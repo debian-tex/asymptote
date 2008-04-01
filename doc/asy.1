@@ -1,0 +1,192 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH ASY 1 "1 Dec 2004"
+.SH NAME
+asy \- Asymptote: a script-based vector graphics language
+.SH SYNOPSIS
+.B asy
+.RI [ options ]
+.RI [ file \ ...]
+.SH DESCRIPTION
+\fBAsymptote\fP is a powerful descriptive vector graphics language for
+technical drawings, inspired by MetaPost but with an improved C++-like syntax.
+Asymptote provides for figures the same high-quality level of typesetting that
+LaTeX does for scientific text.
+.SH OPTIONS
+If no arguments are given, Asymptote runs in interactive mode.
+.PP
+If "\-" is given as the file argument, Asymptote reads from standard input.
+.PP
+A summary of options is included below. The effect of most options
+can be negated by prepending 
+.B no
+to the option name. 
+Default values for most options may also be entered in the 
+file 
+.B .asy/config.asy
+in the user's home directory using the long form:
+.PP
+     import settings;
+     batchView=true;
+.PP
+For a complete
+description, see the Info files.
+.TP
+.B \-V,\-View            
+View output; command-line only.
+.TP
+.B \-a,\-align C|B|T|Z   
+Center, Bottom, Top, or Zero page alignment [Center].
+.TP
+.B \-autoimport string  
+Module to automatically import [""].
+.TP
+.B \-autoplain          
+Enable automatic importing of plain [true].
+.TP
+.B \-autorotate         
+Enable automatic PDF page rotation [false].
+.TP
+.B \-batchMask          
+Mask fpu exceptions in batch mode [false].
+.TP
+.B \-batchView          
+View output in batch mode [false].
+.TP
+.B \-bw                 
+Convert all colors to black and white [false].
+.TP
+.B \-cd directory       
+Set current directory; command-line only.
+.TP
+.B \-cmyk               
+Convert rgb colors to cmyk [false].
+.TP
+.B \-c,\-command string  
+Command to autoexecute.
+.TP
+.B \-compact            
+Conserve memory at the expense of speed [false].
+.TP
+.B \-d,\-debug           
+Enable debugging messages [false].
+.TP
+.B \-divisor n          
+Free space divisor for garbage collection [2].
+.TP
+.B \-globalwrite        
+Allow write to other directory; command-line only [false].
+.TP
+.B \-gray               
+Convert all colors to grayscale [false].
+.TP
+.B \-h,\-help            
+Show summary of options; command-line only.
+.TP
+.B \-historylines n     
+Retain n lines of history [1000].
+.TP
+.B \-inlinetex          
+Generate inline tex code [false].
+.TP
+.B \-interactiveMask    
+Mask fpu exceptions in interactive mode [true].
+.TP
+.B \-interactiveView    
+View output in interactive mode [true].
+.TP
+.B \-interactiveWrite   
+Write expressions entered at the prompt to stdout [true].
+.TP
+.B \-k,\-keep            
+Keep intermediate files [false].
+.TP
+.B \-keepaux            
+Keep intermediate LaTeX .aux files [false].
+.TP
+.B \-level n            
+Postscript level [3].
+.TP
+.B \-l,\-listvariables   
+List available global functions and variables [false].
+.TP
+.B \-localhistory       
+Use a local interactive history file [false].
+.TP
+.B \-m,\-mask            
+Mask fpu exceptions; command-line only.
+.TP
+.B \-multiline          
+Input code over multiple lines at the prompt [false].
+.TP
+.B \-multipleView       
+View output from multiple batch-mode files [false].
+.TP
+.B \-O,\-offset pair     
+PostScript offset [(0,0)].
+.TP
+.B \-f,\-outformat format
+Convert each output file to specified format.
+.TP
+.B \-o,\-outname name    
+Alternative output name for first file.
+.TP
+.B \-p,\-parseonly       
+Parse file [false].
+.TP
+.B \-prompt string      
+Prompt ["> "].
+.TP
+.B \-prompt2 string     
+Continuation prompt for multiline input [".."].
+.TP
+.B \-rgb                
+Convert cmyk colors to rgb [false].
+.TP
+.B \-safe               
+Disable system call; command-line only [true].
+.TP
+.B \-scroll n           
+Scroll standard output n lines at a time [0].
+.TP
+.B \-tabcompletion      
+Interactive prompt auto-completion [true].
+.TP
+.B \-tex engine         
+TeX engine ("latex|pdflatex|tex|pdftex|none") ["latex"].
+.TP
+.B \-s,\-translate       
+Show translated virtual machine code [false].
+.TP
+.B \-twice              
+Run LaTeX twice (to resolve references) [false].
+.TP
+.B \-unsafe             
+Enable system call (=> global); command-line only [false].
+.TP
+.B \-u,\-user string     
+General purpose user string [""].
+.TP
+.B \-v,\-verbose         
+Increase verbosity level [0].
+.TP
+.B \-version            
+Show version; command-line only.
+.TP
+.B \-wait               
+Wait for child processes to finish before exiting [false].
+.TP
+.B \-where              
+Show where listed variables are declared [false].
+.TP
+.B \-xformat format     
+GUI deconstruction format ["png"].
+
+.SH SEE ALSO
+Asymptote is documented fully in the asymptote Info page.
+The manual can also be accessed in interactive mode with the "help" command.
+
+.SH AUTHOR
+Asymptote was written by Andy Hammerlindl, John Bowman, and Tom Prince.
+.PP
+This manual page was written by Hubert Chan for the Debian project (but may
+be used by others).

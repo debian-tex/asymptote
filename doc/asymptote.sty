@@ -1,0 +1,168 @@
+%%% Asymptote style file for LaTeX
+%%% Contributed by Tom Prince 14 May 2003
+%%% Modified by John Bowman
+%%% Adapted from comment.sty (Under GPL v2)
+
+\newif\ifinline
+\DeclareOption{inline}{\inlinetrue}
+\ProcessOptions*
+
+% Work around jobname bug in MiKTeX 2.5 and 2.6:
+% Turn stars in file names (resulting from spaces, etc.) into underscores
+\def\fixstar#1*#2\relax{\def\argtwo{#2}\ifx\argtwo\empty\gdef\Jobname{#1}\else
+\fixstar#1_#2\relax\fi}
+\expandafter\fixstar\jobname*\relax
+
+\ifinline
+\RequirePackage{color,graphicx}
+\else
+\RequirePackage{graphics}
+\fi
+
+\def\makeinnocent#1{\catcode`#1=12 }
+\def\csarg#1#2{\expandafter#1\csname#2\endcsname}
+\newwrite\AsyStream
+\newread\AsyTestStream
+\def\AsyFile{\jobname.asy}
+
+\ifinline
+\openin\AsyTestStream=\jobname_.pre
+\ifeof\AsyTestStream
+\else
+\input \jobname_.pre
+\fi
+\closein\AsyTestStream%
+\fi
+
+\immediate\openout\AsyStream=\AsyFile
+\immediate\write\AsyStream{access settings;}%
+\immediate\write\AsyStream{if(!settings.multipleView)}%
+\immediate\write\AsyStream{  settings.batchView=false;}%
+\ifx\pdfoutput\undefined
+\def\pdfoutput{0}
+\fi
+\ifcase\pdfoutput
+\else
+\immediate\write\AsyStream{settings.tex="pdflatex";}%
+\fi
+\ifinline
+\immediate\write\AsyStream{settings.inlinetex=true;}%
+\immediate\write\AsyStream{deletepreamble();}%
+\fi
+\newcounter{asy}
+
+\def\ProcessAsymptote#1% start it all off
+{\begingroup
+  \def\CurrentAsymptote{#1}%
+  \let\do\makeinnocent \dospecials 
+  \makeinnocent\^^L% and whatever other special cases
+  \endlinechar`\^^M \catcode`\^^M=12 \xAsymptote}
+{\catcode`\^^M=12 \endlinechar=-1 %
+  \gdef\xAsymptote{%
+    \expandafter\ProcessAsymptoteLine}
+  \gdef\ProcessAsymptoteLine#1^^M{\def\test{#1}
+    \csarg\ifx{End\CurrentAsymptote Test}\test
+    \edef\next{\noexpand\EndOfAsymptote{\CurrentAsymptote}}%
+    \else \ThisAsymptote{#1}\let\next\ProcessAsymptoteLine
+    \fi \next}
+}
+
+\def\ASYstringmeaning#1{\expandafter\ASYgobblearrow\meaning#1}
+\def\ASYstringcsnoescape#1{\expandafter\ASYgobbleescape\string#1}
+{\escapechar-1
+  \expandafter\expandafter\expandafter\gdef
+  \expandafter\expandafter\expandafter\ASYgobblearrow
+  \expandafter\string\csname macro:->\endcsname{}
+}
+\def\ASYgobbleescape#1{\ifnum`\\=`#1 \else #1\fi}
+
+\def\WriteAsyLine#1{\def\ASYtmp{#1}%
+  \immediate\write\AsyStream{\ASYstringmeaning\ASYtmp}}
+
+\def\gedefappend#1#2{%
+  \toks@ = \expandafter{#1}%
+  \global\edef#1{\the\toks@ #2}%
+}%
+\def\globalASYdefs{}
+\def\WriteGlobalAsyLine#1{\def\ASYtmp{#1^^J}%
+\gedefappend\globalASYdefs{\ASYstringmeaning\ASYtmp}}
+
+\def\EndOfAsymptote#1{\endgroup\end{#1}%
+    \csname After#1Asymptote\endcsname}
+\def\AsymptoteEndDef#1{{\escapechar=-1\relax
+    \csarg\xdef{End#1Test}{\string\\end\string\{#1\string\}}%
+  }}
+
+\def\AfterasyAsymptote{%
+  \immediate\write\AsyStream{\@charrb);}%
+  \immediate\write\AsyStream{// End of Asymptote Figure \arabic{asy}}%
+  \ifinline
+    \openin\AsyTestStream=\Jobname_\arabic{asy}_.tex
+  \else
+    \ifcase\pdfoutput
+      \openin\AsyTestStream=\Jobname_\arabic{asy}.eps
+    \else
+      \openin\AsyTestStream=\Jobname_\arabic{asy}.pdf
+    \fi
+  \fi
+  \ifeof\AsyTestStream
+    \ifinline
+      \PackageWarning{asymptote}{file \Jobname_\arabic{asy}_.tex does not exist}%
+    \else
+      \ifcase\pdfoutput
+        \PackageWarning{asymptote}{file \Jobname_\arabic{asy}.eps does not exist}%
+      \else
+        \PackageWarning{asymptote}{file \Jobname_\arabic{asy}.pdf does not exist}%
+      \fi
+    \fi
+    \closein\AsyTestStream%
+  \else
+    \closein\AsyTestStream%
+    \ifinline
+    \catcode`:=12
+    \input \Jobname_\arabic{asy}_.tex%
+    \else
+    \includegraphics{\Jobname_\arabic{asy}}%
+    \fi
+  \fi
+  \relax%
+  \endgroup}
+\newcommand\asy[1][]{%
+  \begingroup
+  \let\par\empty
+  \stepcounter{asy}%
+  \def\@optarg{#1}%
+   \immediate\write\AsyStream{}%
+   \immediate\write\AsyStream{// Beginning of Asymptote Figure \arabic{asy}}%
+   \immediate\write\AsyStream{eval(quote\@charlb}%
+   \immediate\write\AsyStream{defaultfilename='\Jobname_\arabic{asy}';}%
+  \ifx\@optarg\empty
+  \else
+    \immediate\write\AsyStream{size(#1);}%
+  \fi
+  \immediate\write\AsyStream{\globalASYdefs}%
+  \let\ThisAsymptote\WriteAsyLine%
+  \ProcessAsymptote{asy}}
+\AsymptoteEndDef{asy}
+\def\asydef{%
+  \let\ThisAsymptote\WriteGlobalAsyLine%
+  \ProcessAsymptote{asydef}}
+\AsymptoteEndDef{asydef}
+\def\AfterasydefAsymptote{}
+
+\AtEndDocument{\immediate\closeout\AsyStream}
+
+\newcommand{\ASYanimategraphics}[5][]{%
+\openin\AsyTestStream=#3.pdf
+\ifeof\AsyTestStream%
+\else%
+\animategraphics[{#1}]{#2}{#3}{#4}{#5}%
+\fi%
+}
+
+\def\Asymptote{{\tt Asymptote}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "shared"
+%%% End: 
