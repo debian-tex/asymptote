@@ -1,3 +1,10 @@
+asymptote (1.42-1) unstable; urgency=low
+
+  * New upstream version
+  * debian/control: Add Depends: python-imaging-tk. (closes: #469149)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Tue, 01 Apr 2008 11:22:31 -0400
+
 asymptote (1.40-1) unstable; urgency=low
 
   * New upstream release.

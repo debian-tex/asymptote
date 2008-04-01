@@ -9,7 +9,7 @@ Homepage: http://asymptote.sourceforge.net/
 
 Package: asymptote
 Architecture: any
-Depends: python, python-tk, imagemagick, gs-gpl | gs, texlive-latex-base | tetex-bin, texlive-base-bin | tetex-bin, texlive-pstricks | tetex-extra, ${shlibs:Depends}, ${misc:Depends}
+Depends: python, python-tk, python-imaging-tk, imagemagick, gs-gpl | gs, texlive-latex-base | tetex-bin, texlive-base-bin | tetex-bin, texlive-pstricks | tetex-extra, ${shlibs:Depends}, ${misc:Depends}
 Recommends: asymptote-doc
 Suggests: gv, xpdf
 Description: script-based vector graphics language inspired by MetaPost
