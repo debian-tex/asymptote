@@ -344,16 +344,25 @@ public:
   }
 };
 
-class subscriptExp : public exp {
+class arrayExp : public exp {
+protected:
   exp *set;
-  exp *index;
 
   array *getArrayType(coenv &e);
   array *transArray(coenv &e);
 
 public:
+  arrayExp(position pos, exp *set) 
+    : exp(pos), set(set) {}
+};
+
+
+class subscriptExp : public arrayExp {
+  exp *index;
+
+public:
   subscriptExp(position pos, exp *set, exp *index)
-    : exp(pos), set(set), index(index) {}
+    : arrayExp(pos, set), index(index) {}
 
   void prettyprint(ostream &out, Int indent);
 
@@ -367,6 +376,52 @@ public:
                             new tempExp(e, index, types::primInt()));
   }
 };
+
+class slice : public absyn {
+  exp *left;
+  exp *right;
+
+public:
+  slice(position pos, exp *left, exp *right)
+    : absyn(pos), left(left), right(right) {}
+
+  void prettyprint(ostream &out, Int indent);
+
+  exp *getLeft() { return left; }
+  exp *getRight() { return right; }
+
+  // Translates code to put the left and right expressions on the stack (in that
+  // order).  If left is omitted, zero is pushed on the stack in it's place.  If
+  // right is omitted, nothing is pushed in its place.
+  void trans(coenv &e);
+
+  slice *evaluate(coenv &e) {
+    return new slice(getPos(),
+                     left ? new tempExp(e, left, types::primInt()) : 0,
+                     right ? new tempExp(e, right, types::primInt()) : 0);
+  }
+};
+
+class sliceExp : public arrayExp {
+  slice *index;
+
+public:
+  sliceExp(position pos, exp *set, slice *index)
+    : arrayExp(pos, set), index(index) {}
+
+  void prettyprint(ostream &out, Int indent);
+
+  types::ty *trans(coenv &e);
+  types::ty *getType(coenv &e);
+  void transWrite(coenv &e, types::ty *target);
+
+  exp *evaluate(coenv &e, types::ty *) {
+    return new sliceExp(getPos(),
+                        new tempExp(e, set, getArrayType(e)),
+                        index->evaluate(e));
+  }
+};
+
 
 // The expression "this," that evaluates to the lexically enclosing record.
 class thisExp : public exp {

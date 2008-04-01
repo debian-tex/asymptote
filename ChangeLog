@@ -1,4 +1,632 @@
 ------------------------------------------------------------------------
+r3056 | jcbowman | 2008-02-26 22:57:08 -0700 (Tue, 26 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/animations/cube.asy
+
+Project labels onto cube faces.
+
+------------------------------------------------------------------------
+r3055 | jcbowman | 2008-02-24 09:32:50 -0700 (Sun, 24 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/settings.cc
+
+Don't set sticky bit when creating ~/.asy directory.
+
+------------------------------------------------------------------------
+r3054 | jcbowman | 2008-02-24 01:18:00 -0700 (Sun, 24 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/slopefield.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/doc/slopefield1.asy
+
+Add optional arrows to slopefield routines.
+
+------------------------------------------------------------------------
+r3053 | jcbowman | 2008-02-22 14:47:40 -0700 (Fri, 22 Feb 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_markers.asy
+   M /trunk/asymptote/base/three.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/spline.asy
+
+Add routines pairs(real[] x, real[] y) and triples(real[] x, real[] y,
+real[] z) as a replacement for the obsolete routine 
+dot(picture pic=currentpicture, pair[] x, pair[] y, pen p=currentpen,
+    filltype filltype=Fill);
+
+------------------------------------------------------------------------
+r3052 | jcbowman | 2008-02-22 14:11:07 -0700 (Fri, 22 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/three.asy
+
+Remove ambiguity in scale.
+
+------------------------------------------------------------------------
+r3051 | jcbowman | 2008-02-22 12:12:12 -0700 (Fri, 22 Feb 2008) | 10 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_markers.asy
+   M /trunk/asymptote/base/three.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/runtime.in
+
+Use the exact derivative of the projection map to project a Label onto a
+given plane.
+
+Remove routine dot(picture pic=currentpicture, pair[] x, pair[] y,
+                   pen p=currentpen, filltype filltype=Fill);
+
+Add dot(real[] a, real[] b) routine returning the dot product of two vectors.
+
+Update documentation.
+
+------------------------------------------------------------------------
+r3050 | jcbowman | 2008-02-20 13:35:14 -0700 (Wed, 20 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/extra/intro.asy
+   M /trunk/asymptote/doc/generalaxis.asy
+   M /trunk/asymptote/doc/latexusage.tex
+   M /trunk/asymptote/doc/saddle.asy
+   M /trunk/asymptote/doc/shadedtiling.asy
+   M /trunk/asymptote/doc/unitcircle3.asy
+   M /trunk/asymptote/doc/westnile.asy
+   M /trunk/asymptote/examples/animations/pdfmovie.asy
+   M /trunk/asymptote/examples/cardiod.asy
+   M /trunk/asymptote/examples/cos2theta.asy
+   M /trunk/asymptote/examples/equilchord.asy
+   M /trunk/asymptote/examples/fjortoft.asy
+   M /trunk/asymptote/examples/integraltest.asy
+   M /trunk/asymptote/examples/lowupint.asy
+   M /trunk/asymptote/examples/mosaic.asy
+   M /trunk/asymptote/examples/polararea.asy
+   M /trunk/asymptote/examples/sacone.asy
+   M /trunk/asymptote/examples/shellmethod.asy
+   M /trunk/asymptote/examples/shellsqrtx01.asy
+   M /trunk/asymptote/examples/sqrtx01.asy
+   M /trunk/asymptote/examples/sqrtx01y1.asy
+   M /trunk/asymptote/examples/venn.asy
+   M /trunk/asymptote/examples/washermethod.asy
+   M /trunk/asymptote/examples/wedge.asy
+   M /trunk/asymptote/examples/workcone.asy
+   M /trunk/asymptote/examples/xxsq01.asy
+   M /trunk/asymptote/examples/xxsq01x-1.asy
+   M /trunk/asymptote/examples/xxsq01y.asy
+
+More guide to path changes.
+
+------------------------------------------------------------------------
+r3049 | jcbowman | 2008-02-20 13:30:54 -0700 (Wed, 20 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/three.asy
+
+Minor optimization.
+
+------------------------------------------------------------------------
+r3048 | jcbowman | 2008-02-20 10:05:24 -0700 (Wed, 20 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/animation.asy
+
+Minor optimization.
+
+------------------------------------------------------------------------
+r3047 | jcbowman | 2008-02-20 09:53:48 -0700 (Wed, 20 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/animation.asy
+
+Simplify code.
+
+------------------------------------------------------------------------
+r3046 | jcbowman | 2008-02-18 13:19:42 -0700 (Mon, 18 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/animation.asy
+
+Add fit argument also for nonglobal animations.
+
+------------------------------------------------------------------------
+r3045 | jcbowman | 2008-02-18 11:07:11 -0700 (Mon, 18 Feb 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/animation.asy
+   M /trunk/asymptote/base/plain_shipout.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/animations/wheel.asy
+
+Add fit argument to animation routines for adding an optionally filled
+bounding box to each movie frame.
+
+Add newpage(frame) function.
+
+------------------------------------------------------------------------
+r3044 | jcbowman | 2008-02-18 09:54:28 -0700 (Mon, 18 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_shipout.asy
+
+Remove unused shipout predeclaration.
+
+------------------------------------------------------------------------
+r3043 | jcbowman | 2008-02-17 22:29:37 -0700 (Sun, 17 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/runtime.in
+
+Add missing explicit qualifier.
+
+------------------------------------------------------------------------
+r3042 | jcbowman | 2008-02-17 22:22:15 -0700 (Sun, 17 Feb 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_paths.asy
+   M /trunk/asymptote/base/plain_pens.asy
+   M /trunk/asymptote/base/plain_picture.asy
+   M /trunk/asymptote/builtin.cc
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/runtime.in
+
+Move definition of currentpen to C++ code.
+
+Add int inside(path p, path q, pen fillrule=currentpen) routine.
+
+------------------------------------------------------------------------
+r3041 | jcbowman | 2008-02-16 22:17:40 -0700 (Sat, 16 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/base/three.asy
+
+Add routine for projecting a Label onto a given plane.
+
+------------------------------------------------------------------------
+r3040 | jcbowman | 2008-02-15 09:43:04 -0700 (Fri, 15 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/extra/intro.asy
+   M /trunk/asymptote/texfile.h
+
+Fix missing ASYbase declaration.
+
+------------------------------------------------------------------------
+r3039 | oshardt | 2008-02-13 19:21:00 -0700 (Wed, 13 Feb 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/GUI/xasyBezierEditor.py
+   M /trunk/asymptote/GUI/xasyMainWin.py
+
+Fix bug in cancellation of text addition.
+------------------------------------------------------------------------
+r3038 | jcbowman | 2008-02-13 15:24:27 -0700 (Wed, 13 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/picture.cc
+   M /trunk/asymptote/texfile.cc
+   M /trunk/asymptote/texfile.h
+
+Output TeX headers only when needed.
+
+------------------------------------------------------------------------
+r3037 | jcbowman | 2008-02-13 15:21:32 -0700 (Wed, 13 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/doc/extra/intro.asy
+
+Mention that transforms can also be applied to Labels.
+
+------------------------------------------------------------------------
+r3036 | jcbowman | 2008-02-11 14:19:08 -0700 (Mon, 11 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/FAQ/asy-faq.bfnn
+
+Update two arrow example.
+
+------------------------------------------------------------------------
+r3035 | jcbowman | 2008-02-11 13:49:15 -0700 (Mon, 11 Feb 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/doc/FAQ/asy-faq.bfnn
+   M /trunk/asymptote/examples/dimension.asy
+
+Update documentation of arrowhead styles.
+
+Change guides to paths.
+
+------------------------------------------------------------------------
+r3034 | jcbowman | 2008-02-11 13:15:19 -0700 (Mon, 11 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Move documentation of colorless(pen) to a better place.
+
+------------------------------------------------------------------------
+r3033 | jcbowman | 2008-02-11 03:14:56 -0700 (Mon, 11 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/imagecontour.asy
+   M /trunk/asymptote/examples/fillcontour.asy
+
+Simply and generalize contour value selection code.
+
+------------------------------------------------------------------------
+r3032 | jcbowman | 2008-02-08 21:58:31 -0700 (Fri, 08 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/graph.asy
+
+Make OmitTick do nothing when there are no major ticks.
+
+------------------------------------------------------------------------
+r3031 | hammera | 2008-02-05 18:25:23 -0700 (Tue, 05 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Fixed typo in slice documentation.
+
+------------------------------------------------------------------------
+r3030 | jcbowman | 2008-02-05 09:01:26 -0700 (Tue, 05 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain.asy
+
+Avoid division by zero in uniform.
+
+------------------------------------------------------------------------
+r3029 | jcbowman | 2008-02-03 16:19:39 -0700 (Sun, 03 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Update documentation regarding ImageMagick convert.
+
+------------------------------------------------------------------------
+r3028 | jcbowman | 2008-02-03 16:13:17 -0700 (Sun, 03 Feb 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/base/animation.asy
+   M /trunk/asymptote/examples/animations/inlinemovie.tex
+
+Make movie generate multipage pdf animations when format="pdf" and global=true.
+
+Insist on pdflatex in animation.pdf().
+
+------------------------------------------------------------------------
+r3027 | jcbowman | 2008-02-03 16:08:56 -0700 (Sun, 03 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawlabel.cc
+
+Catch bad casts.
+
+------------------------------------------------------------------------
+r3026 | jcbowman | 2008-02-02 10:23:44 -0700 (Sat, 02 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_pens.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add casts between hsv structure and pens; reduce angle to [0,360).
+
+------------------------------------------------------------------------
+r3025 | jcbowman | 2008-02-02 02:07:55 -0700 (Sat, 02 Feb 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Increment version to 1.42svn.
+------------------------------------------------------------------------
+r3024 | jcbowman | 2008-02-02 01:12:22 -0700 (Sat, 02 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/array.cc
+
+Fix type conflict.
+
+------------------------------------------------------------------------
+r3023 | jcbowman | 2008-02-02 00:05:46 -0700 (Sat, 02 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_pens.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add support for HSV colorspace.
+
+------------------------------------------------------------------------
+r3022 | jcbowman | 2008-01-31 20:21:25 -0700 (Thu, 31 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Minor edits.
+
+------------------------------------------------------------------------
+r3021 | hammera | 2008-01-30 18:42:11 -0700 (Wed, 30 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/TODO
+   M /trunk/asymptote/doc/asymptote.texi
+
+Documented slices.
+
+------------------------------------------------------------------------
+r3020 | hammera | 2008-01-30 13:28:01 -0700 (Wed, 30 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/array.cc
+   M /trunk/asymptote/tests/array/slice.asy
+
+Disallow A[5:2] and, for non-cyclic A, A[-1:] to play it safe.
+
+------------------------------------------------------------------------
+r3019 | jcbowman | 2008-01-30 12:24:17 -0700 (Wed, 30 Jan 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/arrayop.h
+
+Change write to output nothing for uninitialized values instead of
+producing an error.
+
+------------------------------------------------------------------------
+r3018 | jcbowman | 2008-01-30 11:19:58 -0700 (Wed, 30 Jan 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/plain.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/runtime.in
+
+Add uniform(real a, real b, int n), which returns a uniform partition of
+[a,b] into n subintervals.
+
+Fix comment.
+
+------------------------------------------------------------------------
+r3017 | jcbowman | 2008-01-29 17:53:40 -0700 (Tue, 29 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/runtime.in
+
+Store history line immediately after input (as well at exit, after stifling).
+
+------------------------------------------------------------------------
+r3016 | jcbowman | 2008-01-29 08:23:30 -0700 (Tue, 29 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/integraltest.asy
+   M /trunk/asymptote/runtime.in
+
+Add interface to simpson.
+
+------------------------------------------------------------------------
+r3015 | jcbowman | 2008-01-28 12:12:37 -0700 (Mon, 28 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Format.
+
+------------------------------------------------------------------------
+r3014 | jcbowman | 2008-01-28 12:11:43 -0700 (Mon, 28 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Move numerical routines to Mathematical functions section.
+
+------------------------------------------------------------------------
+r3013 | jcbowman | 2008-01-28 11:38:09 -0700 (Mon, 28 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_paths.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Make buildcycle return nullpath if less than two paths are specified.
+
+------------------------------------------------------------------------
+r3012 | jcbowman | 2008-01-28 10:56:44 -0700 (Mon, 28 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Fix typo in documentation of complement.
+
+------------------------------------------------------------------------
+r3011 | jcbowman | 2008-01-28 10:35:52 -0700 (Mon, 28 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Fix formatting.
+
+------------------------------------------------------------------------
+r3010 | hammera | 2008-01-27 11:05:40 -0700 (Sun, 27 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/array.cc
+   M /trunk/asymptote/array.h
+   M /trunk/asymptote/exp.cc
+   M /trunk/asymptote/exp.h
+   M /trunk/asymptote/runtime.in
+   M /trunk/asymptote/tests/array/slice.asy
+
+Implemented assignment to slices.
+
+------------------------------------------------------------------------
+r3009 | jcbowman | 2008-01-26 16:11:28 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawlabel.cc
+   M /trunk/asymptote/pipestream.h
+
+Shred TeX transcripts after each call to drawLabel::wait.
+
+------------------------------------------------------------------------
+r3008 | jcbowman | 2008-01-26 15:57:21 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawlabel.cc
+   M /trunk/asymptote/pipestream.h
+
+Output complete TeX diagnostics.
+
+------------------------------------------------------------------------
+r3007 | jcbowman | 2008-01-26 15:30:24 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/tests/Makefile
+   M /trunk/asymptote/tests/TestLib.asy
+
+Add blank lines between tests.
+
+------------------------------------------------------------------------
+r3006 | hammera | 2008-01-26 15:02:48 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/runtime.in
+
+Added null check for array slices.
+
+------------------------------------------------------------------------
+r3005 | jcbowman | 2008-01-26 14:57:19 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/Makefile.in
+
+Add array.
+
+------------------------------------------------------------------------
+r3004 | jcbowman | 2008-01-26 14:52:05 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/runtime.in
+
+Define complex exp, log, sin, and cos functions.
+
+------------------------------------------------------------------------
+r3003 | hammera | 2008-01-26 14:13:57 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/TODO
+   A /trunk/asymptote/array.cc
+   M /trunk/asymptote/array.h
+   M /trunk/asymptote/camp.y
+   M /trunk/asymptote/exp.cc
+   M /trunk/asymptote/exp.h
+   M /trunk/asymptote/runtime.in
+   A /trunk/asymptote/tests/array/slice.asy
+
+Added array slices.
+
+------------------------------------------------------------------------
+r3002 | jcbowman | 2008-01-26 10:19:22 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/animations/slidemovies.asy
+
+Fix file paths.
+
+------------------------------------------------------------------------
+r3001 | jcbowman | 2008-01-26 10:14:03 -0700 (Sat, 26 Jan 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/base/animate.asy
+   A /trunk/asymptote/base/animation.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/animations/cube.asy
+   M /trunk/asymptote/examples/animations/sphere.asy
+   M /trunk/asymptote/examples/animations/wavepacket.asy
+   M /trunk/asymptote/examples/animations/wheel.asy
+
+Remove dependence of non-PDF animations on animate.sty package by renaming
+animate.sty to animation.sty (PDF animations still need to import animate.sty).
+
+------------------------------------------------------------------------
+r3000 | hammera | 2008-01-26 09:18:56 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/TODO
+   M /trunk/asymptote/fundec.cc
+
+Report on error for rest args with default arguments.
+
+------------------------------------------------------------------------
+r2999 | hammera | 2008-01-26 09:07:52 -0700 (Sat, 26 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/TODO
+   M /trunk/asymptote/builtin.cc
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/runtime.in
+   M /trunk/asymptote/types.cc
+
+Added virtual field A.keys for arrays.  concat now take a rest arg.
+
+------------------------------------------------------------------------
+r2998 | jcbowman | 2008-01-25 22:47:18 -0700 (Fri, 25 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/transparency.asy
+   M /trunk/asymptote/picture.cc
+   M /trunk/asymptote/picture.h
+   M /trunk/asymptote/psfile.cc
+   M /trunk/asymptote/psfile.h
+   M /trunk/asymptote/runtime.in
+
+Make xasy respect transparency with png xformat.
+
+------------------------------------------------------------------------
+r2997 | jcbowman | 2008-01-25 19:51:26 -0700 (Fri, 25 Jan 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/base/math.asy
+   M /trunk/asymptote/base/plain_arrows.asy
+   M /trunk/asymptote/base/plain_filldraw.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add drawpen argument to FillDraw.
+
+Handle nullpen when drawing arrows.
+
+------------------------------------------------------------------------
+r2996 | jcbowman | 2008-01-20 11:58:45 -0700 (Sun, 20 Jan 2008) | 12 lines
+Changed paths:
+   M /trunk/asymptote/base/flowchart.asy
+   M /trunk/asymptote/base/plain_Label.asy
+   M /trunk/asymptote/base/plain_boxes.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/doc/latexusage.tex
+   M /trunk/asymptote/examples/labelbox.asy
+   M /trunk/asymptote/runtime.in
+
+Store and make use of the bounding path in the object structure to allow
+connections to noncardinal boundary points.
+
+Add constructors to the object structure.
+
+Remove obsolete function for drawing boxes on pictures in favour of
+draw(Label,box).
+
+Add dir(explicit pair z) function so that dir(E) is a synonym for E.
+
+Update documentation.
+
+------------------------------------------------------------------------
+r2995 | jcbowman | 2008-01-19 21:28:43 -0700 (Sat, 19 Jan 2008) | 2 lines
+Changed paths:
+   A /trunk/asymptote/examples/gamma.asy
+
+Add gamma function example.
+
+------------------------------------------------------------------------
+r2994 | jcbowman | 2008-01-19 18:03:13 -0700 (Sat, 19 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Fix typo.
+
+------------------------------------------------------------------------
+r2993 | jcbowman | 2008-01-19 18:02:16 -0700 (Sat, 19 Jan 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_paths.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/path.cc
+
+Improve buildcycle algorithm.
+
+Avoid numerical resolution issues by removing the "paths in concatenation
+do not meet" error.
+
+------------------------------------------------------------------------
+r2992 | jcbowman | 2008-01-17 16:29:08 -0700 (Thu, 17 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/math.asy
+   M /trunk/asymptote/base/plain_paths.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add intersection count to node and value routines.
+
+------------------------------------------------------------------------
+r2991 | jcbowman | 2008-01-17 16:24:27 -0700 (Thu, 17 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/flowchartdemo.asy
+
+Update example to show how to specify all pen colours.
+
+------------------------------------------------------------------------
+r2990 | pivaldi | 2008-01-12 10:53:17 -0700 (Sat, 12 Jan 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Fix typo
+------------------------------------------------------------------------
+r2989 | jcbowman | 2008-01-11 21:59:03 -0700 (Fri, 11 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/solids.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Determine whether unsplit slices are should be drawn as front or back slices.
+
+------------------------------------------------------------------------
+r2988 | jcbowman | 2008-01-05 11:59:42 -0700 (Sat, 05 Jan 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/configure.ac
+
+Increment version to 1.41svn.
+------------------------------------------------------------------------
 r2987 | jcbowman | 2008-01-05 11:02:27 -0700 (Sat, 05 Jan 2008) | 2 lines
 Changed paths:
    M /trunk/asymptote/base/solids.asy

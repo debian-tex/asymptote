@@ -31,6 +31,10 @@ using namespace types;
 using namespace camp;
 using namespace vm;  
 
+namespace run {
+  extern camp::pen currentpen;
+}
+
 namespace trans {
 using camp::transform;
 using camp::pair;
@@ -327,6 +331,14 @@ void addConstant(venv &ve, T value, ty *t, const char *name,
   ve.enter(symbol::trans(name), ent);
 }
 
+template<class T>
+void addVariable(venv &ve, T *ref, ty *t, const char *name,
+		 record *module=settings::getSettingsModule()) {
+  access *a = new refAccess<T>(ref);
+  varEntry *ent = new varEntry(t, a, PUBLIC, module, 0, position());
+  ve.enter(symbol::trans(name), ent);
+}
+
 // The identity access, i.e. no instructions are encoded for a cast or
 // operation, and no functions are called.
 identAccess id;
@@ -566,7 +578,7 @@ void addArrayOps(venv &ve, types::array *t)
   switch (t->depth()) {
   case 1:
     addFunc(ve, run::arrayCopy, t, "copy", formal(t, "a"));
-    addFunc(ve, run::arrayConcat, t, "concat", formal(t, "a"), formal(t, "b"));
+    addRestFunc(ve, run::arrayConcat, t, "concat", new types::array(t));
     addFunc(ve, run::arraySequence,
             t, "sequence", formal(new function(ct, primInt()), "f"),
                            formal(primInt(), "n"));
@@ -769,6 +781,8 @@ void base_venv(venv &ve)
   addConstant<Int>(ve, DBL_DIG, primInt(), "realDigits");
   addConstant<Int>(ve, RAND_MAX, primInt(), "randMax");
   addConstant<double>(ve, PI, primReal(), "pi");
+  
+  addVariable<pen>(ve, &run::currentpen, primPen(), "currentpen");
 
   gen_base_venv(ve);
 }

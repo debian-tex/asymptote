@@ -1,3 +1,42 @@
+Release Notes for Version 1.42
+
+A routine was added for projecting a Label onto a given plane;
+an ambiguity in the three-dimensional scale routine was resolved. 
+An inside(path p, path q, pen fillrule=currentpen) routine was added to
+determine if one path is strictly within another. Optional arrows were
+added to the slopefield routines. The movie function now generates
+multipage PDF animations when format="pdf" and global=true; a fit argument
+was added to support an optional filled bounding box for each movie frame.
+Casts were added between the hsv structure and pens. Bad casts from TeX
+bidirectional pipe are now caught. In inline latex mode, TeX headers are
+now output only when needed. A bug in the cancellation of text addition in
+xasy was fixed. The sticky bit is no longer set when creating the ~/.asy
+directory. The documentation and FAQ were updated.
+The dot(real[] a, real[] b) routine now returns the dot product of the
+vectors a and b; this introduced a backwards incompatibility:
+dot(x,y) should now be replaced with dot(pairs(x,y)).
+
+Release Notes for Version 1.41
+
+Python-style array slices were added. The array virtual field A.keys
+returns the indices of initialized entries. The concat routine can now
+take an arbitrary number of arguments. The write functions now output
+nothing for uninitialized values instead of producing an error. A bounding
+path is stored in the object structure to allow connections to
+noncardinal boundary points. The buildcycle algorithm was improved.
+The expression dir(E) is a synonym for E. The visibility of unsplit solid
+slices is now properly resolved. A drawpen argument was added to FillDraw.
+The uniform(real a, real b, int n) function returns a uniform partition of
+[a,b] into n subintervals. Complex exp, log, sin, and cos functions were
+added. An interface to the internal adaptive simpson integration routine
+was added. History lines are now stored immediately after input (as well
+at exit, after stifling). Support for the HSV colorspace was added.
+The dependence of non-PDF animations on the animate.sty package was removed by
+renaming animate.asy to animation.asy (PDF animations still need to import
+animate.asy). Transparency groups are now respected by xasy.
+TeX diagnostics were improved. An obsolete function for drawing boxes on
+pictures was removed in favour of draw(Label,box).
+
 Release Notes for Version 1.40
 
 Hatch widths for PDF output were fixed by disabling dynamic line width

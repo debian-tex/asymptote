@@ -1,2 +1,2 @@
 #!/usr/bin/env python
-xasyVersion = "1.40"
+xasyVersion = "1.42"

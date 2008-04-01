@@ -239,6 +239,12 @@ frame legend(picture pic=currentpicture, int perline=1,
   return F;
 }
 
+pair[] pairs(real[] x, real[] y)
+{
+  if(x.length != y.length) abort("arrays have different lengths");
+  return sequence(new pair(int i) {return (x[i],y[i]);},x.length);
+}
+
 void dot(frame f, pair z, pen p=currentpen, filltype filltype=Fill)
 {
   if(filltype == Fill)
@@ -266,13 +272,6 @@ void dot(picture pic=currentpicture, pair[] z, pen p=currentpen,
 	 filltype filltype=Fill)
 {
   for(int i=0; i < z.length; ++i) dot(pic,z[i],p,filltype);
-}
-
-void dot(picture pic=currentpicture, real[] x, real[] y, pen p=currentpen,
-	 filltype filltype=Fill)
-{
-  if(x.length != y.length) abort("arrays have different lengths");
-  for(int i=0; i < x.length; ++i) dot(pic,(x[i],y[i]),p,filltype);
 }
 
 void dot(picture pic=currentpicture, explicit path g, pen p=currentpen,

@@ -147,16 +147,7 @@ types::ty *fieldExp::getObject(coenv& e)
 }
 
 
-void subscriptExp::prettyprint(ostream &out, Int indent)
-{
-  prettyindent(out, indent);
-  out << "subscriptExp\n";
-
-  set->prettyprint(out, indent+1);
-  index->prettyprint(out, indent+1);
-}
-
-array *subscriptExp::getArrayType(coenv &e)
+array *arrayExp::getArrayType(coenv &e)
 {
   types::ty *a = set->cgetType(e);
   if (a->kind == ty_overloaded) {
@@ -175,7 +166,7 @@ array *subscriptExp::getArrayType(coenv &e)
   }
 }
 
-array *subscriptExp::transArray(coenv &e)
+array *arrayExp::transArray(coenv &e)
 {
   types::ty *a = set->cgetType(e);
   if (a->kind == ty_overloaded) {
@@ -208,6 +199,16 @@ bool isAnArray(coenv &e, exp *x)
   if (t->kind == ty_overloaded)
     t=dynamic_cast<overloaded *>(t)->signatureless();
   return t && t->kind==ty_array;
+}
+
+
+void subscriptExp::prettyprint(ostream &out, Int indent)
+{
+  prettyindent(out, indent);
+  out << "subscriptExp\n";
+
+  set->prettyprint(out, indent+1);
+  index->prettyprint(out, indent+1);
 }
 
 types::ty *subscriptExp::trans(coenv &e)
@@ -248,6 +249,72 @@ void subscriptExp::transWrite(coenv &e, types::ty *t)
   e.c.encode(inst::builtin, run::arrayWrite);
 }
 
+
+void slice::prettyprint(ostream &out, Int indent)
+{
+  prettyname(out, "slice", indent);
+  if (left)
+    left->prettyprint(out, indent+1);
+  else
+    prettyname(out, "left omitted", indent+1);
+  if (right)
+    right->prettyprint(out, indent+1);
+  else
+    prettyname(out, "right omitted", indent+1);
+}
+
+void slice::trans(coenv &e)
+{
+  if (left)
+    left->transToType(e, types::primInt());
+  else
+    // If the left index is omitted it can be assumed to be zero.
+    e.c.encode(inst::intpush, (Int)0);
+
+  if (right)
+    right->transToType(e, types::primInt());
+}
+
+
+void sliceExp::prettyprint(ostream &out, Int indent)
+{
+  prettyname(out, "sliceExp", indent);
+  set->prettyprint(out, indent+1);
+  index->prettyprint(out, indent+1);
+}
+
+types::ty *sliceExp::trans(coenv &e)
+{
+  array *a = transArray(e);
+  if (!a)
+    return primError();
+
+  index->trans(e);
+
+  e.c.encode(inst::builtin, index->getRight() ? run::arraySliceRead :
+                                                run::arraySliceReadToEnd);
+
+  return a;
+}
+
+types::ty *sliceExp::getType(coenv &e)
+{
+  array *a = getArrayType(e);
+  return a ? a : primError();
+}
+
+void sliceExp::transWrite(coenv &e, types::ty *t)
+{
+  array *a = transArray(e);
+  if (!a)
+    return;
+  assert(equivalent(a, t));
+
+  index->trans(e);
+
+  e.c.encode(inst::builtin, index->getRight() ? run::arraySliceWrite :
+                                                run::arraySliceWriteToEnd);
+}
 
 void thisExp::prettyprint(ostream &out, Int indent)
 {

@@ -116,6 +116,10 @@ Functions
 * Mathematical functions::      Standard libm functions
 
 
+Arrays
+
+* Slices::                      Python-style array slices
+
 Base modules
 
 * plain::                       Default @code{Asymptote} base file
@@ -132,7 +136,7 @@ Base modules
 * syzygy::                      Syzygy and braid drawing module
 * feynman::                     Feynman diagrams
 * roundedpath::                 Round the sharp corners of paths
-* animate::                     Embedded @acronym{PDF} and @acronym{MPEG} movies
+* animation::                   Embedded @acronym{PDF} and @acronym{MPEG} movies
 * embed::                       Embedding movies, sounds, and 3D objects
 * slide::                       Making presentations with @code{Asymptote}
 * MetaPost::                    @code{MetaPost} compatibility routines
@@ -362,8 +366,8 @@ The @code{ImageMagick} package from
 @url{http://www.imagemagick.org/script/binary-releases.php} 
 
 @noindent
-is required to support alternate output formats (@pxref{convert}),
-including the graphical user interface and animations.
+is required to support output formats other than @acronym{EPS} and
+@acronym{PDF} (@pxref{convert}).
 The @code{Python} interpreter from @url{http://www.python.org} is only required
 if you wish to try out the graphical user interface (@pxref{GUI}).
 
@@ -930,8 +934,9 @@ with
 @cindex @code{---}
 @cindex @code{&}
 The @code{---} connector is an abbreviation for @code{..tension atleast
-infinity..} and the @code{&} connector concatenates two paths which meet
-at a common point. 
+infinity..} and the @code{&} connector concatenates two paths, after
+first stripping off the last node of the first path (which normally
+should coincide with the first node of the second path).
 
 @cindex @code{PostScript} subpath
 @cindex @code{^^}
@@ -1156,8 +1161,6 @@ void dot(picture pic=currentpicture, pair z, pen p=currentpen,
         filltype filltype=Fill);
 void dot(picture pic=currentpicture, pair[] z, pen p=currentpen
         filltype filltype=Fill);
-void dot(picture pic=currentpicture, pair[] x, pair[] y, pen p=currentpen
-        filltype filltype=Fill);
 void dot(picture pic=currentpicture, Label L, pair z, align align=NoAlign,
          string format=defaultformat, pen p=currentpen, filltype filltype=Fill);
 void dot(picture pic=currentpicture, Label L, pen p=currentpen
@@ -1165,7 +1168,7 @@ void dot(picture pic=currentpicture, Label L, pen p=currentpen
 @end verbatim
 
 @cindex @code{Label}
-The third routine draws a dot at every point of a pair array @code{z}.
+The second routine draws a dot at every point of a pair array @code{z}.
 If the special variable @code{Label} is given as the @code{Label}
 argument to the fourth routine, the @code{format} argument will be
 used to format a string based on the dot location (here @code{defaultformat}
@@ -1477,6 +1480,20 @@ A group of objects may be packed together into single frame with the routine
 @verbatim
 frame pack(pair align=2S ... object inset[]);
 @end verbatim
+@noindent
+To draw or fill a box (or ellipse or other path) around a Label and
+return the bounding object, use one of the routines
+@verbatim
+object draw(picture pic=currentpicture, Label L, envelope e, 
+            real xmargin=0, real ymargin=xmargin, pen p=currentpen,
+            filltype filltype=NoFill, bool put=Above);
+object draw(picture pic=currentpicture, Label L, envelope e, pair position,
+            real xmargin=0, real ymargin=xmargin, pen p=currentpen,
+            filltype filltype=NoFill, bool put=Above);
+@end verbatim
+@noindent
+Here @code{envelope} is a boundary-drawing routine such as @code{box} or
+@code{ellipse} defined in @code{plain_boxes.asy} (@pxref{envelope}).
 
 @cindex @code{minipage}
 The @code{string minipage(string s, width=100pt)} function can be used
@@ -1531,6 +1548,7 @@ for(int i=0; i < 10; ++i) {
 @code{continue} statements just as in C/C++. It also supports the Java-style
 shorthand for iterating over all elements of an array:
 
+@cindex array iteration
 @anchor{array iteration}
 @verbatim
 // Iterate over an array
@@ -2193,8 +2211,8 @@ Note that @code{lastcut.before} plays the role of the
 
 @cindex @code{buildcycle}
 @item path buildcycle(... path[] p);
-This returns the path surrounding a region bounded by a list of consecutively
-intersecting paths, following the behaviour of the 
+This returns the path surrounding a region bounded by a list of two or more
+consecutively intersecting paths, following the behaviour of the 
 @code{MetaPost buildcycle} command.
 
 @cindex @code{min}
@@ -2216,6 +2234,13 @@ counterclockwise direction.
 returns @code{true} iff the point @code{z} is inside the region bounded
 by the cyclic path @code{p} according to the fill rule @code{fillrule}
 (@pxref{fillrule}). 
+
+@cindex @code{inside}
+@item bool inside(path p, path q, pen fillrule=currentpen);
+returns @code{1} if the cyclic path @code{p} strictly contains @code{q}
+according to the fill rule @code{fillrule} (@pxref{fillrule}), @code{-1}
+if the cyclic path @code{q} strictly contains @code{p}, and @code{0}
+otherwise.
 
 @end table
 
@@ -2385,11 +2410,6 @@ This special pen writes in invisible ink, but adjusts the bounding
 box as if something had been drawn (like the @code{\phantom}
 command in @TeX{}).
 
-@item pen colorless(pen);
-@cindex @code{colorless}
-The function @code{colorless(pen)}; returns a copy of @code{pen p}
-with its color attributes stripped (to avoid color mixing).
-
 @end table
 
 @cindex @code{defaultpen}
@@ -2403,6 +2423,9 @@ The function @code{real[] colors(pen)} returns the color components of a pen.
 The functions @code{pen gray(pen)}, @code{pen rgb(pen)},  and
 @code{pen cmyk(pen)} return new pens obtained by converting their
 arguments to the respective color spaces. 
+@cindex @code{colorless}
+The function @code{colorless(pen)} returns a copy of its argument
+with the color attributes stripped (to avoid color mixing).
 
 Various shades and mixtures of the grayscale primary colors
 @code{black} and @code{white}, @acronym{RGB} primary colors
@@ -2440,9 +2463,19 @@ color of only a portion of a string, say for a slide presentation,
 usepackage("asycolors");
 @end verbatim
 
+The structure @code{hsv} defined in @code{plain_pens.asy} may be used
+to convert between @acronym{HSV} and @acronym{RGB} spaces, where
+the hue @code{h} is an angle in @math{[0,360)} and the saturation
+@code{s} and value @code{v} lie in @code{[0,1]}:
+@verbatim
+pen p=hsv(180,0.5,0.75);
+write(p);           // ([default], red=0.375, green=0.75, blue=0.75)
+hsv q=p;
+write(q.h,q.s,q.v); // 180     0.5     0.75
+@end verbatim
+
 @item Line types are specified with the function 
-@code{pen linetype(string s, real offset=0, bool scale=true,
- bool adjust=true)},
+@code{pen linetype(string s, real offset=0, bool scale=true, bool adjust=true)},
 @cindex @code{solid}
 @cindex @code{dashed}
 @cindex @code{dotted}
@@ -2766,7 +2799,7 @@ y' = t.y + t.yx * x + t.yy * y
 This is equivalent to the @code{PostScript} transformation
 @code{[t.xx t.yx t.xy t.yy t.x t.y]}.
 
-Transforms can be applied to pairs, guides, paths, pens,
+Transforms can be applied to pairs, guides, paths, pens, strings,
 transforms, frames, and pictures by multiplication (via the binary operator
 @code{*}) on the left (@pxref{circle} for an example).
 @cindex @code{inverse}
@@ -2846,6 +2879,21 @@ A frame obtained by aligning frame @code{f} in the direction
 @code{label} (@pxref{label}), is returned by
 @verbatim
 frame align(frame f, pair align);
+@end verbatim
+
+@cindex @code{box}
+@cindex @code{ellipse}
+@anchor{envelope}
+@cindex @code{envelope}
+To draw or fill a box or ellipse around a label or frame and return the
+boundary as a path, use one of the predefined @code{envelope} routines
+@verbatim
+path box(frame f, Label L="", real xmargin=0,
+         real ymargin=xmargin, pen p=currentpen,
+         filltype filltype=NoFill, bool put=Above);
+path ellipse(frame f, Label L="", real xmargin=0,
+             real ymargin=xmargin, pen p=currentpen,
+             filltype filltype=NoFill, bool put=Above);
 @end verbatim
 
 @item picture
@@ -2990,17 +3038,20 @@ Here @code{filltype} specifies one of the following fill types:
 @table @code
 @cindex @code{FillDraw}
 @item FillDraw
-Fill with the pen used to draw the boundary.
+Fill the interior and draw the boundary.
 
-@item FillDraw(real xmargin=0, real ymargin=xmargin, pen p=nullpen)
+@item FillDraw(real xmargin=0, real ymargin=xmargin, pen fillpen=nullpen,
+               @code{pen drawpen=nullpen);}
 @cindex @code{nullpen}
-If @code{p} is @code{nullpen}, fill with the pen used to draw the
-boundary; otherwise fill with pen @code{p}. An optional margin of
+If @code{fillpen} is @code{nullpen}, fill with the drawing pen;
+otherwise fill with pen @code{fillpen}. 
+If @code{drawpen} is @code{nullpen}, draw the boundary with @code{fillpen};
+otherwise with @code{drawpen}. An optional margin of
 @code{xmargin} and @code{ymargin} can be specified.
 
 @cindex @code{Fill}
 @item Fill
-Fill with the drawing pen.
+Fill the interior.
 
 @cindex @code{nullpen}
 @item Fill(real xmargin=0, real ymargin=xmargin, pen p=nullpen)
@@ -3026,7 +3077,7 @@ otherwise draw with pen @code{p}. An optional margin of
 Clip the region.
 
 @cindex @code{UnFill}
-@item UnFill(real xmargin=0, real ymargin=xmargin
+@item UnFill(real xmargin=0, real ymargin=xmargin)
 Clip the region and surrounding margins @code{xmargin} and @code{ymargin}.
 
 @cindex @code{RadialShade}
@@ -3140,21 +3191,6 @@ void attach(picture dest=currentpicture, frame src,
 void attach(picture dest=currentpicture, frame src,
             pair position=0, pair align, bool group=true,
             filltype filltype=NoFill, bool put=Above);
-@end verbatim
-
-To draw or fill a box or ellipse around a label, frame, or picture,
-use one of the routines (the first two routines for convenience also
-return the boundary as a guide):
-@verbatim
-path box(frame f, Label L="", real xmargin=0,
-         real ymargin=xmargin, pen p=currentpen,
-         filltype filltype=NoFill, bool put=Above);
-path ellipse(frame f, Label L="", real xmargin=0,
-             real ymargin=xmargin, pen p=currentpen,
-             filltype filltype=NoFill, bool put=Above);
-void box(picture pic=currentpicture, Label L,
-         real xmargin=0, real ymargin=xmargin, pen p=currentpen,
-         filltype filltype=NoFill, bool put=Above);
 @end verbatim
 
 @cindex @code{erase}
@@ -4369,7 +4405,9 @@ interval [0,360).
 @cindex @code{aTan}
 For convenience, @code{Asymptote} defines variants @code{Sin},
 @code{Cos}, @code{Tan}, @code{aSin}, @code{aCos}, and @code{aTan} of
-the standard trigonometric functions using degrees rather than radians.
+the standard trigonometric functions that use degrees rather than radians.
+We also define complex versions of the @code{sqrt}, @code{sin}, @code{cos},
+@code{exp}, and @code{log} functions.
 
 @cindex @code{floor}
 @cindex @code{ceil}
@@ -4387,8 +4425,8 @@ We also define a function @code{sgn}, which returns the sign of its
 real argument as an integer (-1, 0, or 1).
 
 @cindex @code{abs}
-There is an @code{abs(int)} function, as well as an @code{abs(real)} function
-(equivalent to @code{fabs(real)}) and an @code{abs(pair)} function
+There is an @code{abs(int)} function, as well as an @code{abs(real)}
+function (equivalent to @code{fabs(real)}), an @code{abs(pair)} function
 (equivalent to @code{length(pair)}).
 
 @cindex @code{rand}
@@ -4455,9 +4493,42 @@ import gsl;
 write(Si(1.0));
 @end verbatim
 
+@code{Asymptote} also provides a few general purpose numerical routines:
+
+@table @code
+
+@cindex @code{newton}
+@item @code{real newton(int iterations=100, real f(real), real fprime(real), real x, bool verbose=false);}
+Use Newton-Raphson iteration to solve for a root of a real-valued
+differentiable function @code{f}, given its derivative @code{fprime} and
+an initial guess @code{x}. Diagnostics for
+each iteration are printed if @code{verbose=true}. 
+If the iteration fails after the maximum allowed number of loops
+(@code{iterations}), @code{realMax} is returned.
+
+@cindex @code{newton}
+@item @code{real newton(int iterations=100, real f(real), real fprime(real), real x1, real x2, bool verbose=false);}
+Use bracketed Newton-Raphson bisection to solve for a root of a real-valued
+differentiable function @code{f} within an interval
+[@code{x1},@code{x2}] (on which the endpoint values of @code{f} have
+opposite signs), given its derivative @code{fprime}. Diagnostics for
+each iteration are printed if @code{verbose=true}.
+If the iteration fails after the maximum allowed number of loops
+(@code{iterations}), @code{realMax} is returned.
+
+@cindex @code{simpson}
+@item @code{real simpson(real f(real), real a, real b, real acc=realEpsilon, real dxmax=b-a)}
+returns the integral of @code{f} from @code{a} to @code{b} using adaptive Simpson integration.
+
+@end table
+
 @node Arrays
 @section Arrays
 @cindex arrays
+
+@menu
+* Slices::                      Python-style array slices
+@end menu
 
 Appending @code{[]} to a built-in or user-defined type yields an array.
 The array element @code{i} of an array @code{A} can be accessed as @code{A[i]}.
@@ -4500,6 +4571,7 @@ The @code{copy} function listed below provides a deep copy of an array.
 @cindex @code{length}
 @cindex @code{cyclic}
 @cindex @code{cyclicflag}
+@cindex @code{keys}
 @cindex @code{push}
 @cindex @code{append}
 @cindex @code{pop}
@@ -4507,15 +4579,32 @@ The @code{copy} function listed below provides a deep copy of an array.
 @cindex @code{delete}
 @cindex @code{initialized}
 Every array @code{A} of type @code{T[]} has the virtual members
-@code{int length}, @code{void cyclic(bool b)}, @code{bool cyclicflag},
-@code{T push(T x)}, @code{void append(T[] a)}, @code{T pop()},
-@code{void insert(int i ... T[] x)}, @code{void delete(int i, int j=i)}, 
-@code{void delete()}, and @code{bool initialized(int n)}.
+@itemize
+@item   @code{int length},
+@item   @code{void cyclic(bool b)},
+@item   @code{bool cyclicflag},
+@item   @code{int[] keys},
+@item   @code{T push(T x)},
+@item   @code{void append(T[] a)},
+@item   @code{T pop()},
+@item   @code{void insert(int i ... T[] x)},
+@item   @code{void delete(int i, int j=i)}, 
+@item   @code{void delete()}, and
+@item   @code{bool initialized(int n)}.
+@end itemize
+
 The member @code{A.length} evaluates to the length of the array.
 Setting @code{A.cyclic(true)} signifies that array indices should be reduced
 modulo the current array length. Reading from or writing to a nonempty
 cyclic array never leads to out-of-bounds errors or array resizing. The member
 @code{A.cyclicflag} returns the current setting of the @code{cyclic} flag.
+
+The member @code{A.keys} evaluates to an array of integers containing the
+indices of initialized entries in the array in ascending order.  Hence, for an
+array of length @code{n} with all entries initialized, @code{A.keys} evaluates
+to the array of integers from @code{0} to @code{n-1} inclusive.  A new keys
+array is produced each time @code{A.keys} is evaluated.
+
 The functions @code{A.push} and @code{A.append} append their
 arguments onto the end of the array, while @code{A.insert(int i ... T[] x)}
 inserts @code{x} into the array at index @code{i}.
@@ -4605,8 +4694,13 @@ returns a null array);
 @cindex @code{complement}
 @item int[] complement(int[] a, int n)
 returns the complement of the integer array @code{a} in
-@code{@{1,2,...,n@}}, so that @code{b[complement(a,b.length)]} yields the
+@code{@{0,1,2,...,n-1@}}, so that @code{b[complement(a,b.length)]} yields the
 complement of @code{b[a]}.
+
+@cindex @code{uniform}
+@item int[] uniform(real a, real b, int n)
+if @code{n >= 1} returns a uniform partition of @code{[a,b]} into
+@code{n} subintervals (otherwise returns a null array);
 
 @cindex @code{find}
 @item int find(bool[], int n=1)
@@ -4636,8 +4730,8 @@ returns a deep copy of the array @code{a};
 returns a deep copy of the array @code{a};
 
 @cindex @code{concat}
-@item T[] concat(T[] a, T[] b)
-returns a new array formed by concatenating arrays @code{a} and @code{b};
+@item T[] concat(... T[][] a)
+returns a new array formed by concatenating the arrays given as arguments;
 
 @cindex @code{alias}
 @item bool alias(T[] a, T[] b)
@@ -4705,6 +4799,11 @@ For built-in ordered types @code{T}, and arrays @code{a} and @code{b}
 of the same length, returns an array composed of the maximum of the
 corresponding elements of @code{a} and @code{b}.
 
+@cindex @code{pairs}
+@item pair[] pairs(real[] x, real[] y);
+For arrays @code{x} and @code{y} of the same length, returns the pair array
+@code{sequence(new pair(int i) @{return (x[i],y[i]);@},x.length)}.
+
 @cindex @code{fft}
 @item pair[] fft(pair[] a, int sign=1)
 returns the Fast Fourier Transform of @code{a} (if the optional
@@ -4721,6 +4820,10 @@ f=fft(g,1);
 write();
 write(f/n);
 @end verbatim
+
+@cindex @code{solve}
+@item real dot(real[] a, real[] b)
+returns the dot product of the vectors @code{a} and @code{b}.
 
 @anchor{tridiagonal}
 @cindex @code{tridiagonal}
@@ -4792,27 +4895,6 @@ quadratic equation @math{ax^2+bx+c=0}.
 @item @code{real[] cubicroots(real a, real b, real c, real d);}
 This numerically robust solver returns the real roots of the
 cubic equation @math{ax^3+bx^2+cx+d=0}. Multiple roots are listed separately.
-
-@cindex @code{newton}
-@item @code{real newton(int iterations=100, real f(real), real fprime(real),
-real x, bool verbose=false);}
-Use Newton-Raphson iteration to solve for a root of a real-valued
-differentiable function @code{f}, given its derivative @code{fprime} and
-an initial guess @code{x}. Diagnostics for
-each iteration are printed if @code{verbose=true}. 
-If the iteration fails after the maximum allowed number of loops
-(@code{iterations}), @code{realMax} is returned.
-
-@cindex @code{newton}
-@item @code{real newton(int iterations=100, real f(real), real fprime(real),
-real x1, real x2, bool verbose=false);}
-Use bracketed Newton-Raphson bisection to solve for a root of a real-valued
-differentiable function @code{f} within an interval
-[@code{x1},@code{x2}] (on which the endpoint values of @code{f} have
-opposite signs), given its derivative @code{fprime}. Diagnostics for
-each iteration are printed if @code{verbose=true}.
-If the iteration fails after the maximum allowed number of loops
-(@code{iterations}), @code{realMax} is returned.
 
 @end table
 
@@ -4923,6 +5005,97 @@ real[][][] C=read3(fin);
 One, two, and three-dimensional arrays of the basic data types can be
 output with the functions @code{write(file,T[])},
 @code{write(file,T[][])}, @code{write(file,T[][][])}, respectively.
+
+@node Slices
+@subsection Slices
+@cindex slices
+
+Asymptote allows a section of an array to be addressed as a slice
+using a Python-like syntax.  If @code{A} is an array, the expression
+@code{A[m:n]} returns a new array consisting of the elements of @code{A} with
+indices from @code{m} up to but not including @code{n}. For example,
+
+@verbatim
+int[] x={0,1,2,3,4,5,6,7,8,9};
+int[] y=x[2:6];  // y={2,3,4,5};
+int[] z=x[5:10]; // z={5,6,7,8,9};
+@end verbatim
+
+If the left index is omitted, it is taken be @code{0}.  If the right index is
+omitted it is taken to be the length of the array.  If both are omitted, the
+slice then goes from the start of the array to the end, producing a non-cyclic
+deep copy of the array.  For example:
+
+@verbatim
+int[] x={0,1,2,3,4,5,6,7,8,9};
+int[] y=x[:4];  // y={0,1,2,3}
+int[] z=x[5:];  // z={5,6,7,8,9}
+int[] w=x[:];   // w={0,1,2,3,4,5,6,7,8,9}, distinct from array x.
+@end verbatim
+
+If A is a non-cyclic array, it is illegal to use negative values for either of
+the indices.  If the indices exceed the length of the array, however, they are
+politely truncated to that length.
+
+For cyclic arrays, the slice @code{A[m:n]} still consists of the cells with
+indices in the set [@code{m},@code{n}), but now negative
+values and values beyond the length of the array are allowed.  The indices
+simply wrap around.  For example:
+
+@verbatim
+int[] x={0,1,2,3,4,5,6,7,8,9};
+x.cyclic(true);
+int[] y=x[8:15];  // y={8,9,0,1,2,3,4}.
+int[] z=x[-5:5];  // z={5,6,7,8,9,0,1,2,3,4}
+int[] w=x[-3:17]; // w={7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6}
+@end verbatim
+
+Notice that with cyclic arrays, it is possible to include the same element of
+the original array multiple times within a slice.  Regardless of the original
+array, arrays produced by slices are always non-cyclic.
+
+If the left and right indices of a slice are the same, the result is an empty
+array.  If the array being sliced is empty, the result is an empty array.  Any
+slice with a left index greater than its right index will yield an error.
+
+Slices can also be assigned to, changing the value of the original array.  If
+the array being assigned to the slice has a different length than the
+slice itself, elements will be inserted or removed from the array to
+accommodate it. For instance:
+
+@verbatim
+string[] toppings={"mayo", "salt", "ham", "lettuce"};
+toppings[0:2]=new string[] {"mustard", "pepper"};
+    // Now toppings={"mustard", "pepper", "ham", "lettuce"}
+toppings[2:3]=new string[] {"turkey", "bacon" };
+    // Now toppings={"mustard", "pepper", "turkey", "bacon", "lettuce"}
+toppings[0:3]=new string[] {"tomato"};
+    // Now toppings={"tomato", "bacon", "lettuce"}
+@end verbatim
+
+If an array is assigned to a slice of itself, a copy of the original array
+is assigned to the slice.  That is, code such as @code{x[m:n]=x} is equivalent
+to @code{x[m:n]=copy(x)}.  One can use the shorthand @code{x[m:m]=y} to insert
+the contents of the array @code{y} into the array @code{x} starting at the
+location just before @code{A[m]}.
+
+For a cyclic array, a slice is bridging if it addresses cells up to the end of
+the array and then continues on to address cells at the start of the array.
+For instance, if @code{A} is a cyclic array of length 10, @code{A[8:12]},
+@code{A[-3:1]}, and @code{A[5:25]} are bridging slices whereas @code{A[3:7]},
+@code{A[7:10]}, @code{A[-3:0]} and @code{A[103:107]} are not.  Bridging slices
+can only be assigned to if the number of elements in the slice is exactly equal
+to the number of elements we are assigning to it.  Otherwise, there is no clear
+way to decide which of the new entries should be @code{A[0]} and an error is
+reported.  Non-bridging slices may be assigned an array of any length.
+
+For a cyclic array @code{A} an expression of the form
+@code{A[A.length:A.length]} is equivalent to the expression @code{A[0:0]} and
+so assigning to this slice will insert values at the start of the array.
+@code{A.append()} can be used to insert values at the end of the array.
+
+It is illegal to assign to a slice of a cyclic array that repeats any of the
+cells.
 
 @node Casts
 @section Casts
@@ -5401,7 +5574,7 @@ Here now is @code{latexusage.tex}:
 * syzygy::                      Syzygy and braid drawing module
 * feynman::                     Feynman diagrams
 * roundedpath::                 Round the sharp corners of paths
-* animate::                     Embedded @acronym{PDF} and @acronym{MPEG} movies
+* animation::                   Embedded @acronym{PDF} and @acronym{MPEG} movies
 * embed::                       Embedding movies, sounds, and 3D objects
 * slide::                       Making presentations with @code{Asymptote}
 * MetaPost::                    @code{MetaPost} compatibility routines
@@ -5638,9 +5811,9 @@ and @code{fermi.asy}.
 This package, contributed by Stefan Knorr, is useful for rounding the
 sharp corners of paths, as illustrated in the example file @code{roundpath.asy}.
 
-@node animate
-@section @code{animate}
-@cindex @code{animate}
+@node animation
+@section @code{animation}
+@cindex @code{animation}
 @cindex @code{merge}
 @cindex @code{convert}
 @cindex animation
@@ -5650,11 +5823,13 @@ files @code{wheel.asy}, @code{wavelet.asy}, and @code{cube.asy} in
 the @code{animations} subdirectory of the examples directory. These
 animations use the @code{ImageMagick} @code{convert} program to
 @code{merge} multiple images into a @acronym{GIF} or @acronym{MPEG}
-movie. 
+movie.
 
-Higher-quality portable clickable @acronym{PDF} movies, with
-optional controls, can be internally generated and embedded by
-@code{Asymptote}. This requires installing the package
+@cindex @code{animate}
+@anchor{animate}
+The related @code{animate} module, derived from the @code{animation}
+module, generates higher-quality portable clickable @acronym{PDF} movies, with
+optional controls. This requires installing the package
 @quotation
 @url{http://www.ctan.org/tex-archive/macros/latex/contrib/animate/animate.sty}
 @noindent
@@ -5672,7 +5847,7 @@ The example @code{inlinemovie.tex} shows how to generate and embed @acronym{PDF}
 movies directly within a @code{LaTeX} file (@pxref{LaTeX usage}).
 The member function
 @verbatim
-string pdf(real delay=animationdelay, string options="",
+string pdf(fit fit=NoBox, real delay=animationdelay, string options="",
            bool keep=false, bool multipage=true);
 @end verbatim
 @noindent
@@ -5722,7 +5897,7 @@ interfaces is provided in the file @code{embeddedmovie.asy} and
 @code{externalmovie.asy} in the @code{animations} subdirectory of the
 examples directory. For a high-quality movie generated by
 @code{Asymptote}, use the @code{animate} module along with the
-@code{animate.sty} package to embed a portable @code{PDF} animation
+@code{animate.sty} package to embed a portable @acronym{PDF} animation
 (@pxref{animate}).
 
 @node slide
@@ -6461,7 +6636,7 @@ to the @code{label} and @code{limits} functions) are always treated as linear
 pair Scale(picture pic=currentpicture, pair z);
 @end verbatim
 to convert a graph coordinate into a scaled picture coordinate.
-@verbatim
+
 The @math{x} and @math{y} components can be individually scaled using
 the analogous routines
 @verbatim
@@ -6712,7 +6887,7 @@ as illustrated in the following example:
 This module fully extends the notion of guides and paths in @code{Asymptote}
 to three dimensions, introducing the new types @code{guide3} and @code{path3}.
 Guides in three dimensions are specified with the same syntax as in two
-dimensions but with triples @code{(x,y,z)} in place of pairs @code{(x,y)} for
+dimensions but using triples @code{(x,y,z)} in place of pairs @code{(x,y)} for
 the nodes and direction specifiers.  This generalization of John Hobby's spline
 algorithm is shape-invariant under three-dimensional rotation, scaling, and
 shifting, and reduces in the planar case to the two-dimensional algorithm used
@@ -6728,16 +6903,26 @@ and then distorted into a saddle:
 @image{saddle}
 @noindent
 
+@cindex @code{O}
+@cindex @code{X}
+@cindex @code{Y}
+@cindex @code{Z}
+@cindex @code{unitcircle}
+For convenience, the @code{three} module defines @code{O=(0,0,0)},
+@code{X=(1,0,0)}, @code{Y=(0,1,0)}, and @code{Z=(0,0,1)}, along with a
+unitcircle in the XY plane:
+@verbatim
+path3 unitcircle3=X..Y..-X..-Y..cycle;
+@end verbatim
 
-Here @code{O} is the triple @code{(0,0,0)} and @code{X},
-@code{Y}, and @code{Z} are the triples @code{(1,0,0)},
-@code{(0,1,0)}, and @code{(0,0,1)}, respectively.
-A general circle can be drawn perpendicular to the direction
+@cindex @code{circle}
+A general (approximate) circle can be drawn perpendicular to the direction
 @code{normal} with the routine
 @verbatim
 path3 circle(triple c, real r, triple normal=Z);
 @end verbatim
 
+@cindex @code{arc}
 A circular arc centered at @code{c} with radius @code{r} from
 @code{c+r*dir(theta1,phi1)} to @code{c+r*dir(theta2,phi2)},
 drawing counterclockwise relative to the normal vector
@@ -6762,18 +6947,21 @@ When high accuracy is needed, the routines @code{Circle} and
 @code{Arc} defined in @code{graph3} may be used instead.
 See @ref{GaussianSurface} for an example of a three-dimensional circular arc.
 
-A representation of the plane passing through point O with normal cross(u,v)
-is given by
+@cindex @code{plane}
+A representation of the plane passing through point @code{O} with normal
+@code{cross(u,v)} is given by
 @verbatim
 path3 plane(triple u, triple v, triple O=O);
 @end verbatim
 A three-dimensional box with opposite vertices at triples @code{v1}
 and @code{v2} may be drawn with the function
+@cindex @code{box}
 @verbatim
 path3[] box(triple v1, triple v2);
 @end verbatim
 @noindent
 For example, a unit cube is predefined as
+@cindex @code{unitcube}
 @verbatim
 path3[] unitcube=box((0,0,0),(1,1,1));
 @end verbatim
@@ -6847,6 +7035,14 @@ triple invert(pair z, triple normal, triple point,
 @end verbatim
 
 @cindex @code{transform}
+To project a Label onto the plane passing through point @code{O} with
+normal @code{cross(u,v)} use the function
+@verbatim
+transform transform(triple u, triple v, triple O=O,
+                    projection P=currentprojection);
+@end verbatim
+
+@cindex @code{transform}
 Three-dimensional objects may be transformed with one of the following
 built-in @code{transform3} types:
 
@@ -6890,14 +7086,15 @@ reflects about the plane through @code{u}, @code{v}, and @code{w}.
 @cindex @code{reverse}
 @cindex @code{subpath}
 @cindex @code{intersect}
-@cindex @code{intersectpoint}
+@cindex @code{intersectionpoint}
+@cindex @code{intersectionpoints}
 @cindex @code{min}
 @cindex @code{max}
 @cindex @code{cyclic}
 @cindex @code{straight}
-@cindex @code{inside}
 Three-dimensional versions of the path functions @code{length},
-@code{size}, @code{point}, @code{dir}, @code{precontrol}, @code{postcontrol}, @code{arclength}, @code{arctime}, @code{reverse}, @code{subpath},
+@code{size}, @code{point}, @code{dir}, @code{precontrol}, @code{postcontrol},
+@code{arclength}, @code{arctime}, @code{reverse}, @code{subpath},
 @code{intersect}, @code{intersections}, @code{intersectionpoint},
 @code{intersectionpoints}, @code{min}, @code{max}, @code{cyclic}, and
 @code{straight} are also defined in the module @code{three}.
@@ -7366,7 +7563,8 @@ To draw a slope field for the differential equation @math{dy/dx=f(x,y)} (or
 @verbatim
 picture slopefield(real f(real,real), pair a, pair b,
                    int nx=nmesh, int ny=nx, 
-                   real tickfactor=0.5, pen p=currentpen);
+                   real tickfactor=0.5, pen p=currentpen,
+                   arrowbar arrow=None);
 @end verbatim
 @noindent
 Here, the points @code{a} and @code{b} are the lower left and upper
@@ -7379,15 +7577,18 @@ The return value is a picture that can be added to
 @code{currentpicture} via the @code{add(picture)} command.
 
 The function
+@cindex @code{curve}
 @verbatim
 path curve(pair c, real f(real,real), pair a, pair b);
 @end verbatim
 @noindent
 takes a point (@code{c}) and a slope field-defining function @code{f}
-(@code{real f(real)} is also accepted), and returns, as a path, the
-curve passing through that point. The points @code{a} and @code{b}
-represent the rectangular boundaries over which the curve is interpolated.
-Here is an example of a slope field:
+and returns, as a path, the curve passing through that point. The points
+@code{a} and @code{b} represent the rectangular boundaries over which
+the curve is interpolated. 
+
+Both @code{slopefield} and @code{curve} alternatively accept a function
+@code{real f(real)} that depends on @math{x} only, as seen in this example:
 
 @verbatiminclude slopefield1.asy
 @image{slopefield1}
@@ -7635,7 +7836,7 @@ g.label("\"$O$\", (0,0), SW")
 In the event that adjustments to the final figure are required, the
 preliminary Graphical User Interface (@acronym{GUI}) @code{xasy} included with
 @code{Asymptote} allows you to move graphical objects and draw new ones.
-The modified figure can then be saved as an normal @code{Asymptote} file.
+The modified figure can then be saved as a normal @code{Asymptote} file.
 
 @menu
 * GUI Installation::            Installing @code{xasy}
@@ -7995,7 +8196,7 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  nondeconstructed backends usr venn labelsquare nobasealign dp
 @c  LocalWords:  NoMargin BeginMargin EndMargin BeginPenMargin EndPenMargin dm
 @c  LocalWords:  PenMargin PenMargins TrueMargin labelmargin errorbars errorbar
-@c  LocalWords:  dpx dpy dmx dmy barsize arrowsize BeginDotMargin DotMargin
+@c  LocalWords:  dpx dpy dmx dmy barsize arrowsize BeginDotMargin DotMargin acc
 @c  LocalWords:  EndDotMargin DotMargins NColors BWRainbow colorspace labelled
 @c  LocalWords:  PaletteTicks defaultformat leastsquares bjam fprintf endgroup
 @c  LocalWords:  begingroup xmargin ymargin pbox box ellipse wget exe Gouraud
@@ -8004,7 +8205,7 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  nodeps Ghostgum beginlabel endlabel pTick ptick loggrid SAS dy
 @c  LocalWords:  currentprojection latticeshading subpictures colinear unitcube
 @c  LocalWords:  Autoscaling solveQuadratic MidArrow MidArcArrow Prebuilt url
-@c  LocalWords:  pdftex comment getstring getstringprefix getreal defaultS
+@c  LocalWords:  pdftex comment getstring getstringprefix getreal defaultS hsv
 @c  LocalWords:  ticklocate autoscaleT autoscaling vectorfield autolimits dvi
 @c  LocalWords:  zlimits inline dvipdf hyperdvi autoconf gui zerowindingoverlap
 @c  LocalWords:  prepended intMax quadraticroots cubicroots filltype prepend dx
@@ -8060,4 +8261,5 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  NoZero NoZeroFormat abbrevation gsOptions namespace redeclared
 @c  LocalWords:  atLeast intMin globalwrite quarticroots deconsruct substrings
 @c  LocalWords:  usleep currentpatterns trailingzero Orest Shardt DefaultHead
-@c  LocalWords:  SimpleHead HookHead TeXHead multipage nurbs
+@c  LocalWords:  SimpleHead HookHead TeXHead multipage nurbs inlinemovie dxmax
+@c  LocalWords:  simpson NoBox
