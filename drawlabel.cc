@@ -39,9 +39,13 @@ int drawLabel::wait(iopipestream &tex, const char *s, const char **abort,
       tex << "\n";
       tex.wait(s,abort);
     }
-    if(!ignore)
-      reportError(*tex.message());
+    if(!ignore) {
+      string s=tex.message();
+      tex.shred();
+      reportError(s);
+    }
    }
+  tex.shred();
   return rc;
 }
  
@@ -67,25 +71,39 @@ bool drawLabel::texbounds(iopipestream& tex, string& s, const char **abort,
 
   tex << "\\showthe\\wd\\ASYbox\n";
   tex >> texbuf;
+  
+  string cannotread="Cannot read label ";
   if(texbuf[0] == '>' && texbuf[1] == ' ')
-    width=lexical::cast<double>(texbuf.c_str()+2,true)*tex2ps;
-  else reportError("Cannot read label width");
+    try {
+      width=lexical::cast<double>(texbuf.c_str()+2,true)*tex2ps;
+    } catch(lexical::bad_cast&) {
+      reportError(cannotread+"width");
+    }
+  else reportError(cannotread+"width");
   tex << "\n";
   wait(tex,"\n*",abort);
   
   tex << "\\showthe\\ht\\ASYbox\n";
   tex >> texbuf;
   if(texbuf[0] == '>' && texbuf[1] == ' ')
+    try {
     height=lexical::cast<double>(texbuf.c_str()+2,true)*tex2ps;
-  else reportError("Cannot read label height");
+    } catch(lexical::bad_cast&) {
+      reportError(cannotread+"height");
+    }
+  else reportError(cannotread+"height");
   tex << "\n";
   wait(tex,"\n*",abort);
   
   tex << "\\showthe\\dp\\ASYbox\n";
   tex >> texbuf;
   if(texbuf[0] == '>' && texbuf[1] == ' ')
+    try {
     depth=lexical::cast<double>(texbuf.c_str()+2,true)*tex2ps;
-  else reportError("Cannot read label depth");
+    } catch(lexical::bad_cast&) {
+      reportError(cannotread+"depth");
+    }
+  else reportError(cannotread+"depth");
   tex << "\n";
   wait(tex,"\n*",abort);
      

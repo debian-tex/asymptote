@@ -16,7 +16,10 @@ namespace vm {
 
 // Arrays are vectors with push and pop functions.
 class array : public mem::vector<item> {
-bool cycle;  
+  bool cycle;  
+
+  void setNonBridgingSlice(size_t l, size_t r, mem::vector<item> *a);
+  void setBridgingSlice(size_t l, size_t r, mem::vector<item> *a);
 public:
   array() {}
   
@@ -42,6 +45,9 @@ public:
     return get<T>((*this)[i]);
   }
   
+  array *slice(Int left, Int right);
+  void setSlice(Int left, Int right, array *a);
+
   void cyclic(bool b) {
     cycle=b;
   }

@@ -44,16 +44,20 @@ protected:
   char buffer[BUFSIZE];
   int pid;
   bool pipeopen;
-  string *last;
+  ostringstream transcript;
 public:
   
   void clear() {
-    last=new string(buffer);
+    transcript << buffer;
     *buffer=0;
   }
   
-  const string *message() {
-    return last;
+  void shred() {
+    transcript.str("");
+  }
+  
+  const string message() const {
+    return transcript.str();
   }
   
   void open(const char *command, const char *hint=NULL,
@@ -113,7 +117,7 @@ public:
 
   bool isopen() {return pipeopen;}
   
-  iopipestream(): pid(0), pipeopen(false), last(NULL) {}
+  iopipestream(): pid(0), pipeopen(false) {}
   
   iopipestream(const char *command, const char *hint=NULL,
 	       const char *application="", int out_fileno=STDOUT_FILENO) :

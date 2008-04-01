@@ -187,6 +187,7 @@ typedef union YYSTYPE
   absyntax::explist *elist;
   absyntax::argument arg;
   absyntax::arglist *alist;
+  absyntax::slice *slice;
   absyntax::dimensions *dim;
   absyntax::ty  *t;
   absyntax::decid *di;
@@ -216,7 +217,7 @@ typedef union YYSTYPE
   absyntax::formals *fls;
 }
 /* Line 1529 of yacc.c.  */
-#line 220 "camp.tab.h"
+#line 221 "camp.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -10,11 +10,18 @@ real[] operator ecast(triple v)
   return new real[] {v.x, v.y, v.z, 1};
 }
 
+private string tooclose="camera is too close to object";
+
 triple operator ecast(real[] a)
 {
-  if(a.length != 4) abort("vector length of "+(string) a.length+" != 4");
-  if(a[3] == 0) abort("camera is too close to object");
+  if(a[3] == 0) abort(tooclose);
   return (a[0],a[1],a[2])/a[3];
+}
+
+pair operator ecast(real[] a)
+{
+  if(a[3] == 0) abort(tooclose);
+  return (a[0],a[1])/a[3];
 }
 
 typedef real[][] transform3;
@@ -187,6 +194,14 @@ struct projection {
     return P;
   }
 
+  transform3 transform3() {
+    return multdiagonal(project,aspect);
+  }
+
+  void scale(real x, real y, real z) {
+    aspect=new real[] {x,y,z,1};
+  }
+
   // Check that v is in front of the projection plane.
   void check(triple v) {
     if(!infinity && dot(camera-v,camera-target) < 0)
@@ -292,28 +307,18 @@ projection obliqueX=obliqueX(), obliqueY=obliqueY(), obliqueZ=obliqueZ();
 
 currentprojection=perspective(5,4,2);
 
-transform3 aspect(projection P)
-{
-  return multdiagonal(P.project,P.aspect);
-}
-
 // Map pair z onto a triple by inverting the projection P onto the 
 // plane perpendicular to normal and passing through point.
 triple invert(pair z, triple normal, triple point,
               projection P=currentprojection)
 {
-  transform3 t=aspect(P);
+  transform3 t=P.transform3();
   real[][] A={{t[0][0]-z.x*t[3][0],t[0][1]-z.x*t[3][1],t[0][2]-z.x*t[3][2]},
               {t[1][0]-z.y*t[3][0],t[1][1]-z.y*t[3][1],t[1][2]-z.y*t[3][2]},
               {normal.x,normal.y,normal.z}};
   real[] b={z.x*t[3][3],z.y*t[3][3],dot(normal,point)};
   real[] x=solve(A,b);
   return (x[0],x[1],x[2]);
-}
-
-void scale(projection dest=currentprojection, real x, real y, real z)
-{
-  dest.aspect=new real[] {x,y,z,1};
 }
 
 pair xypart(triple v)
@@ -324,7 +329,7 @@ pair xypart(triple v)
 project operator cast(transform3 t)
 {
   return new pair(triple v) {
-    return xypart(t*v);
+    return (pair) (t*(real[]) v);
   };
 }
 
@@ -1660,7 +1665,7 @@ path3 solve(flatguide3 g)
 path nurb(path3 p, projection P=currentprojection,
 	  int ninterpolate=ninterpolate)
 {
-  project Q=aspect(P);
+  project Q=P.transform3();
   triple f=P.camera;
   triple u=unit(P.camera-P.target);
 
@@ -1701,7 +1706,7 @@ path project(explicit path3 p, projection P=currentprojection,
   int last=p.nodes.length-1;
   if(last < 0) return g;
   
-  project Q=aspect(P);
+  project Q=P.transform3();
 
   if(P.infinity || ninterpolate == 1) {
     g=Q(p.nodes[0].point);
@@ -1733,7 +1738,7 @@ path project(flatguide3 g, projection P=currentprojection,
 pair project(triple v, projection P=currentprojection)
 {
   P.check(v);
-  project P=aspect(P);
+  project P=P.transform3();
   return P(v);
 }
 
@@ -1792,6 +1797,39 @@ void label(picture pic=currentpicture, Label L, pair position,
            triple align, pen p=nullpen, filltype filltype=NoFill)
 {
   label(pic,L,position,project(align),p,filltype);
+}
+
+// Transform for projecting onto plane through point O with normal cross(u,v).
+transform transform(triple u, triple v, triple O=O,
+		    projection P=currentprojection)
+{
+  transform3 t=P.project;
+  real[] tO=t*(real[]) O;
+  real[] x=new real[4];
+  real[] y=new real[4];
+  real[] t3=t[3];
+  real tO3=tO[3];
+  real factor=1.0/tO3^2;
+  for(int i=0; i < 3; ++i) {
+    x[i]=(tO3*t[0][i]-tO[0]*t3[i])*factor;
+    y[i]=(tO3*t[1][i]-tO[1]*t3[i])*factor;
+  }
+  x[3]=1;
+  y[3]=1;
+  triple x=(triple) x;
+  triple y=(triple) y;
+  u=unit(u);
+  v=unit(v);
+  return (0,0,dot(u,x),dot(v,x),dot(u,y),dot(v,y));
+}
+
+// Project Label onto plane through point O with normal cross(u,v).
+Label project(Label L, triple u, triple v, triple O=O,
+	      projection P=currentprojection) {
+  Label L=L.copy();
+  L.position=project(O,P);
+  L.T=transform(u,v,O,P);
+  return L;
 }
 
 path3 operator cast(guide3 g) {return solve(g);}
@@ -2255,6 +2293,13 @@ void draw(picture pic=currentpicture, path3[] g, pen p=currentpen)
   draw(pic,(path[]) g,p);
 }
 
+triple[] triples(real[] x, real[] y, real[] z)
+{
+  if(x.length != y.length || x.length != z.length)
+    abort("arrays have different lengths");
+  return sequence(new triple(int i) {return (x[i],y[i],z[i]);},x.length);
+}
+
 void dot(picture pic=currentpicture, explicit path3 g, pen p=currentpen,
 	 filltype filltype=Fill)
 {
@@ -2449,13 +2494,13 @@ void aspect(projection P=currentprojection, bbox3 b,
   triple L=b.max-b.min;
   if(z != 0) {
     real s=L.z/z;
-    scale(P,x == 0 || L.x == 0 ? 1 : s*x/L.x,y == 0 || L.y == 0 ? 1 : s*y/L.y,
+    P.scale(x == 0 || L.x == 0 ? 1 : s*x/L.x,y == 0 || L.y == 0 ? 1 : s*y/L.y,
           1);
   } else if(y != 0) {
     real s=L.y/y;
-    scale(P,x == 0 || L.x == 0 ? 1 : s*x/L.x,1,1);
+    P.scale(x == 0 || L.x == 0 ? 1 : s*x/L.x,1,1);
   }
-  else scale(P,1,1,1);
+  else P.scale(1,1,1);
 }
   
 // Routines for hidden surface removal (via binary space partition):
