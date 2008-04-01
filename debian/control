@@ -1,0 +1,32 @@
+Source: asymptote
+Section: tex
+Priority: optional
+Maintainer: Hubert Chathi <uhoreg@debian.org>
+Build-Depends: cdbs, debhelper (>= 4.1.0), flex, bison, libfftw3-dev, libreadline5-dev, libncurses5-dev, libgc-dev (>= 1:6.4-1), libgsl0-dev, libsigsegv-dev
+Build-Depends-Indep: imagemagick, gs-gpl | gs, texlive-latex-base | tetex-bin, texlive-base-bin | tetex-bin, texlive-pstricks | tetex-extra, texinfo
+Standards-Version: 3.7.3
+Homepage: http://asymptote.sourceforge.net/
+
+Package: asymptote
+Architecture: any
+Depends: python, python-tk, imagemagick, gs-gpl | gs, texlive-latex-base | tetex-bin, texlive-base-bin | tetex-bin, texlive-pstricks | tetex-extra, ${shlibs:Depends}, ${misc:Depends}
+Recommends: asymptote-doc
+Suggests: gv, xpdf
+Description: script-based vector graphics language inspired by MetaPost
+ Asymptote is a powerful script-based vector graphics language for technical
+ drawings, inspired by MetaPost but with an improved C++-like syntax.
+ Asymptote provides for figures the same high-quality level of typesetting that
+ LaTeX does for scientific text.
+
+Package: asymptote-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Recommends: asymptote, info-browser | pdf-viewer | www-browser
+Conflicts: asymptote (<< 1.18)
+Replaces: asymptote (<< 1.18)
+Description: script-based vector graphics language inspired by MetaPost
+ Asymptote is a powerful script-based vector graphics language for technical
+ drawings, inspired by MetaPost but with an improved C++-like syntax.
+ Asymptote provides for figures the same high-quality level of typesetting that
+ LaTeX does for scientific text.

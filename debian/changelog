@@ -1,0 +1,264 @@
+asymptote (1.40-1) unstable; urgency=low
+
+  * New upstream release.
+    * More fixes for GCC 4.3. (closes: #455424)
+  * debian/control: Build-Depend on libfftw3-dev instead of fftw3-dev.
+    (closes: #457945)
+  * debian/control: Use Homepage field.
+  * debian/control: Bumped Standards-Version to 3.7.3.
+  * debian/copyright: License changed to GPL 3 or later.
+  * debian/copyright: Use proposed machine-readable copyright format.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Mon,  7 Jan 2008 21:35:34 -0500
+
+asymptote (1.37-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Tue, 11 Dec 2007 21:57:48 -0500
+
+asymptote (1.33-1) unstable; urgency=low
+
+  * New upstream release. (closes: #431334)
+
+ -- Hubert Chan <uhoreg@debian.org>  Wed, 12 Sep 2007 18:52:29 -0400
+
+asymptote (1.29-1) unstable; urgency=low
+
+  * New upstream release. (closes: #425988)
+    * Add missing #include for GCC 4.3. (closes: #421207)
+  * Fix building on mips.
+  * Make texlive the default dependency, since tetex is obsolete.
+
+ -- Hubert Chan <uhoreg@debian.org>  Sun, 27 May 2007 15:50:59 -0400
+
+asymptote (1.23-1) unstable; urgency=low
+
+  * New upstream release.
+  * Only Recommends: asymptote-doc (instead of Depends:), since we now
+    print a proper warning if the documentation is not installed.
+  * Fix Recommends: for asymptote-doc.
+
+ -- Hubert Chan <uhoreg@debian.org>  Mon, 12 Mar 2007 17:36:40 -0400
+
+asymptote (1.21-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove obsolete dependencies. (closes: #402803)
+
+ -- Hubert Chan <uhoreg@debian.org>  Wed, 21 Feb 2007 13:21:42 -0500
+
+asymptote (1.18-3) unstable; urgency=low
+
+  * Add Replaces:, so that upgrades work properly. (closes: #402625)
+
+ -- Hubert Chan <uhoreg@debian.org>  Mon, 11 Dec 2006 16:13:23 -0500
+
+asymptote (1.18-2) unstable; urgency=low
+
+  * Properly install all the info files.
+  * Install FAQ (info and ascii format).
+
+ -- Hubert Chan <uhoreg@debian.org>  Wed,  6 Dec 2006 00:30:58 -0500
+
+asymptote (1.18-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add watch file.
+  * Move documentation to asymptote-doc package (so maybe it'll take less
+    than 13 hours to build on m68k).  (But we still depend on
+    asymptote-doc, since asy has a help command that depends on it.)
+
+ -- Hubert Chan <uhoreg@debian.org>  Thu, 23 Nov 2006 00:37:18 -0500
+
+asymptote (1.14-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update maintainer address.
+
+ -- Hubert Chan <uhoreg@debian.org>  Wed, 18 Oct 2006 15:22:02 -0400
+
+asymptote (1.13-1) unstable; urgency=low
+
+  * Sponsor note: upload to Debian by Yann Dirson <dirson@debian.org>.
+
+  * New upstream release.
+  * Update dependencies to support texlive (closes: #381465).
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 19 Sep 2006 13:45:57 -0400
+
+asymptote (1.11-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build-depend on libsigsegv-dev as per upstream's suggestion.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Wed, 12 Jul 2006 16:37:13 -0400
+
+asymptote (1.10-1) unstable; urgency=low
+
+  * New upstream release.
+    - supports $(DESTDIR) now, so we can drop the extra make flags
+  * Bumped standards version to 3.7.2. (no changes)
+  * Add info to copyright file.
+  * Build-depend on libgsl0-dev.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Thu, 29 Jun 2006 21:56:14 -0400
+
+asymptote (1.03-1) unstable; urgency=low
+
+  * Sponsor note: upload to Debian by Yann Dirson <dirson@debian.org>.
+
+  * New upstream release.
+    * Support compilation under GCC 4.1 (closes: #357382).
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Thu, 30 Mar 2006 21:55:05 -0700
+
+asymptote (1.02-2) unstable; urgency=low
+
+  * Sponsor note: upload to Debian by Yann Dirson <dirson@debian.org>.
+
+  * Change default PDF reader to xpdf instead of acroread.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 14 Mar 2006 21:35:28 -0700
+
+asymptote (1.02-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fix the copyright file (use "Copyright Holder" and "License" instead
+    of "Upstream Authors" and "Copyright").
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 13 Mar 2006 20:32:28 -0700
+
+asymptote (0.95-1) unstable; urgency=low
+
+  * Sponsor note: upload to Debian by Yann Dirson <dirson@debian.org>.
+
+  * New upstream release.
+    * Store history file in home directory (closes: #334307).
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 29 Nov 2005 14:11:29 -0500
+
+asymptote (0.92-1) unstable; urgency=low
+
+  * New upstream release.
+  * Call gv using --nowatch instead of -nowatch in interactive mode.
+    (closes: #334310)
+  * Suggests: gv. (closes: #334308) (Only suggests, because gv is only
+    needed for interactive mode, and may be replaced by another PS viewer.)
+  * Suggests: xpdf, in order to view help in interactive mode.
+  * Add upstream change to use convert instead of dvipng. (closes: #334226)
+  * Fix a typo in the documentation.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue,  8 Nov 2005 20:59:40 -0500
+
+asymptote (0.91-2) unstable; urgency=low
+
+  * Sponsor note: initial upload to Debian by Yann Dirson
+    <dirson@debian.org> (closes: 284030).
+
+  * Fix doc-base to refer to correct path to PDF documentation.
+  * Remove prerm script -- it only contains install-doc snippet, which is
+    automatically generated by dh_installdocs.
+  * Edit documentation to reflect paths actually used by this package.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Fri,  7 Oct 2005 23:10:23 -0400
+
+asymptote (0.91-1) unstable; urgency=low
+
+  * New upstream version.
+  * As suggested by Yann Dirson:
+    * Don't modify configure.ac.  Use CXXFLAGS=-I/usr/include/gc instead.
+    * Don't run texhash in Makefile, since we do that in postinst.
+    * Build against libreadline5 instead of libreadline4.
+    * Don't compress the PDF documentation.
+    * Let dh_installdocs handle doc-base installation.
+  * List doc target as "phony" in Makefile.in, to ensure that
+    documentation is built.
+  * Add doc to debian/rules build targets, since it's not built by default
+    any more.
+  * Bump standards-version to 3.6.2.
+  * Add dvipng to Build-depends, for building the documentation.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Thu,  6 Oct 2005 15:35:15 -0400
+
+asymptote (0.86-1) unstable; urgency=low
+
+  * New upstream version.
+  * Add upstream home page to package description.
+  * Add tetex-extra to Depends and Build-depends (for pstricks.sty).
+  * Add tetex-bin alternative to latex and dvips virtual package dependencies.
+  * Add gs-gpl | gs to Depends and Build-depends.
+  * Don't rebuild configure script in Makefile.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 30 Aug 2005 13:44:25 -0600
+
+asymptote (0.82-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue,  5 Jul 2005 09:54:24 -0400
+
+asymptote (0.80-1) unstable; urgency=low
+
+  * New upstream version.
+  * Don't run texhash in postrm upgrade -- it's already run in postinst.
+  * Register documentation with doc-base.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 21 Jun 2005 00:41:10 -0400
+
+asymptote (0.78-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add build-depends on libgc-dev, and add --enable-gc=system configure flag.
+  * Asymptote doesn't seem to depend on the Boost libraries any more.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 23 May 2005 18:31:31 -0400
+
+asymptote (0.75-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Fri, 29 Apr 2005 15:55:44 -0400
+
+asymptote (0.74-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Thu, 14 Apr 2005 10:58:34 -0400
+
+asymptote (0.65-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 21 Feb 2005 22:49:33 -0500
+
+asymptote (0.63-1) unstable; urgency=low
+
+  * New upstream release.
+  * Install emacs mode file in the proper location, and add a startup file
+    to /etc/emacs/site-start.d, so that emacs users get asy-mode automatically.
+  * Install the documentation in PDF format rather than PostScript.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Sat, 19 Feb 2005 19:05:04 -0500
+
+asymptote (0.55-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Fri, 17 Dec 2004 23:19:12 -0500
+
+asymptote (0.54-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove my versions of the man pages.  (Merged into upstream.)
+  * Edit texinfo doc to point to the Debian copy of the GPL.
+  * Install html documentation.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Sun,  5 Dec 2004 23:31:22 -0500
+
+asymptote (0.53-1) unstable; urgency=low
+
+  * Initial Debian package. (closes: 284030)
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Wed,  1 Dec 2004 16:37:32 -0500
+

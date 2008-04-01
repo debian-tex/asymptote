@@ -1,0 +1,43 @@
+This package was debianized by Hubert Chan <hubert@uhoreg.ca> on
+Wed, 1 Dec 2004 16:37:32 -0500.
+
+It was downloaded from http://asymptote.sourceforge.net
+
+Files: debian/*
+Copyright: Copyright 2004-2008, Hubert Chathi <hubert@uhoreg.ca>
+License: GPL-2+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+ .
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ .
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+Files: *
+Copyright: Copyright 2004-6 Andy Hammerlindl, John Bowman, and Tom Prince
+License: GPL-3+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+ .
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ .
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the latest version of the GPL can be found at
+/usr/share/common-licenses/GPL, version 3 of the GPL can be found at
+/usr/share/common-licenses/GPL-3, and version 2 of the GPL can be found at
+/usr/share/common-licenses/GPL-2.

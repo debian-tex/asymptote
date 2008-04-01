@@ -1,0 +1,12 @@
+Asymptote for Debian
+--------------------
+
+If you want to use Asymptote in interactive mode, you will either need to
+install gv, or set the ASYMPTOTE_PSVIEWER environment variable.
+
+To use the 'help' command in interactive mode, you will either need to install
+xpdf, or set the ASYMPTOTE_PDFVIEWER environment variable.
+
+For more information, see section 2.3 in the info file.
+
+ -- Hubert Chan <hubert@uhoreg.ca>, Tue Nov  8 20:48:19 2005

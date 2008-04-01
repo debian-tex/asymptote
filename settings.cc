@@ -77,7 +77,7 @@ string defaultPSViewer="gv";
 #ifdef __APPLE__
 string defaultPDFViewer="open";
 #else  
-string defaultPDFViewer="acroread";
+string defaultPDFViewer="xpdf";
 #endif  
 string defaultGhostscript="gs";
 string defaultDisplay="display";

@@ -350,9 +350,12 @@ void popupHelp() {
   // If the help viewer isn't running (or its last run has termined), launch the
   // viewer again.
   if (pid==0 || (waitpid(pid, &status, WNOHANG) == pid)) {
-    ostringstream cmd;
+    ostringstream filename;
+    filename << docdir << "/asymptote.pdf";
+    if (access(filename.str().c_str(), R_OK) != 0)
+      camp::reportError("Documentation not found; to install the documentation, please install the\nasymptote-doc package.");    ostringstream cmd;
     cmd << "'" << getSetting<string>("pdfviewer") << "' " 
-      << docdir << "/asymptote.pdf";
+      << filename.str();
     status=System(cmd,0,false,"pdfviewer","your PDF viewer",&pid);
   }
 }
