@@ -1,6 +1,12 @@
 Asymptote for Debian
 --------------------
 
+To create animations in PDF files, you will need animate.sty, which can be
+found at:
+http://www.ctan.org/tex-archive/macros/latex/contrib/animate/animate.sty
+
+ -- Hubert Chathi <uhoreg@debian.org>, Wed, 11 Jun 2008 12:21:09 -0400
+
 If you want to use Asymptote in interactive mode, you will either need to
 install gv, or set the ASYMPTOTE_PSVIEWER environment variable.
 
