@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[1.42],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[1.43],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 
@@ -81,7 +81,7 @@ AC_CHECK_HEADER(fftw3.h,
            AC_MSG_NOTICE([*** Could not find libfftw3: will compile without optional fast Fourier transforms. ***])),
      AC_MSG_NOTICE([*** Header file fftw3.h not found: will compile without optional fast Fourier transforms. ***]))
 
-GCVERSION=gc-7.0
+GCVERSION=gc-7.1
 
 AC_CHECK_FILE($GCVERSION.tar.gz,
 ac_cv_use_gc=$GCVERSION,
@@ -165,7 +165,8 @@ AC_ARG_ENABLE(gc-full-debug,
 AC_CHECK_FUNC(getopt_long_only, AC_DEFINE(HAVE_GNU_GETOPT_H, 1,
 			   [Define if getopt.h is the GNU version]),
 			   getopt="getopt getopt1",)
-AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")
+AC_CHECK_HEADER(tr1/unordered_map,,
+		[AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])
 
 AC_SUBST(getopt)
 AC_SUBST(GCDIR)
@@ -201,6 +202,13 @@ AC_CHECK_HEADER(gsl/gsl_sf.h,
    [Define to 1 if you have the 'gsl' library (-lgsl). ]) LIBS=$LIBS"-lgsl -lgslcblas "],
            AC_MSG_NOTICE([*** Could not find libgsl: will compile without optional special functions. ***]),[-lgslcblas]),
      AC_MSG_NOTICE([*** Header file gsl_sf.h not found: will compile without optional special functions. ***]))
+
+TRIANGLE=Delaunay
+AC_CHECK_FILE(triangle.shar.gz,
+   [AC_DEFINE(HAVE_TRIANGLE, 1,
+   [Define to 1 if you have the source files for the 'triangle' mesh generator. ]) TRIANGLE="triangle "])
+
+AC_SUBST(TRIANGLE)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T

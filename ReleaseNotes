@@ -1,3 +1,20 @@
+Release Notes for Version 1.43
+
+A new array(n, value) function returns an array consisting of n copies of
+value. Conditional drawing of surfaces meshes was implemented. Vector
+field support was improved. Graph tick selection without autoscaling
+was improved. By default, all 2D axes are drawn below existing objects.
+An interface for drawing contours on arbitrary nonoverlapping
+meshes was added. Optional support for Jonathan Shewchuk's more robust
+triangulation routines was added. The file precision setting can now be
+queried. A beep() function was added. The partialsum function now returns an
+array of the same length as its argument (backwards incompatible). Dash
+offset and font selection bugs were fixed. Modules to redefine LaTeX named
+fontsizes for 10pt and 11pt article documentclasses were added. Problems
+in asy-mode.el were fixed. A problem with label alignment was fixed.
+The international inch is now used instead of the U.S. survey inch.
+The code now compiles cleanly under gcc-4.3.0.
+
 Release Notes for Version 1.42
 
 A routine was added for projecting a Label onto a given plane;
