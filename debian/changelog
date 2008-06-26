@@ -1,3 +1,9 @@
+asymptote (1.43-1) unstable; urgency=low
+
+  * New upstream version. (closes: #488141)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 26 Jun 2008 15:55:42 -0400
+
 asymptote (1.42-2) unstable; urgency=low
 
   * Add pointer to animate.sty in README.Debian for animated PDFs.
