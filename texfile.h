@@ -84,6 +84,13 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
     }
   }
   if(settings::latex(settings::getSetting<string>("tex"))) {
+    out << "\\makeatletter%" << newl
+	<< "\\let\\ASYencoding\\f@encoding%" << newl
+	<< "\\let\\ASYfamily\\f@family%" << newl
+	<< "\\let\\ASYseries\\f@series%" << newl
+	<< "\\let\\ASYshape\\f@shape%" << newl
+	<< "\\makeatother%" << newl;
+    
     if(pipe || !settings::getSetting<bool>("inlinetex")) {
       out << "\\usepackage{graphicx}" << newl;
       if(!pipe) out << "\\usepackage{color}" << newl;

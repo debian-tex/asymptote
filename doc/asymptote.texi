@@ -532,7 +532,7 @@ cd asymptote-x.xx
 @end verbatim
 
 @noindent Then put
-@url{http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.0.tar.gz}
+@url{http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.1.tar.gz}
 in the current directory and
 @verbatim
 ./configure
@@ -662,7 +662,7 @@ svn co https://asymptote.svn.sourceforge.net/svnroot/asymptote/trunk/asymptote
  
 cd asymptote
 ./autogen.sh
-wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.0.tar.gz
+wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.1.tar.gz
 ./configure
 make all
 make install
@@ -1306,9 +1306,15 @@ available:
 void tensorshade(picture pic=currentpicture, path g, pen fillrule=currentpen,
                  pen[] p, path b=g, pair[] z=new pair[]);
 @end verbatim
+One can also smoothly shade the regions between consecutive paths of a
+sequence using a given array of pens:
+@verbatim
+void draw(picture pic=currentpicture, path[] g, pen[] p);
+@end verbatim
 @noindent
 Illustrations of tensor product and Coons shading are provided in the
-example files @code{tensor.asy}, @code{Coons.asy}, and @code{BezierSurface.asy}.
+example files @code{tensor.asy}, @code{Coons.asy}, @code{BezierSurface.asy},
+and @code{rainbow.asy}.
 
 @cindex unfill
 The following routine uses @code{evenodd} clipping together with the
@@ -1954,12 +1960,16 @@ file, line number, and @code{s} is printed;
 exits with a zero error return code in batch mode;
 
 @cindex @code{sleep}
-@item void sleep(int microseconds)
+@item void sleep(int seconds)
 pauses for the given number of seconds;
 
 @cindex @code{usleep}
 @item void usleep(int microseconds)
-pauses for the given number of microseconds.
+pauses for the given number of microseconds;
+
+@cindex @code{beep}
+@item void beep
+produces a beep on the console;
 
 @end table
 
@@ -3149,25 +3159,25 @@ in postscript coordinates to another picture about the user coordinate
 @cindex @code{add}
 @cindex picture alignment
 @verbatim
-void add(picture dest, picture src, pair position, bool group=true,
-         filltype filltype=NoFill, bool put=Above);
-void add(picture src, pair position, bool group=true,
-         filltype filltype=NoFill, bool put=Above);
+void add(picture dest=currentpicture, picture src, pair position,
+         bool group=true, filltype filltype=NoFill, bool put=Above);
 void add(picture dest=currentpicture, frame src, pair position=0,
-         bool group=true, filltype filltype=NoFill,
+         bool group=true, filltype filltype=NoFill, bool put=Above);
+void add(picture dest=currentpicture, picture src, pair position,
+         pair align, bool group=true, filltype filltype=NoFill,
          bool put=Above);
 void add(picture dest=currentpicture, frame src, pair position,
          pair align, bool group=true, filltype filltype=NoFill,
          bool put=Above);
 @end verbatim
 
-The optional @code{align} argument in the last form specifies a
+The optional @code{align} argument in the last two forms specifies a
 direction to use for aligning the frame, in a manner analogous to the
 @code{align} argument of @code{label} (@pxref{label}). However, one key
 difference is that when @code{align} is not specified, labels are
 centered, whereas frames and pictures are aligned so that their origin is
 at @code{position}. Illustrations of frame alignment can be found in
-the examples @ref{errorbars} and @ref{image}. If you want to align 3
+the examples @ref{errorbars} and @ref{image}. If you want to align three
 or more subpictures, group them two at a time:
 
 @verbatiminclude subpictures.asy
@@ -3178,11 +3188,11 @@ size of picture @code{dest} to accommodate adding a frame @code{src}
 about the user coordinate @code{position}:
 @verbatim
 void attach(picture dest=currentpicture, frame src,
-            pair position=0, bool group=true,
-            filltype filltype=NoFill, bool put=Above);
+                 pair position=0, bool group=true,
+                 filltype filltype=NoFill, bool put=Above);
 void attach(picture dest=currentpicture, frame src,
-            pair position=0, pair align, bool group=true,
-            filltype filltype=NoFill, bool put=Above);
+                 pair position, pair align, bool group=true,
+                 filltype filltype=NoFill, bool put=Above);
 @end verbatim
 
 @cindex @code{erase}
@@ -3335,6 +3345,7 @@ write(suffix suffix=endl);
 write(file file, suffix suffix=none);
 @end verbatim
 @cindex @code{none}
+@cindex @code{flush}
 @cindex @code{endl}
 @cindex @code{tab}
 @cindex @code{comma}
@@ -3343,10 +3354,10 @@ terminated by default with a newline. If specified, the optional
 identifying string @code{s} is written before the data @code{x}.
 An arbitrary number of data values may be listed when writing scalars
 or one-dimensional arrays. The @code{suffix} may be one of the following:
-@code{none} (do nothing), @code{endl} (terminate with a newline),
+@code{none} (do nothing), @code{flush} (output buffered data),
+@code{endl} (terminate with a newline and flush),
 @code{tab} (terminate with a tab), or @code{comma} (terminate with a
-comma). Here are some simple examples of
-data output:
+comma). Here are some simple examples of data output:
 @verbatim
 file fout=output("test.txt");
 write(fout,1);                  // Writes "1"
@@ -3392,10 +3403,13 @@ One can test a file for end-of-file with the boolean function @code{eof(file)},
 end-of-line with @code{eol(file)}, and for I/O errors with @code{error(file)}.
 One can flush the output buffers with @code{flush(file)}, clear a
 previous I/O error with @code{clear(file)}, and close the file with
-@code{close(file)}. To set the number of digits of output precision, use
-@code{precision(file,int)}. The function @code{int tell(file)} returns
+@code{close(file)}. The function 
+@code{int precision(file file=stdout, int digits=0)}
+sets the number of digits of output precision for @code{file} to @code{digits},
+provided @code{digits} is nonzero, and returns the previous
+precision setting. The function @code{int tell(file)} returns
 the current position in a file relative to the beginning.
-The function @code{seek(file file, int pos)} can be used to
+The routine @code{seek(file file, int pos)} can be used to
 change this position, where a negative value for the position @code{pos}
 is interpreted as relative to the end-of-file. For example, one can
 rewind a file @code{file} with the command @code{seek(file,0)}
@@ -4359,6 +4373,7 @@ i(3,4); // ambiguous; the first candidate is better for the first argument,
 @cindex @code{sqrt}
 @cindex @code{cbrt}
 @cindex @code{fabs}
+@cindex @code{expm1}
 @cindex @code{identity}
 @cindex @code{J}
 @cindex @code{Y}
@@ -4373,7 +4388,7 @@ i(3,4); // ambiguous; the first candidate is better for the first argument,
 real(real) functions @code{sin}, @code{cos}, @code{tan}, @code{asin},
 @code{acos}, @code{atan}, @code{exp}, @code{log}, @code{pow10},
 @code{log10}, @code{sinh}, @code{cosh}, @code{tanh}, @code{asinh},
-@code{acosh}, @code{atanh}, @code{sqrt}, @code{cbrt}, @code{fabs},
+@code{acosh}, @code{atanh}, @code{sqrt}, @code{cbrt}, @code{fabs}, @code{expm1},
 as well as the identity function @code{identity}. 
 @code{Asymptote} also defines the order @code{n} Bessel functions of
 the first kind @code{J(int n, real)} and second kind
@@ -4637,7 +4652,7 @@ This declares @code{a} to be @code{real} and implicitly declares @code{A} to
 be of type @code{real[]}. 
 
 In the following list of built-in array functions, @code{T} represents a
-generic type. Note that the internal functions @code{alias},
+generic type. Note that the internal functions @code{alias}, @code{array},
 @code{copy}, @code{concat}, @code{sequence}, @code{map}, and
 @code{transpose}, which depend on type @code{T[]}, are defined only after the
 first declaration of a variable of type @code{T[]}.
@@ -4657,6 +4672,13 @@ delimited list of elements).
 returns a new array of @code{n} elements of type @code{T[]}. 
 These @code{n} array elements are not initialized unless they are arrays
 themselves (in which case they are each initialized to empty arrays).
+
+@cindex @code{array}
+@item T[] array(int n, T value, int depth=intMax)
+returns an array consisting of n copies of value.  By default, if value is
+itself an array, a deep copy of that array is made for each entry in the new
+array.  If depth is specified, this deep copying only recurses to the number of
+levels specified.
 
 @cindex @code{sequence}
 @item int[] sequence(int n)
@@ -4867,7 +4889,7 @@ returns an @math{n \times n} identity matrix.
 
 @cindex @code{inverse}
 @item real[][] inverse(real[][] a)
-returns the inverse of an @math{n \times n} matrix @code{a}.
+returns the inverse of a square matrix @code{a}.
 
 @cindex @code{multdiagonal}
 @item real[][] multdiagonal(real[][] a, real[] b)
@@ -5855,14 +5877,14 @@ as described here:
 This module provides an interface to the @code{LaTeX} package
 (included with @code{MikTeX}) 
 @quotation
-@url{http://www.tug.org/tex-archive/macros/latex/contrib/movie15}
+@url{http://www.ctan.org/tex-archive/macros/latex/contrib/movie15}
 @end quotation
 @noindent
 for embedding movies, sounds, and 3D objects into a @acronym{PDF} document.
 The latest version of the @code{movie15} package requires both
 @code{pdflatex} version 1.20 or later and the file
 @quotation
-@url{http://www.tug.org/tex-archive/macros/latex/contrib/oberdiek/ifdraft.dtx}
+@url{http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/ifdraft.dtx}
 @end quotation
 @noindent
 which can be installed by placing it in a directory @code{ifdraft} in
@@ -5941,7 +5963,7 @@ defaultpen(font("T2A","cmr"));
 Support for Chinese, Japanese, and Korean fonts is provided by the
 CJK package: 
 @quotation
-@url{http://www.tug.org/tex-archive/languages/chinese/CJK/}
+@url{http://www.ctan.org/tex-archive/languages/chinese/CJK/}
 @end quotation
 @noindent
 The following commands enable the CJK song family (within a label, you
@@ -6160,9 +6182,8 @@ end of the axis. An infinite value of @code{xmin}
 or @code{xmax} specifies that the corresponding axis limit will be
 automatically determined from the picture limits. 
 The optional @code{arrow} argument takes the same values as in the
-@code{draw} command (@pxref{arrows}). If @code{put}=@code{Below} and
-the @code{extend} flag for @code{axis} is @code{false}, the axis is
-drawn before any existing objects in the current picture.
+@code{draw} command (@pxref{arrows}). The axis is drawn before any
+existing objects in the current picture unless @code{put}=@code{Above}.
 The axis placement is determined by one of the following @code{axis} types:
 
 @table @code
@@ -6322,9 +6343,8 @@ Label @code{L}. The relative location of the label (a real number from
 or @code{ymax} specifies that the corresponding axis limit will be
 automatically determined from the picture limits. 
 The optional @code{arrow} argument takes the same values as in the
-@code{draw} command (@pxref{arrows}). If @code{put}=@code{Below} and
-the @code{extend} flag for @code{axis} is @code{false}, the axis is
-drawn before any existing objects in the current picture.
+@code{draw} command (@pxref{arrows}). The axis is drawn before any
+existing objects in the current picture unless @code{put}=@code{Above}.
 The tick type is specified by @code{ticks} and the axis placement is
 determined by one of the following @code{axis} types:
 
@@ -6387,11 +6407,11 @@ and any arrows specified by @code{arrow}. The axes are drawn on top of
 existing objects in the current picture only if @code{put} is @code{Above}.
 
 @item
-@verbatim 
+@verbatim
 void axis(picture pic=currentpicture, Label L="", path g,
           pen p=currentpen, ticks ticks, ticklocate locate,
           arrowbar arrow=None, int[] divisor=new int[],
-          bool put=Above, bool opposite=false);
+          bool put=Below, bool opposite=false);
 @end verbatim
 
 This routine can be used to draw on picture @code{pic} a general axis
@@ -6401,10 +6421,9 @@ One can optionally label the axis with Label @code{L} and add an arrow
 The optional integer array @code{divisor} specifies what tick divisors
 to try in the attempt to produce uncrowded tick labels. A @code{true}
 value for the flag @code{opposite} identifies an unlabelled secondary
-axis (typically drawn opposite a primary axis).  The axis is drawn
-on top of existing objects in the current picture only if @code{put}
-is @code{Above}. The tick locator @code{ticklocate} is
-constructed by the routine
+axis (typically drawn opposite a primary axis). The axis is drawn before
+any existing objects in the current picture unless @code{put}=@code{Above}.
+The tick locator @code{ticklocate} is constructed by the routine
 @verbatim
 ticklocate ticklocate(real a, real b, autoscaleT S=defaultS,
                       real tickmin=-infinity, real tickmax=infinity,
@@ -6708,20 +6727,27 @@ least-squares fit, using the @code{stats} module.
 @verbatiminclude generalaxis.asy
 @image{generalaxis}
 
-@item To draw a vector field along a path, first define a routine
-that returns a path as a function of a relative position parameter
-from [0,1] and use
-@cindex @code{vector field}
+@item To draw a vector field of @code{n} arrows evenly spaced along the arclength of a path, use the routine
+@cindex @code{vectorfield}
 @verbatim
-typedef path vector(real);
-
-void vectorfield(picture pic=currentpicture, path g, int n, 
-                 vector vector, real arrowsize=0, real arrowlength=0,
-                 pen p=currentpen);
+picture vectorfield(path vector(real), path g, int n, bool truesize=false,
+                    pen p=currentpen, arrowbar arrow=Arrow);
 @end verbatim
-Here is a simple example of a flow field:
+as illustrated in this simple example of a flow field:
 @verbatiminclude flow.asy
 @image{flow}
+
+@item To draw a vector field of @code{nx}@math{\times}@code{ny} arrows in @code{box(a,b)}, use the routine
+@cindex @code{vectorfield}
+@verbatim
+picture vectorfield(path vector(pair), pair a, pair b,
+                    int nx=nmesh, int ny=nx, 
+                    bool autoscale=true, bool truesize=false,
+                    pen p=currentpen, arrowbar arrow=Arrow);
+@end verbatim
+as illustrated in this example:
+@verbatiminclude vectorfield.asy
+@image{vectorfield}
 
 @item The following scientific graphs, which illustrate many features of
 @code{Asymptote}'s graphics routines, were generated from the examples
@@ -7232,31 +7258,35 @@ One can also place ticks along a general three-dimensional axis:
 Surface plots of matrices and functions over the region
 @code{box(a,b)} in the @math{XY} plane are also implemented: 
 @verbatim
-picture surface(real[][] f, pair a, pair b, bool outward=false,
+picture surface(real[][] f, pair a, pair b, bool[][] cond={}, 
+                bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
-picture surface(triple[][] f, bool outward=false,
+picture surface(triple[][] f, bool[][] cond={}, bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
 picture surface(real f(pair z), pair a, pair b, int nx=nmesh,
-                int ny=nx, bool outward=false,
+                int ny=nx, bool cond(pair z)=null, bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
 picture surface(real f(pair z), int nsub, pair a, pair b, int nx=nmesh,
-                int ny=nx, bool outward=false,
+                int ny=nx, bool cond(pair z)=null, bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
 @end verbatim
 @noindent
+The boolean array or function @code{cond} can be used to control which
+surface mesh cells are actually drawn (by default all mesh cells over
+@code{box(a,b)} are drawn).
 A parametric surface for a function @math{f(u,v)} over the parameter
 space @code{box(a,b)} may be drawn with
 @verbatim
 picture surface(triple f(pair z), pair a, pair b, int nu=nmesh,
-                int nv=nu, bool outward=false,
+                int nv=nu, bool cond(pair z)=null, bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
 picture surface(triple f(pair z), int nsub, pair a, pair b, int nu=nmesh,
-                int nv=nu, bool outward=false,
+                int nv=nu, bool cond(pair z)=null, bool outward=false,
                 pen surfacepen=lightgray, pen meshpen=nullpen,
                 light light=currentlight, projection P=currentprojection);
 @end verbatim
@@ -7463,37 +7493,43 @@ Here is a simple flowchart example:
 @section @code{contour}
 @cindex @code{contour}
 This package draws contour lines.
-To construct contours for a function @code{f}, use
+To construct contours corrsponding to the values in an array @code{c}
+for a function @code{f} on @code{box(a,b)}, use
 @verbatim
 guide[][] contour(real f(real, real), pair a, pair b,
                   real[] c, int nx=ngraph, int ny=nx,
                   interpolate join=operator --);
 @end verbatim
 @noindent
-The contour lines @code{c} for the function @code{f} are drawn
-on the rectangle defined by the bottom-left and top-right points @code{a}
-and @code{b}. The integers @code{nx} and @code{ny} define the resolution.
+The integers @code{nx} and @code{ny} define the resolution.
 The default resolution, @code{ngraph x ngraph} (here @code{ngraph}
 defaults to @code{100}), can be increased for greater accuracy. The
 default interpolation operator is @code{operator --} (linear). Spline
-interpolation (@code{operator ..}) generally produces more
-accurate pictures, but as usual, can overshoot in certain cases.
+interpolation (@code{operator ..}) may produce smoother
+contours but it can also lead to overshooting.
 
 To construct contours for an array of data values on a uniform
-two-dimensional lattice, use
+two-dimensional lattice on @code{box(a,b)}, use
 @verbatim
 guide[][] contour(real[][] f, real[][] midpoint=new real[][],
                   pair a, pair b, real[] c,
                   interpolate join=operator --);
+@end verbatim
+
+To construct contours for an array of data values on a nonoverlapping
+mesh specified by the two-dimensional array @code{z}, optionally
+specifying an estimate for the values of @code{f} at the mesh midpoints, use
+@verbatim
+guide[][] contour(pair[][] z, real[][] f,
+		  real[][] midpoint=new real[][], real[] c,
+                  interpolate join=operator --);
 
 @end verbatim
 @noindent
-To construct contours for an array of irregularly spaced points
-and an array of values @code{f} at these points, use one of the routines
+To construct contours for an array of values @code{f} specified at
+irregularly positioned points @code{z}, use the routine
 @verbatim
 guide[][] contour(pair[] z, real[] f, real[] c,
-                  interpolate join=operator --);
-guide[][] contour(real[] x, real[] y, real[] f, real[] c,
                   interpolate join=operator --);
 @end verbatim 
 @noindent
@@ -7528,8 +7564,8 @@ from irregularly spaced data:
 @image{irregularcontour}
 
 In the above example, the contours of irregularly spaced data are constructed by
-first creating a triangular mesh from an array @code{z} of pairs,
-using Gilles Dumoulin's C++ port of Paul Bourke's triangulation code: 
+first creating a triangular mesh from an array @code{z} of pairs:
+
 @verbatim
 int[][] triangulate(pair[] z);
 @end verbatim
@@ -7539,6 +7575,17 @@ int[][] triangulate(pair[] z);
 
 The example @code{Gouraudcontour} illustrates how to produce color
 density images over such irregular triangular meshes.
+
+By default, @code{Asymptote} uses Gilles Dumoulin's C++ port of Paul Bourke's
+triangulation code. However, @code{Asymptote} can be optionally built
+with Jonathan Shewchuk's more robust triangulation routines by placing
+@url{http://netlib.sandia.gov/voronoi/triangle.shar.gz}
+in the @code{Asymptote} source directory and executing the commands
+@verbatim
+./configure
+make all
+make install
+@end verbatim
 
 @node contour3
 @section @code{contour3}
@@ -8254,4 +8301,4 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  atLeast intMin globalwrite quarticroots deconsruct substrings
 @c  LocalWords:  usleep currentpatterns trailingzero Orest Shardt DefaultHead
 @c  LocalWords:  SimpleHead HookHead TeXHead multipage nurbs inlinemovie dxmax
-@c  LocalWords:  simpson NoBox
+@c  LocalWords:  simpson NoBox truesize autoscale

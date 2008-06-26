@@ -3,7 +3,7 @@ restricted pair Infinity=(infinity,infinity);
 
 restricted real inches=72;
 restricted real inch=inches;
-restricted real cm=inches/2.540005;
+restricted real cm=inches/2.54;
 restricted real mm=0.1cm;
 restricted real bp=1;      // A PostScript point.
 restricted real pt=72.0/72.27; // A TeX pt; smaller than a PostScript bp.
@@ -61,7 +61,7 @@ restricted file stdin=input("");
 restricted file stdout=output("");
 
 void none(file file) {}
-void endl(file file) {write(file,'\n'); flush(file);}
+void endl(file file) {write(file,'\n',flush);}
 void tab(file file) {write(file,'\t');}
 void comma(file file) {write(file,',');}
 typedef void suffix(file);

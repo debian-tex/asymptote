@@ -323,10 +323,16 @@ pair point(frame f, pair dir)
   return min(f)+realmult(rectify(dir),max(f)-min(f));
 }
 
+// Returns a transform for aligning frame f in the direction align
+transform shift(frame f, pair align) 
+{
+  return shift(align-point(f,-align));
+}
+
 // Returns a copy of frame f aligned in the direction align
 frame align(frame f, pair align) 
 {
-  return shift(align-point(f,-align))*f;
+  return shift(f,align)*f;
 }
 
 struct picture {
@@ -1040,6 +1046,26 @@ void tensorshade(picture pic=currentpicture, path[] g, pen fillrule=currentpen,
   tensorshade(pic,g,fillrule,new pen[][] {p},b,new pair[][] {z});
 }
 
+// Smoothly shade the regions between consecutive paths of a sequence using a
+// given array of pens:
+void draw(picture pic=currentpicture, path[] g, pen[] p)
+{
+  path[] G;
+  pen[][] P;
+  string differentlengths="arrays have different lengths";
+  if(g.length != p.length) abort(differentlengths);
+  for(int i=0; i < g.length-1; ++i) {
+    path g0=g[i];
+    path g1=g[i+1];
+    if(length(g0) != length(g1)) abort(differentlengths);
+    for(int j=0; j < length(g0); ++j) {
+      G.push(subpath(g0,j,j+1)--reverse(subpath(g1,j,j+1))--cycle);
+      P.push(new pen[] {p[i],p[i],p[i+1],p[i+1]});
+    }
+  }
+  tensorshade(pic,G,P);
+}
+
 void filldraw(picture pic=currentpicture, path[] g, pen fillpen=currentpen,
               pen drawpen=currentpen)
 {
@@ -1097,16 +1123,16 @@ transform fixedscaling(picture pic=currentpicture, pair min, pair max,
 						 pic.keepAspect);
 }
 
-// Add frame dest about position to frame src with optional grouping
+// Add frame src about position to frame dest with optional grouping.
 void add(frame dest, frame src, pair position, bool group=false,
-         filltype filltype=NoFill, bool put=Above)
+	 filltype filltype=NoFill, bool put=Above)
 {
   add(dest,shift(position)*src,group,filltype,put);
 }
 
-// Add frame src about position to picture dest with optional grouping
+// Add frame src about position to picture dest with optional grouping.
 void add(picture dest=currentpicture, frame src, pair position=0,
-         bool group=true, filltype filltype=NoFill, bool put=Above)
+	 bool group=true, filltype filltype=NoFill, bool put=Above)
 {
   dest.add(new void(frame f, transform t) {
       add(f,shift(t*position)*src,group,filltype,put);
@@ -1114,9 +1140,9 @@ void add(picture dest=currentpicture, frame src, pair position=0,
   dest.addBox(position,position,min(src),max(src));
 }
 
-// Like add(pair,picture,frame) but extend picture to accommodate frame
+// Like add(picture,frame,pair) but extend picture to accommodate frame.
 void attach(picture dest=currentpicture, frame src, pair position=0,
-            bool group=true, filltype filltype=NoFill, bool put=Above)
+	    bool group=true, filltype filltype=NoFill, bool put=Above)
 {
   transform t=dest.calculateTransform();
   add(dest,src,position,group,filltype,put);
@@ -1126,14 +1152,15 @@ void attach(picture dest=currentpicture, frame src, pair position=0,
 
 // Like add(picture,frame,pair) but align frame in direction align.
 void add(picture dest=currentpicture, frame src, pair position, pair align,
-         bool group=true, filltype filltype=NoFill, bool put=Above)
+	 bool group=true, filltype filltype=NoFill, bool put=Above)
 {
   add(dest,align(src,align),position,group,filltype,put);
 }
 
-// Like attach(picture,frame,pair) but align frame in direction align.
-void attach(picture dest=currentpicture, frame src, pair position, pair align,
-            bool group=true, filltype filltype=NoFill, bool put=Above)
+// Like attach(picture,frame,pair) but extend picture to accommodate frame;
+void attach(picture dest=currentpicture, frame src, pair position,
+	    pair align, bool group=true, filltype filltype=NoFill,
+	    bool put=Above)
 {
   attach(dest,align(src,align),position,group,filltype,put);
 }
@@ -1156,7 +1183,7 @@ void add(picture src, bool group=true, filltype filltype=NoFill,
 // coordinates and truesize coordinates agree) and add it about the point
 // position to picture dest.
 void add(picture dest, picture src, pair position, bool group=true,
-         filltype filltype=NoFill, bool put=Above)
+	 filltype filltype=NoFill, bool put=Above)
 {
   add(dest,src.fit(identity()),position,group,filltype,put);
 }

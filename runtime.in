@@ -94,10 +94,19 @@ stringarray2* => stringArray2()
 #include "callable.h"
 #include "stm.h"
 #include "lexical.h"
-#include "Delaunay.h"
 #include "process.h"
 #include "arrayop.h"
   
+#ifdef HAVE_TRIANGLE  
+#define REAL double
+#define VOID int
+#define ANSI_DECLARATORS
+#define TRILIBRARY
+#include "triangle.h"
+#else
+#include "Delaunay.h"
+#endif   
+   
 #ifdef HAVE_LIBFFTW3
 #include "fftw++.h"
 #endif
@@ -209,7 +218,13 @@ function *transformFunction()
 const unsigned camp::ColorComponents[]={0,0,1,3,4,0};
 
 namespace vm {
-const char *arraymismatch="operation attempted on arrays of different lengths";
+  const void checkequal(size_t i, size_t j) {
+    if(i == j) return;
+    ostringstream buf;
+    buf << "operation attempted on arrays of different lengths: "
+	<< i << " != " << j;
+    error(buf);
+  }
 }
 
 namespace run {
@@ -482,8 +497,8 @@ static HISTORY_STATE history_save;
 void store_history(HISTORY_STATE *dest)
 {
   HISTORY_STATE *src=history_get_history_state();
-  *dest=*src;
   if(src) {
+    *dest=*src;
     for(Int i=0; i < src->length; ++i)
       dest->entries[i]=src->entries[i];
     free(src);
@@ -499,7 +514,7 @@ stringarray* get_history(Int n)
   int offset=history_length-N+1;
   for(int i=0; i < N; ++i) {
     HIST_ENTRY *last=history_get(offset+i);
-    string s=last ? last-> line : "";
+    string s=last ? last->line : "";
     (*a)[i]=s;
   }	
   return a;
@@ -957,8 +972,8 @@ void tensorshade(picture *f, patharray *g, pen fillrule, penarray2 *p,
   if(b == NULL) b=g;
   size_t n=checkArrays(p,b);
   size_t nz=checkArray(z);
-  if(nz != 0 && nz != n)
-    error(arraymismatch);
+  if(nz != 0)
+    checkequal(nz,n);
   f->append(new drawTensorShade(*copyarray(g),fillrule,*copyarray2(p),
 				*copyarray(b),*copyarray2(z)));
 }
@@ -1101,6 +1116,7 @@ void shipout(string prefix=emptystring, picture *f, picture *preamble=NULL,
 	     string format=emptystring, bool wait=false, bool view=true,
 	     callableTransform *xform)
 {
+  interact::uptodate=true;
   if(prefix.empty()) prefix=outname();
 
   picture *result=new picture;
@@ -1125,8 +1141,10 @@ void shipout(string prefix=emptystring, picture *f, picture *preamble=NULL,
 	if(p == f->nodes.end()) break;
 	assert(*p);
 	if((*p)->begingroup()) ++level;
-	if((*p)->endgroup()) if(level) --level;
+	if((*p)->endgroup()) {
+	  if(level) --level;
 	  else error(nobegin);
+	}
       }
     }
     if(p == f->nodes.end()) break;
@@ -1150,7 +1168,8 @@ void deconstruct(picture *f, picture *preamble=NULL, real magnification=1,
   string prefix=outname();
   string xformat=getSetting<string>("xformat");
 
-  const unsigned maxargs=::min(ARG_MAX/(prefix.size()+xformat.size()+25ul),
+  static long arg_max=sysconf(_SC_ARG_MAX);
+  const unsigned maxargs=::min(arg_max/(prefix.size()+xformat.size()+25ul),
 			       256ul);
   
   cout << xformat << newl;
@@ -1215,11 +1234,13 @@ void deconstruct(picture *f, picture *preamble=NULL, real magnification=1,
 	  if(p == f->nodes.end()) break;
 	  assert(*p);
 	  if((*p)->begingroup()) ++level;
-	  if((*p)->endgroup()) if(level) --level;
+	  if((*p)->endgroup()) {
+	    if(level) --level;
 	    else {
 	      cout << Error << endl;
 	      error(nobegin);
 	    }
+	  }
 	}
       }
       if(p != f->nodes.end()) {
@@ -1616,11 +1637,13 @@ void assert(bool b, string s=emptystring)
 
 void sleep(Int seconds)
 {
+  if(seconds <= 0) return;	
   sleep(seconds);
 }
 
 void usleep(Int microseconds)
 {
+  if(microseconds <= 0) return;	
   usleep((unsigned long) microseconds); 
 }
 
@@ -3167,6 +3190,16 @@ array* :newAppendedArray(array* tail, Int n)
   return a;
 }
 
+// The function T[] array(int n, T value, int depth=0) produces a array of n
+// copies of x, where each copy is copied up to depth.
+array* :newDuplicateArray(Int n, item value, Int depth=Int_MAX)
+{
+  if(n < 0) error("cannot create a negative length array");
+  if(depth < 0) error("cannot copy to a negative depth");
+
+  return new array(n, value, depth);
+}
+
 // Read an element from an array. Checks for initialization & bounds.
 item :arrayRead(array *a, Int n)
 {
@@ -3985,8 +4018,8 @@ realarray2 *Operator *(realarray2 *a, realarray2 *b)
 realarray *tridiagonal(realarray *a, realarray *b, realarray *c, realarray *f)
 {
   size_t n=checkArrays(a,b);
-  if(n != checkArray(c) || n != checkArray(f))
-    error(arraymismatch);
+  checkequal(n,checkArray(c));
+  checkequal(n,checkArray(f));
   
   array *up=new array(n);
   array& u=*up;
@@ -4085,7 +4118,9 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x,
 {
   static const real fuzz=1000.0*DBL_EPSILON;
   Int i=0;
-  size_t oldPrec=cout.precision(DBL_DIG);
+  size_t oldPrec=0;
+  if(verbose) 
+    oldPrec=cout.precision(DBL_DIG);
 
   real diff=DBL_MAX;
   real lastdiff;
@@ -4118,7 +4153,8 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x,
     }
   } while (diff != 0.0 && (diff < lastdiff || diff > fuzz*fabs(x)));
 
-  cout.precision(oldPrec);
+  if(verbose)
+    cout.precision(oldPrec);
   return x;
 }
 
@@ -4128,7 +4164,9 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x1,
 	    real x2, bool verbose=false)
 {
   static const real fuzz=1000.0*DBL_EPSILON;
-  size_t oldPrec=cout.precision(DBL_DIG);
+  size_t oldPrec=0;
+  if(verbose) 
+    oldPrec=cout.precision(DBL_DIG);
 
   Stack->push(x1);
   f->call(Stack);
@@ -4197,7 +4235,8 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x1,
     if(y < 0.0) x1=x;
     else x2=x;
   }
-  cout.precision(oldPrec);
+  if(verbose)
+    cout.precision(oldPrec);
   return (j == iterations) ? DBL_MAX : x;
 }
 
@@ -4243,10 +4282,52 @@ pairarray* :pairArrayFFT(pairarray *a, Int sign=1)
   return c;
 }
 
-// Call Gilles Dumoulin's port of Paul Bourke's triangulation code.
 Intarray2 *triangulate(pairarray *z)
 {
   size_t nv=checkArray(z);
+
+#ifdef HAVE_TRIANGLE  
+  struct triangulateio in, out;
+
+  in.numberofpoints = nv;
+  in.pointlist=new double[2*nv];
+
+  double *p=in.pointlist;
+  for(size_t i=0; i < nv; ++i) {
+    pair w=read<pair>(z,i);
+    *(p++)=w.getx();
+    *(p++)=w.gety();
+  }
+  
+  in.numberofpointattributes = 0;
+  in.pointattributelist = NULL;
+  in.pointmarkerlist = NULL;
+  in.numberofsegments = 0;
+  in.numberofholes = 0;
+  in.numberofregions = 0;
+  in.regionlist = NULL;
+
+  out.trianglelist = NULL;
+
+  triangulate("zBNQ", &in, &out, NULL);
+
+  delete[] in.pointlist;
+
+  size_t nt=(size_t) out.numberoftriangles;
+  array *t=new array(nt);
+  int *k=out.trianglelist;
+  for(size_t i=0; i < nt; ++i) {
+    array *ti=new array(3);
+    (*t)[i]=ti;
+    (*ti)[0]=*(k++);
+    (*ti)[1]=*(k++);
+    (*ti)[2]=*(k++);
+  }
+   
+  free(out.trianglelist);
+  return t;
+#else  
+// Call Gilles Dumoulin's port of Paul Bourke's triangulation code.
 
   XYZ *pxyz=new XYZ[nv+3];
   ITRIANGLE *V=new ITRIANGLE[3*nv];
@@ -4274,8 +4355,8 @@ Intarray2 *triangulate(pairarray *z)
    
   delete[] V;
   delete[] pxyz;
-  
-  return t;      
+  return t;
+#endif  
 }
 
 
@@ -4390,9 +4471,10 @@ void close(file *File)
   File->close();
 }
 
-void precision(file *File, Int digits) 
+Int precision(file *File=NULL, Int digits=0) 
 {
-  File->precision(digits);
+  if(File == 0) File=&camp::Stdout;
+  return File->precision(digits);
 }
 
 void flush(file *File) 

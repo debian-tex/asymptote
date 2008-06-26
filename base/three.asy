@@ -1228,8 +1228,6 @@ struct path3 {
     if (n2 == -1) return p1;
     triple a=p1.point(n1);
     triple b=p2.point(0);
-    if (abs(a-b) > Fuzz*max(abs(a),abs(b)))
-      abort("path3 arguments in concatenation do not meet");
 
     node[] nodes = nodes(n1+n2+1);
 
@@ -1505,6 +1503,14 @@ path3 operator * (transform3 t, path3 p)
     nodes[i].post=t*p.nodes[i].post;
   }
   return path3(nodes,p.cycles);
+}
+
+path3[] operator * (transform3 t, path3[] p) 
+{
+  path3[] g=new path3[p.length];
+  for(int i=0; i < p.length; ++i)
+    g[i]=t*p[i];
+  return g;
 }
 
 void write(file file, string s="", explicit path3 x, suffix suffix=none)

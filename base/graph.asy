@@ -583,8 +583,7 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
       locate.S.Tinv(locate.S.tickMax) : b;
     if(tickmin > tickmax) {real temp=tickmin; tickmin=tickmax; tickmax=temp;}
       
-    if(Step > 0 && a*b < 0 && locate.S.automin)
-      tickmin=floor(tickmin/Step)*Step;
+    real inStep=Step;
 
     bool calcStep=true;
     real len=tickmax-tickmin;
@@ -627,6 +626,11 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
       } else N=1;
     }
       
+    if(inStep != 0 && !locate.S.automin) {
+      tickmin=floor(tickmin/Step)*Step;
+      len=tickmax-tickmin;
+    }
+
     if(calcStep) {
       if(N == 0) N=(int) (len/Step);
       else Step=len/N;
@@ -1088,7 +1092,7 @@ YZero=YZero();
 void axis(picture pic=currentpicture, Label L="", path g, path g2=nullpath,
           pen p=currentpen,
           ticks ticks, ticklocate locate, arrowbar arrow=None,
-          int[] divisor=new int[], bool put=Above, bool opposite=false) 
+          int[] divisor=new int[], bool put=Below, bool opposite=false) 
 {
   Label L=L.copy();
   real t=reltime(g,0.5);
@@ -1449,7 +1453,6 @@ void xaxis(picture pic=currentpicture, Label L="", axis axis=YZero,
   }
   
   axis(pic,axis);
-  if(axis.extend) put=Above;
   
   if(xmin == -infinity && !axis.extend) {
     if(pic.scale.set && pic.scale.x.automin())
@@ -1509,7 +1512,6 @@ void yaxis(picture pic=currentpicture, Label L="", axis axis=XZero,
   }
   
   axis(pic,axis);
-  if(axis.extend) put=Above;
   
   if(ymin == -infinity && !axis.extend) {
     if(pic.scale.set && pic.scale.y.automin())
@@ -1965,20 +1967,57 @@ void errorbars(picture pic=currentpicture, real[] x, real[] y,
   errorbars(pic,x,y,0*x,dpy,cond,p,size);
 }
 
-// A path as a function of a relative position parameter.
-typedef path vector(real);
-
-void vectorfield(picture pic=currentpicture, path g, int n, 
-                 vector vector, real arrowsize=0, real arrowlength=0,
-                 pen p=currentpen) 
+// Return a vector field on path g, specifying the vector as a function of the
+// relative position along path g in [0,1].
+picture vectorfield(path vector(real), path g, int n, bool truesize=false,
+		    pen p=currentpen, arrowbar arrow=Arrow)
 {
-  if(arrowsize == 0) arrowsize=arrowsize(p);
-  if(n == 0) return;
-  for(int i=0; i <= n; ++i) {
-    real x=i/n;
-    pair z=relpoint(g,x);
-    draw(z,pic,vector(x),p,Arrow(arrowsize));
+  picture pic;
+  for(int i=0; i < n; ++i) {
+    real x=(n == 1) ? 0.5 : i/(n-1);
+    if(truesize)
+      draw(relpoint(g,x),pic,vector(x),p,arrow);
+    else 
+      draw(pic,shift(relpoint(g,x))*vector(x),p,arrow);
   }
+  return pic;
+}
+
+picture vectorfield(path vector(pair), pair a, pair b,
+		    int nx=nmesh, int ny=nx, 
+		    bool autoscale=true, bool truesize=false,
+		    pen p=currentpen, arrowbar arrow=Arrow)
+{
+  picture pic;
+  real dx=1/nx;
+  real dy=1/ny;
+  real scale;
+  if(autoscale) {
+    real size(pair z) {
+      path g=vector(z);
+      return abs(point(g,size(g)-1)-point(g,0));
+    }
+    real max=size((0,0));
+    for(int i=0; i <= nx; ++i) {
+      real x=interp(a.x,b.x,i*dx);
+      for(int j=0; j <= ny; ++j)
+	max=max(max,size((x,interp(a.y,b.y,j*dy))));
+    }
+    pair lambda=b-a;
+    scale=min(lambda.x/nx,lambda.y/ny)/max;
+  } else scale=1;
+  for(int i=0; i <= nx; ++i) {
+    real x=interp(a.x,b.x,i*dx);
+    for(int j=0; j <= ny; ++j) {
+      real y=interp(a.y,b.y,j*dy);
+      pair z=(x,y);
+      if(truesize)
+	draw(z,pic,vector(z),p,arrow);
+      else
+	draw(pic,shift(z)*scale(scale)*vector(z),p,arrow,PenMargin);
+    }
+  }
+  return pic;
 }
 
 // True arc

@@ -216,12 +216,6 @@ public:
   // overloaded type.
   ty *getType(symbol *name);
 
-  // This is an optimization that is only implemented for the hashtable
-  // version.
-  void *getMarker(symbol *) {
-    return 0;
-  }
-
   friend std::ostream& operator<< (std::ostream& out, const venv& ve);
   
   // Prints a list of the variables to the standard output.
@@ -291,11 +285,11 @@ class venv {
 
   // A hash table used to quickly look up a variable once its name and type are
   // known.  Includes all scopes.
-  typedef mem::hash_map<key, value *, keyhash, keyeq> keymap;
+  typedef mem::unordered_map<key, value *, keyhash, keyeq> keymap;
   keymap all;
 
   // Similar hashes, one for each scope level.
-  typedef mem::hash_multimap<key, value *, keyhash, keyeq> keymultimap;
+  typedef mem::unordered_multimap<key, value *, keyhash, keyeq> keymultimap;
   typedef mem::stack<keymultimap> mapstack;
   mapstack scopes;
 
@@ -303,7 +297,7 @@ class venv {
   // all values of that name.  Used to get the (possibly overloaded) type
   // of the name.
   typedef mem::list<value *> values;
-  typedef mem::hash_map<symbol *, values, namehash, nameeq> namemap;
+  typedef mem::unordered_map<symbol *, values, namehash, nameeq> namemap;
   namemap names;
 
   void listValues(symbol *name, values &vals, record *module);
@@ -362,19 +356,6 @@ public:
   }
 
   ty *getType(symbol *name);
-
-  // The abstract syntax caches results for resolving overloaded variables.  It
-  // is not enough to index these cached results by name, as new variables of
-  // the same name could be added, invalidating the cached result.  Instead,
-  // they are indexed by a marker, that is unique to the name and to its current
-  // overloading.  The values list does this, and the values list is uniquely
-  // determined by its first entry (as values are not re-used, and the list is
-  // only manipulated from its front).  Therefore, we return an opaque pointer
-  // to the first entry on the list.
-  void *getMarker(symbol *name) {
-    values &list=names[name];
-    return list.empty() ? 0 : (void *)list.front();
-  }
 
   void beginScope() {
     scopes.push(keymultimap());

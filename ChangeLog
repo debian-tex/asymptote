@@ -1,4 +1,511 @@
 ------------------------------------------------------------------------
+r3118 | jcbowman | 2008-06-12 01:26:49 -0600 (Thu, 12 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/settings.cc
+
+Use international inch also in C++ code.
+
+------------------------------------------------------------------------
+r3117 | jcbowman | 2008-06-12 00:54:14 -0600 (Thu, 12 Jun 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/runtime.in
+
+Fix potential segmentation fault in store_history.
+
+Move uptodate=true back to the beginning of shipout to avoid a race condition.
+
+------------------------------------------------------------------------
+r3116 | jcbowman | 2008-06-12 00:14:14 -0600 (Thu, 12 Jun 2008) | 3 lines
+Changed paths:
+   A /trunk/asymptote/base/size10.asy
+   A /trunk/asymptote/base/size11.asy
+
+Add modules to redefine LaTeX named fontsizes to correspond to
+\documentclass[10pt]{article} and \documentclass[11pt]{article}, respectively.
+
+------------------------------------------------------------------------
+r3115 | jcbowman | 2008-06-11 15:45:16 -0600 (Wed, 11 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_constants.asy
+
+Use international inch conversion factor.
+
+------------------------------------------------------------------------
+r3114 | jcbowman | 2008-06-10 08:14:59 -0600 (Tue, 10 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/three.asy
+
+Add missing path3[] operator * (transform3 t, path3[] p).
+
+------------------------------------------------------------------------
+r3113 | jcbowman | 2008-06-09 00:59:31 -0600 (Mon, 09 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/Makefile.in
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/patches/README
+   A /trunk/asymptote/patches/triangle.patch
+   M /trunk/asymptote/runtime.in
+
+Add optional support for Jonathan Shewchuk's more robust triangulation routines.
+
+------------------------------------------------------------------------
+r3112 | jcbowman | 2008-06-08 22:56:41 -0600 (Sun, 08 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/contour.asy
+   M /trunk/asymptote/base/contour3.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/doc/irregularcontour.asy
+
+Add interface for drawing contours on arbitrary nonoverlapping meshes.
+
+------------------------------------------------------------------------
+r3111 | jcbowman | 2008-06-07 22:36:27 -0600 (Sat, 07 Jun 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_picture.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Remove transform return value from add functions in favour of user-supplied
+add routine.
+
+------------------------------------------------------------------------
+r3110 | jcbowman | 2008-06-07 10:49:54 -0600 (Sat, 07 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_picture.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/rainbow.asy
+
+Move draw(path[], pen[]) to plain_picture.asy.
+
+------------------------------------------------------------------------
+r3109 | pivaldi | 2008-06-07 10:02:20 -0600 (Sat, 07 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/base/asy-mode.el
+
+asy-mode.el: add asy to regexp matching environments with indentation at col 0 for begin/end.
+------------------------------------------------------------------------
+r3108 | jcbowman | 2008-06-06 12:18:07 -0600 (Fri, 06 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/three.asy
+
+Remove "paths in concatenation do not meet" also from three.asy.
+
+------------------------------------------------------------------------
+r3107 | jcbowman | 2008-06-06 10:59:22 -0600 (Fri, 06 Jun 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_picture.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Return the transform that maps source coordinates to destination
+coordinates in add and attach.
+
+------------------------------------------------------------------------
+r3106 | jcbowman | 2008-06-06 10:56:10 -0600 (Fri, 06 Jun 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/array.h
+   M /trunk/asymptote/base/plain_shipout.asy
+   M /trunk/asymptote/runtime.in
+
+Move uptodate=true to runtime.
+
+Improve diagnostics about incompatible array lengths.
+
+------------------------------------------------------------------------
+r3105 | jcbowman | 2008-06-06 09:52:43 -0600 (Fri, 06 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/process.cc
+
+Make interrupts set uptodate=true to avoid spurious shipouts.
+
+------------------------------------------------------------------------
+r3104 | jcbowman | 2008-06-06 09:51:37 -0600 (Fri, 06 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/graph.asy
+
+Fix secondary axis tick selection when automin=false.
+
+------------------------------------------------------------------------
+r3103 | hammera | 2008-06-05 15:45:47 -0600 (Thu, 05 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/asymptote/doc/external-proposal.html
+
+A preliminary proposal for how to defined Asymptote modules in C++.
+
+------------------------------------------------------------------------
+r3102 | jcbowman | 2008-06-05 08:58:18 -0600 (Thu, 05 Jun 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/fileio.h
+   M /trunk/asymptote/guide.h
+   M /trunk/asymptote/path.cc
+   M /trunk/asymptote/runtime.in
+
+Allow precision setting to be queried.
+
+Write paths to the specified precision setting for a file.
+
+------------------------------------------------------------------------
+r3101 | jcbowman | 2008-06-05 08:35:35 -0600 (Thu, 05 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/builtin.cc
+
+Add expm1 function.
+
+------------------------------------------------------------------------
+r3100 | jcbowman | 2008-06-05 08:34:21 -0600 (Thu, 05 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/triads.asy
+
+Add labels to example.
+
+------------------------------------------------------------------------
+r3099 | jcbowman | 2008-06-04 22:28:22 -0600 (Wed, 04 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/graph.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/examples/cardioid.asy
+   M /trunk/asymptote/examples/cos2theta.asy
+
+Always draw 2D axes below picture by default.
+
+------------------------------------------------------------------------
+r3098 | jcbowman | 2008-06-04 21:00:36 -0600 (Wed, 04 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/texfile.h
+
+Simplify font variable definitions.
+
+------------------------------------------------------------------------
+r3097 | jcbowman | 2008-06-04 20:34:59 -0600 (Wed, 04 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/pen.h
+   M /trunk/asymptote/texfile.h
+
+Restore to correct initial font.
+
+------------------------------------------------------------------------
+r3096 | jcbowman | 2008-06-04 14:50:26 -0600 (Wed, 04 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/memory.h
+
+Add missing # sign.
+
+------------------------------------------------------------------------
+r3095 | hammera | 2008-06-03 21:54:04 -0600 (Tue, 03 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/entry.h
+   M /trunk/asymptote/env.cc
+   M /trunk/asymptote/env.h
+   M /trunk/asymptote/exp.cc
+   M /trunk/asymptote/exp.h
+   M /trunk/asymptote/name.cc
+   M /trunk/asymptote/name.h
+
+Removed matchCache entirely.
+
+------------------------------------------------------------------------
+r3094 | jcbowman | 2008-06-03 20:14:07 -0600 (Tue, 03 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/memory.h
+
+Handle undefined __GNU_C_PREREQ macros.
+
+------------------------------------------------------------------------
+r3093 | hammera | 2008-05-31 05:55:05 -0600 (Sat, 31 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/exp.cc
+   A /trunk/asymptote/tests/types/resolve.asy
+
+Disabled matchCaching dur to improperly handled cases.
+
+------------------------------------------------------------------------
+r3092 | hammera | 2008-05-31 05:54:24 -0600 (Sat, 31 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/TODO
+
+Ideas about unicode.
+
+------------------------------------------------------------------------
+r3091 | jcbowman | 2008-05-27 00:36:08 -0600 (Tue, 27 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/memory.h
+   M /trunk/asymptote/runtime.in
+
+Work around broken gcc-4.1.2 tr1 headers.
+
+------------------------------------------------------------------------
+r3090 | jcbowman | 2008-05-26 23:41:28 -0600 (Mon, 26 May 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/Delaunay.h
+   M /trunk/asymptote/entry.h
+   M /trunk/asymptote/genv.cc
+   M /trunk/asymptote/memory.h
+   M /trunk/asymptote/path.cc
+   M /trunk/asymptote/runtime.in
+   M /trunk/asymptote/settings.cc
+   M /trunk/asymptote/simpson.cc
+   M /trunk/asymptote/util.cc
+   M /trunk/asymptote/util.h
+
+Port to gcc-4.3.0.
+------------------------------------------------------------------------
+r3089 | jcbowman | 2008-05-26 15:09:53 -0600 (Mon, 26 May 2008) | 2 lines
+Changed paths:
+   A /trunk/asymptote/base/ode.asy
+
+Add beginnings of an ode package.
+
+------------------------------------------------------------------------
+r3088 | jcbowman | 2008-05-22 01:02:23 -0600 (Thu, 22 May 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/base/math.asy
+
+Make partialsum return an array of the same length as its argument
+(this is a backwards incompatible change).
+
+------------------------------------------------------------------------
+r3087 | jcbowman | 2008-05-07 22:52:35 -0600 (Wed, 07 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/INSTALL
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/doc/asymptote.texi
+
+Update to gc-7.1.
+
+------------------------------------------------------------------------
+r3086 | jcbowman | 2008-05-07 22:50:36 -0600 (Wed, 07 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/runtime.in
+
+Return immediately for negative sleep arguments.
+
+------------------------------------------------------------------------
+r3085 | jcbowman | 2008-05-07 22:49:52 -0600 (Wed, 07 May 2008) | 2 lines
+Changed paths:
+   D /trunk/asymptote/examples/cardiod.asy
+   A /trunk/asymptote/examples/cardioid.asy (from /trunk/asymptote/examples/cardiod.asy:3080)
+
+Fix spelling of cardioid.
+
+------------------------------------------------------------------------
+r3084 | jcbowman | 2008-05-07 22:49:21 -0600 (Wed, 07 May 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/embed.asy
+
+Update URL.
+
+------------------------------------------------------------------------
+r3083 | oshardt | 2008-04-28 17:39:58 -0600 (Mon, 28 Apr 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Update links to TeX resources.
+------------------------------------------------------------------------
+r3082 | jcbowman | 2008-03-29 17:18:30 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/generalaxis3.asy
+
+Temporary fix for tick directions.
+
+------------------------------------------------------------------------
+r3081 | jcbowman | 2008-03-29 17:17:47 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add missing index entry for array.
+
+------------------------------------------------------------------------
+r3080 | jcbowman | 2008-03-29 17:10:46 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/multicontour.asy
+   M /trunk/asymptote/examples/gamma.asy
+
+Simplfify examples.
+
+------------------------------------------------------------------------
+r3079 | jcbowman | 2008-03-29 17:08:57 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/castop.h
+
+Improve bad string cast diagnostics.
+
+------------------------------------------------------------------------
+r3078 | jcbowman | 2008-03-29 17:08:34 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_arrows.asy
+
+Add drawing routines for guide[] g.
+
+------------------------------------------------------------------------
+r3077 | jcbowman | 2008-03-29 17:06:54 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_paths.asy
+
+Add path[] operator cast(guide[] g) cast.
+
+------------------------------------------------------------------------
+r3076 | jcbowman | 2008-03-29 17:06:20 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_filldraw.asy
+
+Add draw(frame f, guide[] g, pen p=currentpen) routine.
+
+------------------------------------------------------------------------
+r3075 | jcbowman | 2008-03-29 17:04:45 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_constants.asy
+
+Simplify definition of endl.
+
+------------------------------------------------------------------------
+r3074 | jcbowman | 2008-03-29 17:03:50 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/slide.asy
+
+Move title down slightly.
+
+------------------------------------------------------------------------
+r3073 | jcbowman | 2008-03-29 17:02:59 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Add void beep() function; document flush output suffix. 
+
+------------------------------------------------------------------------
+r3072 | jcbowman | 2008-03-29 16:59:31 -0600 (Sat, 29 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/plain_strings.asy
+
+Add real[] operator ecast(string[] a).
+
+------------------------------------------------------------------------
+r3071 | jcbowman | 2008-03-26 21:35:28 -0600 (Wed, 26 Mar 2008) | 4 lines
+Changed paths:
+   M /trunk/asymptote/base/graph.asy
+
+Make tickmin a multiple of Step when automin=false.
+
+Don't override put=Above default for extended axes.
+
+------------------------------------------------------------------------
+r3070 | hammera | 2008-03-21 21:45:32 -0600 (Fri, 21 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/array.cc
+   M /trunk/asymptote/array.h
+   M /trunk/asymptote/builtin.cc
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/item.h
+   M /trunk/asymptote/runtime.in
+   A /trunk/asymptote/tests/array/array.asy
+
+Added array(n, value) function for making arrays of duplicates.
+
+------------------------------------------------------------------------
+r3069 | jcbowman | 2008-03-21 09:56:10 -0600 (Fri, 21 Mar 2008) | 3 lines
+Changed paths:
+   M /trunk/asymptote/picture.cc
+
+Force the default -D 600 dvips setting for proper label alignment (should
+have no other effect since we are not using bitmapped fonts).
+
+------------------------------------------------------------------------
+r3068 | oshardt | 2008-03-11 21:58:22 -0600 (Tue, 11 Mar 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/GUI/xasyBezierEditor.py
+   M /trunk/asymptote/GUI/xasyMainWin.py
+
+Fix handling of undo/redo while in bezier editing mode.
+------------------------------------------------------------------------
+r3067 | jcbowman | 2008-03-11 08:45:01 -0600 (Tue, 11 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/psfile.cc
+
+Force setdash when offset changes.
+
+------------------------------------------------------------------------
+r3066 | jcbowman | 2008-03-02 16:19:55 -0700 (Sun, 02 Mar 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/asy-mode.el
+
+Make C-c C-c automatically kill a previous running Asymptote process without
+second-guessing user's intentions.
+
+Remove erroneous "Compilation errors,..." message generated by killed processes.
+
+------------------------------------------------------------------------
+r3065 | pivaldi | 2008-03-02 04:29:55 -0700 (Sun, 02 Mar 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/doc/penimage.asy
+
+Remove useless code in penimage.asy
+------------------------------------------------------------------------
+r3064 | jcbowman | 2008-03-01 23:55:37 -0700 (Sat, 01 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/vectorfield3.asy
+
+Fix gradient.
+
+------------------------------------------------------------------------
+r3063 | jcbowman | 2008-03-01 23:53:08 -0700 (Sat, 01 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/examples/vectorfield3.asy
+
+Remove unused import.
+
+------------------------------------------------------------------------
+r3062 | jcbowman | 2008-03-01 23:49:23 -0700 (Sat, 01 Mar 2008) | 5 lines
+Changed paths:
+   M /trunk/asymptote/base/graph.asy
+   M /trunk/asymptote/base/graph3.asy
+   M /trunk/asymptote/doc/CDlabel.asy
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/doc/flow.asy
+   A /trunk/asymptote/doc/vectorfield.asy
+   A /trunk/asymptote/examples/vectorfield3.asy
+
+Improve one-dimensional vector field interface (this change is backwards
+incompatible).
+
+Support two-dimensional and three-dimensional vector fields.
+
+------------------------------------------------------------------------
+r3061 | jcbowman | 2008-03-01 17:14:38 -0700 (Sat, 01 Mar 2008) | 2 lines
+Changed paths:
+   A /trunk/asymptote/examples/partialsurface.asy
+
+Add example of conditional surface and transparent splitting plane.
+
+------------------------------------------------------------------------
+r3060 | jcbowman | 2008-03-01 15:38:14 -0700 (Sat, 01 Mar 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/graph3.asy
+   M /trunk/asymptote/doc/asymptote.texi
+
+Implement conditional drawing of surfaces meshes over box(a,b).
+
+------------------------------------------------------------------------
+r3059 | pivaldi | 2008-02-28 04:42:32 -0700 (Thu, 28 Feb 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/base/asy-mode.el
+
+Update asy-mode-version value.
+------------------------------------------------------------------------
+r3058 | pivaldi | 2008-02-28 04:40:49 -0700 (Thu, 28 Feb 2008) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/asy-mode.el
+
+Fix critical bug in asy-mode.el:
+a new Asymptote compilation when a process was running erased the contents of some buffers.
+------------------------------------------------------------------------
+r3057 | jcbowman | 2008-02-27 00:25:25 -0700 (Wed, 27 Feb 2008) | 1 line
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Increment version to 1.43svn.
+------------------------------------------------------------------------
 r3056 | jcbowman | 2008-02-26 22:57:08 -0700 (Tue, 26 Feb 2008) | 2 lines
 Changed paths:
    M /trunk/asymptote/doc/asymptote.texi
