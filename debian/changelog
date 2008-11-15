@@ -1,6 +1,7 @@
 asymptote (1.51-1) experimental; urgency=low
 
   * New upstream version. (closes: ##505549)
+  * Fix up depends/build-depends.
 
  -- Hubert Chathi <uhoreg@debian.org>  Fri, 14 Nov 2008 23:48:41 -0500
 
