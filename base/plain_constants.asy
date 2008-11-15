@@ -1,5 +1,5 @@
 restricted real infinity=cbrt(realMax); // Reduced for tension atleast infinity
-restricted pair Infinity=(infinity,infinity);
+restricted int undefined=intMax+((intMax % 2)-1);
 
 restricted real inches=72;
 restricted real inch=inches;
@@ -33,9 +33,6 @@ restricted pair SSW=unit(S+SW);
 restricted pair SSE=unit(S+SE);
 restricted pair ESE=unit(E+SE);
   
-restricted bool Above=true;
-restricted bool Below=false;
-
 int min(... int[] a) {return min(a);}
 int max(... int[] a) {return max(a);}
 
@@ -62,6 +59,7 @@ restricted file stdout=output("");
 
 void none(file file) {}
 void endl(file file) {write(file,'\n',flush);}
+void newl(file file) {write(file,'\n');}
 void tab(file file) {write(file,'\t');}
 void comma(file file) {write(file,',');}
 typedef void suffix(file);
@@ -74,9 +72,9 @@ path box(pair a, pair b)
   return a--(b.x,a.y)--b--(a.x,b.y)--cycle;
 }
 
-path unitsquare=box((0,0),(1,1));
+restricted path unitsquare=box((0,0),(1,1));
 
-path unitcircle=E..N..W..S..cycle;
+restricted path unitcircle=E..N..W..S..cycle;
 restricted real circleprecision=0.0006;
 
 restricted transform invert=reflect((0,0),(1,0));

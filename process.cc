@@ -67,6 +67,7 @@ processDataStruct &processData() {
 void init(bool resetpath=true)
 {
   vm::indebugger=false;
+  uptodate=false;
   if(resetpath)
     setPath("");  /* On second and subsequent calls, sets the path
 		     to what it was when the program started. */
@@ -200,14 +201,15 @@ public:
   virtual void process(bool purge=false) {
     if (!interactive && getSetting<bool>("parseonly"))
       doParse();
-    else if (getSetting<bool>("listvariables"))
-      doList();
     else {
       // This is not done in preRun as it is not an optional step.
       processDataStruct data;
       processDataStack.push(&data);
-
-      doRun(purge);
+      
+      if (getSetting<bool>("listvariables"))
+	doList();
+      else
+	doRun(purge);
 
       processDataStack.pop();
     }
@@ -315,7 +317,7 @@ public:
   ifile(const string& filename)
     : itree(filename),
       filename(filename),
-      outname((string) (filename == "-" ? "out" :
+      outname((string) (filename == "-" ? settings::outname() :
 			stripDir(stripExt(string(filename), suffix)))) {}
   
   block *buildTree() {
@@ -355,7 +357,7 @@ public:
 };
 
 void printGreeting() {
-    cout << "Welcome to " << PROGRAM << " version " << VERSION
+    cout << "Welcome to " << PROGRAM << " version " << VERSION << SVN_REVISION
 	 << " (to view the manual, type help)" << endl;
 }
 
@@ -629,7 +631,6 @@ class iprompt : public icore {
       restart=true;
       startline="";
 
-      uptodate=true;
       run::purge();
 
       return true;
@@ -647,7 +648,7 @@ class iprompt : public icore {
 
 
   bool input(commandLine cl) {
-    string prefix="erase(); include ";
+    string prefix="include ";
     string line=prefix+cl.rest;
     running=false;
     restart=true;
@@ -665,8 +666,8 @@ class iprompt : public icore {
     ADDCOMMAND(q,q);
     ADDCOMMAND(exit,exit);
     ADDCOMMAND(reset,reset);
-    ADDCOMMAND(help, help);
-    ADDCOMMAND(input, input);
+    ADDCOMMAND(help,help);
+    ADDCOMMAND(input,input);
 
 #undef ADDCOMMAND
   }
@@ -756,8 +757,8 @@ class iprompt : public icore {
         i.run(e,s,TRANS_INTERACTIVE);
       }
 
-      if(!uptodate)
-        run::updateFunction(&s);
+      run::updateFunction(&s);
+      uptodate=false;
 
     } catch(handled_error) {
       vm::indebugger=false;
@@ -865,6 +866,9 @@ void runPromptEmbedded(trans::coenv &e, istack &s) {
 }
 
 void doUnrestrictedList() {
+  processDataStruct data;
+  processDataStack.push(&data);
+  
   genv ge;
   env base_env(ge);
   coder base_coder;
@@ -873,6 +877,7 @@ void doUnrestrictedList() {
   if (getSetting<bool>("autoplain"))
     absyntax::autoplainRunnable()->trans(e);
 
+  processDataStack.pop();
   e.e.list(0);
 }
 

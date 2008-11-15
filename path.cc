@@ -5,7 +5,7 @@
  * Stores and returns information on a predefined path.
  *
  * When changing the path algorithms, also update the corresponding 
- * three-dimensional algorithms in path3.cc and three.asy.
+ * three-dimensional algorithms in path3.cc.
  *****/
 
 #include "path.h"
@@ -13,15 +13,24 @@
 #include "angle.h"
 #include "camperror.h"
 #include "mathop.h"
+#include "arrayop.h"
+#include "predicates.h"
+#include "rounding.h"
 
 namespace camp {
 
-const double Fuzz=10.0*DBL_EPSILON;
+const double BigFuzz=10000.0*DBL_EPSILON;
+const double Fuzz=1000.0*DBL_EPSILON;
 const double Fuzz2=Fuzz*Fuzz;
 const double sqrtFuzz=sqrt(Fuzz);
 
 path nullpath;
   
+void checkEmpty(Int n) {
+  if(n == 0)
+    reportError("nullpath has no points");
+}
+
 // Accurate computation of sqrt(1+x)-1.
 inline double sqrt1pxm1(double x)
 {
@@ -111,11 +120,6 @@ Quadraticroots::Quadraticroots(pair a, pair b, pair c)
       z2=-z1-2.0*factor;
     }
   }
-}
-
-inline bool goodroot(double t)
-{
-  return 0.0 <= t && t <= 1.0;
 }
 
 inline bool goodroot(double a, double b, double c, double t)
@@ -363,12 +367,12 @@ inline void splitCubic(solvedKnot sn[], double t, const solvedKnot& left_,
 		       const solvedKnot& right_)
 {
   solvedKnot &left=(sn[0]=left_), &mid=sn[1], &right=(sn[2]=right_);
-  pair x=split(t,left.post,right.pre);
-  left.post=split(t,left.point,left.post);
-  right.pre=split(t,right.pre,right.point);
-  mid.pre=split(t,left.post,x);
-  mid.post=split(t,x,right.pre);
-  mid.point=split(t,mid.pre,mid.post);
+  pair x=split(t,left.post,right.pre); // m1
+  left.post=split(t,left.point,left.post); // m0
+  right.pre=split(t,right.pre,right.point); // m2
+  mid.pre=split(t,left.post,x); // m3
+  mid.post=split(t,x,right.pre); // m4 
+  mid.point=split(t,mid.pre,mid.post); // m5
 }
 
 path path::subpath(double a, double b) const
@@ -435,14 +439,14 @@ void path::halve(path &first, path &second) const
   second=path(sn[1],sn[2]);
 }
   
-// Calculate coefficients of Bezier derivative.
+// Calculate the coefficients of a Bezier derivative divided by 3.
 static inline void derivative(pair& a, pair& b, pair& c,
-			      const pair& z0, const pair& z0p,
-			      const pair& z1m, const pair& z1)
+			      const pair& z0, const pair& c0,
+			      const pair& c1, const pair& z1)
 {
-  a=z1-z0+3.0*(z0p-z1m);
-  b=2.0*(z0+z1m)-4.0*z0p;
-  c=z0p-z0;
+  a=z1-z0+3.0*(c0-c1);
+  b=2.0*(z0+c1)-4.0*c0;
+  c=c0-z0;
 }
 
 bbox path::bounds() const
@@ -453,10 +457,12 @@ bbox path::bounds() const
     // No bounds
     return bbox();
   }
-
+  
   Int len=length();
+  box.add(point(len));
+
   for (Int i = 0; i < len; i++) {
-    box += point(i);
+    addpoint(box,i);
     if(straight(i)) continue;
     
     pair a,b,c;
@@ -465,18 +471,17 @@ bbox path::bounds() const
     // Check x coordinate
     quadraticroots x(a.getx(),b.getx(),c.getx());
     if(x.distinct != quadraticroots::NONE && goodroot(x.t1))
-      box += point(i+x.t1);
+      addpoint(box,i+x.t1);
     if(x.distinct == quadraticroots::TWO && goodroot(x.t2))
-      box += point(i+x.t2);
+      addpoint(box,i+x.t2);
     
     // Check y coordinate
     quadraticroots y(a.gety(),b.gety(),c.gety());
     if(y.distinct != quadraticroots::NONE && goodroot(y.t1))
-      box += point(i+y.t1);
+      addpoint(box,i+y.t1);
     if(y.distinct == quadraticroots::TWO && goodroot(y.t2))
-      box += point(i+y.t2);
+      addpoint(box,i+y.t2);
   }
-  box += point(len);
   return box;
 }
 
@@ -484,13 +489,9 @@ bbox path::bounds(double min, double max) const
 {
   bbox box;
   
-  static pair I(0,1);
-  
   Int len=length();
   for (Int i = 0; i < len; i++) {
-    pair v=I*dir(i);
-    box += point(i)+min*v;
-    box += point(i)+max*v;
+    addpoint(box,i,min,max);
     if(straight(i)) continue;
     
     pair a,b,c;
@@ -498,40 +499,29 @@ bbox path::bounds(double min, double max) const
     
     // Check x coordinate
     quadraticroots x(a.getx(),b.getx(),c.getx());
-    if(x.distinct != quadraticroots::NONE && goodroot(x.t1)) {
-      double t=i+x.t1;
-      pair v=I*dir(t);
-      box += point(t)+min*v;
-      box += point(t)+max*v;
-    }
-    if(x.distinct == quadraticroots::TWO && goodroot(x.t2)) {
-      double t=i+x.t2;
-      pair v=I*dir(t);
-      box += point(t)+min*v;
-      box += point(t)+max*v;
-    }
+    if(x.distinct != quadraticroots::NONE && goodroot(x.t1))
+      addpoint(box,i+x.t1,min,max);
+
+    if(x.distinct == quadraticroots::TWO && goodroot(x.t2))
+      addpoint(box,i+x.t2,min,max);
     
     // Check y coordinate
     quadraticroots y(a.gety(),b.gety(),c.gety());
-    if(y.distinct != quadraticroots::NONE && goodroot(y.t1)) {
-      double t=i+y.t1;
-      pair v=I*dir(t);
-      box += point(t)+min*v;
-      box += point(t)+max*v;
-    }
-    if(y.distinct == quadraticroots::TWO && goodroot(y.t2)) {
-      double t=i+y.t2;
-      pair v=I*dir(t);
-      box += point(t)+min*v;
-      box += point(t)+max*v;
-    }
+    if(y.distinct != quadraticroots::NONE && goodroot(y.t1))
+      addpoint(box,i+y.t1,min,max);
+    if(y.distinct == quadraticroots::TWO && goodroot(y.t2))
+      addpoint(box,i+y.t2,min,max);
   }
-  pair v=I*dir(len);
-  box += point(len)+min*v;
-  box += point(len)+max*v;
+  addpoint(box,len,min,max);
   return box;
 }
   
+inline void add(bbox& box, const pair& z, const pair& min, const pair& max)
+{
+    box += z+min;
+    box += z+max;
+}
+
 bbox path::internalbounds(const bbox& padding) const
 {
   bbox box;
@@ -539,23 +529,16 @@ bbox path::internalbounds(const bbox& padding) const
   // Check interior nodes.
   Int len=length();
   for (Int i = 1; i < len; i++) {
-    
     pair pre=point(i)-precontrol(i);
     pair post=postcontrol(i)-point(i);
     
     // Check node x coordinate
-    if((pre.getx() >= 0.0) ^ (post.getx() >= 0)) {
-      pair z=point(i);
-      box += z+padding.left;
-      box += z+padding.right;
-    }
+    if((pre.getx() >= 0.0) ^ (post.getx() >= 0))
+      add(box,point(i),padding.left,padding.right);
 			      
     // Check node y coordinate
-    if((pre.gety() >= 0.0) ^ (post.gety() >= 0)) {
-      pair z=point(i);
-      box += z+pair(0,padding.bottom);
-      box += z+pair(0,padding.top);
-    }
+    if((pre.gety() >= 0.0) ^ (post.gety() >= 0))
+      add(box,point(i),pair(0,padding.bottom),pair(0,padding.top));
   }
 			      
   // Check interior segments.
@@ -567,29 +550,17 @@ bbox path::internalbounds(const bbox& padding) const
     
     // Check x coordinate
     quadraticroots x(a.getx(),b.getx(),c.getx());
-    if(x.distinct != quadraticroots::NONE && goodroot(x.t1)) {
-      pair z=point(i+x.t1);
-      box += z+padding.left;
-      box += z+padding.right;
-    }
-    if(x.distinct == quadraticroots::TWO && goodroot(x.t2)) {
-      pair z=point(i+x.t2);     
-      box += z+padding.left;
-      box += z+padding.right;
-    }
+    if(x.distinct != quadraticroots::NONE && goodroot(x.t1))
+      add(box,point(i+x.t1),padding.left,padding.right);
+    if(x.distinct == quadraticroots::TWO && goodroot(x.t2))
+      add(box,point(i+x.t2),padding.left,padding.right);
     
     // Check y coordinate
     quadraticroots y(a.gety(),b.gety(),c.gety());
-    if(y.distinct != quadraticroots::NONE && goodroot(y.t1)) {
-      pair z=point(i+y.t1);     
-      box += z+pair(0,padding.bottom);
-      box += z+pair(0,padding.top);
-    }
-    if(y.distinct == quadraticroots::TWO && goodroot(y.t2)) {
-      pair z=point(i+y.t2);
-      box += z+pair(0,padding.bottom);
-      box += z+pair(0,padding.top);
-    }
+    if(y.distinct != quadraticroots::NONE && goodroot(y.t1))
+      add(box,point(i+y.t1),pair(0,padding.bottom),pair(0,padding.top));
+    if(y.distinct == quadraticroots::TWO && goodroot(y.t2))
+      add(box,point(i+y.t2),pair(0,padding.bottom),pair(0,padding.top));
   }
   return box;
 }
@@ -602,16 +573,25 @@ static double ds(double t)
 {
   double dx=quadratic(a.getx(),b.getx(),c.getx(),t);
   double dy=quadratic(a.gety(),b.gety(),c.gety(),t);
-//  cout << t << " " << sqrt(dx*dx+dy*dy) << endl;
   return sqrt(dx*dx+dy*dy);
 }
 
 // Calculates arclength of a cubic using adaptive simpson integration.
-double cubiclength(const pair& z0, const pair& z0p,
-		   const pair& z1m, const pair& z1, double goal=-1)
+double path::cubiclength(Int i, double goal) const
 {
-  double L,integral;
-  derivative(a,b,c,z0,z0p,z1m,z1);
+  const pair& z0=point(i);
+  const pair& z1=point(i+1);
+  double L;
+  if(straight(i)) {
+    L=(z1-z0).length();
+    return (goal < 0 || goal >= L) ? L : -goal/L;
+  }
+  
+  const pair& c0=postcontrol(i);
+  const pair& c1=precontrol(i+1);
+  
+  double integral;
+  derivative(a,b,c,z0,c0,c1,z1);
   
   if(!simpson(integral,ds,0.0,1.0,DBL_EPSILON,1.0))
     reportError("nesting capacity exceeded in computing arclength");
@@ -626,23 +606,23 @@ double cubiclength(const pair& z0, const pair& z0p,
   return -t;
 }
 
-double path::arclength() const {
+double path::arclength() const 
+{
   if (cached_length != -1) return cached_length;
 
   double L=0.0;
   for (Int i = 0; i < n-1; i++) {
-    L += cubiclength(point(i),postcontrol(i),precontrol(i+1),point(i+1));
+    L += cubiclength(i);
   }
-  if(cycles) L += cubiclength(point(n-1),postcontrol(n-1),precontrol(n),
-			      point(n));
+  if(cycles) L += cubiclength(n-1);
   cached_length = L;
-  
   return cached_length;
 }
 
-double path::arctime(double goal) const {
+double path::arctime(double goal) const
+{
   if (cycles) {
-    if (goal == 0) return 0;
+    if (goal == 0 || cached_length == 0) return 0;
     if (goal < 0)  {
       const path &rp = this->reverse();
       double result = -rp.arctime(-goal);
@@ -662,7 +642,7 @@ double path::arctime(double goal) const {
     
   double l,L=0;
   for (Int i = 0; i < n-1; i++) {
-    l = cubiclength(point(i),postcontrol(i),precontrol(i+1),point(i+1),goal);
+    l = cubiclength(i,goal);
     if (l < 0)
       return (-l+i);
     else {
@@ -673,7 +653,7 @@ double path::arctime(double goal) const {
     }
   }
   if (cycles) {
-    l = cubiclength(point(n-1),postcontrol(n-1),precontrol(n),point(n),goal);
+    l = cubiclength(n-1,goal);
     if (l < 0)
       return -l+n-1;
     if (cached_length > 0 && cached_length != L+l) {
@@ -752,112 +732,232 @@ double path::directiontime(const pair& dir) const {
 }
 // }}}
 
-// {{{ Path Intersection Calculation
+// {{{ Path Intersection Calculations
 
 const unsigned maxdepth=DBL_MANT_DIG;
 const unsigned mindepth=maxdepth-16;
 
-bool intersect(double& S, double& T, path& p, path& q, double fuzz,
-	       unsigned depth)
+void roots(std::vector<double> &roots, double a, double b, double c, double d)
 {
-  if(errorstream::interrupt) throw interrupted();
+  cubicroots r(a,b,c,d);
+  if(r.roots >= 1) roots.push_back(r.t1);
+  if(r.roots >= 2) roots.push_back(r.t2);
+  if(r.roots == 3) roots.push_back(r.t3);
+}
   
-  pair maxp=p.max();
-  pair minp=p.min();
-  pair maxq=q.max();
-  pair minq=q.min();
-  
-  if(maxp.getx()+fuzz >= minq.getx() &&
-     maxp.gety()+fuzz >= minq.gety() && 
-     maxq.getx()+fuzz >= minp.getx() &&
-     maxq.gety()+fuzz >= minp.gety()) {
-    // Overlapping bounding boxes
-
-    --depth;
-    if((maxp-minp).length()+(maxq-minq).length() <= fuzz || depth == 0) {
-      S=0;
-      T=0;
-      return true;
-    }
-    
-    Int lp=p.length();
-    path p1,p2;
-    double pscale,poffset;
-    
-    if(lp == 1) {
-      p.halve(p1,p2);
-      pscale=poffset=0.5;
-    } else {
-      Int tp=lp/2;
-      p1=p.subpath(0,tp);
-      p2=p.subpath(tp,lp);
-      poffset=tp;
-      pscale=1.0;
-    }
-      
-    Int lq=q.length();
-    path q1,q2;
-    double qscale,qoffset;
-    
-    if(lq == 1) {
-      q.halve(q1,q2);
-      qscale=qoffset=0.5;
-    } else {
-      Int tq=lq/2;
-      q1=q.subpath(0,tq);
-      q2=q.subpath(tq,lq);
-      qoffset=tq;
-      qscale=1.0;
-    }
-      
-    if(intersect(S,T,p1,q1,fuzz,depth)) {
-      S=S*pscale;
-      T=T*qscale;
-      return true;
-    }
-    if(intersect(S,T,p1,q2,fuzz,depth)) {
-      S=S*pscale;
-      T=T*qscale+qoffset;
-      return true;
-    }
-    if(intersect(S,T,p2,q1,fuzz,depth)) {
-      S=S*pscale+poffset;
-      T=T*qscale;
-      return true;
-    }
-    if(intersect(S,T,p2,q2,fuzz,depth)) {
-      S=S*pscale+poffset;
-      T=T*qscale+qoffset;
-      return true;
-    }
-  }
-  return false;
+void roots(std::vector<double> &r, double x0, double c0, double c1, double x1,
+	   double x)
+{
+  double a=x1-x0+3.0*(c0-c1);
+  double b=3.0*(x0+c1)-6.0*c0;
+  double c=3.0*(c0-x0);
+  double d=x0-x;
+  roots(r,a,b,c,d);
 }
 
-void add(std::vector<double>& S, std::vector<double>& T, double s, double t,
-	 const path& p, const path& q, double fuzz)
+// Return all intersection times of path g with the pair z.
+void intersections(std::vector<double>& T, const path& g, const pair& z,
+		   double fuzz)
 {
-  for(unsigned i=0; i < S.size(); ++i)
-    if((p.point(S[i])-p.point(s)).length() <= fuzz &&
-       (q.point(T[i])-q.point(t)).length() <= fuzz) return;
+  double fuzz2=fuzz*fuzz;
+  Int n=g.length();
+  bool cycles=g.cyclic();
+  for(Int i=0; i < n; ++i) {
+    // Check both directions to circumvent degeneracy.
+    std::vector<double> r;
+    roots(r,g.point(i).getx(),g.postcontrol(i).getx(),
+	  g.precontrol(i+1).getx(),g.point(i+1).getx(),z.getx());
+    roots(r,g.point(i).gety(),g.postcontrol(i).gety(),
+	  g.precontrol(i+1).gety(),g.point(i+1).gety(),z.gety());
+    
+    size_t m=r.size();
+    for(size_t j=0 ; j < m; ++j) {
+      double t=r[j];
+      if(t >= -Fuzz && t <= 1.0+Fuzz) {
+	double s=i+t;
+	if((g.point(s)-z).abs2() <= fuzz2) {
+	  if(cycles && s >= n-Fuzz) s=0;
+	  T.push_back(s);
+	}
+      }
+    }
+  }
+}
+
+inline bool online(const pair&p, const pair& q, const pair& z, double fuzz)
+{
+  if(p == q) return (z-p).abs2() <= fuzz*fuzz;
+  return (z.getx()-p.getx())*(q.gety()-p.gety()) ==
+    (q.getx()-p.getx())*(z.gety()-p.gety());
+}
+
+// Return all intersection times of path g with the (infinite)
+// line through p and q; if there are an infinite number of intersection points,
+// the returned list is guaranteed to include the endpoint times of
+// the intersection if endpoints=true.
+void lineintersections(std::vector<double>& T, const path& g,
+		       const pair& p, const pair& q, double fuzz,
+		       bool endpoints=false)
+{
+  Int n=g.length();
+  if(n == 0) {
+    if(online(p,q,g.point((Int) 0),fuzz)) T.push_back(0.0);
+    return;
+  }
+  bool cycles=g.cyclic();
+  double dx=q.getx()-p.getx();
+  double dy=q.gety()-p.gety();
+  double det=p.gety()*q.getx()-p.getx()*q.gety();
+  for(Int i=0; i < n; ++i) {
+    pair z0=g.point(i);
+    pair c0=g.postcontrol(i);
+    pair c1=g.precontrol(i+1);
+    pair z1=g.point(i+1);
+    pair t3=z1-z0+3.0*(c0-c1);
+    pair t2=3.0*(z0+c1)-6.0*c0;
+    pair t1=3.0*(c0-z0);
+    double a=dy*t3.getx()-dx*t3.gety();
+    double b=dy*t2.getx()-dx*t2.gety();
+    double c=dy*t1.getx()-dx*t1.gety();
+    double d=dy*z0.getx()-dx*z0.gety()+det;
+    std::vector<double> r;
+    if(max(max(max(a*a,b*b),c*c),d*d) >
+       Fuzz2*max(max(max(z0.abs2(),z1.abs2()),c0.abs2()),c1.abs2()))
+      roots(r,a,b,c,d);
+    else r.push_back(0.0);
+    if(endpoints) {
+      path h=g.subpath(i,i+1);
+      intersections(r,h,p,fuzz);
+      intersections(r,h,q,fuzz);
+      if(online(p,q,z0,fuzz)) r.push_back(0.0);
+      if(online(p,q,z1,fuzz)) r.push_back(1.0);
+    }
+    size_t m=r.size();
+    for(size_t j=0 ; j < m; ++j) {
+      double t=r[j];
+      if(t >= -Fuzz && t <= 1.0+Fuzz) {
+	double s=i+t;
+	if(cycles && s >= n-Fuzz) s=0;
+	T.push_back(s);
+      }
+    }
+  }
+}
+
+// An optimized implementation of intersections(g,p--q);
+// if there are an infinite number of intersection points, the returned list is
+// only guaranteed to include the endpoint times of the intersection.
+void intersections(std::vector<double>& S, std::vector<double>& T,
+		   const path& g, const pair& p, const pair& q, double fuzz)
+{
+  if(q == p) {
+    std::vector<double> S1;
+    intersections(S1,g,p,fuzz);
+    size_t n=S1.size();
+    for(size_t i=0; i < n; ++i) {
+      S.push_back(S1[i]);
+      T.push_back(0);
+    }
+  } else {
+    pair factor=(q-p)/((q-p).abs2());
+    std::vector<double> S1;
+    lineintersections(S1,g,p,q,fuzz,true);
+    size_t n=S1.size();
+    for(size_t i=0; i < n; ++i) {
+      double s=S1[i];
+      pair z=g.point(s);
+      double t=dot(g.point(s)-p,factor);
+      if(t >= -Fuzz && t <= 1.0+Fuzz) {
+	S.push_back(s);
+	T.push_back(t);
+      }
+    }
+  }
+}
+
+void add(std::vector<double>& S, double s, const path& p, double fuzz2)
+{
+  pair P=p.point(s);
+  for(size_t i=0; i < S.size(); ++i)
+    if((p.point(S[i])-P).abs2() <= fuzz2) return;
+  S.push_back(s);
+}
+  
+void add(std::vector<double>& S, std::vector<double>& T, double s, double t,
+	 const path& p, const path& q, double fuzz2)
+{
+  pair P=p.point(s);
+  for(size_t i=0; i < S.size(); ++i)
+    if((p.point(S[i])-P).abs2() <= fuzz2) return;
   S.push_back(s);
   T.push_back(t);
 }
   
-void add(std::vector<double>& S, std::vector<double>& T,
+void add(double& s, double& t, std::vector<double>& S, std::vector<double>& T,
 	 std::vector<double>& S1, std::vector<double>& T1,
 	 double pscale, double qscale, double poffset, double qoffset,
-	 const path& p, const path& q, double fuzz)
+	 const path& p, const path& q, double fuzz, bool single)
 {
-  fuzz *= 2.0;
-  for(unsigned i=0; i < S1.size(); ++i)
-    add(S,T,pscale*S1[i]+poffset,qscale*T1[i]+qoffset,p,q,fuzz);
+  if(single) {
+    s=s*pscale+poffset;
+    t=t*qscale+qoffset;
+  } else {
+    double fuzz2=4.0*fuzz*fuzz;
+    size_t n=S1.size();
+    for(size_t i=0; i < n; ++i)
+      add(S,T,pscale*S1[i]+poffset,qscale*T1[i]+qoffset,p,q,fuzz2);
+  }
 }
 
-void intersections(std::vector<double>& S, std::vector<double>& T,
-		   path& p, path& q, double fuzz, unsigned depth)
+void add(double& s, double& t, std::vector<double>& S, std::vector<double>& T,
+	 std::vector<double>& S1, std::vector<double>& T1,
+	 const path& p, const path& q, double fuzz, bool single)
+{
+  size_t n=S1.size();
+  if(single) {
+    if(n > 0) {
+      s=S1[0];
+      t=T1[0];
+    }
+  } else {
+    double fuzz2=4.0*fuzz*fuzz;
+    for(size_t i=0; i < n; ++i)
+      add(S,T,S1[i],T1[i],p,q,fuzz2);
+  }
+}
+
+void intersections(std::vector<double>& S, path& g,
+		   const pair& p, const pair& q, double fuzz)
+{	
+  double fuzz2=fuzz*fuzz;
+  std::vector<double> S1;
+  lineintersections(S1,g,p,q,fuzz);
+  size_t n=S1.size();
+  for(size_t i=0; i < n; ++i)
+    add(S,S1[i],g,fuzz2);
+}
+
+bool intersections(double &s, double &t, std::vector<double>& S,
+		   std::vector<double>& T,
+		   path& p, path& q, double fuzz, bool single, unsigned depth)
 {
   if(errorstream::interrupt) throw interrupted();
+  
+  Int lp=p.length();
+  if((lp == 1 && p.straight(0)) || lp == 0) {
+    std::vector<double> T1,S1;
+    intersections(T1,S1,q,p.point((Int) 0),p.point(lp),fuzz);
+    add(s,t,S,T,S1,T1,p,q,fuzz,single);
+    return S1.size() > 0;
+  }
+  
+  Int lq=q.length();
+  if((lq == 1 && q.straight(0)) || lq == 0) {
+    std::vector<double> S1,T1;
+    intersections(S1,T1,p,q.point((Int) 0),q.point(lq),fuzz);
+    add(s,t,S,T,S1,T1,p,q,fuzz,single);
+    return S1.size() > 0;
+  }
   
   pair maxp=p.max();
   pair minp=p.min();
@@ -872,17 +972,27 @@ void intersections(std::vector<double>& S, std::vector<double>& T,
 
     --depth;
     if((maxp-minp).length()+(maxq-minq).length() <= fuzz || depth == 0) {
-      S.push_back(0.0);
-      T.push_back(0.0);
-      return;
+      if(single) {
+	s=0;
+	t=0;
+      } else {
+	S.push_back(0.0);
+	T.push_back(0.0);
+      }
+      return true;
     }
     
-    Int lp=p.length();
     path p1,p2;
     double pscale,poffset;
     
     if(lp <= 1) {
       p.halve(p1,p2);
+      if(p1 == p || p2 == p) {
+	std::vector<double> T1,S1;
+	intersections(T1,S1,q,p.point((Int) 0),p.point((Int) 0),fuzz);
+	add(s,t,S,T,S1,T1,p,q,fuzz,single);
+	return S1.size() > 0;
+      }
       pscale=poffset=0.5;
     } else {
       Int tp=lp/2;
@@ -892,12 +1002,17 @@ void intersections(std::vector<double>& S, std::vector<double>& T,
       pscale=1.0;
     }
       
-    Int lq=q.length();
     path q1,q2;
     double qscale,qoffset;
     
     if(lq <= 1) {
       q.halve(q1,q2);
+      if(q1 == q || q2 == q) {
+	std::vector<double> S1,T1;
+	intersections(S1,T1,p,q.point((Int) 0),q.point((Int) 0),fuzz);
+	add(s,t,S,T,S1,T1,p,q,fuzz,single);
+	return S1.size() > 0;
+      }
       qscale=qoffset=0.5;
     } else {
       Int tq=lq/2;
@@ -907,72 +1022,75 @@ void intersections(std::vector<double>& S, std::vector<double>& T,
       qscale=1.0;
     }
       
+    bool Short=lp == 1 && lq == 1;
+    
+    static size_t maxcount=9;
+    size_t count=0;
+    
     std::vector<double> S1,T1;
-    intersections(S1,T1,p1,q1,fuzz,depth);
-    add(S,T,S1,T1,pscale,qscale,0.0,0.0,p,q,fuzz);
-
-    if(depth <= mindepth && S1.size() > 0)
-      return;
+    if(intersections(s,t,S1,T1,p1,q1,fuzz,single,depth)) {
+      add(s,t,S,T,S1,T1,pscale,qscale,0.0,0.0,p,q,fuzz,single);
+      if(single || depth <= mindepth)
+	return true;
+      count += S1.size();
+      if(Short && count > maxcount) return true;
+    }
     
     S1.clear();
     T1.clear();
-    intersections(S1,T1,p1,q2,fuzz,depth);
-    add(S,T,S1,T1,pscale,qscale,0.0,qoffset,p,q,fuzz);
-    
-    if(depth <= mindepth && S1.size() > 0)
-      return;
-    
-    S1.clear();
-    T1.clear();
-    intersections(S1,T1,p2,q1,fuzz,depth);
-    add(S,T,S1,T1,pscale,qscale,poffset,0.0,p,q,fuzz);
-    
-    if(depth <= mindepth && S1.size() > 0)
-      return;
+    if(intersections(s,t,S1,T1,p1,q2,fuzz,single,depth)) {
+      add(s,t,S,T,S1,T1,pscale,qscale,0.0,qoffset,p,q,fuzz,single);
+      if(single || depth <= mindepth)
+	return true;
+      count += S1.size();
+      if(Short && count > maxcount) return true;
+    }
     
     S1.clear();
     T1.clear();
-    intersections(S1,T1,p2,q2,fuzz,depth);
-    add(S,T,S1,T1,pscale,qscale,poffset,qoffset,p,q,fuzz);
+    if(intersections(s,t,S1,T1,p2,q1,fuzz,single,depth)) {
+      add(s,t,S,T,S1,T1,pscale,qscale,poffset,0.0,p,q,fuzz,single);
+      if(single || depth <= mindepth)
+	return true;
+      count += S1.size();
+      if(Short && count > maxcount) return true;
+    }
+    
+    S1.clear();
+    T1.clear();
+    if(intersections(s,t,S1,T1,p2,q2,fuzz,single,depth)) {
+      add(s,t,S,T,S1,T1,pscale,qscale,poffset,qoffset,p,q,fuzz,single);
+      if(single || depth <= mindepth)
+	return true;
+      count += S1.size();
+      if(Short && count > maxcount) return true;
+    }
+    
+    return S.size() > 0;
   }
+  return false;
 }
 
 // }}}
 
 ostream& operator<< (ostream& out, const path& p)
 {
-  Int n = p.n;
-  switch(n) {
-  case 0:
+  Int n = p.length();
+  if(n < 0)
     out << "<nullpath>";
-    break;
-    
-  case 1:
-    out << p.point((Int) 0);
-    break;
-
-  default:
-    out << p.point((Int) 0) << ".. controls " << p.postcontrol((Int) 0) 
-	<< " and ";
-
-    for (Int i = 1; i < n-1; i++) {
-      out << p.precontrol(i) << newl;
-
-      out << " .." << p.point(i);
-
-      out << ".. controls " << p.postcontrol(i) << " and ";
+  else {
+    for(Int i = 0; i < n; i++) {
+      out << p.point(i);
+      if(p.straight(i)) out << "--";
+      else
+	out << ".. controls " << p.postcontrol(i) << " and "
+	    << p.precontrol(i+1) << newl << " ..";
     }
-    
-    out << p.precontrol(n-1) << newl
-	<< " .." << p.point(n-1);
-
-    if (p.cycles) 
-      out << ".. controls " << p.postcontrol(n-1) << " and "
-	  << p.precontrol((Int) 0) << newl
-	  << " ..cycle";
-    break;
+    if(p.cycles) 
+      out << "cycle";
+    else
+      out << p.point(n);
   }
-
   return out;
 }
 
@@ -1008,87 +1126,123 @@ path concat(const path& p1, const path& p2)
   return path(nodes, i+1);
 }
 
-// Increment count if the path has a vertical component at t.
-bool path::Count(Int& count, double t) const
+// Interface to orient2d predicate optimized for pairs.
+double orient2d(const pair& a, const pair& b, const pair& c)
 {
-  pair z=point(t);
-  pair Pre=z-precontrol(t);
-  pair Post=postcontrol(t)-z;
-  double pre=unit(Pre).gety();
-  double post=unit(Post).gety();
-  if(pre == 0.0 && Pre != pair(0.0,0.0)) pre=post;
-  if(post == 0.0 && Post != pair(0.0,0.0)) post=pre;
-  Int incr=(pre*post > Fuzz) ? sgn1(pre) : 0;
-  count += incr;
-  return incr != 0.0;
-}
-  
-// Count if t is in (begin,end] and z lies to the left of point(i+t).
-void path::countleft(Int& count, double x, Int i, double t, double begin,
-		     double end, double& mint, double& maxt) const 
-{
-  if(t > -Fuzz && t < Fuzz) t=0;
-  if(begin < t && t <= end && x < point(i+t).getx() && Count(count,i+t)) {
-    if(t > maxt) maxt=t;
-    if(t < mint) mint=t;
+  double detleft, detright, det;
+  double detsum, errbound;
+  double orient;
+
+  FPU_ROUND_DOUBLE;
+
+  detleft = (a.getx() - c.getx()) * (b.gety() - c.gety());
+  detright = (a.gety() - c.gety()) * (b.getx() - c.getx());
+  det = detleft - detright;
+
+  if (detleft > 0.0) {
+    if (detright <= 0.0) {
+      FPU_RESTORE;
+      return det;
+    } else {
+      detsum = detleft + detright;
+    }
+  } else if (detleft < 0.0) {
+    if (detright >= 0.0) {
+      FPU_RESTORE;
+      return det;
+    } else {
+      detsum = -detleft - detright;
+    }
+  } else {
+    FPU_RESTORE;
+    return det;
   }
+
+  errbound = ccwerrboundA * detsum;
+  if ((det >= errbound) || (-det >= errbound)) {
+    FPU_RESTORE;
+    return det;
+  }
+
+  double pa[]={a.getx(),a.gety()};
+  double pb[]={b.getx(),b.gety()};
+  double pc[]={c.getx(),c.gety()};
+  
+  orient = orient2dadapt(pa, pb, pc, detsum);
+  FPU_RESTORE;
+  return orient;
+}
+
+// Returns true iff the point z lies strictly inside the bounding box
+// of a,b,c, and d.
+bool insidebbox(const pair& a, const pair& b, const pair& c, const pair& d,
+		const pair& z)
+{
+  bbox B(a);
+  B.addnonempty(b);
+  B.addnonempty(c);
+  B.addnonempty(d);
+  return B.left < z.getx() && z.getx() < B.right && B.bottom < z.gety() 
+    && z.gety() < B.top;
+}
+
+inline bool inrange(double x0, double x1, double x)
+{
+  return (x0 <= x && x <= x1) || (x1 <= x && x <= x0);
+}
+
+// returns true if point is on curve; otherwise compute contribution to 
+// winding number.
+bool checkside(const pair& z0, const pair& c0, const pair& c1,
+	       const pair& z1, const pair& z, Int& count, unsigned depth) 
+{
+  if(depth == 0) return true;
+  --depth;
+  if(insidebbox(z0,c0,c1,z1,z)) {
+    const pair m0=0.5*(z0+c0);
+    const pair m1=0.5*(c0+c1);
+    const pair m2=0.5*(c1+z1);
+    const pair m3=0.5*(m0+m1);
+    const pair m4=0.5*(m1+m2);
+    const pair m5=0.5*(m3+m4);
+    if(checkside(z0,m0,m3,m5,z,count,depth) || 
+       checkside(m5,m4,m2,z1,z,count,depth)) return true;
+  } else {
+    if(z0.gety() <= z.gety() && z.gety() <= z1.gety()) {
+      double side=orient2d(z0,z1,z);
+      if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
+	return true;
+      if(z.gety() < z1.gety() && side > 0) ++count;
+    }
+    else if(z1.gety() <= z.gety() && z.gety() <= z0.gety()) {
+      double side=orient2d(z0,z1,z);
+      if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
+	return true;
+      if(z.gety() < z0.gety() && side < 0) --count;
+    }
+  }
+  return false;
 }
 
 // Return the winding number of the region bounded by the (cyclic) path
-// relative to the point z.
+// relative to the point z, or the largest odd integer if the point lies on
+// the path.
 Int path::windingnumber(const pair& z) const
 {
+  static const Int infinity=Int_MAX+((Int_MAX % 2)-1);;
+  
   if(!cycles)
     reportError("path is not cyclic");
-  Int count=0;
   
-  double x=z.getx();
-  double y=z.gety();
-  
-  double begin=-Fuzz;
-  double end=1.0+Fuzz;
-      
   bbox b=bounds();
   
   if(z.getx() < b.left || z.getx() > b.right ||
      z.gety() < b.bottom || z.gety() > b.top) return 0;
   
-  for(Int i=0; i < n; ++i) {
-    pair a=point(i);
-    pair d=point(i+1);
-      
-    double mint=1.0;
-    double maxt=0.0;
-    double stop=(i < n-1) ? 1.0+Fuzz : end;
-      
-    if(straight(i)) {
-      double denom=d.gety()-a.gety();
-      if(denom != 0.0)
-	countleft(count,x,i,(z.gety()-a.gety())/denom,begin,stop,mint,maxt);
-    } else {
-      pair b=postcontrol(i);
-      pair c=precontrol(i+1);
-    
-      double A=-a.gety()+3.0*(b.gety()-c.gety())+d.gety();
-      double B=3.0*(a.gety()-2.0*b.gety()+c.gety());
-      double C=3.0*(-a.gety()+b.gety());
-      double D=a.gety()-y;
-    
-      cubicroots r(A,B,C,D);
-
-      if(r.roots >= 1) countleft(count,x,i,r.t1,begin,stop,mint,maxt);
-      if(r.roots >= 2) countleft(count,x,i,r.t2,begin,stop,mint,maxt);
-      if(r.roots >= 3) countleft(count,x,i,r.t3,begin,stop,mint,maxt);
-    }
-      
-    // Avoid double-counting endpoint roots.      
-    if(i == 0)
-      end=camp::min(mint-Fuzz,Fuzz)+1.0;
-    if(mint <= maxt)
-      begin=camp::max(maxt+Fuzz-1.0,-Fuzz); 
-    else // no root found
-      begin=-Fuzz;
-  }
+  Int count=0;
+  for(Int i=0; i < n; ++i)
+    if(checkside(point(i),postcontrol(i),precontrol(i+1),point(i+1),z,count,
+		 maxdepth)) return infinity;
   return count;
 }
 

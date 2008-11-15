@@ -16,15 +16,15 @@ namespace camp {
 
 class drawClipBegin : public drawSuperPathPenBase {
   bool gsave;
+  bool stroke;
 public:
   void noncyclic() {
       reportError("cannot clip to non-cyclic path");
   }
   
-  drawClipBegin(const vm::array& src, pen pentype, bool gsave=true)
-    : drawSuperPathPenBase(src,pentype), gsave(gsave) {
-    for(size_t i=0; i < size; i++)
-      if(!cyclic()) noncyclic();
+  drawClipBegin(const vm::array& src, bool stroke, pen pentype, bool gsave=true)
+    : drawSuperPathPenBase(src,pentype), gsave(gsave), stroke(stroke) {
+      if(!stroke && !cyclic()) noncyclic();
   }
 
   virtual ~drawClipBegin() {}
@@ -33,7 +33,8 @@ public:
 	      bboxlist& bboxstack) {
     bboxstack.push_back(b);
     bbox bpath;
-    drawSuperPathPenBase::bounds(bpath,iopipe,vbox,bboxstack);
+    if(stroke) strokebounds(bpath);
+    else drawSuperPathPenBase::bounds(bpath,iopipe,vbox,bboxstack);
     bboxstack.push_back(bpath);
   }
 
@@ -48,6 +49,7 @@ public:
     if(empty()) return true;
     
     writepath(out);
+    if(stroke) strokepath(out);
     out->clip(pentype);
     return true;
   }
@@ -56,7 +58,8 @@ public:
     if(gsave) out->gsave();
     if(empty()) return true;
     
-    out->verbatim("\\begin{picture}(");
+    out->verbatim(settings::beginpicture(out->texengine));
+    out->verbatim("(");
     double width=bpath.right-bpath.left;
     double height=bpath.top-bpath.bottom;
     out->write(width*ps2tex);
@@ -67,6 +70,7 @@ public:
     out->beginspecial();
     out->beginraw();
     writeshiftedpath(out);
+    if(stroke) strokepath(out);
     out->clip(pentype);
     out->endraw();
     out->endspecial();
@@ -76,7 +80,7 @@ public:
   
   drawElement *transformed(const transform& t)
   {
-    return new drawClipBegin(transpath(t),transpen(t));
+    return new drawClipBegin(transpath(t),stroke,transpen(t));
   }
 
 };

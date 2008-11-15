@@ -1,4 +1,6 @@
-size(200);
-import solids;
+import three;
 
-sphere(O,1).filldraw(green,3,blue);
+size(200);
+currentprojection=orthographic(5,4,3);
+
+draw(unitsphere,green);

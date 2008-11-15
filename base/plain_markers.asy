@@ -80,7 +80,7 @@ markroutine markuniform(bool centered=false, int n, bool rotated=false) {
 
 struct marker {
   frame f;
-  bool put=Above;
+  bool above=true;
   markroutine markroutine=marknodes;
   void mark(picture pic, path g) {
     markroutine(pic,f,g);
@@ -88,21 +88,21 @@ struct marker {
 }
   
 marker marker(frame f=newframe, markroutine markroutine=marknodes,
-              bool put=Above) 
+              bool above=true) 
 {
   marker m=new marker;
   m.f=f;
-  m.put=put;
+  m.above=above;
   m.markroutine=markroutine;
   return m;
 }
 
 marker marker(path[] g, markroutine markroutine=marknodes, pen p=currentpen,
-              filltype filltype=NoFill, bool put=Above)
+              filltype filltype=NoFill, bool above=true)
 {
   frame f;
   filltype(f,g,p);
-  return marker(f,markroutine,put);
+  return marker(f,markroutine,above);
 }
 
 marker nomarker;
@@ -134,11 +134,11 @@ picture legenditem(Legend legenditem, real linelength)
   picture pic;
   pair z1=(0,0);
   pair z2=z1+(linelength,0);
-  if(!legenditem.put && !empty(legenditem.mark))
+  if(!legenditem.above && !empty(legenditem.mark))
     marknodes(pic,legenditem.mark,interp(z1,z2,0.5));
   if(linelength > 0)
     Draw(pic,z1--z2,legenditem.p);
-  if(legenditem.put && !empty(legenditem.mark))
+  if(legenditem.above && !empty(legenditem.mark))
     marknodes(pic,legenditem.mark,interp(z1,z2,0.5));
   if(legenditem.plabel != invisible)
     label(pic,legenditem.label,z2,E,legenditem.plabel);
@@ -148,8 +148,13 @@ picture legenditem(Legend legenditem, real linelength)
 }
 
 picture legend(Legend[] Legend, int perline=1, real linelength,
-               real hskip, real vskip, real maxwidth=0)
+               real hskip, real vskip, real maxwidth=0, real maxheight=0,
+               bool hstretch=false, bool vstretch=false)
 {
+  if(maxwidth <= 0) hstretch=false;
+  if(maxheight <= 0) vstretch=false;
+  if(Legend.length <= 1) vstretch=hstretch=false;
+
   picture inset;
   size(inset,0,0,IgnoreAspect);
 
@@ -182,14 +187,15 @@ picture legend(Legend[] Legend, int perline=1, real linelength,
   real totalwidth=0;
   for(int i=0; i < Legend.length; ++i) {
     picture pic=legenditem(Legend[i],linelength);
-    heightPerEntry=max(heightPerEntry,max(pic).y-min(pic).y);
-    widthPerEntry=max(widthPerEntry,max(pic).x-min(pic).x);
+    pair lambda=size(pic);
+    heightPerEntry=max(heightPerEntry,lambda.y);
+    widthPerEntry=max(widthPerEntry,lambda.x);
     if(Legend[i].p != invisible)
-      totalwidth += max(pic).x-min(pic).x;
+      totalwidth += lambda.x;
     else {
       // Legend entries without leading line need less space in one-line legends
       picture pic=legenditem(Legend[i],0);
-      totalwidth += max(pic).x-min(pic).x;
+      totalwidth += size(pic).x;
     }
   }
   // Does everything fit into one line? 
@@ -198,12 +204,16 @@ picture legend(Legend[] Legend, int perline=1, real linelength,
       (Legend.length-1)*(hskip-1))) {
     // One-line legend
     real currPosX=0;
-    real itemDistance=(totalwidth/Legend.length)*(hskip-1);
+    real itemDistance;
+    if(hstretch)
+      itemDistance=(maxwidth-totalwidth)/(Legend.length-1);
+    else
+      itemDistance=(totalwidth/Legend.length)*(hskip-1);
     for(int i=0; i < Legend.length; ++i) {
       picture pic=legenditem(Legend[i],
                              Legend[i].p == invisible ? 0 : linelength);
       add(inset,pic,(currPosX,0));
-      currPosX += max(pic).x-min(pic).x+itemDistance;
+      currPosX += size(pic).x+itemDistance;
     }
   } else {
     // multiline legend
@@ -214,7 +224,14 @@ picture legend(Legend[] Legend, int perline=1, real linelength,
     }
     if(perline < 1) // This means: maxwidth < widthPerEntry
       perline=1;
- 
+
+    if(perline <= 1) hstretch=false;
+    if(hstretch) hskip=(maxwidth/widthPerEntry-perline)/(perline-1)+1;
+    if(vstretch) {
+      int rows=ceil(Legend.length/perline);
+      vskip=(maxheight/heightPerEntry-rows)/(rows-1)+1;
+    }
+
     for(int i=0; i < Legend.length; ++i)
       add(inset,legenditem(Legend[i],linelength),
           ((i%perline)*widthPerEntry*hskip,
@@ -228,13 +245,16 @@ frame legend(picture pic=currentpicture, int perline=1,
              real xmargin=legendmargin, real ymargin=xmargin,
              real linelength=legendlinelength,
              real hskip=legendhskip, real vskip=legendvskip,
-             real maxwidth=perline == 0 ?
-             legendmaxrelativewidth*(max(pic).x-min(pic).x) : 0,
-             pen p=currentpen)
+             real maxwidth=perline == 0 ? 
+             legendmaxrelativewidth*size(pic).x : 0, real maxheight=0,
+	     bool hstretch=false, bool vstretch=false, pen p=currentpen)
 {
   frame F;
   if(pic.legend.length == 0) return F;
-  F=legend(pic.legend,perline,linelength,hskip,vskip,maxwidth).fit();
+  F=legend(pic.legend,perline,linelength,hskip,vskip,
+           max(maxwidth-2xmargin,0),
+           max(maxheight-2ymargin,0),
+           hstretch,vstretch).fit();
   box(F,xmargin,ymargin,p);
   return F;
 }
@@ -260,7 +280,7 @@ void dot(frame f, pair z, pen p=currentpen, filltype filltype=Fill)
 }
 
 void dot(picture pic=currentpicture, pair z, pen p=currentpen,
-	 filltype filltype=Fill)
+         filltype filltype=Fill)
 {
   pic.add(new void(frame f, transform t) {
       dot(f,t*z,p,filltype);
@@ -269,19 +289,19 @@ void dot(picture pic=currentpicture, pair z, pen p=currentpen,
 }
 
 void dot(picture pic=currentpicture, pair[] z, pen p=currentpen,
-	 filltype filltype=Fill)
+         filltype filltype=Fill)
 {
   for(int i=0; i < z.length; ++i) dot(pic,z[i],p,filltype);
 }
 
 void dot(picture pic=currentpicture, explicit path g, pen p=currentpen,
-	 filltype filltype=Fill)
+         filltype filltype=Fill)
 {
   for(int i=0; i <= length(g); ++i) dot(pic,point(g,i),p,filltype);
 }
 
 void dot(picture pic=currentpicture, path[] g, pen p=currentpen,
-	 filltype filltype=Fill)
+         filltype filltype=Fill)
 {
   for(int i=0; i < g.length; ++i) dot(pic,g[i],p,Fill);
 }
@@ -302,7 +322,7 @@ void dot(picture pic=currentpicture, Label L, pair z, align align=NoAlign,
 }
 
 void dot(picture pic=currentpicture, Label L, pen p=currentpen,
-	 filltype filltype=Fill)
+         filltype filltype=Fill)
 {
   dot(pic,L,L.position,p,filltype);
 }

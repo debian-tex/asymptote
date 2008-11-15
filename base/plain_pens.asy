@@ -1,8 +1,6 @@
 real labelmargin=0.3;
 real dotfactor=6;
 
-pen nullpen=linewidth(0);
-
 pen solid=linetype("");
 pen dotted=linetype("0 4");
 pen dashed=linetype("8 8");
@@ -17,21 +15,25 @@ pen operator +(real w, pen p) {return linewidth(w)+p;}
 pen Dotted=dotted+1.0;
 pen Dotted(pen p=currentpen) {return dotted+2*linewidth(p);}
 
-pen squarecap=linecap(0);
-pen roundcap=linecap(1);
-pen extendcap=linecap(2);
+restricted pen squarecap=linecap(0);
+restricted pen roundcap=linecap(1);
+restricted pen extendcap=linecap(2);
 
-pen miterjoin=linejoin(0);
-pen roundjoin=linejoin(1);
-pen beveljoin=linejoin(2);
+restricted pen miterjoin=linejoin(0);
+restricted pen roundjoin=linejoin(1);
+restricted pen beveljoin=linejoin(2);
 
-pen zerowinding=fillrule(0);
-pen evenodd=fillrule(1);
+restricted pen zerowinding=fillrule(0);
+restricted pen evenodd=fillrule(1);
 
-pen nobasealign=basealign(0);
-pen basealign=basealign(1);
+restricted pen nobasealign=basealign(0);
+restricted pen basealign=basealign(1);
 
 pen invisible=invisible();
+pen thin() {return settings.thin ? linewidth(0) : defaultpen;}
+pen thick(pen p=currentpen) {return linewidth(linewidth(p));}
+pen nullpen=linewidth(0)+invisible;
+
 pen black=gray(0);
 pen white=gray(1);
 pen gray=gray(0.5);
@@ -137,11 +139,11 @@ real lineskip()
 }
 
 // Options for handling label overwriting
-int Allow=0;
-int Suppress=1;
-int SuppressQuiet=2;
-int Move=3;
-int MoveQuiet=4;
+restricted int Allow=0;
+restricted int Suppress=1;
+restricted int SuppressQuiet=2;
+restricted int Move=3;
+restricted int MoveQuiet=4;
 
 pen[] colorPen={red,blue,green,magenta,cyan,orange,purple,brown,
                 deepblue,deepgreen,chartreuse,fuchsia,lightred,
@@ -302,4 +304,39 @@ pen operator cast(hsv hsv)
 hsv operator cast(pen p)
 {
   return hsv(p);
+}
+
+real[] rgba(pen p)
+{
+  real[] a=colors(rgb(p));
+  a.push(opacity(p));
+  return a;
+}
+
+pen rgba(real[] a)
+{
+  return rgb(a[0],a[1],a[2])+opacity(a[3]);
+}
+
+// Interpolate an array of pens in rgb space using by default their minimum
+// opacity.
+pen mean(pen[] p, real opacity(real[])=min)
+{
+  if(p.length == 0) return nullpen;
+  real[] a=rgba(p[0]);
+  real[] t=new real[p.length];
+  t[0]=a[3];
+  for(int i=1; i < p.length; ++i) {
+    real[] b=rgba(p[i]);
+    a += b;
+    t[i]=b[3];
+  }
+  a /= p.length;
+  return rgb(a[0],a[1],a[2])+opacity(opacity(t));
+}
+
+pen[] mean(pen[][] palette, real opacity(real[])=min)
+{
+  return sequence(new pen(int i) {return mean(palette[i],opacity);},
+		  palette.length);
 }

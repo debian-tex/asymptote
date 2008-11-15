@@ -29,8 +29,8 @@ include plain_paths;
 include plain_filldraw;
 include plain_margins;
 include plain_picture;
-include plain_shipout;
 include plain_Label;
+include plain_shipout;
 include plain_arcs;
 include plain_boxes;
 include plain_strings;
@@ -44,15 +44,17 @@ bool needshipout() {
   return !shipped && !currentpicture.empty();
 }
 
-void shiponce() {
-  if(needshipout()) shipout();
+void updatefunction()
+{
+  if(!currentpicture.uptodate) shipout();
 }
 
 void exitfunction()
 {
-  if(interactive() || needshipout()) shipout();
+  if(needshipout()) shipout();
 }
 
+atupdate(updatefunction);
 atexit(exitfunction);
 
 // A restore thunk is a function, that when called, restores the graphics state
@@ -96,7 +98,7 @@ addSaveFunction(new restoreThunk () {
       defaultpen(defaultpen);
       currentpen=p;
       currentpicture=pic;
-      uptodate(false);
+      currentpicture.uptodate=false;
       restore=r;
     };
   });
@@ -115,10 +117,12 @@ void restoredefaults()
 restoreThunk buildRestoreDefaults()
 {
   pen defaultpen=defaultpen();
+  exitfcn atupdate=atupdate();
   exitfcn atexit=atexit();
   restoreThunk r=restoredefaults;
   return new void() {
     defaultpen(defaultpen);
+    atupdate(atupdate);
     atexit(atexit);
     restoredefaults=r;
   };
@@ -134,6 +138,7 @@ void initdefaults()
 {
   savedefaults();
   resetdefaultpen();
+  atupdate(null);
   atexit(null);
 }
 
@@ -259,6 +264,7 @@ if(settings.autoimport != "") {
   settings.autoimport="";
   eval("import \""+s+"\" as dummy",true);
   shipped=false;
+  atupdate(updatefunction);
   atexit(exitfunction);
   settings.autoimport=s;
 }

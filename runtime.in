@@ -29,6 +29,7 @@ pen      => primPen()
 pair     => primPair()
 triple   => primTriple()
 path     => primPath()
+path3     => primPath3()
 guide*   => primGuide()
 cycleToken => primCycleToken()
 tensionSpecifier => primTensionSpecifier()
@@ -49,7 +50,9 @@ realarray2* => realArray2()
 pairarray* => pairArray()
 pairarray2* => pairArray2()
 triplearray* => tripleArray()
+triplearray2* => tripleArray2()
 patharray* => pathArray()  
+patharray2* => pathArray2()  
 guidearray* => guideArray()  
 transformarray* => transformArray()
 penarray* => penArray()  
@@ -67,10 +70,13 @@ stringarray2* => stringArray2()
 #include "triple.h"
 #include "transform.h"
 #include "path.h"
+#include "path3.h"
 #include "pen.h"
 #include "guide.h"
 #include "picture.h"
 #include "drawpath.h"
+#include "drawpath3.h"
+#include "drawsurface.h"
 #include "drawfill.h"
 #include "drawclipbegin.h"
 #include "drawclipend.h"
@@ -96,16 +102,8 @@ stringarray2* => stringArray2()
 #include "lexical.h"
 #include "process.h"
 #include "arrayop.h"
-  
-#ifdef HAVE_TRIANGLE  
-#define REAL double
-#define VOID int
-#define ANSI_DECLARATORS
-#define TRILIBRARY
-#include "triangle.h"
-#else
+#include "predicates.h"
 #include "Delaunay.h"
-#endif   
    
 #ifdef HAVE_LIBFFTW3
 #include "fftw++.h"
@@ -137,6 +135,8 @@ using absyntax::runnable;
 
 typedef double real;
 
+#define CURRENTPEN processData().currentpen
+
 typedef array boolarray;
 typedef array Intarray;
 typedef array Intarray2;
@@ -145,7 +145,9 @@ typedef array realarray2;
 typedef array pairarray;
 typedef array pairarray2;
 typedef array triplearray;
+typedef array triplearray2;
 typedef array patharray;
+typedef array patharray2;
 typedef array guidearray;
 typedef array transformarray;
 typedef array penarray;
@@ -173,7 +175,9 @@ using types::realArray2;
 using types::pairArray;
 using types::pairArray2;
 using types::tripleArray;
+using types::tripleArray2;
 using types::pathArray;
+using types::pathArray2;
 using types::guideArray;
 using types::transformArray;
 using types::penArray;
@@ -181,18 +185,6 @@ using types::penArray2;
 using types::stringArray;
 using types::stringArray2;
 using types::formal;
-
-template<class T>
-inline T Min(T a, T b)
-{
-  return (a < b) ? a : b;
-}
-
-template<class T>
-inline T Max(T a, T b)
-{
-  return (a > b) ? a : b;
-}
 
 function *voidFunction()
 {
@@ -215,16 +207,14 @@ function *transformFunction()
   return new function(primTransform());
 }
 
-const unsigned camp::ColorComponents[]={0,0,1,3,4,0};
+function *realTripleFunction()
+{
+  return new function(primReal(),primTriple());
+}
+
+const size_t camp::ColorComponents[]={0,0,1,3,4,0};
 
 namespace vm {
-  const void checkequal(size_t i, size_t j) {
-    if(i == j) return;
-    ostringstream buf;
-    buf << "operation attempted on arrays of different lengths: "
-	<< i << " != " << j;
-    error(buf);
-  }
 }
 
 namespace run {
@@ -282,6 +272,20 @@ array *nop(array *a)
   return a;
 }
   
+array *Identity(Int n)
+{
+  size_t N=(size_t) n;
+  array *c=new array(N);
+  for(size_t i=0; i < N; ++i) {
+    array *ci=new array(N);
+    (*c)[i]=ci;
+    for(size_t j=0; j < N; ++j)
+      (*ci)[j]=0.0;
+   (*ci)[i]=1.0;
+  }
+  return c;
+}
+
 array *copyArray(array *a)
 {
   size_t size=checkArray(a);
@@ -291,12 +295,32 @@ array *copyArray(array *a)
   return c;
 }
 
-double *copyArrayC(array *a)
+inline size_t checkdimension(array *a, size_t dim)
 {
   size_t size=checkArray(a);
+  if(dim && size != dim) {
+    ostringstream buf;
+    buf << "array of length " << dim << " expected" << endl;
+    error(buf);
+  }
+  return size;
+}
+
+double *copyArrayC(array *a, size_t dim=0)
+{
+  size_t size=checkdimension(a,dim);
   double *c=new double[size];
   for(size_t i=0; i < size; i++) 
     c[i]=read<double>(a,i);
+  return c;
+}
+
+triple *copyTripleArrayC(array *a, size_t dim=0)
+{
+  size_t size=checkdimension(a,dim);
+  triple *c=new triple[size];
+  for(size_t i=0; i < size; i++) 
+    c[i]=read<triple>(a,i);
   return c;
 }
 
@@ -336,10 +360,16 @@ array *copyArray3(array *a)
   return c;
 }
 
-double *copyArray2C(array *a, bool square=true)
+double *copyArray2C(array *a, bool square=true, size_t dim2=0)
 {
   size_t n=checkArray(a);
-  size_t m=((square || n == 0) ? n : read<array*>(a,0)->size());
+  size_t m=(square || n == 0) ? n : checkArray(read<array*>(a,0));
+  if(n > 0 && dim2 && m != dim2) {
+    ostringstream buf;
+    buf << "second matrix dimension must be " << dim2 << endl;
+    error(buf);
+  }
+  
   double *c=new double[n*m];
   for(size_t i=0; i < n; i++) {
     array *ai=read<array*>(a,i);
@@ -357,6 +387,64 @@ double *copyArray2C(array *a, bool square=true)
 static const char *incommensurate="Incommensurate matrices";
 static const char *singular="Singular matrix";
 static size_t *pivot,*Row,*Col;
+
+triple operator *(const array& t, const triple& v)
+{
+  size_t n=checkArray(&t);
+  if(n != 4) error(incommensurate);
+  array *t0=read<array*>(t,0);
+  array *t1=read<array*>(t,1);
+  array *t2=read<array*>(t,2);
+  array *t3=read<array*>(t,3);
+  
+  if(checkArray(t0) != 4 || checkArray(t1) != 4 || 
+     checkArray(t2) != 4 || checkArray(t3) != 4)
+    error(incommensurate);
+
+  double x=v.getx();
+  double y=v.gety();
+  double z=v.getz();
+  
+  double f=read<real>(t3,0)*x+read<real>(t3,1)*y+read<real>(t3,2)*z+
+    read<real>(t3,3);
+  if(f == 0.0) run::dividebyzero();
+  f=1.0/f;
+  
+  return triple((read<real>(t0,0)*x+read<real>(t0,1)*y+read<real>(t0,2)*z+
+		 read<real>(t0,3))*f,
+		(read<real>(t1,0)*x+read<real>(t1,1)*y+read<real>(t1,2)*z+
+		 read<real>(t1,3))*f,
+		(read<real>(t2,0)*x+read<real>(t2,1)*y+read<real>(t2,2)*z+
+		 read<real>(t2,3))*f);
+}
+
+triple multshiftless(const array& t, const triple& v)
+{
+  size_t n=checkArray(&t);
+  if(n != 4) error(incommensurate);
+  array *t0=read<array*>(t,0);
+  array *t1=read<array*>(t,1);
+  array *t2=read<array*>(t,2);
+  array *t3=read<array*>(t,3);
+  
+  if(checkArray(t0) != 4 || checkArray(t1) != 4 || 
+     checkArray(t2) != 4 || checkArray(t3) != 4)
+    error(incommensurate);
+
+  double x=v.getx();
+  double y=v.gety();
+  double z=v.getz();
+  
+  double f=read<real>(t3,0)*x+read<real>(t3,1)*y+read<real>(t3,2)*z+
+    read<real>(t3,3);
+  if(f == 0.0) run::dividebyzero();
+  f=1.0/f;
+  
+  return triple((read<real>(t0,0)*x+read<real>(t0,1)*y+read<real>(t0,2)*z)*f,
+		(read<real>(t1,0)*x+read<real>(t1,1)*y+read<real>(t1,2)*z)*f,
+		(read<real>(t2,0)*x+read<real>(t2,1)*y+read<real>(t2,2)*z)*f);
+}
+
 static inline void inverseAllocate(size_t n)
 {
   pivot=new size_t[n];
@@ -390,9 +478,9 @@ void writestring(stack *s)
 
 void checkSquare(array *a) 
 {
-  size_t n=a->size();
+  size_t n=checkArray(a);
   for(size_t i=0; i < n; i++)
-    if(read<array*>(a,i)->size() != n)
+    if(checkArray(read<array*>(a,i)) != n)
       error("matrix a must be square");
 }
 
@@ -553,6 +641,7 @@ void cleanup()
 {
   processDataStruct &pd=processData();
   pd.atExitFunction=NULL;
+  pd.atUpdateFunction=NULL;
   pd.atBreakpointFunction=NULL;
   
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
@@ -577,14 +666,16 @@ void purge()
 
 void updateFunction(stack *Stack)
 {
-  callable *atExitFunction=processData().atExitFunction;
-  if(atExitFunction && !nullfunc::instance()->compare(atExitFunction))
-    atExitFunction->call(Stack);
+  callable *atUpdateFunction=processData().atUpdateFunction;
+  if(atUpdateFunction && !nullfunc::instance()->compare(atUpdateFunction))
+    atUpdateFunction->call(Stack);
 }
 
 void exitFunction(stack *Stack)
 {
-  updateFunction(Stack);
+  callable *atExitFunction=processData().atExitFunction;
+  if(atExitFunction && !nullfunc::instance()->compare(atExitFunction))
+    atExitFunction->call(Stack);
   cleanup();
 }
 
@@ -592,7 +683,7 @@ default_t def;
 string emptystring;
 array *emptyarray=new array(0);
 string commentchar="#";
-pen currentpen=pen(DEFLINE);
+pair zero;
 
 void breakpoint(stack *Stack, runnable *r)
 {
@@ -713,7 +804,7 @@ void clear(string file, Int line, bool warn=false)
 
 Int windingnumber(array *p, camp::pair z)
 {
-  size_t size=p->size();
+  size_t size=checkArray(p);
   Int count=0;
   for(size_t i=0; i < size; i++) 
     count += read<path *>(p,i)->windingnumber(z);
@@ -738,12 +829,129 @@ double wrapFunction(double x)
   return pop<double>(FuncStack);
 }
 
+callable *compareFunc;
+bool compareFunction(const vm::item& i, const vm::item& j)
+{
+  FuncStack->push(i);
+  FuncStack->push(j);
+  compareFunc->call(FuncStack);
+  return pop<bool>(FuncStack);
+}
+
 void unused(void *)
 {
 }
 
+pair readpair(stringstream& s, bool tex)
+{
+  static const double f=12.0/100.0;
+  double x,y;
+  s >> y;
+  s >> x;
+  return tex ? pair(f*x,-f*y) : pair(x,y);
+}
+
 // Ignore unclosed begingroups but not spurious endgroups.
 const char *nobegin="endgroup without matching begingroup";
+  
+// Return the component of vector v perpendicular to a unit vector u.
+inline triple perp(triple v, triple u)
+{
+  return v-dot(v,u)*u;
+}
+
+string ASYo="/ASYo {( ) print 12 string cvs print} bind def";
+string pathforall="{(M) print ASYo ASYo} {(L) print ASYo ASYo} {(C) print ASYo ASYo ASYo ASYo ASYo ASYo} {(c) print} pathforall";
+string currentpoint="print currentpoint ASYo ASYo ";
+
+array *readpath(const string& psname, bool tex, bool keep)
+{
+  array *P=new array(0);
+  ostringstream pipe;
+  pipe << "'" << getSetting<string>("gs")
+       << "' -q -dNOPAUSE -dBATCH";
+  if(safe) pipe << " -dSAFER";
+#ifdef __CYGWIN__
+  string null="NUL";
+#else
+  string null="/dev/null";
+#endif
+  pipe << " -sDEVICE=epswrite -sOutputFile="+null+" '" << psname << "'";
+  iopipestream gs(pipe.str().c_str(),"gs","Ghostscript");
+  stringstream buf;
+  while(true) {
+    string out;
+    gs >> out;
+    buf << out;
+    string s=buf.str();
+    if(gs.tailequals(s.c_str(),s.size(),"E",1)) break;
+  }
+  if(verbose > 2) cout << endl;
+    
+  mem::vector<solvedKnot> nodes;
+  solvedKnot node;
+  bool cyclic=false;
+  bool active=false;
+  
+  pair offset;
+  while(!buf.eof()) {
+    char c;
+    buf >> c;
+    switch(c) {
+    case 'M':
+      {
+	if(active) {
+	  node.post=node.point;
+	  nodes.push_back(node);
+	  P->push(path(nodes,nodes.size(),cyclic));
+	  nodes.clear();
+	}
+	active=false;
+	cyclic=false;
+	node.pre=node.point=readpair(buf,tex)-offset;
+	break;
+      }
+    case 'L':
+      {
+	pair point=readpair(buf,tex)-offset;
+	static const double third=1.0/3.0;
+	pair delta=(point-node.point)*third;
+	node.post=node.point+delta;
+	nodes.push_back(node);
+	active=true;
+	node.pre=point-delta;
+	node.point=point;
+	break;
+      }
+    case 'C':
+      {
+	pair point=readpair(buf,tex)-offset;
+	pair pre=readpair(buf,tex)-offset;
+	node.post=readpair(buf,tex)-offset;
+	nodes.push_back(node);
+	active=true;
+	node.pre=pre;
+	node.point=point;
+	break;
+      }
+    case 'c':
+      {
+	cyclic=true;
+	break;
+      }
+    case 'Z':
+      {
+	offset=readpair(buf,tex);
+	break;
+      }
+    }
+  }
+  
+  if(!keep)
+    unlink(psname.c_str());
+  return P;
+}
+
   
 // Autogenerated routines:
 
@@ -828,6 +1036,7 @@ bool :boolFuncNeq(callable *a, callable *b)
 
 
 // Bit operations
+
 Int AND(Int a, Int b) 
 {
     return a & b;
@@ -879,14 +1088,19 @@ bool empty(picture *f)
   return f->null();
 }
 
-pair max(picture *f)
+void erase(picture *f)
 {
-  return f->bounds().Max();
+  f->nodes.clear();
 }
 
 pair min(picture *f)
 {
   return f->bounds().Min();
+}
+
+pair max(picture *f)
+{
+  return f->bounds().Max();
 }
 
 void label(picture *f, string *s, string *size, transform t, pair position,
@@ -900,50 +1114,140 @@ bool labels(picture *f)
   return f->havelabels();
 }
 
+patharray *_texpath(string *s, pen p=CURRENTPEN)
+{
+  array *P=new array(0);
+  if(s->empty()) return P;
+  
+  string prefix=outname();
+  spaceToUnderscore(prefix);
+  string psname=auxname(prefix,"ps");
+
+  string texname=auxname(prefix,"tex");
+  string dviname=auxname(prefix,"dvi");
+  bbox b;
+  texfile tex(texname,b,true);
+  tex.miniprologue();
+  
+  tex.setfont(p);
+  tex.verbatimline("\\special{ps:");
+  tex.verbatimline(ASYo);
+  tex.verbatimline("/ASY1 true def");
+  tex.verbatimline("/v {neg exch 4 copy 4 2 roll 2 copy 6 2 roll 2 copy (M) print ASYo ASYo (L) print ASYo add ASYo (L) print add ASYo add ASYo (L) print add ASYo ASYo (c) print} bind def");
+  tex.verbatimline("/show {ASY1 {(Z) "+currentpoint+
+		   "/ASY1 false def} if currentpoint newpath moveto false charpath "+
+		   pathforall+"} bind def}");
+  tex.verbatim(*s);
+  tex.verbatimline("\\special{ps: (E) print}");
+  tex.epilogue(true);
+  tex.close();
+  
+  ostringstream cmd;
+  cmd << "'" << texprogram(true) << "'"
+      << " \\nonstopmode\\input '" << texname << "'";
+  bool quiet=verbose <= 2;
+  int status=System(cmd,quiet ? 1 : 0,"texpath",texpathmessage());
+  if(!status && getSetting<bool>("twice"))
+    status=System(cmd,quiet ? 1 : 0,"texpath",texpathmessage());
+  if(status) {
+    if(quiet) {
+      ostringstream cmd;
+      cmd << "'" << texprogram() << "'"
+	  << " \\scrollmode\\input '" << texname << "'";
+      System(cmd,0);
+    }
+  }
+    
+  if(!status) {  
+    ostringstream cmd;
+    cmd << "'" << getSetting<string>("dvips") << "' -R -Pdownload35 -D600 "
+	<< getSetting<string>("dvipsOptions");
+    if(verbose <= 2) cmd << " -q";
+    cmd  << " -o '" << psname << "' '" << dviname << "'";
+    status=System(cmd,0,true,"dvips");
+  }
+
+  if(status != 0)
+    error("texpath failed");
+    
+  bool keep=getSetting<bool>("keep");
+  if(!keep) { // Delete temporary files.
+    unlink(texname.c_str());
+    if(!getSetting<bool>("keepaux")) unlink(auxname(prefix,"aux").c_str());
+    unlink(auxname(prefix,"log").c_str());
+    unlink(dviname.c_str());
+  }
+  return readpath(psname,true,keep);
+}
+
+patharray *_strokepath(path g, pen p=CURRENTPEN)
+{
+  array *P=new array(0);
+  if(g.size() == 0) return P;
+  
+  string prefix=outname();
+  spaceToUnderscore(prefix);
+  string psname=auxname(prefix,"ps");
+  bbox b;
+  psfile ps(psname, false);
+  ps.prologue(b);
+  ps.verbatimline(ASYo);
+  ps.verbatimline("/stroke {(Z) "+currentpoint+pathforall+"} bind def");
+  ps.resetpen();
+  ps.setpen(p);
+  ps.write(g);
+  ps.strokepath();
+  ps.stroke();
+  ps.verbatimline("(M) "+currentpoint+"(E) print");
+  ps.epilogue();
+  ps.close();
+  return readpath(psname,false,getSetting<bool>("keep"));
+}
+
 void _draw(picture *f, path g, pen p)
 {
   f->append(new drawPath(g,p));
 }
 
-void fill(picture *f, patharray *g, pen p, bool copy=true)
+void fill(picture *f, patharray *g, pen p=CURRENTPEN, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
-  f->append(new drawFill(*copyarray(g),p));
+  f->append(new drawFill(*copyarray(g),false,p));
 }
 
-void latticeshade(picture *f, patharray *g, pen fillrule, penarray2 *p,
-		  bool copy=true)
+void latticeshade(picture *f, patharray *g, bool stroke=false,
+		  pen fillrule, penarray2 *p, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
-  f->append(new drawLatticeShade(*copyarray(g),fillrule,*copyarray(p)));
+  f->append(new drawLatticeShade(*copyarray(g),stroke,fillrule,*copyarray(p)));
 }
 
-void axialshade(picture *f, patharray *g, pen pena, pair a, pen penb, pair b,
-		bool copy=true)
+void axialshade(picture *f, patharray *g, bool stroke=false, pen pena, pair a,
+		pen penb, pair b, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
-  f->append(new drawAxialShade(*copyarray(g),pena,a,penb,b));
+  f->append(new drawAxialShade(*copyarray(g),stroke,pena,a,penb,b));
 }
 
-void radialshade(picture *f, patharray *g, pen pena, pair a, real ra,
-		 pen penb, pair b, real rb, bool copy=true)
+void radialshade(picture *f, patharray *g, bool stroke=false, pen pena,
+		 pair a, real ra, pen penb, pair b, real rb, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
-  f->append(new drawRadialShade(*copyarray(g),pena,a,ra,penb,b,rb));
+  f->append(new drawRadialShade(*copyarray(g),stroke,pena,a,ra,penb,b,rb));
 }
 
-void gouraudshade(picture *f, patharray *g, pen fillrule, penarray *p,
-		  pairarray *z, Intarray *edges, bool copy=true)
+void gouraudshade(picture *f, patharray *g, bool stroke=false, pen fillrule,
+		  penarray *p, pairarray *z, Intarray *edges, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
   checkArrays(p,z);
   checkArrays(z,edges);
-  f->append(new drawGouraudShade(*copyarray(g),fillrule,*copyarray(p),
+  f->append(new drawGouraudShade(*copyarray(g),stroke,fillrule,*copyarray(p),
 				 *copyarray(z),*copyarray(edges)));
 }
 
-void gouraudshade(picture *f, patharray *g, pen fillrule, penarray *p,
-		  Intarray *edges, bool copy=true)
+void gouraudshade(picture *f, patharray *g, bool stroke=false, pen fillrule,
+		  penarray *p, Intarray *edges, bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
   size_t n=checkArrays(p,edges);
@@ -953,6 +1257,7 @@ void gouraudshade(picture *f, patharray *g, pen fillrule, penarray *p,
   Int in=(Int) n;
   for(size_t j=0; j < m; ++j) {
     path *P=read<path *>(g,j);
+    assert(P);
     Int stop=Min(P->size(),in-k);
     mem::vector<solvedKnot>& nodes=P->Nodes();
     for(Int i=0; i < stop; ++i)
@@ -960,12 +1265,13 @@ void gouraudshade(picture *f, patharray *g, pen fillrule, penarray *p,
   }
   checkArrays(p,z);
   
- f->append(new drawGouraudShade(*copyarray(g),fillrule,*copyarray(p),
+  f->append(new drawGouraudShade(*copyarray(g),stroke,fillrule,*copyarray(p),
 				*z,*copyarray(edges)));
 }
 
-void tensorshade(picture *f, patharray *g, pen fillrule, penarray2 *p,
-		 patharray *b=NULL, pairarray2 *z=emptyarray, bool copy=true)
+void tensorshade(picture *f, patharray *g, bool stroke=false, pen fillrule,
+		 penarray2 *p, patharray *b=NULL, pairarray2 *z=emptyarray,
+		 bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
   array *(*copyarray2)(array *a)=copy ? copyArray2: nop;
@@ -973,23 +1279,24 @@ void tensorshade(picture *f, patharray *g, pen fillrule, penarray2 *p,
   size_t n=checkArrays(p,b);
   size_t nz=checkArray(z);
   if(nz != 0)
-    checkequal(nz,n);
-  f->append(new drawTensorShade(*copyarray(g),fillrule,*copyarray2(p),
+    checkEqual(nz,n);
+  f->append(new drawTensorShade(*copyarray(g),stroke,fillrule,*copyarray2(p),
 				*copyarray(b),*copyarray2(z)));
 }
 
 // Clip a picture to a superpath using the given fill rule.
 // Subsequent additions to the picture will not be affected by the clipping.
-void clip(picture *f, patharray *g, pen fillrule, bool copy=true)
+void clip(picture *f, patharray *g, bool stroke=false, pen fillrule,
+	  bool copy=true)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
-  drawClipBegin *begin=new drawClipBegin(*copyarray(g),fillrule,true);
+  drawClipBegin *begin=new drawClipBegin(*copyarray(g),stroke,fillrule,true);
   f->enclose(begin,new drawClipEnd(true,begin));
 }
 
-void beginclip(picture *f, patharray *g, pen fillrule)
+void beginclip(picture *f, patharray *g, bool stroke=false, pen fillrule)
 {
-  f->append(new drawClipBegin(*copyArray(g),fillrule,false));
+  f->append(new drawClipBegin(*copyArray(g),stroke,fillrule,false));
 }
 
 void endclip(picture *f)
@@ -1082,19 +1389,20 @@ void layer(picture *f)
 }
 
 void _image(picture *f, realarray2 *data, pair initial, pair final,
-	    penarray *palette=NULL, transform t=identity, bool copy=true)
+	    penarray *palette=NULL, transform t=identity, bool copy=true,
+	    bool antialias=false)
 {
   array *(*copyarray)(array *a)=copy ? copyArray: nop;
   array *(*copyarray2)(array *a)=copy ? copyArray2: nop;
   f->append(new drawImage(*copyarray2(data),*copyarray(palette),
-			  t*matrix(initial,final)));
+			  t*matrix(initial,final),antialias));
 }
 
 void _image(picture *f, penarray2 *data, pair initial, pair final,
-	    transform t=identity, bool copy=true)
+	    transform t=identity, bool copy=true, bool antialias=false)
 {
   array *(*copyarray2)(array *a)=copy ? copyArray2: nop;
-  f->append(new drawImage(*copyarray2(data),t*matrix(initial,final)));
+  f->append(new drawImage(*copyarray2(data),t*matrix(initial,final),antialias));
 }
 
 string nativeformat()
@@ -1104,19 +1412,18 @@ string nativeformat()
 
 bool latex()
 {
-  return latex(texengine());
+  return latex(getSetting<string>("tex"));
 }
 
 bool pdf()
 {
-  return pdf(texengine());
+  return pdf(getSetting<string>("tex"));
 }
 
 void shipout(string prefix=emptystring, picture *f, picture *preamble=NULL,
 	     string format=emptystring, bool wait=false, bool view=true,
 	     callableTransform *xform)
 {
-  interact::uptodate=true;
   if(prefix.empty()) prefix=outname();
 
   picture *result=new picture;
@@ -1159,6 +1466,33 @@ void shipout(string prefix=emptystring, picture *f, picture *preamble=NULL,
   result->shipout(preamble,prefix,format,0.0,wait,view);
 }
 
+void shipout3(string prefix, picture *f, string format=emptystring,
+	      real width, real height, real angle, triple m, triple M,
+	      triplearray *lights, realarray2 *diffuse, realarray2 *ambient,
+	      realarray2 *specular, bool viewportlighting,
+	      bool wait=false, bool view=true)
+{
+  size_t n=checkArrays(lights,diffuse);
+  checkEqual(n,checkArray(ambient));
+  checkEqual(n,checkArray(specular));
+  
+  triple *Lights=copyTripleArrayC(lights);
+  real *Diffuse=copyArray2C(diffuse,false,4);  
+  real *Ambient=copyArray2C(ambient,false,4);
+  real *Specular=copyArray2C(specular,false,4);
+  f->shipout3(prefix,format,width,height,angle,m,M,n,
+	      Lights,Diffuse,Ambient,Specular,viewportlighting,wait,view);
+  delete[] Specular;
+  delete[] Ambient;
+  delete[] Diffuse;
+  delete[] Lights;
+}
+
+void shipout3(string prefix, picture *f)
+{
+    f->shipout3(prefix);
+}
+
 void deconstruct(picture *f, picture *preamble=NULL, real magnification=1, 
 		 callableTransform *xform)
 {
@@ -1183,7 +1517,7 @@ void deconstruct(picture *f, picture *preamble=NULL, real magnification=1,
   
   // Enforce ghostscript limitations.
   magnification=::max(magnification,0.0001);
-  double res=::min(::max(magnification*72.0,2.0),8192.0);
+  real res=::min(::max(magnification*72.0,2.0),8192.0);
   
   const char *converter=NULL, *hint=NULL;
   
@@ -1204,8 +1538,10 @@ void deconstruct(picture *f, picture *preamble=NULL, real magnification=1,
 			  prefix != settings::outname() && !globalwrite());
 	if(png) {
 	  cmd << "'" << getSetting<string>("gs")
-	      << "' -q -dNOPAUSE -dBATCH -sDEVICE=pngalpha -dEPSCrop"
-	      << " -r" << res << "x" << res
+	      << "' -q -dNOPAUSE -dBATCH -sDEVICE=pngalpha -dEPSCrop";
+	  if(safe)
+	    cmd << " -dSAFER";
+	  cmd << " -r" << res << "x" << res
 	      << " -sOutputFile='" << outname << "'";
 	  converter="gs";
 	  hint="Ghostscript";
@@ -1355,6 +1691,11 @@ pen defaultpen()
   return processData().defaultpen;
 }
 
+bool invisible(pen p)
+{
+  return p.invisible();
+}
+
 pen invisible()
 {
   return pen(invisiblepen);
@@ -1391,7 +1732,7 @@ pen gray(real gray)
 
 realarray *colors(pen p)
 {  
-  Int n=ColorComponents[p.colorspace()];
+  size_t n=ColorComponents[p.colorspace()];
   array *a=new array(n);
   
   switch(n) {
@@ -1487,6 +1828,11 @@ bool scale(pen p)
 bool adjust(pen p)
 {
   return p.linetype().adjust;
+}
+
+pen adjust(pen p, real arclength, bool cyclic)
+{
+  return adjustdash(p,arclength,cyclic);
 }
 
 pen linecap(Int n)
@@ -1594,11 +1940,6 @@ bool interactive()
   return interact::interactive;
 }
 
-void uptodate(bool b)
-{
-  interact::uptodate=b;
-}
-
 bool uptodate()
 {
   return interact::uptodate;
@@ -1607,15 +1948,32 @@ bool uptodate()
 
 // System commands
 
-Int system(string *s)
+Int system(string s)
 {
   if(safe) error("system() call disabled; override with option -unsafe");
-  else return System(s->c_str());
+  if(s.empty()) return 0;
+  else return System(s.c_str());
+}
+
+bool view()
+{
+  return view();
+}
+
+string asydir() 
+{
+  return ASYMPTOTE_SYSDIR;	
+}
+
+string locale(string s=emptystring)
+{
+  char *L=setlocale(LC_ALL,s.empty() ? NULL : s.c_str());
+  return L != NULL ? string(L) : "";
 }
 
 void abort(string s=emptystring)
 {
-  if(s == "") throw handled_error();
+  if(s.empty()) throw handled_error();
   error(s.c_str());
 }
 
@@ -1755,14 +2113,36 @@ pair postcontrol(path p, real t)
   return p.postcontrol(t);
 }
 
-pair dir(path p, Int t, Int sign=0)
+pair dir(path p, Int t, Int sign=0, bool normalize=true)
 {
-  return p.dir((Int) t,sign);
+  return p.dir(t,sign,normalize);
 }
 
-pair dir(path p, real t)
+pair dir(path p, real t, bool normalize=true)
 {
-  return p.dir(t);
+  return p.dir(t,normalize);
+}
+
+pair accel(path p, Int t, Int sign=0)
+{
+  return p.accel(t,sign);
+}
+
+pair accel(path p, real t)
+{
+  return p.accel(t);
+}
+
+real radius(path p, real t)
+{
+  pair v=p.dir(t,false);
+  pair a=p.accel(t);
+  real d=dot(a,v);
+  real v2=v.abs2();
+  real a2=a.abs2();
+  real denom=v2*a2-d*d;
+  real r=v2*sqrt(v2);
+  return denom > 0 ? r/sqrt(denom) : 0.0;
 }
 
 path reverse(path p)
@@ -1781,7 +2161,7 @@ path subpath(path p, real a, real b)
 }
 
 path nurb(pair z0, pair z1, pair z2, pair z3,
-	  double w0, double w1, double w2, double w3, Int m)
+	  real w0, real w1, real w2, real w3, Int m)
 {
   return nurb(z0,z1,z2,z3,w0,w1,w2,w3,m);
 }
@@ -1801,12 +2181,14 @@ bool straight(path p, Int t)
   return p.straight(t);
 }
 
+path unstraighten(path p)
+{
+  return p.unstraighten();
+}
+
 bool piecewisestraight(path p)
 {
-  Int L=p.length();
-  for(Int i=0; i < L; ++i)
-    if(!p.straight(i)) return false;
-  return true;
+  return p.piecewisestraight();
 }
 
 real arclength(path p)
@@ -1824,35 +2206,54 @@ real dirtime(path p, pair z)
   return p.directiontime(z);
 }
 
-realarray* intersect(path p, path q, real fuzz=0)
+realarray* intersect(path p, path q, real fuzz=-1)
 {
-  fuzz=::max(fuzz,Fuzz*::max(::max(length(p.max()),length(p.min())),
-			     ::max(length(q.max()),length(q.min()))));
+  if(fuzz < 0)
+    fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
+		       ::max(length(q.max()),length(q.min())));
+  std::vector<real> S,T;
   real s,t;
-  if(intersect(s,t,p,q,fuzz)) {
-    array *T=new array(2);
-    (*T)[0]=s;
-    (*T)[1]=t;
-    return T;
+  if(intersections(s,t,S,T,p,q,fuzz,true)) {
+    array *V=new array(2);
+    (*V)[0]=s;
+    (*V)[1]=t;
+    return V;
   } else
     return new array(0);
 }
 
-realarray2* intersections(path p, path q, real fuzz=0)
+realarray2* intersections(path p, path q, real fuzz=-1)
 {
-  fuzz=::max(fuzz,Fuzz*::max(::max(length(p.max()),length(p.min())),
-			     ::max(length(q.max()),length(q.min()))));
+  if(fuzz < 0)
+    fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
+		       ::max(length(q.max()),length(q.min())));
+  real s,t;
   std::vector<real> S,T;
-  intersections(S,T,p,q,fuzz);
-  unsigned n=S.size();
+  intersections(s,t,S,T,p,q,fuzz,false);
+  size_t n=S.size();
   array *V=new array(n);
-  for(unsigned i=0; i < n; ++i) {
+  for(size_t i=0; i < n; ++i) {
     array *Vi=new array(2);
     (*V)[i]=Vi;
     (*Vi)[0]=S[i];
     (*Vi)[1]=T[i];
   }
-  stable_sort(V->begin(),V->end(),compare2<double>());
+  stable_sort(V->begin(),V->end(),run::compare2<real>());
+  return V;
+}
+
+realarray* intersections(path p, pair a, pair b, real fuzz=-1)
+{
+  if(fuzz < 0)
+    fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
+		       ::max(length(a),length(b)));
+  std::vector<real> S;
+  intersections(S,p,a,b,fuzz);
+  sort(S.begin(),S.end());
+  size_t n=S.size();
+  array *V=new array(n);
+  for(size_t i=0; i < n; ++i)
+    (*V)[i]=S[i];
   return V;
 }
 
@@ -1876,6 +2277,24 @@ pair max(path p)
   return p.max();
 }
 
+realarray *mintimes(path p)
+{
+  array *V=new array(2);
+  pair z=p.mintimes();
+  (*V)[0]=z.getx();
+  (*V)[1]=z.gety();
+  return V;
+}
+
+realarray *maxtimes(path p)
+{
+  array *V=new array(2);
+  pair z=p.maxtimes();
+  (*V)[0]=z.getx();
+  (*V)[1]=z.gety();
+  return V;
+}
+
 real relativedistance(real theta, real phi, real t, bool atleast)
 {
   return camp::velocity(theta,phi,tension(t,atleast));
@@ -1886,14 +2305,263 @@ Int windingnumber(patharray *p, pair z)
   return windingnumber(p,z);
 }
 
-bool inside(explicit patharray *g, pair z, pen fillrule=currentpen)
+bool inside(explicit patharray *g, pair z, pen fillrule=CURRENTPEN)
 {
   return fillrule.inside(windingnumber(g,z));
 }
 
-bool inside(path g, pair z, pen fillrule=currentpen)
+bool inside(path g, pair z, pen fillrule=CURRENTPEN)
 {
   return fillrule.inside(g.windingnumber(z));
+}
+
+// Determine the side of a--b that c lies on
+// (negative=left, zero=on line, positive=right).
+real side(pair a, pair b, pair c) 
+{
+  return orient2d(a,b,c);
+}
+
+// Determine the side of the counterclockwise circle through a,b,c that d
+// lies on (negative=inside, 0=on circle, positive=right). 
+real incircle(pair a, pair b, pair c, pair d)
+{
+  return incircle(a.getx(),a.gety(),b.getx(),b.gety(),c.getx(),c.gety(),
+		  d.getx(),d.gety());
+}
+
+
+// Path3 operations
+
+path3 path3(triplearray *pre, triplearray *point, triplearray *post,
+	    boolarray *straight, bool cyclic)
+{
+  size_t n=checkArrays(pre,point);
+  checkEqual(n,checkArray(post));
+  checkEqual(n,checkArray(straight));
+  mem::vector<solvedKnot3> nodes(n);
+  for(size_t i=0; i < n; ++i) {
+    nodes[i].pre=read<triple>(pre,i);
+    nodes[i].point=read<triple>(point,i);
+    nodes[i].post=read<triple>(post,i);
+    nodes[i].straight=read<bool>(straight,i);
+  }
+
+  return path3(nodes,(Int) n,cyclic);
+}
+
+path3 :nullPath3()
+{
+  return nullpath3;
+}
+
+bool ==(path3 a, path3 b)
+{
+  return a == b;
+}
+
+bool !=(path3 a, path3 b)
+{
+  return !(a == b);
+}
+
+triple point(path3 p, Int t)
+{
+  return p.point((Int) t);
+}
+
+triple point(path3 p, real t)
+{
+  return p.point(t);
+}
+
+triple precontrol(path3 p, Int t)
+{
+  return p.precontrol((Int) t);
+}
+
+triple precontrol(path3 p, real t)
+{
+  return p.precontrol(t);
+}
+
+triple postcontrol(path3 p, Int t)
+{
+  return p.postcontrol((Int) t);
+}
+
+triple postcontrol(path3 p, real t)
+{
+  return p.postcontrol(t);
+}
+
+triple dir(path3 p, Int t, Int sign=0, bool normalize=true)
+{
+  return p.dir(t,sign,normalize);
+}
+
+triple dir(path3 p, real t, bool normalize=true)
+{
+  return p.dir(t,normalize);
+}
+
+triple accel(path3 p, Int t, Int sign=0)
+{
+  return p.accel(t,sign);
+}
+
+triple accel(path3 p, real t)
+{
+  return p.accel(t);
+}
+
+real radius(path3 p, real t)
+{
+  triple v=p.dir(t,false);
+  triple a=p.accel(t);
+  real d=dot(a,v);
+  real v2=v.abs2();
+  real a2=a.abs2();
+  real denom=v2*a2-d*d;
+  real r=v2*sqrt(v2);
+  return denom > 0 ? r/sqrt(denom) : 0.0;
+}
+
+path3 reverse(path3 p)
+{
+  return p.reverse();
+}
+
+path3 subpath(path3 p, Int a, Int b)
+{
+  return p.subpath((Int) a, (Int) b);
+}
+
+path3 subpath(path3 p, real a, real b)
+{
+  return p.subpath(a,b);
+}
+
+Int length(path3 p)
+{
+  return p.length();
+}
+
+bool cyclic(path3 p)
+{
+  return p.cyclic();
+}
+
+bool straight(path3 p, Int t)
+{
+  return p.straight(t);
+}
+
+// Return the maximum perpendicular deviation of segment i of path3 g
+// from a straight line.
+real straightness(path3 p, Int t) 
+{
+  if(p.straight(t)) return 0;
+  triple z0=p.point(t);
+  triple u=unit(p.point(t+1)-z0);
+  return ::max(length(perp(p.postcontrol(t)-z0,u)),
+	       length(perp(p.precontrol(t+1)-z0,u)));
+}
+
+bool piecewisestraight(path3 p)
+{
+  return p.piecewisestraight();
+}
+
+real arclength(path3 p)
+{
+  return p.arclength();
+}
+
+real arctime(path3 p, real dval)
+{
+  return p.arctime(dval);
+}
+
+realarray* intersect(path3 p, path3 q, real fuzz=-1)
+{
+  if(fuzz < 0) 
+    fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
+		       ::max(length(q.max()),length(q.min())));
+  std::vector<real> S,T;
+  real s,t;
+  if(intersections(s,t,S,T,p,q,fuzz,true)) {
+    array *V=new array(2);
+    (*V)[0]=s;
+    (*V)[1]=t;
+    return V;
+  } else
+    return new array(0);
+}
+
+realarray2* intersections(path3 p, path3 q, real fuzz=-1)
+{
+  if(fuzz < 0)
+    fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
+		       ::max(length(q.max()),length(q.min())));
+  real s,t;
+  std::vector<real> S,T;
+  intersections(s,t,S,T,p,q,fuzz,false);
+  size_t n=S.size();
+  array *V=new array(n);
+  for(size_t i=0; i < n; ++i) {
+    array *Vi=new array(2);
+    (*V)[i]=Vi;
+    (*Vi)[0]=S[i];
+    (*Vi)[1]=T[i];
+  }
+  stable_sort(V->begin(),V->end(),run::compare2<real>());
+  return V;
+}
+
+Int size(path3 p)
+{
+  return p.size();
+}
+
+path3 &(path3 p, path3 q)
+{
+  return camp::concat(p,q);
+}
+
+triple min(path3 p)
+{
+  return p.min();
+}
+
+triple max(path3 p)
+{
+  return p.max();
+}
+
+realarray *mintimes(path3 p)
+{
+  array *V=new array(3);
+  triple v=p.mintimes();
+  (*V)[0]=v.getx();
+  (*V)[1]=v.gety();
+  (*V)[2]=v.getz();
+  return V;
+}
+
+realarray *maxtimes(path3 p)
+{
+  array *V=new array(3);
+  triple v=p.maxtimes();
+  (*V)[0]=v.getx();
+  (*V)[1]=v.gety();
+  (*V)[2]=v.getz();
+  return V;
+}
+
+path3 Operator *(realarray2 *t, path3 g)
+{
+  return transformed(*t,g);
 }
 
 
@@ -2048,7 +2716,6 @@ pairarray *dirSpecifier(guide *g, Int t)
   Int n=f.size();
   if(g->cyclic()) t=t % n;
   else if(t < 0 || t >= n-1) {
-    static pair zero;
     (*c)[0]=zero;
     (*c)[1]=zero;
     return c;
@@ -2131,7 +2798,6 @@ guide *reverse(guide *g)
 	v.push_back(new controlguide(next.in->control(),curr.out->control()));
       } else {
 	pair d=f.Nodes(i+1).in->dir();
-	static pair zero;
 	if(d != zero) 
 	  v.push_back(new specguide(new dirSpec(-d),camp::OUT));
 	real tout=next.tin.val;
@@ -2152,6 +2818,161 @@ guide *reverse(guide *g)
       v.push_back(new cycletokguide());
   }
   return new multiguide(v);
+}
+
+
+// Three-dimensional picture and surface operations
+
+void _draw(picture *f, path3 g, pen p)
+{
+  f->append(new drawPath3(g,p));
+}
+
+void draw(picture *f, triplearray2 *g, bool straight, penarray *p, real opacity,
+	  real shininess, real granularity, triple normal, bool lighton,
+	  penarray *colors)
+{
+  f->append(new drawSurface(*g,straight,*p,opacity,shininess,granularity,
+			    normal,lighton,*colors));
+}
+
+triple min3(picture *f)
+{
+  return f->bounds3().Min();
+}
+
+triple max3(picture *f)
+{
+  return f->bounds3().Max();
+}
+
+pair min(picture *f, realarray2 *t)
+{
+  real *T=copyArray2C(t,4);
+  pair m=f->bounds(::min,xproject,yproject,T);
+  delete[] T;
+  return m;
+}
+
+pair max(picture *f, realarray2 *t)
+{
+  real *T=copyArray2C(t,4);
+  pair M=f->bounds(::max,xproject,yproject,T);
+  delete[] T;
+  return M;
+}
+
+pair minratio(picture *f)
+{
+  return f->bounds(::min,xratio,yratio);
+}
+
+pair maxratio(picture *f)
+{
+  return f->bounds(::max,xratio,yratio);
+}
+
+real minbound(realarray *a, real b)
+{
+  real *A=copyArrayC(a,16);
+  b=bound(A,::min,b);
+  delete[] A;
+  return b;
+}
+
+real maxbound(realarray *a, real b)
+{
+  real *A=copyArrayC(a,16);
+  b=bound(A,::max,b);
+  delete[] A;
+  return b;
+}
+
+pair minbound(triplearray *a, realarray2 *t, pair b)
+{
+  triple *A=copyTripleArrayC(a,16);
+  real *T=copyArray2C(t,4);
+  b=pair(bound(A,::min,xproject,T,b.getx()),
+	 bound(A,::min,yproject,T,b.gety()));
+  delete[] T;
+  delete[] A;
+  return b;
+}
+
+pair maxbound(triplearray *a, realarray2 *t, pair b)
+{
+  triple *A=copyTripleArrayC(a,16);
+  real *T=copyArray2C(t,4);
+  b=pair(bound(A,::max,xproject,T,b.getx()),
+	 bound(A,::max,yproject,T,b.gety()));
+  delete[] T;
+  delete[] A;
+  return b;
+}
+
+pair max(path3 g, realarray2 *t)
+{
+  real *T=copyArray2C(t,4);
+  pair b=g.bounds(::max,xproject,yproject,T);
+  delete[] T;
+  return b;
+}
+
+pair min(path3 g, realarray2 *t)
+{
+  real *T=copyArray2C(t,4);
+  pair b=g.bounds(::min,xproject,yproject,T);
+  delete[] T;
+  return b;
+}
+
+real change2(triplearray2 *a)
+{
+  size_t n=checkArray(a);
+  if(n == 0) return 0.0;
+  
+  vm::array *a0=vm::read<vm::array*>(a,0);
+  size_t m=checkArray(a0);
+  if(m == 0) return 0.0;
+  triple a00=vm::read<triple>(a0,0);
+  real M=0.0;
+    
+  for(size_t i=0; i < n; ++i) {
+    vm::array *ai=vm::read<vm::array*>(a,i);
+    size_t m=checkArray(ai);
+    for(size_t j=0; j < m; ++j) {
+      real a=(vm::read<triple>(ai,j)-a00).abs2();
+      if(a > M) M=a;
+    }
+  }
+  return M;
+}
+
+bool is3D(picture *f)
+{
+  return f->have3D();
+}
+
+triple bezier(triple a, triple b, triple c, triple d, real t) 
+{
+  real onemt=1-t;
+  real onemt2=onemt*onemt;
+  return onemt2*onemt*a+t*(3.0*(onemt2*b+t*onemt*c)+t*t*d);
+}
+
+triple bezierP(triple a, triple b, triple c, triple d, real t) 
+{
+  return 3.0*(t*t*(d-a+3.0*(b-c))+t*(2.0*(a+c)-4.0*b)+b-a);
+}
+
+triple bezierPP(triple a, triple b, triple c, triple d, real t) 
+{
+  return 6.0*(t*(d-a+3.0*(b-c))+a+c-2.0*b);
+}
+
+triple bezierPPP(triple a, triple b, triple c, triple d) 
+{
+  return 6.0*(d-a+3.0*(b-c));
 }
 
 
@@ -2260,12 +3081,12 @@ string format(string *format, Int x)
   return s;
 }
 
-string format(string *format, real x) 
+string format(string *format, real x, string locale=emptystring) 
 {
   ostringstream out;
   
   checkformat(format->c_str(),false);
-  
+
   const char *phantom="\\phantom{+}";
   const char *p0=format->c_str();
   
@@ -2290,11 +3111,21 @@ string format(string *format, real x)
   
   const char *tail=p;
   string f=format->substr(start-p0,tail-start);
+
+  const char *oldlocale=NULL;
+  if(!locale.empty()) {
+    oldlocale=setlocale(LC_ALL,NULL);
+    setlocale(LC_ALL,locale.c_str());
+  }
+
   Int size=snprintf(NULL,0,f.c_str(),x)+1;
   if(size < 1) size=255; // Workaround for non-C99 compliant systems.
   char *buf=new char[size];
   snprintf(buf,size,f.c_str(),x);
 
+  if(!locale.empty())
+    setlocale(LC_ALL,oldlocale);
+  
   bool trailingzero=f.find("#") < string::npos;
   bool plus=f.find("+") < string::npos;
   bool space=f.find(" ") < string::npos;
@@ -2363,10 +3194,18 @@ string format(string *format, real x)
     out << *(tail++);
   
   delete[] buf;
+
   return out.str();
 }
 
-string string(real x, Int digits)
+string string(Int x)
+{
+  ostringstream buf;
+  buf << x;
+  return buf.str();
+}
+
+string string(real x, Int digits=DBL_DIG)
 {
   ostringstream buf;
   buf.precision(digits);
@@ -2464,6 +3303,12 @@ void srand(Int seed)
 { 
   srand(intcast(seed));
 }  
+
+// a random number uniformly distributed in the interval [0,1]
+real unitrand()
+{                         
+  return ((real) rand())/RAND_MAX;
+}
 
 Int ceil(real x)
 { 
@@ -2618,6 +3463,11 @@ picture * Operator *(transform t, picture *f)
   return transformed(t,f);
 }
 
+picture * Operator *(realarray2 *t, picture *f)
+{
+  return transformed(*t,f);
+}
+
 transform ^(transform t, Int n)
 {
   transform T;
@@ -2735,7 +3585,6 @@ transform reflect(pair a, pair b)
 
 pair :pairZero()
 {
-  static pair zero;
   return zero;
 }
 
@@ -2841,9 +3690,9 @@ pair unit(pair z)
   return unit(z);
 }
 
-pair dir(real theta)
+pair dir(real degrees)
 {
-  return expi(radians(theta));
+  return expi(radians(degrees));
 }
 
 pair dir(explicit pair z)
@@ -2851,9 +3700,9 @@ pair dir(explicit pair z)
   return unit(z);
 }
 
-pair expi(real theta)
+pair expi(real angle)
 {
-  return expi(theta);
+  return expi(angle);
 }
 
 pair exp(explicit pair z) 
@@ -2886,10 +3735,15 @@ pair realmult(pair z, pair w)
   return pair (z.getx()*w.getx(),z.gety()*w.gety());
 }
 
+triple realmult(triple u, triple v) 
+{
+  return triple (u.getx()*v.getx(),u.gety()*v.gety(),u.getz()*v.getz());
+}
+
 // To avoid confusion, a dot product requires explicit pair arguments.
 real dot(explicit pair z, explicit pair w)
 {
-  return z.getx()*w.getx()+z.gety()*w.gety();
+  return dot(z,w);
 }
 
 
@@ -2928,7 +3782,7 @@ triple Operator *(real x, triple v)
 
 triple Operator *(triple v, real x)
 {
-  return x*v;
+  return v*x;
 }
 
 triple /(triple v, real x)
@@ -2980,31 +3834,22 @@ triple unit(triple v)
 
 real dot(triple u, triple v) 
 {
-  return u.getx()*v.getx()+u.gety()*v.gety()+u.getz()*v.getz();
+  return dot(u,v);
 }
 
 triple cross(triple u, triple v) 
 {
-  return triple(u.gety()*v.getz()-u.getz()*v.gety(),
-		u.getz()*v.getx()-u.getx()*v.getz(),
-		u.getx()*v.gety()-v.getx()*u.gety());
+  return cross(u,v);
 }
 
-triple expi(real theta, real phi)
+triple expi(real polar, real azimuth)
 {
-  return expi(theta,phi);
-  real sintheta=sin(theta);
-  return triple(sintheta*cos(phi),sintheta*sin(phi),cos(theta));
+  return expi(polar,azimuth);
 }
 
-triple dir(real theta, real phi)
+triple dir(real colatitude, real longitude)
 {
-  return expi(radians(theta),radians(phi));
-}
-
-real cubiclength(triple z0, triple z0p, triple z1m, triple z1, real goal)
-{
-  return cubiclength(z0,z0p,z1m,z1,goal);
+  return expi(radians(colatitude),radians(longitude));
 }
 
 
@@ -3012,7 +3857,17 @@ real cubiclength(triple z0, triple z0p, triple z1m, triple z1, real goal)
 
 string VERSION()
 {
-  return VERSION;
+  return string(VERSION)+string(SVN_REVISION);
+}
+
+void atupdate(callable *f)
+{
+  processData().atUpdateFunction=f;
+}
+
+callable *atupdate()
+{
+  return processData().atUpdateFunction;
 }
 
 void atexit(callable *f)
@@ -3078,20 +3933,35 @@ string stripextension(string *s)
 }
 
 // Call ImageMagick convert.
-Int convert(string *args, string output=emptystring,
+Int convert(string args=emptystring, string file=emptystring,
 	    string format=emptystring)
 {
   ostringstream cmd;
   
-  string name=convertname(output,format);
-  cmd << "'" << getSetting<string>("convert") << "' " << *args
+  string name=convertname(file,format);
+  cmd << "'" << getSetting<string>("convert") << "' " << args
       << " '" << name << "'";
-  Int ret=System(cmd,2,true,"convert");
+  Int ret=System(cmd,2,true,"convert","your ImageMagick convert utility");
   
   if(ret == 0 && verbose > 0)
-    cout << "Wrote " << ((output == "") ? name : output) << endl;
+    cout << "Wrote " << ((file.empty()) ? name : file) << endl;
   
   return ret;
+}
+
+// Call ImageMagick animate.
+Int animate(string args=emptystring, string file=emptystring,
+	    string format=emptystring)
+{
+  string name=convertname(file,format,false);
+  if(view()) {
+    ostringstream cmd;
+    cmd << "'" << getSetting<string>("animate") << "' " << args
+	<< " '" << name << "'";
+    return System(cmd,0,false,"animate","your animated GIF viewer");
+  }
+  
+  return 0;
 }
 
 // Delete file named s.
@@ -3113,19 +3983,6 @@ Int rename(string *from, string *to)
   if(rc == 0 && verbose > 0) 
     cout << "Renamed " << *from << " to " << *to << endl;
   return rc;
-}
-
-// Call ImageMagick animate.
-Int animate(string output=emptystring, string format=emptystring)
-{
-  string name=convertname(output,format,false);
-  if(view()) {
-    ostringstream cmd;
-    cmd << "'" << getSetting<string>("animate") << "' '" << name << "'";
-    return System(cmd,0,false,"animate","your animated GIF viewer");
-  }
-  
-  return 0;
 }
 
 
@@ -3435,7 +4292,7 @@ Intarray* complement(Intarray *a, Int n)
   return r;
 }
 
-// Generate the sequence {f_i : i=0,1,...n-1} given a function f and integer n
+// Generate the sequence {f(i) : i=0,1,...n-1} given a function f and integer n
 Intarray* :arraySequence(callable *f, Int n)
 {
   if(n < 0) n=0;
@@ -3470,6 +4327,15 @@ array* :arrayFunction(callable *f, array *a)
     (*b)[i]=pop(Stack);
   }
   return b;
+}
+
+array* :arraySort(array *a, callable *f)
+{
+  array *c=copyArray(a);
+  compareFunc=f;
+  FuncStack=Stack;
+  stable_sort(c->begin(),c->end(),compareFunction);
+  return c;
 }
 
 bool all(boolarray *a)
@@ -3521,7 +4387,7 @@ array* :arrayConcat(array *a)
   size_t ri=0;
   for (size_t i=0; i < numArgs; ++i) {
     array *arg=a->read<array *>(i);
-    size_t size=arg->size();
+    size_t size=checkArray(arg);
 
     for (size_t j=0; j < size; ++j) {
       (*result)[ri]=(*arg)[j];
@@ -3550,7 +4416,7 @@ array* :array2Transpose(array *a)
     size_t ip=i+1;
     array *ai=read<array*>(a,i);
     size_t aisize=checkArray(ai);
-    size_t csize=c->size();
+    size_t csize=checkArray(c);
     if(csize < aisize) {
       c->resize(aisize);
       for(size_t j=csize; j < aisize; j++) {
@@ -3559,7 +4425,7 @@ array* :array2Transpose(array *a)
     }
     for(size_t j=0; j < aisize; j++) {
     array *cj=read<array*>(c,j);
-    if(cj->size() < ip) cj->resize(ip);
+    if(checkArray(cj) < ip) cj->resize(ip);
     (*cj)[i]=(*ai)[j];
     }
   }
@@ -3602,9 +4468,9 @@ array* :array3Transpose(array *a, array *perm)
   
   size_t isize=size[0]=checkArray(a);
   array *a0=read<array*>(a,0);
-  size[1]=a0->size();
+  size[1]=checkArray(a0);
   array *a00=read<array*>(a0,0);
-  size[2]=a00->size();
+  size[2]=checkArray(a00);
   for(size_t i=0; i < isize; i++) {
     array *ai=read<array*>(a,i);
     size_t jsize=checkArray(ai);
@@ -3673,6 +4539,25 @@ Int find(boolarray *a, Int n=1)
   return j;
 }
 
+bool Operator ==(realarray2 *a, realarray2 *b)
+{
+  size_t n=checkArray(a);
+  if(n != checkArray(b)) return false;
+  
+  size_t n0=n == 0 ? 0 : checkArray(read<array*>(a,0));
+  if(n0 != checkArray(read<array*>(b,0))) return false;
+    
+  for(size_t i=0; i < n; ++i) {
+    array *ai=read<array*>(a,i);
+    array *bi=read<array*>(b,i);
+    for(size_t j=0; j < n0; ++j) {
+      if(read<real>(ai,j) != read<real>(bi,j))
+	return false;
+    }
+  }
+  return true;
+}
+
 // construct vector obtained by replacing those elements of b for which the
 // corresponding elements of a are false by the corresponding element of c.
 array* :arrayConditional(array *a, array *b, array *c)
@@ -3702,14 +4587,22 @@ array* :arrayConditional(array *a, array *b, array *c)
 // Return an n x n identity matrix.
 realarray2 *identity(Int n)
 {
-  size_t N=(size_t) n;
-  array *c=new array(N);
-  for(size_t i=0; i < N; ++i) {
-    array *ci=new array(N);
+  return Identity(n);
+}
+
+// Return the diagonal matrix with diagonal entries given by a.
+realarray2* :diagonal(realarray *a)
+{
+  size_t n=checkArray(a);
+  array *c=new array(n);
+  for(size_t i=0; i < n; ++i) {
+    array *ci=new array(n);
     (*c)[i]=ci;
-    for(size_t j=0; j < N; ++j)
+    for(size_t j=0; j < i; ++j)
       (*ci)[j]=0.0;
-   (*ci)[i]=1.0;
+    (*ci)[i]=read<real>(a,i);
+    for(size_t j=i+1; j < n; ++j)
+      (*ci)[j]=0.0;
   }
   return c;
 }
@@ -3718,7 +4611,7 @@ realarray2 *identity(Int n)
 realarray2 *inverse(realarray2 *a)
 {
   a=copyArray2(a);
-  size_t n=a->size();
+  size_t n=checkArray(a);
   checkSquare(a);
   
   inverseAllocate(n);
@@ -3808,21 +4701,26 @@ realarray2 *inverse(realarray2 *a)
 
 // Solve the linear equation ax=b by LU decomposition, returning the
 // solution x, where a is an n x n matrix and b is an array of length n.
-realarray *solve(realarray2 *a, realarray *b)
+// If no solution exists, return an empty array.
+realarray *solve(realarray2 *a, realarray *b, bool warn=true)
 {
-  size_t n=a->size();
+  size_t n=checkArray(a);
   
-  array *x=new array(n);
-  if(n == 0) return x;
+  if(n == 0) return new array(0);
+  
+  size_t m=checkArray(b);
+  if(m != n) error(incommensurate);
   
   real *A=copyArray2C(a);
-  real *B=copyArrayC(b);
-  size_t m=b->size();
-  if(m != n) error(incommensurate);  
-  
   size_t *index=new size_t[n];
-  LUdecompose(A,n,index);
+  
+  if(LUdecompose(A,n,index,warn) == 0)
+    return new array(0);
 
+  array *x=new array(n);
+  
+  real *B=copyArrayC(b);
+  
   for(size_t i=0; i < n; ++i) {
     size_t ip=index[i];
     real sum=B[ip];
@@ -3854,22 +4752,26 @@ realarray *solve(realarray2 *a, realarray *b)
 
 // Solve the linear equation ax=b by LU decomposition, returning the
 // solution x, where a is an n x n matrix and b is an n x m matrix.
-realarray2 *solve(realarray2 *a, realarray2 *b)
+// If no solution exists, return an empty array.
+realarray2 *solve(realarray2 *a, realarray2 *b, bool warn=true)
 {
-  size_t n=a->size();
+  size_t n=checkArray(a);
   
-  array *x=new array(n);
-  if(n == 0) return x;
+  if(n == 0) return new array(0);
   
-  if(b->size() != n) error(incommensurate);  
-  size_t m=read<array*>(b,0)->size();
+  if(checkArray(b) != n) error(incommensurate);
+  size_t m=checkArray(read<array*>(b,0));
   
   real *A=copyArray2C(a);
   real *B=copyArray2C(b,false);
   
   size_t *index=new size_t[n];
-  LUdecompose(A,n,index);
+  
+  if(LUdecompose(A,n,index,warn) == 0)
+    return new array(0);
 
+  array *x=new array(n);
+  
   for(size_t i=0; i < n; ++i) {
     real *Ai=A+i*n;
     real *Bi=B+i*m;
@@ -3916,7 +4818,7 @@ realarray2 *solve(realarray2 *a, realarray2 *b)
 real determinant(realarray2 *a)
 {
   real *A=copyArray2C(a);
-  size_t n=a->size();
+  size_t n=checkArray(a);
   
   real det=LUdecompose(A,n,NULL,false);
   size_t n1=n+1;
@@ -3931,13 +4833,14 @@ real determinant(realarray2 *a)
 realarray *Operator *(realarray2 *a, realarray *b)
 {
   size_t n=checkArray(a);
-  if(b->size() != n) error(incommensurate);
+  size_t m=checkArray(b);
   array *c=new array(n);
   real *B=copyArrayC(b);
   for(size_t i=0; i < n; ++i) {
     array *ai=read<array*>(a,i);
+    if(checkArray(ai) != m) error(incommensurate);
     real sum=0.0;
-    for(size_t j=0; j < n; ++j)
+    for(size_t j=0; j < m; ++j)
       sum += read<real>(ai,j)*B[j];
     (*c)[i]=sum;
   }
@@ -3945,44 +4848,16 @@ realarray *Operator *(realarray2 *a, realarray *b)
   return c;
 }
 
-// Compute the dot product of vectors a and b.
-real dot(realarray *a, realarray *b) 
-{
-  size_t n=checkArrays(a,b);
-  real sum=0.0;
-  for(size_t i=0; i < n; ++i)
-    sum += read<real>(a,i)*read<real>(b,i);
-  return sum;
-}
-
-// Multiply a by diagonal(b).
-realarray2 *multdiagonal(realarray2 *a, realarray *b)
-{
-  size_t n=checkArray(a);
-  if(b->size() != n) error(incommensurate);
-  array *c=new array(n);
-  real *B=copyArrayC(b);
-  for(size_t i=0; i < n; ++i) {
-    array *ai=read<array*>(a,i);
-    array *ci=new array(n);
-    (*c)[i]=ci;
-    for(size_t j=0; j < n; ++j)
-      (*ci)[j]=read<real>(ai,j)*B[j];
-  }
-  delete[] B;
-  return c;
-}
-
 realarray2 *Operator *(realarray2 *a, realarray2 *b)
 {
-  size_t n=a->size();
+  size_t n=checkArray(a);
   
-  size_t nb=b->size();
-  size_t na0=n == 0 ? 0 : read<array*>(a,0)->size();
+  size_t nb=checkArray(b);
+  size_t na0=n == 0 ? 0 : checkArray(read<array*>(a,0));
   if(na0 != nb) 
     error(incommensurate);
   
-  size_t nb0=nb == 0 ? 0 : read<array*>(b,0)->size();
+  size_t nb0=nb == 0 ? 0 : checkArray(read<array*>(b,0));
     
   array *c=new array(n);
 
@@ -4008,6 +4883,46 @@ realarray2 *Operator *(realarray2 *a, realarray2 *b)
   return c;
 }
 
+triple Operator *(realarray2 *t, triple v)
+{
+  return *t*v;
+}
+
+pair project(triple v, realarray2 *t)
+{
+  size_t n=checkArray(t);
+  if(n != 4) error(incommensurate);
+  array *t0=read<array*>(t,0);
+  array *t1=read<array*>(t,1);
+  array *t3=read<array*>(t,3);
+  if(checkArray(t0) != 4 || checkArray(t1) != 4 || checkArray(t3) != 4)
+    error(incommensurate);
+  
+  real x=v.getx();
+  real y=v.gety();
+  real z=v.getz();
+  
+  real f=read<real>(t3,0)*x+read<real>(t3,1)*y+read<real>(t3,2)*z+
+    read<real>(t3,3);
+  if(f == 0.0) dividebyzero();
+  f=1.0/f;
+  
+  return pair((read<real>(t0,0)*x+read<real>(t0,1)*y+read<real>(t0,2)*z+
+	       read<real>(t0,3))*f,
+	      (read<real>(t1,0)*x+read<real>(t1,1)*y+read<real>(t1,2)*z+
+	       read<real>(t1,3))*f);
+}
+
+// Compute the dot product of vectors a and b.
+real dot(realarray *a, realarray *b) 
+{
+  size_t n=checkArrays(a,b);
+  real sum=0.0;
+  for(size_t i=0; i < n; ++i)
+    sum += read<real>(a,i)*read<real>(b,i);
+  return sum;
+}
+
 // Solve the problem L\inv f, where f is an n vector and L is the n x n matrix
 //
 // [ b[0] c[0]           a[0]   ]
@@ -4018,8 +4933,8 @@ realarray2 *Operator *(realarray2 *a, realarray2 *b)
 realarray *tridiagonal(realarray *a, realarray *b, realarray *c, realarray *f)
 {
   size_t n=checkArrays(a,b);
-  checkequal(n,checkArray(c));
-  checkequal(n,checkArray(f));
+  checkEqual(n,checkArray(c));
+  checkEqual(n,checkArray(f));
   
   array *up=new array(n);
   array& u=*up;
@@ -4128,10 +5043,6 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x,
     real x0=x;
     
     Stack->push(x);
-    f->call(Stack);
-    real fx=pop<real>(Stack);
-    
-    Stack->push(x);
     fprime->call(Stack);
     real dfdx=pop<real>(Stack);
     
@@ -4139,6 +5050,11 @@ real newton(Int iterations=100, callableReal *f, callableReal *fprime, real x,
       x=DBL_MAX;
       break;
     }
+
+    Stack->push(x);
+    f->call(Stack);
+    real fx=pop<real>(Stack);
+    
     x -= fx/dfdx;
 
     lastdiff=diff;
@@ -4285,57 +5201,16 @@ pairarray* :pairArrayFFT(pairarray *a, Int sign=1)
 Intarray2 *triangulate(pairarray *z)
 {
   size_t nv=checkArray(z);
-
-#ifdef HAVE_TRIANGLE  
-  struct triangulateio in, out;
-
-  in.numberofpoints = nv;
-  in.pointlist=new double[2*nv];
-
-  double *p=in.pointlist;
-  for(size_t i=0; i < nv; ++i) {
-    pair w=read<pair>(z,i);
-    *(p++)=w.getx();
-    *(p++)=w.gety();
-  }
-  
-  in.numberofpointattributes = 0;
-  in.pointattributelist = NULL;
-  in.pointmarkerlist = NULL;
-  in.numberofsegments = 0;
-  in.numberofholes = 0;
-  in.numberofregions = 0;
-  in.regionlist = NULL;
-
-  out.trianglelist = NULL;
-
-  triangulate("zBNQ", &in, &out, NULL);
-
-  delete[] in.pointlist;
-
-  size_t nt=(size_t) out.numberoftriangles;
-  array *t=new array(nt);
-  int *k=out.trianglelist;
-  for(size_t i=0; i < nt; ++i) {
-    array *ti=new array(3);
-    (*t)[i]=ti;
-    (*ti)[0]=*(k++);
-    (*ti)[1]=*(k++);
-    (*ti)[2]=*(k++);
-  }
-   
-  free(out.trianglelist);
-  return t;
-#else  
-// Call Gilles Dumoulin's port of Paul Bourke's triangulation code.
+// Call robust version of Gilles Dumoulin's port of Paul Bourke's
+// triangulation code.
 
   XYZ *pxyz=new XYZ[nv+3];
-  ITRIANGLE *V=new ITRIANGLE[3*nv];
+  ITRIANGLE *V=new ITRIANGLE[4*nv];
   
   for(size_t i=0; i < nv; ++i) {
     pair w=read<pair>(z,i);
-    pxyz[i].x=w.getx();
-    pxyz[i].y=w.gety();
+    pxyz[i].p[0]=w.getx();
+    pxyz[i].p[1]=w.gety();
     pxyz[i].i=(Int) i;
   }
   
@@ -4356,7 +5231,6 @@ Intarray2 *triangulate(pairarray *z)
   delete[] V;
   delete[] pxyz;
   return t;
-#endif  
 }
 
 
@@ -4379,7 +5253,7 @@ file* :nullFile()
 
 file* input(string name, bool check=true, string comment=commentchar)
 {
-  char c=comment == "" ? (char) 0 : comment[0];
+  char c=comment.empty() ? (char) 0 : comment[0];
   file *f=new ifile(name,c,check);
   f->open();
   return f;
@@ -4389,7 +5263,7 @@ file* output(string name, bool update=false, string comment=commentchar)
 {
   file *f;
   if(update) {
-    char c=comment == "" ? (char) 0 : comment[0];
+    char c=comment.empty() ? (char) 0 : comment[0];
     f=new iofile(name,c);
   } else f=new ofile(name);
   f->open();

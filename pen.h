@@ -53,7 +53,7 @@ static const string BaseLineTag[]={"NoAlign","Align"};
 const Int nBaseLine=sizeof(BaseLineTag)/sizeof(string);
   
 enum ColorSpace {DEFCOLOR=0,INVISIBLE,GRAYSCALE,RGB,CMYK,PATTERN};
-extern const unsigned ColorComponents[];
+extern const size_t ColorComponents[];
 static const string ColorDeviceSuffix[]={"","","Gray","RGB","CMYK",""};
 const unsigned nColorSpace=sizeof(ColorDeviceSuffix)/sizeof(string);
   
@@ -502,6 +502,11 @@ public:
     rgbtogrey();
   }
   
+  void torgb() {
+    if(cmyk()) cmyktorgb();
+    else if(gray()) greytorgb();
+  }
+  
   void convert() {
     if(settings::gray || settings::bw) {
       if(rgb()) rgbtogrey();
@@ -587,6 +592,9 @@ public:
     
     if(P.color == PATTERN && P.pattern.empty()) P.color=DEFCOLOR;
     ColorSpace colorspace=(ColorSpace) max((Int) P.color,(Int) Q.color);
+    
+    if(!(p.transparency == DEFTRANSP && q.transparency == DEFTRANSP))
+      P.transparency.opacity=max(p.opacity(),q.opacity());
     
   switch(colorspace) {
     case PATTERN:
@@ -695,7 +703,11 @@ public:
   }
   
   friend ostream& operator << (ostream& out, const pen& p) {
-    out << "([" << p.line.pattern << "]";
+    out << "(";
+    if(p.line == DEFLINE)
+      out << p.line.pattern;
+    else
+      out << "[" << p.line.pattern << "]";
     if(p.line.offset)
       out << p.line.offset;
     if(!p.line.scale)

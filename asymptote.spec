@@ -1,7 +1,7 @@
 %{!?_texmf: %define _texmf %(eval "echo `kpsewhich -expand-var '$TEXMFMAIN'`")}
 
 Name:           asymptote
-Version:        1.43
+Version:        1.51
 Release:        1%{?dist}
 Summary:        Descriptive vector graphics language
 
@@ -23,6 +23,7 @@ BuildRequires:  ImageMagick
 
 Requires:       tetex-latex
 Requires:       tkinter
+Requires:       freeglut-devel >= 2.4.0
 Requires(post): /usr/bin/texhash /sbin/install-info
 Requires(postun): /usr/bin/texhash /sbin/install-info
 

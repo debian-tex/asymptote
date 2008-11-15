@@ -17,7 +17,8 @@ using settings::getSetting;
   
 namespace camp {
 
-texfile::texfile(const string& texname, const bbox& box) : box(box)
+texfile::texfile(const string& texname, const bbox& box, bool pipe) 
+  : box(box)
 {
   texengine=getSetting<string>("tex");
   inlinetex=getSetting<bool>("inlinetex");
@@ -29,7 +30,7 @@ texfile::texfile(const string& texname, const bbox& box) : box(box)
   }
   out->setf(std::ios::fixed);
   out->precision(6);
-  texdocumentclass(*out);
+  texdocumentclass(*out,pipe);
   resetpen();
 }
 
@@ -41,6 +42,14 @@ texfile::~texfile()
   }
 }
   
+void texfile::miniprologue()
+{
+  texpreamble(*out,processData().TeXpreamble,false,true);
+  *out << "\\pagestyle{empty}" << newl;
+  *out << "\\begin{document}" << newl;
+  texfontencoding(*out);
+}
+
 void texfile::prologue()
 {
   if(inlinetex) {
@@ -62,8 +71,6 @@ void texfile::prologue()
       if(height < 12.0) voffset=height-12.0;
     } else if(height < 10.0) voffset=height-10.0;
 
-    *out << "\\pdfhorigin=0bp" << newl
-	 << "\\pdfvorigin=" << voffset << "bp" << newl;
     if(width > 0) 
       *out << "\\pdfpagewidth=" << width << "bp" << newl;
     if(height > 0)
@@ -76,17 +83,21 @@ void texfile::prologue()
 	   << "\\textheight=" << height+18.0 << "bp" << newl
 	   << "\\textwidth=" << width+18.0 << "bp" << newl;
       if(settings::pdf(texengine))
-	*out << "\\oddsidemargin=-17.61pt" << newl
+	*out << "\\oddsidemargin=-89.9pt" << newl
 	     << "\\evensidemargin=\\oddsidemargin" << newl
-	     << "\\topmargin=-37.01pt" << newl;
+	     << "\\topmargin=-109.27pt" << newl;
       *out << "\\begin{document}" << newl;
     }
   } else {
-    *out << "\\hoffset=36.6pt" << newl
-	 << "\\voffset=54.0pt" << newl;
-    if(settings::pdf(texengine)) {
-      *out << "\\hoffset=-20pt" << newl
-	   << "\\voffset=0pt" << newl;
+    if(!inlinetex) {
+      *out << "\\footline={}" << newl;
+      if(settings::pdf(texengine)) {
+	*out << "\\hoffset=-92.27pt" << newl
+	     << "\\voffset=-72.27pt" << newl;
+      } else {
+	*out << "\\hoffset=36.6pt" << newl
+	     << "\\voffset=54.0pt" << newl;
+      }
     }
   }
 }
@@ -140,6 +151,21 @@ void texfile::setlatexcolor(pen p)
   }
 }
   
+void texfile::setfont(pen p)
+{
+  if((p.size() != lastpen.size() || p.Lineskip() != lastpen.Lineskip()) &&
+     settings::latex(texengine)) {
+    *out << "\\fontsize{" << p.size() << "}{" << p.Lineskip()
+	 << "}\\selectfont" << newl;
+  }
+
+  if(p.Font() != lastpen.Font()) {
+    *out << p.Font() << "%" << newl;
+  }
+  
+  lastpen=p;
+}
+  
 void texfile::setpen(pen p)
 {
   bool latex=settings::latex(texengine);
@@ -150,17 +176,7 @@ void texfile::setpen(pen p)
   if(latex) setlatexcolor(p);
   else setcolor(p,settings::beginspecial(texengine),settings::endspecial());
   
-  if((p.size() != lastpen.size() || p.Lineskip() != lastpen.Lineskip()) &&
-     settings::latex(texengine)) {
-    *out << "\\fontsize{" << p.size() << "}{" << p.Lineskip()
-	 << "}\\selectfont" << newl;
-  }
-
-  if(p.Font() != lastpen.Font()) {
-    *out << p.Font() << "%" << newl;
-  }
-
-  lastpen=p;
+  setfont(p);
 }
    
 void texfile::gsave()
@@ -215,10 +231,10 @@ void texfile::put(const string& label, const transform& T, const pair& z,
        << "}{" << label << "}" << newl;
 }
 
-void texfile::epilogue()
+void texfile::epilogue(bool pipe)
 {
   if(settings::latex(texengine)) {
-    if(!inlinetex)
+    if(!inlinetex || pipe)
       *out << "\\end{document}" << newl;
   } else {
       *out << "\\bye" << newl;

@@ -1,5 +1,6 @@
 // Number of function samples.
 int ngraph=100;
+int nCircle=400;
 
 // Number of mesh intervals.
 int nmesh=10;
@@ -14,6 +15,4 @@ real epsilon=10*realEpsilon;
 
 restricted bool Crop=true;
 restricted bool NoCrop=false;
-
-typedef guide interpolate(... guide[]);
 

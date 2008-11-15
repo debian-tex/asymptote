@@ -1,4 +1,3 @@
-import graph3;
 import solids;
 size(0,150);
 currentprojection=orthographic(0,-30,5);
@@ -19,24 +18,23 @@ real x2=r*s2/h;
 
 path3 p=(0,0,0)--(x,0,s);
 revolution a=revolution(p,Z);
-a.filldraw(lightblue,lightblue+white,false);
+draw(surface(a,4),lightblue+opacity(0.5));
 
 path3 q=(x,0,s)--(r,0,h);
 revolution b=revolution(q,Z);
-b.filldraw(white,black,false);
-
-bbox3 b=autolimits(O,h*(X+Z)+Y);
+draw(surface(b),white+opacity(0.5));
 
 draw((-r-1,0,0)--(r+1,0,0));
 draw((0,0,0)--(0,0,h+1),dashed);
 
 path3 w=(x1,0,s1)--(x2,0,s2)--(0,0,s2);
 revolution b=revolution(w,Z);
-b.filldraw(blue,black,false);
+draw(surface(b),blue+opacity(0.5));
 draw(circle((0,0,s2),x2));
+draw(circle((0,0,s1),x1));
 
-draw("$x$",(xr,0,0)--(xr,0,sr),red,Arrow,PenMargin);
+draw("$x$",(xr,0,0)--(xr,0,sr),red,Arrow3,PenMargin3);
 draw("$r$",(0,0,sr)--(xr,0,sr),N,red);
 draw((string) r,(0,0,h)--(r,0,h),N,red);
-draw((string) h,(r,0,0)--(r,0,h),red,Arrow,PenMargin);
-draw((string) s,(-x,0,0)--(-x,0,s),W,red,Arrow,Bar,PenMargin);
+draw((string) h,(r,0,0)--(r,0,h),red,Arrow3,PenMargin3);
+draw((string) s,(-x,0,0)--(-x,0,s),W,red,Arrow3,Bar3,PenMargin3);

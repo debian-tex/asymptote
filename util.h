@@ -44,6 +44,10 @@ string buildname(string filename, string suffix="",
 // directory.
 string auxname(string filename, string suffix="");
 
+// Return an argv array corresponding to the fields in command delimited
+// by spaces not within matching single quotes.
+char **args(const char *command, bool quiet=false);
+  
 // Similar to the standard system call except allows interrupts and does
 // not invoke a shell.
 int System(const char *command, int quiet=0, bool wait=true,
@@ -79,10 +83,6 @@ extern "C" int fileno(FILE *);
 extern "C" char *strptime(const char *s, const char *format, struct tm *tm);
 #endif
 
-#if defined(__CYGWIN__)
-#define ARG_MAX _POSIX_ARG_MAX
-#endif
-
 extern bool False;
 
 // Strip blank lines (which would break the bidirectional TeX pipe)
@@ -98,6 +98,7 @@ extern char *startpath;
 void backslashToSlash(string& s);
 void spaceToUnderscore(string& s);
 string Getenv(const char *name, bool msdos);
+char *getPath(char *p=NULL);
 
 void execError(const char *command, const char *hint, const char *application);
   

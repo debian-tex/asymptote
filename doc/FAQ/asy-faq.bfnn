@@ -84,7 +84,7 @@ don't care about interactive readline support (in which case configure will
 automatically detect and disable obsolete versions of the readline library).
 Marius Schamschula also maintains a binary package for various MacOS X
 platforms 
-\docref{http://www.hmug.org/pub/MacOS_X/BSD/Applications/Publishing/asymptote/\}.
+\docref{http://www.hmug.org/pub/MacOS_X/X/Applications/Publishing/asymptote\}.
 
 \question 26jun:osxbadCPU Why do I get the error \courier{Bad CPU type in executable\} on installing Asymptote from the MAC OS binary?
 
@@ -139,7 +139,7 @@ pdflatex latexusage
 
 \question 02sep:tkinterdepend Do I need the \courier{tkinter\} package to install an Asymptote rpm binary?
  
-No, you don't need \courier{tkinter\} unless you want to try out the GUI \courier{xasy\} (still under development). Try
+No, you don't need \courier{tkinter\} unless you want to try out the GUI \courier{xasy\}. Try
 
 \verbatim
 rpm -Uvh --nodeps asymptote-x.xx-1.i386.rpm
@@ -277,7 +277,12 @@ Put
 usepackage("mathptmx");
 \endverbatim
 
-at the beginning of your file.
+at the beginning of your file. Note: to enable the Adobe Times Roman font
+for text, you will also need to say:
+\verbatim
+defaultpen(TimesRoman());
+\endverbatim
+
 
 \question 28jun:internatfonts How can I use international fonts in Asymptote labels?
 
@@ -601,8 +606,6 @@ the non-quiet types, but will not notify you which labels are overlapping. See:
  
 In the case of a user-specified tick array, you can change which labels get
 suppressed/moved by changing the order of array entries.
-
-Further examples of graphs are available at \docref{http://home.tele2.fr/phivaldi/asymptote/graph/index.html\}.
 
 \question 04nov:fixedsizegraphs How do I make the plot region of a graph, ignoring labels and legends, have a fixed size?
  
@@ -1275,17 +1278,21 @@ features not available in PostScript (e.g. general function shading).
 \question 28jun:bigpictures How to I produce large pictures of high quality in raster format (e.g. png, giff etc). 
 
 Try using some of the options to convert, mainly -geometry and -density. For example: 
+\verbatim
 convert -geometry 1000x3000 example.eps example.png 
+\endverbatim
 should give you the number of pixels you are looking for. 
  
 You can also change the default resolution of the image with: 
-convert -geometry 1000x3000 -density 300 -units PixelsPerInch example.eps 
-example.png 
+\verbatim
+convert -geometry 1000x3000 -density 300 -units PixelsPerInch example.eps example.png 
+\endverbatim
 This does not change the number of pixels in the image, but just gives a hint 
-as to how large a pixel should be displayed.
+as to how large each pixel should be displayed.
  
 If you include the -density option without the -geometry option, convert will 
-keep the image size constant (so a 4"x3" eps figure will generate a 4"x3" png 
+keep the image size constant (so a 4cm x 3cm eps figure will generate a 4cm x
+3cm png 
 image). 
 
 \question 28jun:multipage Is it possible to produce multi-page documents with asymptote? 

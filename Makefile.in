@@ -12,22 +12,27 @@ LFLAGS = @LDFLAGS@
 LIBS = $(LFLAGS) @LIBS@ $(GCLIBS)
 
 CAMP = camperror path drawpath drawlabel picture psfile texfile util settings \
-       guide flatguide knot drawfill path3
-FILES = $(CAMP) @TRIANGLE@ runtime env genv main stm dec errormsg callable \
-	name symbol types entry exp newexp stack camp.tab lex.yy access \
-	absyn record interact fileio builtin fftw++ simpson coder coenv \
+       guide flatguide knot drawfill path3 drawpath3 drawsurface
+
+PRC =  prc/PRCbitStream prc/oPRCFile prc/PRCdouble prc/writePRC
+
+FILES = $(CAMP) runtime env genv main stm dec errormsg \
+        callable name symbol types entry exp newexp stack camp.tab lex.yy \
+	access absyn record interact fileio builtin fftw++ simpson coder coenv \
 	@getopt@ locate parser program application varinit fundec refaccess \
-	envcompleter process constructor array
+	envcompleter process constructor array Delaunay predicates \
+	$(PRC) glrender tr arcball algebra3 quaternion svnrevision
 
 DIST = camp.tab.h camp.tab.cc lex.yy.cc runtime.h runtime.cc keywords.cc \
 	asy-keywords.el base/asy-keywords.el
-CLEAN = camp.output asy.list
 NAME = asy
 XNAME = x$(NAME)
-EXTRA = asy-mode.el asy-keywords.el asy-init.el asy.vim asymptote.py
+CLEAN = camp.output asy.list svnrevision.cc doc/version.texi GUI/xasyVersion.py $(XNAME)
+EXTRA = asy-mode.el asy-keywords.el asy-init.el asy.vim asymptote.py reload.js
+DOCEXTRA = *.asy *.csv *.dat latexusage.tex externalprc.tex pixel.pdf
 KEYWORDS = base $(ASYMPTOTE_SITEDIR)
 LATEXFILES = asymptote.sty asycolors.sty
-ASY = ./asy -dir base -config ""
+ASY = ./asy -dir base -config "" -render=0
 
 DEFS = @DEFS@ @OPTIONS@
 CFLAGS = @CPPFLAGS@ @CFLAGS@ 
@@ -54,18 +59,38 @@ exampledir = $(docdir)/examples
 animationsdir = $(exampledir)/animations
 latexdir = $(DESTDIR)@latexdir@
 INSTALL = @INSTALL@
+REVISION = "const char *SVN_REVISION="
+revision = `svn info 2>/dev/null | grep "Revision" | sed -e "s/Revision: \(.*\)/-r\1/"`
+last = `cat svnrevision.cc | sed -e 's/.*\"\(.*\)\";/\\1/'`
 
 export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
 
-asy: $(GCLIB) $(FILES:=.o) 
+asy: $(GCLIB) $(FILES:=.o) prc
+	if test "$(revision)" != "$(last)"; then \
+	  echo $(REVISION)\"$(revision)\"\; > svnrevision.cc; \
+	  $(CXX) $(OPTS) $(INCL) -o svnrevision.o -c svnrevision.cc; \
+	fi
+	echo string VERSION=\"@VERSION@$(revision)\"\; > base/version.asy
+	echo @set VERSION @VERSION@$(revision) > doc/version.texi
+	echo @set Datadir @datadir@ >> doc/version.texi
+	echo "#!/usr/bin/env python" > GUI/xasyVersion.py
+	echo xasyVersion = \"@VERSION@$(revision)\" >> GUI/xasyVersion.py
 	ln -sf GUI/xasy.py $(XNAME)
 	$(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) $(LIBS)
 
-msdos: $(GCLIB) $(FILES:=.o) asy.o
+svnrevision.cc:
+	echo $(REVISION)\"\"\; > svnrevision.cc;
+
+msdos: $(GCLIB) $(FILES:=.o) prc asy.o
+	echo string VERSION=\"@VERSION@\"\; > base/version.asy
+	echo @set VERSION @VERSION@ > doc/version.texi
+	echo @set Datadir @datadir@ >> doc/version.texi
+	echo "#!/usr/bin/env python" > GUI/xasyVersion.py
+	echo xasyVersion = \"@VERSION@\" >> GUI/xasyVersion.py
 	$(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) asy.o $(LIBS) -s -static
 
 asy.o:	asy.rc asy.ico Makefile
-	cat asy.rc | sed -e "s/ASYMPTOTE_VERSION/@VERSION@/" | \
+	cat asy.rc | sed -e "s/ASYMPTOTE_VERSION/@VERSION@$(revision)/" | \
 	windres -o asy.o
 
 all:  	asy man faq asy-keywords.el
@@ -95,17 +120,6 @@ man:	asy
 faq:	asy
 	cd doc; $(MAKE) faq
 
-triangle.h: triangle.shar.gz
-	mkdir triangle
-	gunzip -c triangle.shar.gz > triangle/triangle.shar
-	cd triangle; sh triangle.shar
-	cp triangle/triangle.h .
-	cp triangle/triangle.c ./triangle.cc
-	patch triangle.cc patches/triangle.patch
-
-triangle.o: triangle.h
-	$(CXX) $(OPTS) $(INCL) -DANSI_DECLARATORS -DTRILIBRARY -o triangle.o -c triangle.cc
-
 runtime.cc: runtime.pl runtime.in
 	./runtime.pl
 
@@ -126,7 +140,7 @@ envcompleter.d: keywords.cc
 
 asy-keywords.el: asy asy-list.pl
 	$(ASY) -l > asy.list
-	ls $(addsuffix /*.asy,$(KEYWORDS)) | grep -v plain\* | grep -v featpost3D | xargs $(ASY) -l >> asy.list
+	ls $(addsuffix /*.asy,$(KEYWORDS)) | grep -v plain\* | grep -v three_\* | grep -v featpost3D | xargs $(ASY) -l >> asy.list
 	./asy-list.pl asy.list @VERSION@
 	ln -sf ../asy-keywords.el base/
 
@@ -142,8 +156,8 @@ install-asy: asy asy-keywords.el
 	${INSTALL} -p -m 644 base/*.asy $(addprefix base/,$(EXTRA)) $(asydir)
 	${INSTALL} -p -m 755 GUI/*.py $(GUIdir)
 	ln -sf @datadir@/asymptote/GUI/xasy.py $(bindir)/$(XNAME)
-	${INSTALL} -p -m 644 examples/*.asy examples/piicon.eps doc/*.asy \
-	  doc/extra/*.asy doc/*.csv doc/*.dat doc/latexusage.tex $(exampledir)
+	${INSTALL} -p -m 644 examples/*.asy examples/piicon.eps \
+	  doc/extra/*.asy $(addprefix doc/,$(DOCEXTRA)) $(exampledir)
 	${INSTALL} -p -m 644 examples/animations/*.asy $(animationsdir)
 	-${INSTALL} -p -m 644 $(addprefix doc/,$(LATEXFILES)) $(latexdir)
 	-if test -z "$(DESTDIR)"; then \
@@ -163,8 +177,7 @@ uninstall-all: uninstall-man uninstall-asy
 uninstall-asy:
 	-cd $(animationsdir); rm -f *.asy
 	-rmdir $(animationsdir)
-	-cd $(exampledir); rm -f *.asy *.csv *.dat $(EXTRA) piicon.eps \
-		latexusage.tex
+	-cd $(exampledir); rm -f piicon.eps $(DOCEXTRA)
 	-rmdir $(exampledir)
 	-rmdir $(docdir)
 	-cd $(GUIdir); rm -f *.py
@@ -178,28 +191,30 @@ uninstall-asy:
 uninstall-man: 
 	cd doc; $(MAKE) uninstall
 
-clean:  FORCE
-	rm -f asy *.o *.d *mon.out $(CLEAN)
+prc-clean: FORCE
+	-rm -f prc/*.o prc/*.d 
 
-gc-clean: clean
+clean:  FORCE prc-clean
+	-rm -f asy *.o *.d *mon.out $(CLEAN)
+
+gc-clean: FORCE clean
 	-if test -d $(GC); then \
 		$(MAKE) -C $(GC) clean; \
 	fi
 
-cleaner: distclean
+cleaner: FORCE distclean
 distclean: FORCE clean
 	-if test -d $(GC); then \
 		rm -rf $(GC); \
 	fi
-	rm -rf triangle triangle.h triangle.cc
-	rm -f Makefile config.h config.log config.status errors.temp
+	-rm -f Makefile config.h config.log config.status errors.temp
 	cd doc; $(MAKE) distclean
 	cd tests; $(MAKE) distclean
 
-cleanest: maintainer-clean
+cleanest: FORCE maintainer-clean
 maintainer-clean: FORCE distclean
-	rm -f configure config.h.in $(DIST)
-	rm -rf autom4te.cache
+	-rm -f configure config.h.in $(DIST)
+	-rm -rf autom4te.cache
 
 check: asy FORCE
 	./wce

@@ -60,11 +60,6 @@ void draw(frame f, guide[] g, pen p=currentpen)
   for(int i=0; i < g.length; ++i) draw(f,g[i],p);
 }
 
-void fill(frame f, path[] g)
-{
-  fill(f,g,currentpen);
-}
-
 void filldraw(frame f, path[] g, pen fillpen=currentpen,
               pen drawpen=currentpen)
 {
@@ -183,9 +178,9 @@ path fill(frame dest, frame src, filltype filltype=NoFill,
 
 // Add frame dest to frame src with optional grouping and background fill.
 void add(frame dest, frame src, bool group, filltype filltype=NoFill,
-         bool put=Above)
+         bool above=true)
 {
-  if(put) {
+  if(above) {
     if(filltype != NoFill) fill(dest,src,filltype);
     if(group) begingroup(dest);
     add(dest,src);
@@ -211,8 +206,8 @@ void add(frame dest, frame src, bool group, filltype filltype=NoFill,
 }
 
 void add(frame dest, frame src, filltype filltype,
-	 bool put=filltype(newframe,(0,0)--cycle,nullpen))
+	 bool above=filltype(newframe,(0,0)--cycle,nullpen))
 {
   if(filltype != NoFill) fill(dest,src,filltype);
-  (put ? add : prepend)(dest,src);
+  (above ? add : prepend)(dest,src);
 }

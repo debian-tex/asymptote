@@ -43,17 +43,11 @@ struct bbox {
   {
   }
 
-  bbox(pair p, pair q) 
-  {
-    bbox();
-    add(p); add(q);
-  }
-  
   // Start a bbox with a point
-  bbox(pair z)
+  bbox(const pair& z)
+    : empty(false), left(z.getx()), bottom(z.gety()),
+      right(z.getx()), top(z.gety())
   {
-    bbox();
-    add(z);
   }
 
   bool nonempty() const {
@@ -73,20 +67,58 @@ struct bbox {
     else {
       if (x < left)
 	left = x;  
-      if (x > right)
+      else if (x > right)
 	right = x;  
       if (y < bottom)
 	bottom = y;
-      if (y > top)
+      else if (y > top)
 	top = y;
     }
 
     return *this;
   }
 
+  // Add a point to a nonempty bbox
+  void addnonempty(const pair& z)
+  {
+    double x = z.getx(), y = z.gety();
+    if (x < left)
+      left = x;  
+    else if (x > right)
+      right = x;  
+    if (y < bottom)
+      bottom = y;
+    else if (y > top)
+      top = y;
+  }
+
+  // Add a point to a nonempty bbox, updating bounding times
+  void addnonempty(const pair& z, bbox& times, double t)
+  {
+    double x = z.getx(), y = z.gety();
+
+    if (x < left) {
+      left = x;  
+      times.left = t;
+    }
+    else if (x > right) {
+      right = x;  
+      times.right = t;
+    }
+    if (y < bottom) {
+      bottom = y;
+      times.bottom = t;
+    }
+    else if (y > top) {
+      top = y;
+      times.top = t;
+    }
+  }
+
   bbox operator+= (const pair& z)
   {
-    return add(z);
+    add(z);
+    return *this;
   }
 
   bbox operator*= (double x)
@@ -113,7 +145,7 @@ struct bbox {
   }
 
   // Add one bounding box to another
-  bbox add(const bbox& b)
+  void add(const bbox& b)
   {
     if (this->empty)
       *this = b;
@@ -123,13 +155,12 @@ struct bbox {
       bottom = min(bottom, b.bottom);
       top = max(top, b.top);
     }
-
-    return *this;
   }
 
   bbox operator+= (const bbox& b)
   {
-    return add(b);
+    add(b);
+    return *this;
   }
 
   void clip(const bbox& b) {

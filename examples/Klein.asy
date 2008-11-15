@@ -1,7 +1,7 @@
 import graph3;
 
 size(200,0);
-currentprojection=perspective(50,-300,30);
+currentprojection=perspective(10,-50,5);
 
 // From http://local.wasp.uwa.edu.au/~pbourke/surfaces_curves/klein/
 triple f(pair t) {
@@ -16,4 +16,4 @@ triple f(pair t) {
 
 pen p=rgb(0.2,0.5,0.7);
 
-add(surface(f,(0,0),(2pi,2pi),60,60,meshpen=p));
+draw(surface(f,(0,0),(2pi,2pi),60,60),lightgray,meshpen=p);

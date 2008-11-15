@@ -41,7 +41,7 @@ void stringCast(vm::stack *s)
   ostringstream buf;
   buf.precision(DBL_DIG);
   buf << pop<T>(s);
-  s->push((string) buf.str());
+  s->push(buf.str());
 }
 
 template<class T>

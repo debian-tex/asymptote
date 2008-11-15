@@ -11,7 +11,6 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <iostream>
 #include <cfloat>
 
 #include "mod.h"
@@ -40,11 +39,8 @@ bool unsimpson(double integral, double (*)(double), double a, double& b,
 
 namespace camp {
 
-inline void checkEmpty(Int n) {
-  if(n == 0)
-    reportError("nullpath has no points");
-}
-
+void checkEmpty(Int n);
+  
 inline Int adjustedIndex(Int i, Int n, bool cycles)
 {
   checkEmpty(n);
@@ -72,6 +68,7 @@ struct solvedKnot : public gc {
   }
 };
 
+extern const double BigFuzz;
 extern const double Fuzz;
 extern const double Fuzz2;
 extern const double sqrtFuzz;
@@ -83,14 +80,16 @@ class path : public gc {
 
   mem::vector<solvedKnot> nodes;
   mutable double cached_length; // Cache length since path is immutable.
+  
   mutable bbox box;
+  mutable bbox times; // Times where minimum and maximum extents are attained.
 
 public:
   path()
     : cycles(false), n(0), nodes(), cached_length(-1) {}
 
   // Create a path of a single point
-  path(pair z,bool = false)
+  path(pair z, bool = false)
     : cycles(false), n(1), nodes(1), cached_length(-1)
   {
     nodes[0].pre = nodes[0].point = nodes[0].post = z;
@@ -126,6 +125,14 @@ public:
       box(p.box)
   {}
 
+  path unstraighten() const
+  {
+    path P=path(*this);
+    for(int i=0; i < n; ++i)
+      P.nodes[i].straight=false;
+    return P;
+  }
+  
   virtual ~path()
   {
   }
@@ -161,6 +168,14 @@ public:
     return (t >= 0 && t < n) ? nodes[t].straight : false;
   }
   
+  bool piecewisestraight() const
+  {
+    Int L=length();
+    for(Int i=0; i < L; ++i)
+      if(!straight(i)) return false;
+    return true;
+  }
+  
   pair point(Int t) const
   {
     return nodes[adjustedIndex(t,n,cycles)].point;
@@ -182,65 +197,111 @@ public:
 
   pair postcontrol(double t) const;
   
-  pair predir(Int t) const {
+  inline double norm(const pair& z0, const pair& c0, const pair& c1,
+		     const pair& z1) const {
+    return Fuzz2*camp::max((c0-z0).abs2(),
+			   camp::max((c1-z0).abs2(),(z1-z0).abs2()));
+  }
+
+  pair predir(Int t, bool normalize=true) const {
     if(!cycles && t <= 0) return pair(0,0);
-    pair z0=point(t-1);
     pair z1=point(t);
     pair c1=precontrol(t);
-    pair dir=z1-c1;
-    double epsilon=Fuzz2*(z0-z1).abs2();
-    if(dir.abs2() > epsilon) return unit(dir);
+    pair dir=3.0*(z1-c1);
+    pair z0=point(t-1);
     pair c0=postcontrol(t-1);
-    dir=2*c1-c0-z1;
+    double epsilon=norm(z0,c0,c1,z1);
+    if(!normalize) return dir;
     if(dir.abs2() > epsilon) return unit(dir);
-    return unit(z1-z0+3*(c0-c1));
+    dir=2.0*c1-c0-z1;
+    if(dir.abs2() > epsilon) return unit(dir);
+    return unit(z1-z0+3.0*(c0-c1));
   }
 
-  pair predir(double t) const {
-    if(!cycles) {
-      if(t <= 0) return pair(0,0);
-      if(t >= n-1) return predir(n-1);
+  pair postdir(Int t, bool normalize=true) const {
+    if(!cycles && t >= n-1) return pair(0,0);
+    pair c0=postcontrol(t);
+    pair z0=point(t);
+    pair dir=3.0*(c0-z0);
+    pair z1=point(t+1);
+    pair c1=precontrol(t+1);
+    double epsilon=norm(z0,c0,c1,z1);
+    if(!normalize) return dir;
+    if(dir.abs2() > epsilon) return unit(dir);
+    dir=z0-2.0*c0+c1;
+    if(dir.abs2() > epsilon) return unit(dir);
+    return unit(z1-z0+3.0*(c0-c1));
+  }
+
+  pair dir(Int t, Int sign, bool normalize=true) const {
+    if(sign == 0) {
+      pair v=predir(t,normalize)+postdir(t,normalize);
+      return normalize ? unit(v) : 0.5*v;
     }
-    Int a=Floor(t);
-    return (t-a < sqrtFuzz) ? predir(a) : subpath((double) a,t).predir((Int) 1);
+    if(sign > 0) return postdir(t,normalize);
+    return predir(t,normalize);
   }
 
-  pair postdir(Int t) const {
+  pair dir(double t, bool normalize=true) const {
+    if(!cycles) {
+      if(t <= 0) return postdir((Int) 0,normalize);
+      if(t >= n-1) return predir(n-1,normalize);
+    }
+    Int i=Floor(t);
+    t -= i;
+    if(t == 0) return dir(i,0);
+    pair z0=point(i);
+    pair c0=postcontrol(i);
+    pair c1=precontrol(i+1);
+    pair z1=point(i+1);
+    pair a=3.0*(z1-z0)+9.0*(c0-c1);
+    pair b=6.0*(z0+c1)-12.0*c0;
+    pair c=3.0*(c0-z0);
+    pair dir=a*t*t+b*t+c;
+    double epsilon=norm(z0,c0,c1,z1);
+    if(!normalize) return dir;
+    if(dir.abs2() > epsilon) return unit(dir);
+    dir=2.0*a*t+b;
+    if(dir.abs2() > epsilon) return unit(dir);
+    return unit(a);
+  }
+
+  pair postaccel(Int t) const {
     if(!cycles && t >= n-1) return pair(0,0);
     pair z0=point(t);
-    pair z1=point(t+1);
     pair c0=postcontrol(t);
-    pair dir=c0-z0;
-    double epsilon=Fuzz2*(z0-z1).abs2();
-    if(dir.abs2() > epsilon) return unit(dir);
     pair c1=precontrol(t+1);
-    dir=z0-2*c0+c1;
-    if(dir.abs2() > epsilon) return unit(dir);
-    return unit(z1-z0+3*(c0-c1));
+    return 6.0*(z0+c1)-12.0*c0;
   }
 
-  pair postdir(double t) const {
-    if(!cycles) {
-      if(t >= n-1) return pair(0,0);
-      if(t <= 0) return postdir((Int) 0);
-    }
-    Int b=Ceil(t);
-    return (b-t < sqrtFuzz) ? postdir(b) : 
-      subpath(t,(double) b).postdir((Int) 0);
-  }
-
-  pair dir(Int t) const {
-    return unit(predir(t)+postdir(t));
+  pair preaccel(Int t) const {
+    if(!cycles && t <= 0) return pair(0,0);
+    pair z0=point(t-1);
+    pair c0=postcontrol(t-1);
+    pair c1=precontrol(t);
+    pair z1=point(t);
+    return 6.0*(z1+c0)-12.0*c1;
   }
   
-  pair dir(double t) const {
-    return unit(predir(t)+postdir(t));
+  pair accel(Int t, Int sign) const {
+    if(sign == 0) return 0.5*(preaccel(t)+postaccel(t));
+    if(sign > 0) return postaccel(t);
+    return preaccel(t);
   }
 
-  pair dir(Int t, Int sign) const {
-    if(sign == 0) return dir(t);
-    else if(sign > 0) return postdir(t);
-    else return predir(t);
+  pair accel(double t) const {
+    if(!cycles) {
+      if(t <= 0) return postaccel((Int) 0);
+      if(t >= n-1) return preaccel(n-1);
+    }
+    Int i=Floor(t);
+    t -= i;
+    if(t == 0) return 0.5*(postaccel(i)+preaccel(i));
+    pair z0=point(i);
+    pair c0=postcontrol(i);
+    pair c1=precontrol(i+1);
+    pair z1=point(i+1);
+    return 6.0*t*(z1-z0+3.0*(c0-c1))+6.0*(z0+c1)-12.0*c0;
   }
 
   // Returns the path traced out in reverse.
@@ -257,12 +318,39 @@ public:
   // Used by picture to determine bounding box.
   bbox bounds() const;
   
+  pair mintimes() const {
+    checkEmpty(n);
+    bounds();
+    return camp::pair(times.left,times.bottom);
+  }
+  
+  pair maxtimes() const {
+    checkEmpty(n);
+    bounds();
+    return camp::pair(times.right,times.top);
+  }
+  
+  template<class T>
+  void addpoint(bbox& box, T i) const {
+    box.addnonempty(point(i),times,(double) i);
+  }
+
+  template<class T>
+  void addpoint(bbox& box, T i, double min, double max) const {
+    static const pair I(0,1);
+    pair v=I*dir(i);
+    pair z=point(i);
+    box.add(z+min*v);
+    box.addnonempty(z+max*v);
+  }
+
   // Return bounding box accounting for padding perpendicular to path.
   bbox bounds(double min, double max) const;
-
+  
   // Return bounding box accounting for internal pen padding (but not pencap).
   bbox internalbounds(const bbox &padding) const;
   
+  double cubiclength(Int i, double goal=-1) const;
   double arclength () const;
   double arctime (double l) const;
   double directiontime(const pair& z) const;
@@ -279,11 +367,6 @@ public:
   
   // Debugging output
   friend std::ostream& operator<< (std::ostream& out, const path& p);
-
-  Int sgn1(double x) const
-  {
-    return x > 0.0 ? 1 : -1;
-  }
 
 // Increment count if the path has a vertical component at t.
   bool Count(Int& count, double t) const;
@@ -302,12 +385,17 @@ public:
 };
 
 extern path nullpath;
-extern const unsigned maxdepth; 
+extern const unsigned maxdepth;
+extern const unsigned mindepth;
  
-bool intersect(double& s, double& t, path& p, path& q, double fuzz,
+bool intersect(double& S, double& T, path& p, path& q, double fuzz,
 	       unsigned depth=maxdepth);
-void intersections(std::vector<double>& S, std::vector<double>& T, path& p,
-		   path& q, double fuzz, unsigned depth=maxdepth);
+bool intersections(double& s, double& t, std::vector<double>& S,
+		   std::vector<double>& T, path& p, path& q,
+		   double fuzz, bool single, unsigned depth=maxdepth);
+void intersections(std::vector<double>& S, path& g,
+		   const pair& p, const pair& q, double fuzz);
+
   
 // Concatenates two paths into a new one.
 path concat(const path& p1, const path& p2);
@@ -346,6 +434,17 @@ public:
 path nurb(pair z0, pair z1, pair z2, pair z3,
 	  double w0, double w1, double w2, double w3, Int m);
   
+double orient2d(const pair& a, const pair& b, const pair& c);
+
+void roots(std::vector<double> &roots, double a, double b, double c, double d);
+void roots(std::vector<double> &r, double x0, double c0, double c1, double x1,
+	   double x);
+  
+inline bool goodroot(double t)
+{
+  return 0.0 <= t && t <= 1.0;
+}
+
 }
 
 // Delete the following line to work around problems with old broken compilers.

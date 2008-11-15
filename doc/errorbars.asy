@@ -9,7 +9,9 @@ pair[] df={(0,0),(5,7),(0,5)};
 
 errorbars(pic,f,df,red);
 draw(pic,graph(pic,f),"legend",
-     marker(scale(0.8mm)*unitcircle,red,FillDraw(blue),Below));
+     marker(scale(0.8mm)*unitcircle,red,FillDraw(blue),above=false));
+
+scale(pic,true);
 
 xaxis(pic,"$x$",BottomTop,LeftTicks);
 yaxis(pic,"$y$",LeftRight,RightTicks);
@@ -23,6 +25,8 @@ filldraw(mark,scale(0.8mm)*polygon(6),green,green);
 draw(mark,scale(0.8mm)*cross(6),blue);
 
 draw(pic2,graph(pic2,f),marker(mark,markuniform(5)));
+
+scale(pic2,true);
 
 xaxis(pic2,"$x$",BottomTop,LeftTicks);
 yaxis(pic2,"$y$",LeftRight,RightTicks);

@@ -23,6 +23,8 @@ extern const char PROGRAM[];
 extern const char VERSION[];
 extern const char BUGREPORT[];
 
+extern char *argv0;
+
 extern const string docdir;
   
 extern bool safe;
@@ -75,13 +77,21 @@ string defaultformat();
 const char *beginlabel(const string& texengine);
 const char *endlabel(const string& texengine);
 const char *rawpostscript(const string& texengine);
+const char *beginpicture(const string& texengine);
+const char *endpicture(const string& texengine);
 const char *beginspecial(const string& texengine);
 const char *endspecial();
   
 extern bool fataltex[];
 const char **texabort(const string& texengine);
   
-string texengine();
-string texprogram();
+string texcommand(bool ps=false);
+string texprogram(bool ps=false);
+  
+const double inches=72;
+const double cm=inches/2.54;
 }
+
+extern const char *SVN_REVISION;
+
 #endif

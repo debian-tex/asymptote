@@ -21,6 +21,9 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the <fpu_control.h> header file. */
+#undef HAVE_FPU_CONTROL_H
+
 /* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
 #undef HAVE_FSEEKO
 
@@ -36,6 +39,9 @@
 /* Define to 1 if you have the `fftw3' library (-lfftw3). */
 #undef HAVE_LIBFFTW3
 
+/* Define to 1 if you have the `glut' library (-lglut). */
+#undef HAVE_LIBGLUT
+
 /* Define to 1 if you have the 'gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
 
@@ -50,6 +56,9 @@
 
 /* Define to 1 if you have the `sigsegv' library (-lsigsegv). */
 #undef HAVE_LIBSIGSEGV
+
+/* Define to 1 if you have the `z' library (-lz). */
+#undef HAVE_LIBZ
 
 /* Define to 1 if the system has the type `long'. */
 #undef HAVE_LONG
@@ -119,10 +128,6 @@
 
 /* Define to 1 if you have the `tgamma' function. */
 #undef HAVE_TGAMMA
-
-/* Define to 1 if you have the source files for the 'triangle' mesh generator.
-   */
-#undef HAVE_TRIANGLE
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H

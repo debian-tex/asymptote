@@ -1,10 +1,13 @@
 // Default file prefix used for inline LaTeX mode
 string defaultfilename;
 
-bool shipped; // Was a picture or frame already shipped out?
+string outprefix(string prefix=defaultfilename) {
+  string s=prefix != "" ? prefix :
+    (settings.outname == "" && interactive()) ? "out" : settings.outname;
+return stripdirectory(stripextension(s));
+}
 
-restricted bool Wait=true;                         
-restricted bool NoWait=false;
+bool shipped; // Was a picture or frame already shipped out?
 
 frame currentpatterns;
 
@@ -15,11 +18,48 @@ frame Seascape(frame f) {return rotate(-90)*f;};
 typedef frame orientation(frame);
 orientation orientation=Portrait;
 
+object embed3(string, frame, string, string, string, projection);
+string Embed(string name, string options="", real width=0, real height=0);
+string Link(string label, string text, string options="");
+
+bool prc0(string format="") {
+  if(format == "") format=settings.outformat;
+  return settings.prc && ((format == "pdf" || pdf()) || settings.inlineimage);
+}
+
+bool prc(string format="") {
+  return prc0(format) && Embed != null;
+}
+
+bool is3D(string format="")
+{
+  return prc(format) || settings.render != 0;
+}
+
+frame enclose(string prefix=defaultfilename, object F, string format="")
+{
+  if(prc(format)) {
+    frame f;
+    label(f,F.L);
+    return f;
+  } return F.f;
+}
+
 include plain_xasy;
 
 void shipout(string prefix=defaultfilename, frame f,
-             string format="", bool wait=NoWait, bool view=true)
+             string format="", bool wait=false, bool view=true,
+	     string options="", string script="",
+	     projection P=currentprojection)
 {
+  if(is3D(f)) {
+    f=enclose(prefix,embed3(prefix,f,format,options,script,P));
+    if(settings.render != 0 && !prc(format)) {
+      shipped=true;
+      return;
+    }
+  }
+
   if(inXasyMode) {
     erase();
     add(f,group=false);
@@ -35,19 +75,25 @@ void shipout(string prefix=defaultfilename, frame f,
   shipped=true;
 }
 
-void shipout(string prefix=defaultfilename, picture pic,
-             orientation orientation=orientation,
-             string format="", bool wait=NoWait, bool view=true)
+void shipout(string prefix=defaultfilename, picture pic=currentpicture,
+	     orientation orientation=orientation,
+	     string format="", bool wait=false, bool view=true,
+	     string options="", string script="",
+	     projection P=currentprojection)
 {
-  shipout(prefix,orientation(pic.fit()),format,wait,view);
+  if(!uptodate()) {
+    bool inlinetex=settings.inlinetex;
+    bool prc=prc(format);
+    if(prc && !pic.empty3())
+      settings.inlinetex=settings.inlineimage;
+    frame f=pic.fit(prefix,format,wait=wait,view=view,options,script,P);    
+    if(!pic.empty2() || settings.render == 0 || prc)
+      shipout(prefix,orientation(f),format,wait,view);
+    settings.inlinetex=inlinetex;
+  }
+  
+  pic.uptodate=true;
 }
-
-void shipout(string prefix=defaultfilename,
-             orientation orientation=orientation,
-             string format="", bool wait=NoWait, bool view=true)
-{
-  shipout(prefix,currentpicture,orientation,format,wait,view);
-};
 
 void newpage(frame f)
 {

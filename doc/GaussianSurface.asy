@@ -2,23 +2,20 @@ import graph3;
 
 size(200,0);
 
-currentprojection=perspective(5,4,2);
+currentprojection=perspective(10,8,4);
 
 real f(pair z) {return 0.5+exp(-abs(z)^2);}
 
 draw((-1,-1,0)--(1,-1,0)--(1,1,0)--(-1,1,0)--cycle);
 
-draw(arc(0.12Z,0.2,90,60,90,15),ArcArrow);
+draw(arc(0.12Z,0.2,90,60,90,25),Arrow3);
 
-picture surface=surface(f,nsub=4,(-1,-1),(1,1),nx=10,light=O);
-  
-bbox3 b=limits(O,1.75(1,1,1));
+surface s=surface(f,(-1,-1),(1,1));
 
-xaxis(Label("$x$",1),b,red,Arrow);
-yaxis(Label("$y$",1),b,red,Arrow);
-zaxis(Label("$z$",1),b,red,Arrow);
+xaxis3(Label("$x$",1,-X-Y),red,Arrow3);
+yaxis3(Label("$y$",1,-X-Y),red,Arrow3);
+zaxis3(XYZero(extend=true),red,Arrow3);
 
-label("$O$",(0,0,0),S,red);
-  
-add(surface);
+draw(s,lightgray,meshpen=black+thick(),nolight);
 
+label("$O$",O,-Z+Y,red);
