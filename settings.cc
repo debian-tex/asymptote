@@ -69,6 +69,12 @@ using camp::pair;
 string asyInstallDir; // Used only by msdos
 string defaultXasy="xasy";
 
+#ifdef HAVE_LIBGLUT
+const bool haveglut=true;  
+#else
+const bool haveglut=false;
+#endif
+  
 #ifndef __CYGWIN__
   
 bool msdos=false;
@@ -309,9 +315,22 @@ const string noarg;
 struct setting : public option {
   types::ty *t;
 
+private:
+  trans::permission perm;
+  bool added;
+
+  // Flag the setting as secure, so that it can only be set on the command-line,
+  // though it can still be read in Asymptote code.
+  void secure() {
+    assert(!added);
+    perm = trans::RESTRICTED;
+  }
+
+public:
   setting(string name, char code, string argname, string desc,
           types::ty *t, string Default)
-    : option(name, code, argname, desc, false,Default), t(t) {}
+    : option(name, code, argname, desc, false,Default),
+      t(t), perm(trans::PUBLIC), added(false) {}
 
   void reset() = 0;
 
@@ -319,9 +338,17 @@ struct setting : public option {
 
   // Add to the dictionaries of options and to the settings module.
   virtual void add() {
-    option::add();
+    assert(!added);
 
-    settingsModule->add(name, t, buildAccess());
+    option::add();
+    settingsModule->add(name, t, buildAccess(), perm);
+
+    added=true;
+  }
+
+  friend void addSecureSetting(setting *s) {
+    s->secure();
+    s->add();
   }
 };
 
@@ -456,7 +483,8 @@ struct stringSetting : public argumentSetting {
   stringSetting(string name, char code,
                 string argname, string desc,
                 string defaultValue)
-    : argumentSetting(name, code, argname, desc,
+    : argumentSetting(name, code, argname, desc.empty() ? "" :
+		      desc+(defaultValue.empty() ? "" : " ["+defaultValue+"]"),
 		      types::primString(), (item)defaultValue) {}
 
   bool getOption() {
@@ -525,24 +553,41 @@ struct dataSetting : public argumentSetting {
   }
 };
 
+template<class T>
+string String(T x)
+{
+  ostringstream buf;
+  buf << x; 
+  return buf.str();
+}
+  
+template<class T>
+string description(string desc, T defaultValue) 
+{
+  return desc.empty() ? "" : desc+" ["+String(defaultValue)+"]";
+}
+
 struct IntSetting : public dataSetting<Int> {
   IntSetting(string name, char code,
 	     string argname, string desc, Int defaultValue=0)
-    : dataSetting<Int>("an int", name, code, argname, desc,
+    : dataSetting<Int>("an int", name, code, argname,
+		       description(desc,defaultValue),
 		       types::primInt(), defaultValue) {}
 };
   
 struct realSetting : public dataSetting<double> {
   realSetting(string name, char code,
 	      string argname, string desc, double defaultValue=0.0)
-    : dataSetting<double>("a real", name, code, argname, desc,
+    : dataSetting<double>("a real", name, code, argname,
+			  description(desc,defaultValue),
 			  types::primReal(), defaultValue) {}
 };
   
 struct pairSetting : public dataSetting<pair> {
   pairSetting(string name, char code,
 	      string argname, string desc, pair defaultValue=0.0)
-    : dataSetting<pair>("a pair", name, code, argname, desc,
+    : dataSetting<pair>("a pair", name, code, argname,
+			  description(desc,defaultValue),
 			types::primPair(), defaultValue) {}
 };
   
@@ -713,7 +758,7 @@ void addOption(option *o) {
 
 void version()
 {
-  cerr << PROGRAM << " version " << VERSION
+  cerr << PROGRAM << " version " << VERSION << SVN_REVISION
        << " [(C) 2004 Andy Hammerlindl, John C. Bowman, Tom Prince]" 
        << endl;
 }
@@ -775,21 +820,6 @@ struct versionOption : public option {
 };
 
 // For security reasons, these options aren't fields of the settings module.
-struct boolOption : public option {
-  bool *variable;
-  bool value;
-
-  boolOption(string name, char code, string desc,
-	     bool *variable, bool value, bool Default)
-    : option(name, code, noarg, desc, true, Default ? "true" : "false"),
-      variable(variable), value(value) {}
-
-  bool getOption() {
-    *variable=value;
-    return true;
-  }
-};
-
 struct stringOption : public option {
   char **variable;
   stringOption(string name, char code, string argname,
@@ -894,10 +924,38 @@ void initSettings() {
 			    "View output in interactive mode", true));
   addOption(view);
   addOption(new stringSetting("xformat", 0, "format", 
-			      "GUI deconstruction format [\"png\"]","png"));
+			      "GUI deconstruction format","png"));
   addOption(new stringSetting("outformat", 'f', "format",
 			      "Convert each output file to specified format",
 			      ""));
+  addOption(new boolSetting("prc", 0,
+                            "Embed 3D PRC graphics in PDF output", true));
+  addOption(new boolSetting("toolbar", 0,
+                            "Show 3D toolbar in PDF output", true));
+  addOption(new realSetting("render", 0, "n",
+			   "Render 3D graphics using n pixels per bp (-1=auto)",
+			    haveglut ? -1.0 : 0.0));
+  addOption(new boolSetting("antialias", 0,
+			    "Antialias rendered output", true));
+  addOption(new boolSetting("multisample", 0,
+			    "Multisample rendered screen images", true));
+  addOption(new boolSetting("twosided", 0,
+                            "Use two-sided 3D lighting model for rendering",
+			    true));
+  addOption(new pairSetting("position", 0, "pair", 
+			    "Initial 3D rendering screen position"));
+  addOption(new pairSetting("maxviewport", 0, "pair",
+			    "Maximum viewport size",pair(2048,2048)));
+  addOption(new pairSetting("maxtile", 0, "pair",
+			    "Maximum rendering tile size",pair(0,0)));
+  addOption(new boolSetting("iconify", 0,
+                            "Iconify rendering window", false));
+  addOption(new boolSetting("thick", 0,
+                            "Render thick 3D lines", true));
+  addOption(new boolSetting("thin", 0,
+                            "Render thin 3D lines", true));
+  addOption(new boolSetting("fitscreen", 0,
+                            "Fit rendered image to screen", true));
   addOption(new stringOutnameSetting("outname", 'o', "name",
 				     "Alternative output name for first file",
 				     ""));
@@ -907,8 +965,7 @@ void initSettings() {
   addOption(new helpOption("help", 'h', "Show summary of options"));
   addOption(new versionOption("version", 0, "Show version"));
 
-  addOption(new pairSetting("offset", 'O', "pair",
-			    "PostScript offset [(0,0)]"));
+  addOption(new pairSetting("offset", 'O', "pair", "PostScript offset"));
   addOption(new alignSetting("align", 'a', "C|B|T|Z",
 			     "Center, Bottom, Top, or Zero page alignment [Center]"));
   
@@ -923,11 +980,14 @@ void initSettings() {
   addOption(new boolSetting("keepaux", 0,
 			    "Keep intermediate LaTeX .aux files"));
   addOption(new stringSetting("tex", 0,"engine",
-			      "TeX engine (\"latex|pdflatex|tex|pdftex|none\") [\"latex\"]",
+			      "TeX engine (\"latex|pdflatex|tex|pdftex|none\")",
 			      "latex"));
   addOption(new boolSetting("twice", 0,
 			    "Run LaTeX twice (to resolve references)"));
-  addOption(new boolSetting("inlinetex", 0, "Generate inline tex code"));
+  addOption(new boolSetting("inlinetex", 0, "Generate inline TeX code"));
+  addOption(new boolSetting("embed", 0, "Embed rendered preview image", true));
+  addOption(new boolSetting("inlineimage", 0,
+			    "Generate inline embedded image"));
   addOption(new boolSetting("parseonly", 'p', "Parse file"));
   addOption(new boolSetting("translate", 's',
 			    "Show translated virtual machine code"));
@@ -953,16 +1013,11 @@ void initSettings() {
   addOption(new boolrefSetting("rgb", 0, "Convert cmyk colors to rgb",&rgb));
   addOption(new boolrefSetting("cmyk", 0, "Convert rgb colors to cmyk",&cmyk));
 
-  addOption(new boolOption("safe", 0,
-			   "Disable system call", &safe, true, true));
-  addOption(new boolOption("unsafe", 0,
-			   "Enable system call (=> global)", &safe, false,
-			   false));
-  addOption(new boolOption("globalwrite", 0,
-			   "Allow write to other directory",
-			   &globaloption, true, false));
-  addOption(new boolOption("noglobalwrite", 0,
-			   "", &globaloption, false, true));
+  addSecureSetting(new boolrefSetting("safe", 0, "Disable system call",
+                                      &safe, true));
+  addSecureSetting(new boolrefSetting("globalwrite", 0,
+                                      "Allow write to other directory",
+                                      &globaloption, false));
   addOption(new stringOption("cd", 0, "directory", "Set current directory",
 			     &startpath));
   
@@ -976,10 +1031,10 @@ void initSettings() {
 				    "an int"));
 #endif  
   
-  addOption(new stringSetting("prompt", 0,"string","Prompt [\"> \"]","> "));
+  addOption(new stringSetting("prompt", 0,"string","Prompt","> "));
   addOption(new stringSetting("prompt2", 0,"string",
-                              "Continuation prompt for multiline input "
-                              "[\"..\"]", ".."));
+                              "Continuation prompt for multiline input ",
+			      ".."));
   addOption(new boolSetting("multiline", 0,
                             "Input code over multiple lines at the prompt"));
 
@@ -991,28 +1046,39 @@ void initSettings() {
   addOption(new boolSetting("localhistory", 0,
 			    "Use a local interactive history file"));
   addOption(new IntSetting("historylines", 0, "n",
-			   "Retain n lines of history [1000]",1000));
+			   "Retain n lines of history",1000));
   addOption(new IntSetting("scroll", 0, "n",
-			   "Scroll standard output n lines at a time [0]",0));
-  addOption(new IntSetting("level", 0, "n", "Postscript level [3]",3));
+			   "Scroll standard output n lines at a time",0));
+  addOption(new IntSetting("level", 0, "n", "Postscript level",3));
   addOption(new boolSetting("autoplain", 0,
 			    "Enable automatic importing of plain",
 			    true));
   addOption(new boolSetting("autorotate", 0,
 			    "Enable automatic PDF page rotation",
 			    false));
+  addOption(new boolSetting("pdfreload", 0,
+                            "Automatically reload document in pdfviewer",
+			    false));
+  addOption(new IntSetting("pdfreloaddelay", 0, "usec",
+			   "Delay before attempting initial pdf reload"
+			   ,750000));
   addOption(new stringSetting("autoimport", 0, "string",
-			      "Module to automatically import [\"\"]", ""));
+			      "Module to automatically import", ""));
   addOption(new userSetting("command", 'c', "string",
 			    "Command to autoexecute", ""));
   addOption(new userSetting("user", 'u', "string",
-			    "General purpose user string [\"\"]", ""));
+			    "General purpose user string", ""));
   
   addOption(new realSetting("paperwidth", 0, "bp", ""));
   addOption(new realSetting("paperheight", 0, "bp", ""));
   
   addOption(new stringSetting("dvipsOptions", 0, "string", "", ""));
+  addOption(new stringSetting("convertOptions", 0, "string", "", ""));
   addOption(new stringSetting("gsOptions", 0, "string", "", ""));
+  addOption(new stringSetting("psviewerOptions", 0, "string", "", ""));
+  addOption(new stringSetting("pdfviewerOptions", 0, "string", "", ""));
+  addOption(new stringSetting("pdfreloadOptions", 0, "string", "", ""));
+  addOption(new stringSetting("glOptions", 0, "string", "", ""));
   
   addOption(new envSetting("config","config."+suffix));
   addOption(new envSetting("pdfviewer", defaultPDFViewer));
@@ -1020,6 +1086,7 @@ void initSettings() {
   addOption(new envSetting("gs", defaultGhostscript));
   addOption(new envSetting("texpath", ""));
   addOption(new envSetting("texcommand", ""));
+  addOption(new envSetting("texdvicommand", ""));
   addOption(new envSetting("dvips", "dvips"));
   addOption(new envSetting("convert", "convert"));
   addOption(new envSetting("display", defaultDisplay));
@@ -1094,9 +1161,6 @@ void SetPageDimensions() {
      getSetting<double>("paperwidth") != 0.0 &&
      getSetting<double>("paperheight") != 0.0) return;
   
-  const double inches=72;
-  const double cm=inches/2.54;
-  
   if(paperType == "letter") {
     Setting("paperwidth")=8.5*inches;
     Setting("paperheight")=11.0*inches;
@@ -1159,6 +1223,22 @@ const char *rawpostscript(const string& texengine) {
       "setmatrix neg exch neg exch translate}";
 }
 
+// TeX macro to begin picture
+const char *beginpicture(const string& texengine) {
+  if(latex(texengine))
+    return "\\begin{picture}";
+  else
+    return "\\picture";
+}
+
+// TeX macro to end picture
+const char *endpicture(const string& texengine) {
+  if(latex(texengine))
+    return "\\end{picture}%";
+  else
+    return "\\endpicture%";
+}
+
 // Begin TeX special command.
 const char *beginspecial(const string& texengine) {
   if(pdf(texengine))
@@ -1181,16 +1261,23 @@ const char **texabort(const string& texengine)
   return settings::pdf(texengine) ? pdftexerrors : texerrors;
 }
 
-string texengine() 
+string texcommand(bool ps)
 {
-  string command=getSetting<string>("texcommand");
+  string command;
+  if(ps) {
+    command=getSetting<string>("texdvicommand");
+    if(command == "")
+      command=latex(getSetting<string>("tex")) ? "latex" : "tex";
+  } else
+    command=getSetting<string>("texcommand");
   return command.empty() ? getSetting<string>("tex") : command;
 }
   
-string texprogram()
+string texprogram(bool ps)
 {
   string path=getSetting<string>("texpath");
-  return (path == "") ? texengine() : (string) (path+"/"+texengine());
+  string engine=texcommand(ps);
+  return (path == "") ? engine : (string) (path+"/"+engine);
 }
 
 Int getScroll() 
@@ -1223,11 +1310,20 @@ void setOptions(int argc, char *argv[])
   // Read command-line options initially to obtain CONFIG and DIR.
   getOptions(argc,argv);
   
+  Int Verbose=verbose;
   resetOptions();
   
   // Read user configuration file.
   setPath();
-  doConfig(getSetting<string>("config"));
+  string filename=getSetting<string>("config");
+  if(!filename.empty()) {
+    string file=locateFile(filename);
+    if(!file.empty()) {
+      if(Verbose > 1)
+	cerr << "Loading " << filename << " from " << file << endl;
+      doConfig(file);
+    }
+  }
   
   // Read command-line options again to override configuration file defaults.
   getOptions(argc,argv);

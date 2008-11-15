@@ -1,3 +1,131 @@
+Release Notes for Version 1.51
+
+A separate multisample setting is used to control screen antialiasing;
+multisampling is now only enabled when viewing. The problem of multiple
+glInit calls is fixed. A more conservative multisampling patch for freeglut
+is supplied. The OpenGL process is now always forked for better
+performance. The last freeglut extension was removed.
+
+Release Notes for Version 1.50
+
+Detection and support for the native glut library on MacOSX now allows
+Asymptote's adaptive OpenGL renderer to be used on all major platforms.
+The OpenGL renderer now supports antialiasing; a race condition and export
+problems were fixed. The new default value of maxtile=(0,0) denotes
+the screen dimensions. Lighting problems due to incorrect normal
+orientations were fixed. The up vector for embedded PRC output was fixed.
+A viewportmargin parameter was added to allow for a larger viewport.
+An iconify setting was added for UNIX systems that support rendering in an
+iconified state. An embed option (default true) was added to allow one to
+suppress the embedding of a rendered preview image. A new version of
+asymptote.sty (1.01) supports file attachments, which provide a better way
+of embedding 3D PRC files in a LaTeX document. The latexusage file prefix
+was renamed from latexusage_ to latexusage-. A numerical precision issue in
+the surface of revolution constructor was fixed. Support for
+three-dimensional dimension bars was added; PenMargin3 and DotMargin3 were
+fixed. The argument put=Above (put=Below) should now be replaced by
+above=true (above=false); this is a backwards incompatible change.
+
+Release Notes for Version 1.49
+
+Issues with surface normals that led to incorrect lighting were fixed.
+By default, the mean(pen[]) routine now returns an interpolated pen with the
+minimum opacity of all given pens. A patch reverse(patch) function was
+added. The settings.keep flag is now handled correctly in texpath and
+strokepath. A cornermean function for surfaces was added. Several
+examples that illustrate patch and vertex shading were updated.
+
+Release Notes for Version 1.48
+
+High-resolution OpenGL tiled rendering was implemented. Support for
+vertex-dependent colors was added. Centering of perspective projections
+was improved. Rendering artifacts in planar surfaces and thick lines were
+fixed. A Gradient palette that varies linearly over a specified range of
+pens was added. An improved surface constructor for convex
+three-dimensional paths was added; the planar constructor should now only
+be used for nonconvex paths. A DefaultHead2(filltype filltype=Fill)
+arrowhead was implemented, along with an optional filltype argument for
+HookHead2. New maxheight, hstretch, and vstretch parameters were added to
+legend(). A boolean user=true argument was added to the point(picture, pair)
+function; the framepoint routine was removed in favour of
+truepoint(picture, pair, user=false). A roundbox envelope routine was
+added. An antialias setting (default true) was added. A bug in xasy and an
+incorrect precontrol bug in write(path) was fixed. Compilation with
+standard glut for systems without freeglut is now supported.
+
+Release Notes for Version 1.47
+
+Support for simple obj files and patch-specific surfacepens and meshpens
+was added. Surface constructors for triangles were added. Three-dimensional
+margins were implemented. Flat 3D arrowhead types HookHead2 and TeXHead2
+were implemented. By default, 3D arrowheads are now always drawn with
+currentlight. A missing angle parameter in HookHead3 was added. Functions
+that construct a pen array from a given function and palette were added, as
+illustrated in the example elevation.asy. A bug in the cyclic path write
+functions was fixed. A strokepath(path g, pen p) function was implemented.
+A missing put argument in grid3 and a missing transform for projected 3D
+mesh lines were fixed. File prefix problems were fixed. Spurious "camera
+too close" errors were fixed. Tighter three-dimensional bounds are generated.
+
+Release Notes for Version 1.46
+
+Support was added for embedding 3D PRC files within LaTeX even when 
+settings.render=0. An error is now signalled if the user tries to render an
+image without freeglut library support. The Klein bottle example was
+updated to use lightgray instead of the new default surface color (black).
+The sphere animation example was updated to work with the new skeleton
+structure in the solids module.
+
+Release Notes for Version 1.45
+
+Bugs in the solids of revolution and graph3 modules were fixed;
+longitudinal curves are split into front and back pieces. Min and max
+arguments were added to axes and axes3. Rendering artifacts are now
+avoided. When render=0, 2D and 3D objects are now sized consistently.
+The automatic camera adjustment was improved. Bugs in thick three-dimensional
+lines were fixed; thick lines are now drawn with fewer Bezier patches and
+3D Linetype offsets are supported. The appearance of unitcones and arrows
+was improved. New arrowhead3 types HookHead3 and TeXHead3 were added. The
+default surface color is now black. New surface and path constructors were
+added. Secure options can now be queried as read-only settings.
+
+Release Notes for Version 1.44
+
+Full interactive 3D support has been added to Asymptote, with the option of
+generating and embedding 3D PRC data in PDF files or rendering scenes
+directly with Asymptote's own fast OpenGL-based renderer.  The implicit
+casts from 3D to 2D objects were removed (in favour of call explicit calls
+to project).  A path[][] texpath(string s) routine was added to convert
+string into the paths that TeX would fill. Add boolean stroke parameter was
+added for shading (and clipping to) stroked paths.  The Circle and Arc
+routines were fixed.  Autoscaling of graph axes limits is now disabled by
+default.  A path3 path3(path p, triple plane(pair)=XYplane) constructor was
+added; the path3 routines were moved to C++ code.  Optimized and robust
+versions of the intersection, windingnumber, inside, and surface extrema
+routines were implemented.  The lighting routines were replaced by the
+OpenGL model.  Each Asymptote process once again uses a separate
+currentpen.  A segmentation fault and an incorrect parameter in the
+Delaunay triangulation routine were fixed.  This major overhaul of the
+three-dimensional graphics has necessitated a few backwards
+incompatibilities. The most significant change involves filldraw:
+
+filldraw(polygon(5),red);
+
+should be replaced by
+
+draw(surface(bezulate(polygon(5))),red);
+
+Also, the solids module has been improved so that
+
+revolution a=revolution(O--X+Z,Z);
+a.filldraw(red,blue);
+
+is now more sensibly written as
+
+revolution a=revolution(O--X+Z,Z);
+draw(surface(a),red);
+draw(a,blue);
+
 Release Notes for Version 1.43
 
 A new array(n, value) function returns an array consisting of n copies of

@@ -1,5 +1,7 @@
 path nullpath;
 
+typedef guide interpolate(... guide[]);
+
 // These numbers identify the side of a specifier in an operator spec or
 // operator curl expression:
 //  a{out} .. {in}b
@@ -20,23 +22,17 @@ guide operator controls(pair z)
 
 guide[] operator cast(pair[] z)
 {
-  guide[] g=new guide[z.length];
-  for(int i=0; i < z.length; ++i) g[i]=z[i];
-  return g;
+  return sequence(new guide(int i) {return z[i];},z.length);
 }
 
 path[] operator cast(pair[] z)
 {
-  path[] g=new path[z.length];
-  for(int i=0; i < z.length; ++i) g[i]=z[i];
-  return g;
+  return sequence(new path(int i) {return z[i];},z.length);
 }
 
 path[] operator cast(guide[] g)
 {
-  path[] p=new path[g.length];
-  for(int i=0; i < g.length; ++i) p[i]=g[i];
-  return p;
+  return sequence(new path(int i) {return g[i];},g.length);
 }
 
 path[] operator cast(path p)
@@ -71,16 +67,12 @@ path[] operator ^^ (explicit path[] p, explicit path[] q)
 
 path[] operator * (transform t, explicit path[] p) 
 {
-  path[] P;
-  for(int i=0; i < p.length; ++i) P[i]=t*p[i];
-  return P;
+  return sequence(new path(int i) {return t*p[i];},p.length);
 }
 
 pair[] operator * (transform t, pair[] z) 
 {
-  pair[] Z;
-  for(int i=0; i < z.length; ++i) Z[i]=t*z[i];
-  return Z;
+  return sequence(new pair(int i) {return t*z[i];},z.length);
 }
 
 void write(file file, string s="", explicit path[] x, suffix suffix=none)
@@ -100,18 +92,22 @@ void write(string s="", explicit path[] x, suffix suffix=endl)
   write(stdout,s,x,suffix);
 }
 
+private string nopoints="nullpath has no points";
+
 pair min(explicit path[] p)
 {
-  pair minp=Infinity;
-  for(int i=0; i < p.length; ++i)
+  if(p.length == 0) abort(nopoints);
+  pair minp=min(p[0]);
+  for(int i=1; i < p.length; ++i)
     minp=minbound(minp,min(p[i]));
   return minp;
 }
 
 pair max(explicit path[] p)
 {
-  pair maxp=(-infinity,-infinity);
-  for(int i=0; i < p.length; ++i)
+  if(p.length == 0) abort(nopoints);
+  pair maxp=max(p[0]);
+  for(int i=1; i < p.length; ++i)
     maxp=maxbound(maxp,max(p[i]));
   return maxp;
 }
@@ -135,7 +131,7 @@ guide operator ---(... guide[] a)
 }
 
 // return an arbitrary intersection point of paths p and q
-pair intersectionpoint(path p, path q, real fuzz=0)
+pair intersectionpoint(path p, path q, real fuzz=-1)
 {
   real[] t=intersect(p,q,fuzz);
   if(t.length == 0) abort("paths do not intersect");
@@ -143,16 +139,13 @@ pair intersectionpoint(path p, path q, real fuzz=0)
 }
 
 // return an array containing all intersection points of the paths p and q
-pair[] intersectionpoints(path p, path q, real fuzz=0)
+pair[] intersectionpoints(path p, path q, real fuzz=-1)
 {
   real[][] t=intersections(p,q,fuzz);
-  pair[] z=new pair[t.length];
-  for(int i=0; i < t.length; ++i)
-    z[i]=point(p,t[i][0]);
-  return z;
+  return sequence(new pair(int i) {return point(p,t[i][0]);},t.length);
 }
 
-pair[] intersectionpoints(explicit path[] p, explicit path[] q, real fuzz=0)
+pair[] intersectionpoints(explicit path[] p, explicit path[] q, real fuzz=-1)
 {
   pair[] z;
   for(int i=0; i < p.length; ++i)
@@ -251,7 +244,8 @@ path operator &(path p, cycleToken tok)
   if(n < 0) return nullpath;
   pair a=point(p,0);
   pair b=point(p,n);
-  return subpath(p,0,n-1)..controls postcontrol(p,n-1) and precontrol(p,n)..
+  return straight(p,n) ? subpath(p,0,n-1)--cycle :
+    subpath(p,0,n-1)..controls postcontrol(p,n-1) and precontrol(p,n)..
     cycle;
 }
 
@@ -308,4 +302,39 @@ int inside(path p, path q, pen fillrule=currentpen)
   if(cyclic(p) && inside(p,point(q,0),fillrule)) return 1;
   if(cyclic(q) && inside(q,point(p,0),fillrule)) return -1;
   return 0;
+}
+
+// Return all intersection times of path g with the vertical line through (x,0).
+real[] times(path p, real x)
+{
+  return intersections(p,(x,0),(x,1));
+}
+
+// Return all intersection times of path g with the horizontal line through
+// (0,z.y).
+real[] times(path p, explicit pair z)
+{
+  return intersections(p,(0,z.y),(1,z.y));
+}
+
+path randompath(int n, bool cumulate=true, interpolate join=operator ..)
+{
+  guide g;
+  pair w;
+  for(int i=0; i <= n; ++i) {
+    pair z=(unitrand()-0.5,unitrand()-0.5);
+    if(cumulate) w += z; 
+    else w=z;
+    g=join(g,w);
+  }
+  return g;
+}
+
+path[] strokepath(path g, pen p=currentpen)
+{
+  path[] G=_strokepath(g,p);
+  if(G.length == 0) return G;
+  pair center(path g) {return 0.5*(min(g)+max(g));}
+  pair center(path[] g) {return 0.5*(min(g)+max(g));}
+  return shift(center(g)-center(G))*G;
 }

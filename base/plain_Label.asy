@@ -46,7 +46,8 @@ transform scaleless(transform t)
   pair[] u={l1-d,b};
   pair[] v={c,l2-a};
   u=unit(u);
-  v -= dot(u,v)/dot(u,u)*u;
+  pair d=dot(u,u);
+  if(d != 0) v -= dot(u,v)/d*u;
   v=unit(v);
 
   pair[][] U={{u[0],v[0]},{u[1],v[1]}};
@@ -85,36 +86,64 @@ transform scaleless(transform t)
 
 struct align {
   pair dir;
+  triple dir3;
   bool relative=false;
   bool default=true;
+  bool is3D=false;
   void init(pair dir=0, bool relative=false, bool default=false) {
     this.dir=dir;
     this.relative=relative;
     this.default=default;
+    is3D=false;
+  }
+  void init(triple dir=(0,0,0), bool relative=false, bool default=false) {
+    this.dir3=dir;
+    this.relative=relative;
+    this.default=default;
+    is3D=true;
   }
   align copy() {
     align align=new align;
     align.init(dir,relative,default);
+    align.dir3=dir3;
+    align.is3D=is3D;
     return align;
   }
   void align(align align) {
-    if(!align.default) init(align.dir,align.relative);
+    if(!align.default) {
+      bool is3D=align.is3D;
+      init(align.dir,align.relative);
+      dir3=align.dir3;
+      this.is3D=is3D;
+    }
   }
   void align(align align, align default) {
     align(align);
-    if(this.default) init(default.dir,default.relative,default.default);
+    if(this.default) {
+      init(default.dir,default.relative,default.default);
+      dir3=default.dir3;
+      is3D=default.is3D;
+    }
   }
   void write(file file=stdout, suffix suffix=endl) {
     if(!default) {
       if(relative) {
         write(file,"Relative(");
-        write(file,dir);
+	if(is3D)
+	  write(file,dir3);
+	else
+	  write(file,dir);
         write(file,")",suffix);
-      } else write(file,dir,suffix);
+      } else {
+	if(is3D)
+	  write(file,dir3,suffix);
+	else
+	  write(file,dir,suffix);
+      }
     }
   }
   bool Center() {
-    return relative && dir == 0;
+    return relative && (is3D ? dir3 == (0,0,0) : dir == 0);
   }
 }
 
@@ -142,6 +171,7 @@ side operator * (real x, side s)
 }
 
 align operator cast(pair dir) {align A; A.init(dir,false); return A;}
+align operator cast(triple dir) {align A; A.init(dir,false); return A;}
 align operator cast(side side) {align A; A.init(side.align,true); return A;}
 align NoAlign;
 
@@ -190,15 +220,16 @@ struct Label {
   align align;
   pen p=nullpen;
   transform T;
+  transform3 T3=identity(4);
   bool defaulttransform=true;
   embed embed=Rotate; // Fixed, Rotate, Rotate, or Scale with embedded picture
   filltype filltype=NoFill;
   
   void init(string s="", string size="", position position=0, 
-            bool defaultposition=true,
-            align align=NoAlign, pen p=nullpen, transform T=identity(),
-            bool defaulttransform=true, embed embed=Rotate,
-            filltype filltype=NoFill) {
+            bool defaultposition=true, align align=NoAlign, pen p=nullpen,
+	    transform T=identity(), transform3 T3=identity4,
+	    bool defaulttransform=true, embed embed=Rotate,
+	    filltype filltype=NoFill) {
     this.s=s;
     this.size=size;
     this.position=position;
@@ -206,6 +237,7 @@ struct Label {
     this.align=align.copy();
     this.p=p;
     this.T=T;
+    this.T3=copy(T3);
     this.defaulttransform=defaulttransform;
     this.embed=embed;
     this.filltype=filltype;
@@ -216,16 +248,21 @@ struct Label {
     init(s,size,align,p,embed,filltype);
   }
   
-  Label copy() {
-    Label L=new Label;
-    L.init(s,size,position,defaultposition,align,p,T,defaulttransform,
-           embed,filltype);
-    return L;
-  }
-  
   void transform(transform T) {
     this.T=T;
     defaulttransform=false;
+  }
+  
+  void transform3(transform3 T) {
+    this.T3=copy(T);
+    defaulttransform=false;
+  }
+
+  Label copy(transform3 T3=this.T3) {
+    Label L=new Label;
+     L.init(s,size,position,defaultposition,align,p,T,T3,defaulttransform,
+           embed,filltype);
+    return L;
   }
   
   void position(position pos) {
@@ -265,6 +302,7 @@ struct Label {
   }
   
   void label(picture pic=currentpicture, pair position, pair align) {
+    if(s == "") return;
     pic.add(new void (frame f, transform t) {
         if(filltype == NoFill)
           label(f,t,position,align);
@@ -296,7 +334,7 @@ struct Label {
       Align=position <= 0 ? S : position >= length(g) ? N : E;
     }
     label(pic,point(g,position),
-          alignrelative ? Align*dir(g,position)/N : Align);
+          alignrelative ? -Align*dir(g,position)*I : Align);
   }
   
   void write(file file=stdout, suffix suffix=endl) {
@@ -305,7 +343,10 @@ struct Label {
     if(!align.default) write(file,", align=");
     write(file,align);
     if(p != nullpen) write(file,", pen=",p);
-    if(!defaulttransform) write(file,", transform=",T);
+    if(!defaulttransform) {
+      write(file,", transform=",T);
+      write(file,T3);
+    }
     write(file,"",suffix);
   }
   
@@ -335,6 +376,14 @@ Label operator * (transform t, Label L)
   Label tL=L.copy();
   tL.align.dir=L.align.dir;
   tL.transform(t*L.T);
+  return tL;
+}
+
+Label operator * (transform3 t, Label L)
+{
+  Label tL=L.copy(t*L.T3);
+  tL.align.dir=L.align.dir;
+  tL.defaulttransform=false;
   return tL;
 }
 
@@ -445,13 +494,13 @@ struct object {
 
   void operator init(frame f) {
     this.f=f;
-    this.g=box(min(f),max(f));
+    g=box(min(f),max(f));
   }
 
   void operator init(Label L) {
     this.L=L.copy();
-    if(L != Label) L.out(this.f);
-    this.g=box(min(this.f),max(this.f));
+    if(L != Label) L.out(f);
+    g=box(min(f),max(f));
   }
 }
 
@@ -469,6 +518,16 @@ object operator cast(string s)
   return object(s);
 }
 
+Label operator cast(object F)
+{
+  return F.L;
+}
+
+frame operator cast(object F)
+{
+  return F.f;
+}
+
 // Pack a list of objects into a frame.
 frame pack(pair align=2S ... object inset[])
 {
@@ -480,4 +539,41 @@ frame pack(pair align=2S ... object inset[])
     z += align+realmult(unit(align),size(inset[i].f));
   }
   return F;
+}
+
+path[] texpath(Label L)
+{
+  static string[] stringcache;
+  static pen[] pencache;
+  static path[][] pathcache;
+  path[] g;
+
+  string s=L.s;
+  pen p=L.p;
+  int k=0;
+  int i;
+  while((i=find(stringcache == s,++k)) >= 0) {
+    if(pencache[i] == p) {
+      g=pathcache[i];
+      break;
+    }
+  }
+
+  if(i == -1) {
+    g=_texpath(s,p);
+    stringcache.push(s);
+    pencache.push(p);
+    pathcache.push(g);
+  }
+  
+  pair a;
+  if(g.length == 0) return g;
+  pair m=min(g);
+  pair M=max(g);
+  pair dir=rectify(inverse(L.T)*-L.align.dir);
+  if(basealign(p) == 1)
+    dir -= (0,m.y/(M.y-m.y));
+  a=m+realmult(dir,M-m);
+
+  return shift(L.position+L.align.dir*labelmargin(p))*L.T*shift(-a)*g;
 }

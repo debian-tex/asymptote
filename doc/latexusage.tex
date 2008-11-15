@@ -1,28 +1,31 @@
 \documentclass[12pt]{article}
 
-% Use this form to include eps (latex) or pdf (pdflatex) files:
+% Use this form to include EPS (latex) or PDF (pdflatex) files:
 \usepackage{asymptote}
 
 % Use this form with latex or pdflatex to include inline LaTeX code:
 %\usepackage[inline]{asymptote}
 
-% Enable this line to produce pdf hyperlinks with latex:
-%\usepackage[hypertex]{hyperref}
+% Enable this line to support PDF hyperlinks:
+%\usepackage[setpagesize=false]{hyperref}
 
-% Enable this line to produce pdf hyperlinks with pdflatex:
-%\usepackage[pdftex]{hyperref}
+% Enable this line to support PDF attachments:
+%\usepackage[dvips]{attachfile2}
 
 \begin{document}
 
 \begin{asydef}
 // Global Asymptote definitions can be put here.
 usepackage("bm");
+texpreamble("\def\V#1{\bm{#1}}");
+// Uncomment the next line to show the toolbar
+// settings.toolbar=true;
 \end{asydef}
 
 Here is a venn diagram produced with Asymptote, drawn to width 4cm:
 
 \def\A{A}
-\def\B{\bm{B}}
+\def\B{\V{B}}
 
 %\begin{figure}
 \begin{center}
@@ -52,7 +55,7 @@ draw(c2);
 //draw("$\A$",box,z1);              // Requires [inline] package option.
 //draw(Label("$\B$","$B$"),box,z2); // Requires [inline] package option.
 draw("$A$",box,z1);            
-draw("$\bm{B}$",box,z2);
+draw("$\V{B}$",box,z2);
 
 pair z=(0,-2);
 real m=3;
@@ -70,59 +73,42 @@ shipout(bbox(0.25cm));
 %\end{figure}
 
 Each graph is drawn in its own environment. One can specify the width
-and height to \LaTeX\ explicitly:
-
+and height to \LaTeX\ explicitly. This 3D example can be viewed
+interactively either with Adobe Reader or Asymptote's fast OpenGL-based
+renderer. It is often desirable to embed such files as annotated attachments;
+this requires the optional \verb+\usepackage{attachfile2}+ package:
+%\begin{asyattach}
 \begin{center}
-\begin{asy}[3cm,0]
-guide center = (0,1){W}..tension 0.8..(0,0){(1,-.5)}..tension 0.8..{W}(0,-1); 
-
-draw((0,1)..(-1,0)..(0,-1));
-filldraw(center{E}..{N}(1,0)..{W}cycle);
-fill(circle((0,0.5),0.125),white);
-fill(circle((0,-0.5),0.125));
+\begin{asy}[0,4cm]
+import three;
+viewportmargin=(3cm,0);
+draw(unitcube,blue);
+label("$V-E+F=2$",(0,1,0.5),3Y,blue+fontsize(17));
 \end{asy}
 \end{center}
+%\end{asyattach}
 
-To scale the figure to the full line width:
-
+One can also scale the figure to the full line width:
 \begin{center}
 \begin{asy}[\the\linewidth]
-import graph;
+pair z0=(0,0);
+pair z1=(2,0);
+pair z2=(5,0);
+pair zf=z1+0.75*(z2-z1);
 
-real f(real x) {return sqrt(x);}
-pair F(real x) {return (x,f(x));}
+draw(z1--z2);
+dot(z1,red+0.15cm);
+dot(z2,darkgreen+0.3cm);
+label("$m$",z1,1.2N,red);
+label("$M$",z2,1.5N,darkgreen);
+label("$\hat{\ }$",zf,0.2*S,fontsize(24)+blue);
 
-real g(real x) {return -sqrt(x);}
-pair G(real x) {return (x,g(x));}
-
-path p=(0,0)--graph(f,0,1,operator ..)--(1,0);
-fill(p--cycle,lightgray);
-draw(p);
-draw((0,0)--graph(g,0,1,operator ..)--(1,0),dotted);
-
-real x=0.5;
-pair c=(4,0);
-
-transform T=xscale(0.5);
-draw((2.695,0),T*arc(0,0.30cm,20,340),ArcArrow);
-fill(shift(c)*T*circle(0,-f(x)),red+white);
-draw(F(x)--c+(0,f(x)),dashed+red);
-draw(G(x)--c+(0,g(x)),dashed+red);
-
-dot(Label,(1,1));
-arrow("$y=\sqrt{x}$",F(0.7),N);
-
-arrow((3,0.5*f(x)),W,1cm,red);
-arrow((3,-0.5*f(x)),W,1cm,red);
-
-xaxis("$x$",0,c.x,dashed);
-yaxis("$y$");
-
-draw("$r$",(x,0)--F(x),E,red,Arrows,BeginBar,PenMargins);
-draw("$r$",(x,0)--G(x),E,red,Arrows,PenMargins);
-draw("$r$",c--c+(0,f(x)),Arrow,PenMargin);
-dot(c);
+pair s=-0.2*I;
+draw("$x$",z0+s--z1+s,N,red,Arrows,Bars,PenMargins);
+s=-0.5*I;
+draw("$\bar{x}$",z0+s--zf+s,blue,Arrows,Bars,PenMargins);
+s=-0.95*I;
+draw("$X$",z0+s--z2+s,darkgreen,Arrows,Bars,PenMargins);
 \end{asy}
 \end{center}
-
 \end{document}

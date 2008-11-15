@@ -37,8 +37,11 @@ View output; command-line only.
 .B \-a,\-align C|B|T|Z   
 Center, Bottom, Top, or Zero page alignment [Center].
 .TP
+.B \-antialias          
+Antialias rendered output [true].
+.TP
 .B \-autoimport string  
-Module to automatically import [""].
+Module to automatically import.
 .TP
 .B \-autoplain          
 Enable automatic importing of plain [true].
@@ -73,8 +76,14 @@ Enable debugging messages [false].
 .B \-divisor n          
 Free space divisor for garbage collection [2].
 .TP
+.B \-embed              
+Embed rendered preview image [true].
+.TP
+.B \-fitscreen          
+Fit rendered image to screen [true].
+.TP
 .B \-globalwrite        
-Allow write to other directory; command-line only [false].
+Allow write to other directory [false].
 .TP
 .B \-gray               
 Convert all colors to grayscale [false].
@@ -85,8 +94,14 @@ Show summary of options; command-line only.
 .B \-historylines n     
 Retain n lines of history [1000].
 .TP
+.B \-iconify            
+Iconify rendering window [false].
+.TP
+.B \-inlineimage        
+Generate inline embedded image [false].
+.TP
 .B \-inlinetex          
-Generate inline tex code [false].
+Generate inline TeX code [false].
 .TP
 .B \-interactiveMask    
 Mask fpu exceptions in interactive mode [true].
@@ -115,11 +130,20 @@ Use a local interactive history file [false].
 .B \-m,\-mask            
 Mask fpu exceptions; command-line only.
 .TP
+.B \-maxtile pair       
+Maximum rendering tile size [(0,0)].
+.TP
+.B \-maxviewport pair   
+Maximum viewport size [(2048,2048)].
+.TP
 .B \-multiline          
 Input code over multiple lines at the prompt [false].
 .TP
 .B \-multipleView       
 View output from multiple batch-mode files [false].
+.TP
+.B \-multisample        
+Multisample rendered screen images [true].
 .TP
 .B \-O,\-offset pair     
 PostScript offset [(0,0)].
@@ -133,17 +157,32 @@ Alternative output name for first file.
 .B \-p,\-parseonly       
 Parse file [false].
 .TP
+.B \-pdfreload          
+Automatically reload document in pdfviewer [false].
+.TP
+.B \-pdfreloaddelay usec
+Delay before attempting initial pdf reload [750000].
+.TP
+.B \-position pair      
+Initial 3D rendering screen position [(0,0)].
+.TP
+.B \-prc                
+Embed 3D PRC graphics in PDF output [true].
+.TP
 .B \-prompt string      
-Prompt ["> "].
+Prompt [> ].
 .TP
 .B \-prompt2 string     
-Continuation prompt for multiline input [".."].
+Continuation prompt for multiline input  [..].
+.TP
+.B \-render n           
+Render 3D graphics using n pixels per bp (-1=auto) [-1].
 .TP
 .B \-rgb                
 Convert cmyk colors to rgb [false].
 .TP
 .B \-safe               
-Disable system call; command-line only [true].
+Disable system call [true].
 .TP
 .B \-scroll n           
 Scroll standard output n lines at a time [0].
@@ -152,7 +191,16 @@ Scroll standard output n lines at a time [0].
 Interactive prompt auto-completion [true].
 .TP
 .B \-tex engine         
-TeX engine ("latex|pdflatex|tex|pdftex|none") ["latex"].
+TeX engine ("latex|pdflatex|tex|pdftex|none") [latex].
+.TP
+.B \-thick              
+Render thick 3D lines [true].
+.TP
+.B \-thin               
+Render thin 3D lines [true].
+.TP
+.B \-toolbar            
+Show 3D toolbar in PDF output [true].
 .TP
 .B \-s,\-translate       
 Show translated virtual machine code [false].
@@ -160,11 +208,11 @@ Show translated virtual machine code [false].
 .B \-twice              
 Run LaTeX twice (to resolve references) [false].
 .TP
-.B \-unsafe             
-Enable system call (=> global); command-line only [false].
+.B \-twosided           
+Use two-sided 3D lighting model for rendering [true].
 .TP
 .B \-u,\-user string     
-General purpose user string [""].
+General purpose user string.
 .TP
 .B \-v,\-verbose         
 Increase verbosity level [0].
@@ -179,7 +227,7 @@ Wait for child processes to finish before exiting [false].
 Show where listed variables are declared [false].
 .TP
 .B \-xformat format     
-GUI deconstruction format ["png"].
+GUI deconstruction format [png].
 
 .SH SEE ALSO
 Asymptote is documented fully in the asymptote Info page.

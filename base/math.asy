@@ -11,18 +11,18 @@ pair unityroot(int n, int k=1)
   return expi(2pi*k/n);
 }
 
-// Return an arbitrary point inside a cyclic path g.
-pair inside(path g)
+// Return an arbitrary point on or inside a cyclic path p.
+pair inside(path p)
 {
-  if(!cyclic(g)) abort("path is not cyclic");
-  pair c=point(g,0);
-  int n=length(g);
+  if(!cyclic(p)) abort("path is not cyclic");
+  pair c=point(p,0);
+  int n=length(p);
   real r;
   int i=0;
   do {
     ++i;
     if(i == n) return c;
-    r=abs(point(g,i)-c);
+    r=abs(point(p,i)-c);
   } while (r == 0);
   pair w=I*0.5*r;
   // Search in a circle of radius r about c.
@@ -30,7 +30,7 @@ pair inside(path g)
   while(true) {
     for(int k=0; k < n; ++k) {
       pair z=c+w*unityroot(n,k);
-      if(inside(g,z)) return z;
+      if(inside(p,z)) return z;
     }
     w *= 0.5; // Reduce the radius of the circle and try again with more points.
     if(w == 0) return c;
@@ -68,25 +68,13 @@ bool polygon(path p)
 
 // Return the intersection point of the extensions of the line segments 
 // PQ and pq.
-pair extension(pair P, pair Q, pair p, pair q) 
+pair extension(pair P, pair Q, pair p, pair q)
 {
   pair ac=P-Q;
   pair bd=q-p;
   real det=(conj(ac)*bd).y;
   if(det == 0) return (infinity,infinity);
   return P+(conj(p-P)*bd).y*ac/det;
-}
-
-// Compute normal vector to the plane defined by the first 3 elements of p.
-triple normal(triple[] p)
-{
-  if(p.length < 3) abort("3 points are required to define a plane");
-  return cross(p[1]-p[0],p[2]-p[0]);
-}
-
-triple unitnormal(triple[] p)
-{
-  return unit(normal(p));
 }
 
 // Return the intersection time of the extension of the line segment PQ
@@ -197,15 +185,6 @@ real[][] zero(int n, int m)
   for(int i=0; i < n; ++i)
     M[i]=sequence(new real(int) {return 0;},m);
   return M;
-}
-
-real[][] diagonal(... real[] a)
-{
-  int n=a.length;
-  real[][] m=new real[n][];
-  for(int i=0; i < n; ++i)
-    m[i]=sequence(new real(int j) {return j == i ? a[i] : 0;},n);
-  return m;
 }
 
 real[][] operator + (real[][] a, real[][] b)
@@ -366,61 +345,48 @@ real interpolate(real[] x, real[] y, real x0)
   return interpolate(x,y,x0,search(x,x0));
 }
 
-private string nonode="node not found";
+private string nopoint="point not found";
 
-real node(path g, real x, int n=0)
+// Return the nth intersection time of path g with the vertical line through x.
+real time(path g, real x, int n=0)
 {
-  real m=min(g).y;
-  real M=max(g).y;
-  path p=(x,m)--(x,M);
-  if(n == 0) {
-    real[] T=intersect(g,p);
-    if(T.length == 0) abort(nonode);
-    T.cyclic(true);
-    return T[0];
-  }
-  real[][] T=intersections(g,p);
-  if(T.length == 0) abort(nonode);
-  T.cyclic(true);
-  return T[n][0];
+  real[] t=times(g,x);
+  if(t.length <= n) abort(nopoint);
+  return t[n];
 }
 
-real node(path g, explicit pair z, int n=0)
+// Return the nth intersection time of path g with the horizontal line through
+// (0,z.y).
+real time(path g, explicit pair z, int n=0)
 {
-  real m=min(g).x;
-  real M=max(g).x;
-  path p=(m,z.y)--(M,z.y);
-  if(n == 0) {
-    real[] T=intersect(g,p);
-    if(T.length == 0) abort(nonode);
-    T.cyclic(true);
-    return T[0];
-  }
-  real[][] T=intersections(g,p);
-  if(T.length == 0) abort(nonode);
-  T.cyclic(true);
-  return T[n][0];
+  real[] t=times(g,z);
+  if(t.length <= n) abort(nopoint);
+  return t[n];
 }
 
+// Return the nth y value of g at x.
 real value(path g, real x, int n=0)
 {
-  return point(g,node(g,x,n)).y;
+  return point(g,time(g,x,n)).y;
 }
 
+// Return the nth x value of g at y=z.y.
 real value(path g, explicit pair z, int n=0)
 {
-  return point(g,node(g,(0,z.y),n)).x;
+  return point(g,time(g,(0,z.y),n)).x;
 }
 
+// Return the nth slope of g at x.
 real slope(path g, real x, int n=0)
 {
-  pair a=dir(g,node(g,x,n));
+  pair a=dir(g,time(g,x,n));
   return a.y/a.x;
 }
 
+// Return the nth slope of g at y=z.y.
 real slope(path g, explicit pair z, int n=0)
 {
-  pair a=dir(g,node(g,(0,z.y),n));
+  pair a=dir(g,time(g,(0,z.y),n));
   return a.y/a.x;
 }
 

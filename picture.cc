@@ -13,6 +13,7 @@
 #include "util.h"
 #include "settings.h"
 #include "interact.h"
+#include "drawverbatim.h"
 
 using std::ifstream;
 using std::ofstream;
@@ -24,7 +25,7 @@ texstream::~texstream() {
     unlink("texput.log");
     unlink("texput.out");
     unlink("texput.aux");
-    if(settings::pdf(texengine()))
+    if(settings::pdf(getSetting<string>("tex")))
       unlink("texput.pdf");
   }
 }
@@ -34,7 +35,7 @@ namespace camp {
 const char *texpathmessage() {
   ostringstream buf;
   buf << "the directory containing your " << getSetting<string>("tex")
-      << " engine (" << texengine() << ")";
+      << " engine (" << texcommand() << ")";
   return Strdup(buf.str());
 }
   
@@ -52,6 +53,7 @@ void picture::enclose(drawElement *begin, drawElement *end)
   assert(end);
   nodes.push_front(begin);
   lastnumber=0;
+  lastnumber3=0;
   for(nodelist::iterator p=nodes.begin(); p != nodes.end(); ++p) {
     assert(*p);
     if((*p)->islayer()) {
@@ -71,6 +73,7 @@ void picture::prepend(drawElement *p)
   assert(p);
   nodes.push_front(p);
   lastnumber=0;
+  lastnumber3=0;
 }
 
 void picture::append(drawElement *p)
@@ -94,6 +97,7 @@ void picture::prepend(picture &pic)
   
   copy(pic.nodes.begin(), pic.nodes.end(), inserter(nodes, nodes.begin()));
   lastnumber=0;
+  lastnumber3=0;
 }
 
 bool picture::havelabels()
@@ -105,11 +109,23 @@ bool picture::havelabels()
     for(size_t i=0; i < lastnumber; ++i) ++p;
     for(; p != nodes.end(); ++p) {
       assert(*p);
-      if((*p)->islabel())
+      if((*p)->islabel()) {
         labels=true;
+	break;
+      }
     }
   }
   return labels;
+}
+
+bool picture::have3D()
+{
+  for(nodelist::iterator p=nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    if((*p)->is3D())
+      return true;
+  }
+  return false;
 }
 
 bbox picture::bounds()
@@ -147,6 +163,39 @@ bbox picture::bounds()
   return b_cached;
 }
 
+bbox3 picture::bounds3()
+{
+  size_t n=nodes.size();
+  if(n == lastnumber3) return b3;
+  
+  if(lastnumber3 == 0)
+    b3=bbox3();
+  
+  nodelist::iterator p=nodes.begin();
+  for(size_t i=0; i < lastnumber3; ++i) ++p;
+  for(; p != nodes.end(); ++p) {
+    assert(*p);
+    (*p)->bounds(b3);
+  }
+
+  lastnumber3=n;
+  return b3;
+}
+  
+pair picture::bounds(double (*m)(double, double),
+		     double (*x)(const triple&, double*),
+		     double (*y)(const triple&, double*),
+		     double *t)
+{
+  bool first=true;
+  pair b;
+  for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    (*p)->bounds(b,m,x,y,t,first);
+  }
+  return b;
+}
+  
 void picture::texinit()
 {
   drawElement::lastpen=pen(initialpen);
@@ -219,6 +268,7 @@ bool picture::texprocess(const string& texname, const string& outname,
       if(verbose <= 1) dcmd << " -q";
       dcmd << " -o '" << psname << "' '" << dviname << "'";
       status=System(dcmd,0,true,"dvips");
+      if(status != 0) return false;
     
       ifstream fin(psname.c_str());
       psfile fout(outname,false);
@@ -261,9 +311,9 @@ bool picture::texprocess(const string& texname, const string& outname,
       unlink(auxname(prefix,"log").c_str());
       unlink(auxname(prefix,"out").c_str());
     }
+    if(status == 0) return true;
   }
-  if(status) return false;
-  return true;
+  return false;
 }
 
 int picture::epstopdf(const string& epsname, const string& pdfname)
@@ -274,6 +324,8 @@ int picture::epstopdf(const string& epsname, const string& pdfname)
       << "' -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEPSCrop"
       << " -dSubsetFonts=true -dEmbedAllFonts=true -dMaxSubsetPct=100"
       << " -dPDFSETTINGS=/prepress -dCompatibilityLevel=1.4";
+  if(safe)
+    cmd << " -dSAFER";
   if(!getSetting<bool>("autorotate"))
     cmd << " -dAutoRotatePages=/None";
   cmd << " -g" << max(ceil(paperWidth),1.0) << "x" << max(ceil(paperHeight),1.0)
@@ -284,12 +336,42 @@ int picture::epstopdf(const string& epsname, const string& pdfname)
   return System(cmd,0,true,"gs","Ghostscript");
 }
   
-static mem::map<CONST string,int> pids;
-
+bool picture::reloadPDF(const string& Viewer, const string& outname) const 
+{
+  static bool needReload=true;
+  static bool haveReload=false;
+  
+  // Send javascript code to redraw picture.
+  picture f;
+  string name=getPath()+string("/")+outname;
+  f.append(new drawVerbatim(TeX,"\\ \\pdfannot width 0pt height 0pt { /AA << /PO << /S /JavaScript /JS (try{reload('"+
+			    name+"');} catch(e) {} closeDoc(this);) >> >> }"));
+  string reloadprefix="reload";
+  if(needReload) {
+    needReload=false;
+    string texengine=getSetting<string>("tex");
+    Setting("tex")=string("pdflatex");
+    haveReload=f.shipout(NULL,reloadprefix,"pdf",0.0,false,false);
+    Setting("tex")=texengine;
+  }
+  if(haveReload) {
+    ostringstream cmd;
+    cmd << "'" << Viewer << "' ";
+    string pdfreloadOptions=getSetting<string>("pdfreloadOptions");
+    if(!pdfreloadOptions.empty())
+      cmd << pdfreloadOptions << " ";
+    cmd << "'" << reloadprefix << ".pdf'";
+    System(cmd,0,false);
+  }
+  return true;
+}		
+  
+  
 bool picture::postprocess(const string& prename, const string& outname,
 			  const string& outputformat, double magnification,
 			  bool wait, bool view)
 {
+  static mem::map<CONST string,int> pids;
   int status=0;
   
   if((pdf && Labels) || !epsformat) {
@@ -298,11 +380,17 @@ bool picture::postprocess(const string& prename, const string& outname,
       else status=epstopdf(prename,outname);
     } else {
       ostringstream cmd;
-      double expand=2.0;
-      double res=expand*72.0;
+      double render=fabs(getSetting<double>("render"));
+      if(render == 0) render=1.0;
+      bool antialias=getSetting<bool>("antialias");
+      double expand=antialias ? 2.0 : 1.0;
+      double res=expand*render*72.0;
       cmd << "'" << getSetting<string>("convert") 
-	  << "' -density " << res << "x" << res
-	  << " +antialias -geometry " << 100.0/expand << "%x"
+	  << "' -alpha Off -density " << res << "x" << res;
+      if(!antialias)
+	cmd << " +antialias";
+      cmd << " -geometry " << 100.0/expand << "%x"
+	  << " " << getSetting<string>("convertOptions")
 	  << " '" << nativeformat()+":" << prename << "'"
           << " '" << outputformat << ":" << outname << "'";
       status=System(cmd,0,true,"convert");
@@ -313,7 +401,8 @@ bool picture::postprocess(const string& prename, const string& outname,
   
   if(verbose > 0)
     cout << "Wrote " << outname << endl;
-  if(settings::view() && view) {
+  bool View=settings::view() && view;
+  if(View) {
     if(epsformat || pdfformat) {
       // Check to see if there is an existing viewer for this outname.
       mem::map<CONST string,int>::iterator p=pids.find(outname);
@@ -323,21 +412,40 @@ bool picture::postprocess(const string& prename, const string& outname,
       int pid;
       if(running) {
 	pid=p->second;
-	if(interact::interactive && pid)
+	if(pid)
 	  running=(waitpid(pid, &status, WNOHANG) != pid);
       }
 	
-      if(!running) {
+      bool pdfreload=pdfformat && getSetting<bool>("pdfreload");
+      if(running) {
+	// Tell gv/acroread to reread file.	  
+	if(Viewer == "gv") kill(pid,SIGHUP);
+	else if(pdfreload) reloadPDF(Viewer,outname);
+      } else {
 	ostringstream cmd;
-	cmd << "'" << Viewer << "'";
-	cmd << " '" << outname << "'";
+	cmd << "'" << Viewer << "' ";
+	string viewerOptions=getSetting<string>(pdfformat ? 
+						"pdfviewerOptions" : 
+						"psviewerOptions");
+	if(!viewerOptions.empty())
+	  cmd << viewerOptions << " ";
+	cmd << "'" << outname << "'";
 	status=System(cmd,0,wait,
 		      pdfformat ? "pdfviewer" : "psviewer",
 		      pdfformat ? "your PDF viewer" : "your PostScript viewer",
 		      &pid);
-	pids[outname]=pid;
 	if(status != 0) return false;
-      } else if(Viewer == "gv") kill(pid,SIGHUP); // Tell gv to reread file.
+	
+	pids[outname]=pid;
+
+	if(pdfreload) {
+	  // Work around race conditions in acroread initialization script
+	  usleep(getSetting<Int>("pdfreloaddelay"));
+	  // Only reload if pdf viewer process is already running.
+	  if(waitpid(pid, &status, WNOHANG) == pid)
+	    reloadPDF(Viewer,outname);
+	}
+      }
     } else {
       ostringstream cmd;
       cmd << "'" << getSetting<string>("display") << "' '"
@@ -552,6 +660,83 @@ bool picture::shipout(picture *preamble, const string& Prefix,
   return true;
 }
 
+// render viewport with width x height pixels.
+void picture::render(GLUnurbs *nurb, double size2,
+		     const triple& Min, const triple& Max,
+		     double perspective, bool transparent) const
+{
+  for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    (*p)->render(nurb,size2,Min,Max,perspective,transparent);
+  }
+}
+  
+bool picture::shipout3(const string& prefix, const string& format,
+		       double width, double height,
+		       double angle, const triple& m, const triple& M,
+		       size_t nlights, triple *lights, double *diffuse,
+		       double *ambient, double *specular, bool viewportlighting,
+		       bool wait, bool view)
+{
+#ifdef HAVE_LIBGLUT
+  bounds3();
+  
+  for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    (*p)->displacement();
+  }
+
+  string outputformat=format.empty() ? getSetting<string>("outformat") : format;
+  bool View=settings::view() && view;
+  
+  int oldpid=0;
+  static mem::map<CONST string,int> pids;
+  if(interact::interactive) {
+    mem::map<CONST string,int>::iterator p=pids.find(prefix);
+    if(p != pids.end())
+      oldpid=p->second;
+  }
+  
+  int pid=fork();
+  if(pid == -1)
+    camp::reportError("Cannot fork process");
+  if(pid != 0)  {
+    pids[prefix]=pid;
+    waitpid(-1,NULL,View && !wait ? WNOHANG : 0);
+    return true;
+  }
+
+  gl::glrender(prefix.c_str(),this,outputformat,width,height,angle,m,M,
+	       nlights,lights,diffuse,ambient,specular,viewportlighting,
+	       View,oldpid);
+#else
+  reportError("Cannot render image; please install glut, run ./configure, and recompile"); 
+#endif
+  return false;
+}
+
+bool picture::shipout3(const string& prefix)
+{
+  bounds3();
+  bool status = true;
+  
+  string prcname=buildname(prefix,"prc");
+  prcfile prc(prcname);
+  for(nodelist::iterator p=nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    if(!(*p)->write(&prc))
+      status = false;
+  }
+  if(status)
+    status=prc.finish();
+    
+  if(!status) reportError("shipout3 failed");
+    
+  if(verbose > 0) cout << "Wrote " << prcname << endl;
+  
+  return true;
+}
+
 picture *picture::transformed(const transform& t)
 {
   picture *pic = new picture;
@@ -562,6 +747,19 @@ picture *picture::transformed(const transform& t)
     pic->append((*p)->transformed(t));
   }
   pic->T=transform(t*T);
+
+  return pic;
+}
+
+picture *picture::transformed(const vm::array& t)
+{
+  picture *pic = new picture;
+
+  nodelist::iterator p;
+  for (p = nodes.begin(); p != nodes.end(); ++p) {
+    assert(*p);
+    pic->append((*p)->transformed(t));
+  }
 
   return pic;
 }

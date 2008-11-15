@@ -1,21 +1,44 @@
 // Draw and/or fill a box on frame dest using the dimensions of frame src.
 path box(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
-         pen p=currentpen, filltype filltype=NoFill, bool put=Above)
+         pen p=currentpen, filltype filltype=NoFill, bool above=true)
 {
   pair z=(xmargin,ymargin);
   int sign=filltype == NoFill ? 1 : -1;
   path g=box(min(src)+0.5*sign*min(p)-z,max(src)+0.5*sign*max(p)+z);
   frame F;
-  if(put == Below) {
+  if(above == false) {
     filltype(F,g,p);
     prepend(dest,F);
   } else filltype(dest,g,p);
   return g;
 }
 
+path roundbox(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
+	      pen p=currentpen, filltype filltype=NoFill, bool above=true)
+{
+  pair m=min(src);
+  pair M=max(src);
+  pair bound=M-m;
+  int sign=filltype == NoFill ? 1 : -1;
+  real a=bound.x+2*xmargin;
+  real b=bound.y+2*ymargin;
+  real ds=0;
+  real dw=min(a,b)*0.3;
+  path g=shift(m-(xmargin,ymargin))*((0,dw)--(0,b-dw){up}..{right}
+  (dw,b)--(a-dw,b){right}..{down}
+  (a,b-dw)--(a,dw){down}..{left}
+  (a-dw,0)--(dw,0){left}..{up}cycle);
+  
+  frame F;
+  if(above == false) {
+    filltype(F,g,p);
+    prepend(dest,F);
+  } else filltype(dest,g,p);
+  return g;
+}
 
 path ellipse(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
-             pen p=currentpen, filltype filltype=NoFill, bool put=Above)
+             pen p=currentpen, filltype filltype=NoFill, bool above=true)
 {
   pair m=min(src);
   pair M=max(src);
@@ -25,7 +48,7 @@ path ellipse(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
   path g=ellipse(0.5*(M+m),factor*D.x+0.5*sign*max(p).x+xmargin,
                  factor*D.y+0.5*sign*max(p).y+ymargin);
   frame F;
-  if(put == Below) {
+  if(above == false) {
     filltype(F,g,p);
     prepend(dest,F);
   } else filltype(dest,g,p);
@@ -33,26 +56,33 @@ path ellipse(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
 }
 
 path box(frame f, Label L, real xmargin=0, real ymargin=xmargin,
-         pen p=currentpen, filltype filltype=NoFill, bool put=Above)
+         pen p=currentpen, filltype filltype=NoFill, bool above=true)
 {
   add(f,L);
-  return box(f,xmargin,ymargin,p,filltype,put);
+  return box(f,xmargin,ymargin,p,filltype,above);
+}
+
+path roundbox(frame f, Label L, real xmargin=0, real ymargin=xmargin,
+	      pen p=currentpen, filltype filltype=NoFill, bool above=true)
+{
+  add(f,L);
+  return roundbox(f,xmargin,ymargin,p,filltype,above);
 }
 
 path ellipse(frame f, Label L, real xmargin=0, real ymargin=xmargin,
-             pen p=currentpen, filltype filltype=NoFill, bool put=Above)
+             pen p=currentpen, filltype filltype=NoFill, bool above=true)
 {
   add(f,L);
-  return ellipse(f,xmargin,ymargin,p,filltype,put);
+  return ellipse(f,xmargin,ymargin,p,filltype,above);
 }
 
 typedef path envelope(frame dest, frame src=dest, real xmargin=0,
                       real ymargin=xmargin, pen p=currentpen,
-                      filltype filltype=NoFill, bool put=Above);
+                      filltype filltype=NoFill, bool above=true);
 
 object draw(picture pic=currentpicture, Label L, envelope e, 
 	    real xmargin=0, real ymargin=xmargin, pen p=currentpen,
-	    filltype filltype=NoFill, bool put=Above) 
+	    filltype filltype=NoFill, bool above=true) 
 {
   object F;
   Label L=L.copy();
@@ -60,7 +90,7 @@ object draw(picture pic=currentpicture, Label L, envelope e,
   pic.add(new void (frame f, transform t) {
       frame d;
       add(d,t,L);
-      e(f,d,xmargin,ymargin,p,filltype,put);
+      e(f,d,xmargin,ymargin,p,filltype,above);
       add(f,d);
     },true);
   Label L0=L.copy();
@@ -75,9 +105,9 @@ object draw(picture pic=currentpicture, Label L, envelope e,
 
 object draw(picture pic=currentpicture, Label L, envelope e, pair position,
             real xmargin=0, real ymargin=xmargin, pen p=currentpen,
-            filltype filltype=NoFill, bool put=Above)
+            filltype filltype=NoFill, bool above=true)
 {
-  return draw(pic,Label(L,position),e,xmargin,ymargin,p,filltype,put);
+  return draw(pic,Label(L,position),e,xmargin,ymargin,p,filltype,above);
 }
 
 pair point(object F, pair dir, transform t=identity()) 
@@ -95,6 +125,6 @@ frame bbox(picture pic=currentpicture, real xmargin=0, real ymargin=xmargin,
            pen p=currentpen, filltype filltype=NoFill)
 {
   frame f=pic.fit(max(pic.xsize-2*xmargin,0),max(pic.ysize-2*ymargin,0));
-  box(f,xmargin,ymargin,p,filltype,Below);
+  box(f,xmargin,ymargin,p,filltype,false);
   return f;
 }

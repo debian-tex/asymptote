@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[1.43],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[1.51],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 
@@ -181,6 +181,7 @@ AC_CHECK_LIB([ncurses], [setupterm], [AC_DEFINE(HAVE_LIBCURSES)
 			 LIBS=$LIBS"-lncurses "],
 			 AC_CHECK_LIB([curses], [setupterm]))
 AC_CHECK_LIB([m], [sqrt])
+AC_CHECK_LIB([z], [deflate])
 AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
 
 AC_CHECK_LIB([readline], [rl_completion_matches],,
@@ -190,6 +191,7 @@ AC_MSG_NOTICE(*** Could not find GNU readline 4.2 or later: will compile without
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fenv.h stddef.h libintl.h])
 AC_CHECK_HEADERS([ncurses/curses.h ncurses.h curses.h], [break])
+AC_CHECK_HEADERS(fpu_control.h)
 
 AC_COMPILE_IFELSE(AC_LANG_PROGRAM([#include "xstream.h"]),
                    [AC_SEARCH_LIBS([xdrstdio_create],[nsl rpc])
@@ -203,12 +205,21 @@ AC_CHECK_HEADER(gsl/gsl_sf.h,
            AC_MSG_NOTICE([*** Could not find libgsl: will compile without optional special functions. ***]),[-lgslcblas]),
      AC_MSG_NOTICE([*** Header file gsl_sf.h not found: will compile without optional special functions. ***]))
 
-TRIANGLE=Delaunay
-AC_CHECK_FILE(triangle.shar.gz,
-   [AC_DEFINE(HAVE_TRIANGLE, 1,
-   [Define to 1 if you have the source files for the 'triangle' mesh generator. ]) TRIANGLE="triangle "])
+case "$OSTYPE" in
+     cygwin) AC_CHECK_HEADER(GL/glut.h,
+                                [AC_DEFINE(HAVE_LIBGLUT, 1,
+		   [Define if you have the `freeglut' library (-lfreeglut).])
+			   LIBS=$LIBS"-lfreeglut -lglu32 -lopengl32 "],
+				 AC_MSG_NOTICE([*** Could not find freeglut: will compile without OpenGL support ***]));;
+     darwin*) AC_CHECK_HEADER(GLUT/glut.h,
+                                [AC_DEFINE(HAVE_LIBGLUT, 1,
+		   [Define if you have the `glut' library (-lglut).])
+			   LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa"],
+				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]));;
+     *) AC_CHECK_LIB([glut], [glutMainLoop],,
+				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]));;
+esac
 
-AC_SUBST(TRIANGLE)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
@@ -239,7 +250,7 @@ AC_FUNC_FSEEKO
 
 AC_CONFIG_HEADERS(config.h)
 
-AC_CONFIG_FILES([Makefile doc/Makefile doc/version.texi base/version.asy GUI/xasyVersion.py])
+AC_CONFIG_FILES([Makefile doc/Makefile])
 AC_OUTPUT
 
 if test "x$GCDIR" != "x" ; then

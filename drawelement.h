@@ -12,9 +12,12 @@
 
 #include "common.h"
 #include "bbox.h"
+#include "bbox3.h"
 #include "pen.h"
 #include "psfile.h"
 #include "texfile.h"
+#include "prcfile.h"
+#include "glrender.h"
 
 namespace camp {
 
@@ -99,11 +102,19 @@ public:
   // Adjust the bbox of the picture based on the addition of this
   // element. The iopipestream is needed for determining label sizes.
   virtual void bounds(bbox&, iopipestream&, boxvector&, bboxlist&) {}
+  virtual void bounds(bbox3&) {}
+
+  virtual void bounds(pair &b, double (*m)(double, double),
+		      double (*x)(const triple&, double*),
+		      double (*y)(const triple&, double*),
+		      double *t, bool &first){}
 
   virtual bool islabel() {return false;}
-
+  
   virtual bool islayer() {return false;}
 
+  virtual bool is3D() {return false;}
+  
   virtual bool endclip() {return false;}
   
   virtual bool begingroup() {return false;}
@@ -112,18 +123,35 @@ public:
 
   virtual void save(bool b) {}
   
-  // Handles its output in a PostScript file
+  // Output to a PostScript file
   virtual bool draw(psfile *) {
     return true;
   }
 
-  // Handles its output in a TeX file
+  // Output to a TeX file
   virtual bool write(texfile *, const bbox&) {
     return true;
   }
 
+  // Output to a PRC file
+  virtual bool write(prcfile *) {
+    return true;
+  }
+
+  // Used to compute deviation of a surface from a quadrilateral.
+  virtual void displacement() {}
+
+  // Render with OpenGL
+  virtual void render(GLUnurbs *nurb, double size2, 
+		      const triple& Min, const triple& Max,
+		      double perspective, bool transparent) {}
+
   // Transform as part of a picture.
   virtual drawElement *transformed(const transform&) {
+    return this;
+  }
+  
+  virtual drawElement *transformed(const vm::array&) {
     return this;
   }
 };
@@ -181,6 +209,8 @@ public:
     return p.cyclic();
   }
   
+  void strokebounds(bbox& b, const path& p);
+    
   virtual void penSave(psfile *out)
   {
     if (!pentype.getTransform().isIdentity())
@@ -243,6 +273,20 @@ public:
   void bounds(bbox& b, iopipestream&, boxvector&, bboxlist&) {
     for(size_t i=0; i < size; i++)
       bpath += vm::read<path>(P,i).bounds();
+    b += bpath;
+  }
+  
+  void strokepath(psfile *out) {
+    // strokepath and evenodd are incompatible
+    static pen zerowinding=pen((FillRule) ZEROWINDING);
+    pentype=pentype+zerowinding;
+    out->setpen(pentype);
+    out->strokepath();
+  }
+  
+  void strokebounds(bbox& b) {
+    for(size_t i=0; i < size; i++)
+      drawPathPenBase::strokebounds(bpath,vm::read<path>(P,i));
     b += bpath;
   }
   

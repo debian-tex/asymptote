@@ -18,7 +18,7 @@
 
 namespace camp {
 
-class triple : public gc {
+class triple : virtual public gc {
   double x;
   double y;
   double z;
@@ -27,6 +27,8 @@ public:
   triple() : x(0.0), y(0.0), z(0.0) {}
   triple(double x, double y=0.0, double z=0.0) : x(x), y(y), z(z) {}
 
+  virtual ~triple() {}
+  
   double getx() const { return x; }
   double gety() const { return y; }
   double getz() const { return z; }
@@ -46,12 +48,17 @@ public:
     return triple(-z.x, -z.y, -z.z);
   }
 
-  friend triple operator* (double s, const triple &z)
+  friend triple operator* (double s, const triple& z)
   {
     return triple(s*z.x, s*z.y, s*z.z);
   }
 
-  friend triple operator/ (const triple &z, double s)
+  friend triple operator* (const triple& z, double s)
+  {
+    return triple(z.x*s, z.y*s, z.z*s);
+  }
+
+  friend triple operator/ (const triple& z, double s)
   {
     if (s == 0.0)
       reportError("division by 0");
@@ -64,6 +71,14 @@ public:
     x += w.x;
     y += w.y;
     z += w.z;
+    return *this;
+  }
+
+  const triple& operator-= (const triple& w)
+  {
+    x -= w.x;
+    y -= w.y;
+    z -= w.z;
     return *this;
   }
 
@@ -87,6 +102,11 @@ public:
     return sqrt(abs2());
   }
   
+  friend double length(const triple& v)
+  {
+    return v.length();
+  }
+
   double polar() const /* theta */
   {
     double r=length();
@@ -100,13 +120,25 @@ public:
     return angle(x,y);
   }
   
-  friend triple unit(const triple& z)
+  friend triple unit(const triple& v)
   {
-    double scale=z.length();
+    double scale=v.length();
     if(scale != 0.0) scale=1.0/scale;
-    return triple(z.x*scale,z.y*scale,z.z*scale);
+    return triple(v.x*scale,v.y*scale,v.z*scale);
   }
   
+  friend double dot(const triple& u, const triple& v)
+  {
+    return u.getx()*v.getx()+u.gety()*v.gety()+u.getz()*v.getz();
+  }
+
+  friend triple cross(const triple& u, const triple& v) 
+  {
+    return triple(u.gety()*v.getz()-u.getz()*v.gety(),
+		  u.getz()*v.getx()-u.getx()*v.getz(),
+		  u.getx()*v.gety()-v.getx()*u.gety());
+  }
+
   // Returns a unit triple in the direction (theta,phi), in radians.
   friend triple expi(double theta, double phi)
   {
@@ -143,23 +175,8 @@ public:
 
 triple expi(double theta, double phi);
   
-struct node : public gc {
-  triple pre,point,post;
-public:
-  node() {}
-  node(const triple& pre, const triple& point, const triple& post)
-    : pre(pre), point(point), post(post) {}
-};
-  
-double cubiclength(const triple& z0, const triple& z0p, const triple& z1m,
-		   const triple& z1, double goal=-1);
-  
-bool intersect(pair &t, Int L1, Int L2, const mem::vector<node>& n1,
-	       const mem::vector<node>& n2, double fuzz=0.0);
-  
 } //namespace camp
 
 GC_DECLARE_PTRFREE(camp::triple);
-GC_DECLARE_PTRFREE(camp::node);
 
 #endif

@@ -90,8 +90,10 @@ struct processDataStruct {
   mem::list<string> TeXpipepreamble;
   mem::list<string> TeXpreamble;
   vm::callable *atExitFunction;
+  vm::callable *atUpdateFunction;
   vm::callable *atBreakpointFunction;
   camp::pen defaultpen;
+  camp::pen currentpen;
   
   terminator<std::ofstream> ofile;
   terminator<std::fstream> ifile;
@@ -102,8 +104,10 @@ struct processDataStruct {
   
   processDataStruct() {
     atExitFunction=NULL;
+    atUpdateFunction=NULL;
     atBreakpointFunction=NULL;
     defaultpen=camp::pen::initialpen();
+    currentpen=camp::pen(camp::DEFLINE);
   }
   
 };

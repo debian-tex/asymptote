@@ -15,7 +15,7 @@ frame NoBox(picture pic) {
 }
 
 fit BBox(real xmargin=0, real ymargin=xmargin,
-	 pen p=currentpen, filltype filltype=NoFill) {
+         pen p=currentpen, filltype filltype=NoFill) {
   return new frame(picture pic) {
     return bbox(pic,xmargin,ymargin,p,filltype);
   };
@@ -23,7 +23,7 @@ fit BBox(real xmargin=0, real ymargin=xmargin,
 
 struct animation {
   string outname() {
-    return "_"+(defaultfilename == "" ? settings.outname : defaultfilename);
+    return "_"+outprefix();
   }
 
   picture[] pictures;
@@ -76,20 +76,20 @@ struct animation {
 
   int merge(int loops=0, real delay=animationdelay, string format="gif",
             string options="", bool keep=settings.keep) {
-    string args="-loop " +(string) loops+" -delay "+(string)(delay/10)+" "
-      +options;
-      for(int i=0; i < files.length; ++i)
-        args += " " +files[i];
-      int rc=convert(args,format=format);
-      this.purge(keep);
-      if(rc == 0) animate(format=format);
-      else abort("merge failed");
-      return rc;
+    string args="-loop " +(string) loops+" -delay "+(string)(delay/10)+
+      " -alpha Off -dispose Background -layers optimize "+options;
+    for(int i=0; i < files.length; ++i)
+      args += " " +files[i];
+    int rc=convert(args,format=format);
+    this.purge(keep);
+    if(rc == 0) animate(format=format);
+    else abort("merge failed");
+    return rc;
   }
 
   // Export all frames with the same scaling.
   void export(string prefix=prefix, fit fit=NoBox,
-	      bool multipage=false, bool view=false) {
+              bool multipage=false, bool view=false) {
     if(pictures.length == 0) return;
     picture all;
     size(all,pictures[0]);
@@ -103,10 +103,22 @@ struct animation {
       draw(pictures[i],m,nullpen);
       draw(pictures[i],M,nullpen);
       if(multipage) {
-	add(multi,fit(pictures[i]));
-	newpage(multi);
-      } else
-	this.shipout(name(prefix,i),fit(pictures[i]));
+        add(multi,fit(pictures[i]));
+        newpage(multi);
+      } else {
+	if(pictures[i].empty3() || settings.render <= 0) {
+	  real render=settings.render;
+	  settings.render=0;
+	  this.shipout(name(prefix,i),fit(pictures[i]));
+	  settings.render=render;
+	} else { // Render 3D frames
+	  string name=defaultfilename;
+	  defaultfilename=name(prefix,i);
+	  files.push(defaultfilename+"."+nativeformat());
+	  fit(pictures[i]);
+	  defaultfilename=name;
+	}
+      }
     }
     if(multipage) {
       bool inlinetex=settings.inlinetex;
@@ -118,7 +130,7 @@ struct animation {
   }
 
   string load(int frames, real delay=animationdelay, string options="") {
-    return "\animategraphics["+options+"]{"+string(1000/delay)+"}{"+
+    return "\animategraphics["+options+"]{"+format("%.18f",1000/delay,"C")+"}{"+
       basename()+"}{0}{"+string(frames-1)+"}";
   }
 
@@ -136,9 +148,9 @@ struct animation {
     shipped=false;
 
     if(!settings.keep && !settings.inlinetex) {
-      exitfcn atexit=atexit();
+      exitfcn currentexitfunction=atexit();
       void exitfunction() {
-        atexit();
+        if(currentexitfunction != null) currentexitfunction();
         this.purge();
         if(!keep && single)
           delete(pdfname);

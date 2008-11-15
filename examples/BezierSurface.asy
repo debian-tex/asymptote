@@ -1,7 +1,11 @@
-import surface;
+import three;
 
-size(400,400);
-currentprojection=orthographic((1,1,1),Y);
+string viewpoint="{-23.978971481323242 7.5465407371521 7.926892280578613}{0.8244763016700745 -0.563306450843811 0.0540805459022522}{27.48492319119571}{17.392772684720835}{}";
+
+//viewpoint=getstring("viewpoint",viewpoint);
+currentprojection=perspective(viewpoint);
+
+currentlight=adobe;
 
 triple[][][] P={{
     {(-1.6,0,1.875),(-1.6,-0.3,1.875),(-1.5,-0.3,2.1),(-1.5,0,2.1)},
@@ -25,9 +29,10 @@ triple[][][] P={{
     {(-2.7,0,1.65),(-2.7,0.3,1.65),(-3,0.3,1.65),(-3,0,1.65)}
   }};
 
-draw(P[1],1,16);
-draw(P[3],1,16);
-draw(P[0],16,1);
-draw(P[2],16,1);
+picture pic;
+size(pic,15cm);
+size3(pic,10cm);
+draw(pic,surface(P),blue);
 
-
+add(embed("label",pic),(0,0),N);
+label(cameralink("label"),(0,0),10S,fontsize(24pt));

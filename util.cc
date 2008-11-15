@@ -146,9 +146,7 @@ string auxname(string filename, string suffix)
   return buildname(filename,suffix,"_");
 }
   
-// Return an argv array corresponding to the fields in command delimited
-// by spaces not within matching single quotes.
-char **args(const char *command)
+char **args(const char *command, bool quiet)
 {
   if(command == NULL) return NULL;
   
@@ -184,7 +182,7 @@ char **args(const char *command)
     }
   }
   
-  if(settings::verbose > 1) {
+  if(!quiet && settings::verbose > 1) {
     cerr << argv[0];
     for(size_t m=1; m < n; ++m) cerr << " " << argv[m];
     cerr << endl;
@@ -304,14 +302,13 @@ string stripblanklines(const string& s)
 }
 
 char *startpath=NULL;
-char *currentpath=NULL;
 
 void noPath()
 {
   camp::reportError("Cannot get current path");
 }
 
-char *getPath(char *p=currentpath)
+char *getPath(char *p)
 {
   static size_t size=MAXPATHLEN;
   if(!p) p=new(UseGC) char[size];

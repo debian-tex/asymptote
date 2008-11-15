@@ -15,6 +15,7 @@
 #include "types.h"
 #include "fileio.h"
 #include "callable.h"
+#include "mathop.h"
 
 namespace run {
 
@@ -26,6 +27,30 @@ using camp::tab;
 vm::array *copyArray(vm::array *a);
 vm::array *copyArray2(vm::array *a);
   
+template<class T, class U, template <class S> class op>
+void arrayOp(vm::stack *s)
+{
+  U b=pop<U>(s);
+  array *a=pop<array*>(s);
+  size_t size=checkArray(a);
+  array *c=new array(size);
+  for(size_t i=0; i < size; i++)
+    (*c)[i]=op<T>()(read<T>(a,i),b,i);
+  s->push(c);
+}
+
+template<class T, class U, template <class S> class op>
+void opArray(vm::stack *s)
+{
+  array *a=pop<array*>(s);
+  T b=pop<T>(s);
+  size_t size=checkArray(a);
+  array *c=new array(size);
+  for(size_t i=0; i < size; i++)
+      (*c)[i]=op<U>()(b,read<U>(a,i),i);
+  s->push(c);
+}
+
 template<class T, template <class S> class op>
 void arrayArrayOp(vm::stack *s)
 {
@@ -35,30 +60,6 @@ void arrayArrayOp(vm::stack *s)
   array *c=new array(size);
   for(size_t i=0; i < size; i++)
       (*c)[i]=op<T>()(read<T>(a,i),read<T>(b,i),i);
-  s->push(c);
-}
-
-template<class T, template <class S> class op>
-void arrayOp(vm::stack *s)
-{
-  T b=pop<T>(s);
-  array *a=pop<array*>(s);
-  size_t size=checkArray(a);
-  array *c=new array(size);
-  for(size_t i=0; i < size; i++)
-      (*c)[i]=op<T>()(read<T>(a,i),b,i);
-  s->push(c);
-}
-
-template<class T, template <class S> class op>
-void opArray(vm::stack *s)
-{
-  array *a=pop<array*>(s);
-  T b=pop<T>(s);
-  size_t size=checkArray(a);
-  array *c=new array(size);
-  for(size_t i=0; i < size; i++)
-      (*c)[i]=op<T>()(b,read<T>(a,i),i);
   s->push(c);
 }
 
@@ -399,6 +400,10 @@ void arrayFunc(vm::stack *s)
     (*c)[i]=func(read<S>(a,i));
   s->push(c);
 }
+
+vm::array *Identity(Int n);
+camp::triple operator *(const vm::array& a, const camp::triple& v);
+camp::triple multshiftless(const vm::array& t, const camp::triple& v);
 
 } // namespace run
 

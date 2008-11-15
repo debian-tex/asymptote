@@ -29,13 +29,81 @@ inline void BoundingBox(std::ostream& s, const bbox& box)
   s << "%%HiResBoundingBox: " << std::setprecision(9) << box << newl;
 }
 
+// An ASCII85Encode filter.
+class encode85 {
+  ostream *out;
+  int tuple;
+  int pos;
+  int count;
+  static const int width=72;
+public:
+  encode85(ostream *out) : out(out), tuple(0), pos(0), count(0) {}
+  
+  ~encode85() {
+    if(count > 0)
+      encode(tuple, count);
+    if(pos+2 > width)
+      *out << '\n';
+    *out << "~>\n";
+  }
+private:  
+  void encode(unsigned int tuple, int count) {
+    unsigned char buf[5], *s=buf;
+    int i=5;
+    do {
+      *s++=tuple % 85;
+      tuple /= 85;
+    } while(--i > 0);
+    i=count;
+    do {
+      *out << (unsigned char) (*--s + '!');
+      if(pos++ >= width) {
+	pos=0;
+	*out << '\n';
+      }
+    } while(i-- > 0);
+  }
+
+public:  
+  void put(unsigned char c) {
+    switch (count++) {
+      case 0:
+	tuple |= (c << 24);
+	break;
+      case 1:
+	tuple |= (c << 16);
+	break;
+      case 2:
+	tuple |= (c <<  8);
+	break;
+      case 3:
+	tuple |= c;
+	if(tuple == 0) {
+	  *out << 'z';
+	  if(pos++ >= width) {
+	    pos=0;
+	    *out << '\n';
+	  }
+	} else
+	  encode(tuple, count);
+	tuple=0;
+	count=0;
+	break;
+    }
+  }
+};
+
+void dealias(unsigned char *a, size_t width, size_t height, size_t n);
+
 class psfile {
   string filename;
   bool pdfformat;    // Is final output format PDF?
   bool pdf;          // Output direct PDF?
   bool transparency; // Is transparency used?
+  unsigned char *buffer;
+  size_t count;
   mem::stack<pen> pens;
-
+  
   void write(transform t) {
     if(!pdf) *out << "[";
     *out << " " << t.getxx() << " " << t.getyx()
@@ -44,8 +112,50 @@ class psfile {
     if(!pdf) *out << "]";
   }
 
-  void writeHex(unsigned n) {
-    *out << std::hex << std::setw(2) << std::setfill('0') << n << std::dec;
+  void writeHex(pen *p, size_t ncomponents);
+  void write(pen *p, size_t ncomponents);
+  
+  void writeCompressed(const unsigned char *a, size_t size);
+  
+  void beginHex() {
+    out->setf(std::ios::hex,std::ios::basefield);
+    out->fill('0');
+  }
+  
+  void endHex() {
+    out->setf(std::ios::dec,std::ios::basefield);
+    out->fill();
+    *out << ">" << endl;
+  }
+  
+  void beginImage(size_t n) {
+    buffer=new unsigned char[n];
+    count=0;
+  }
+  
+  void endImage(bool antialias, size_t width, size_t height, 
+		size_t ncomponents) {
+    if(antialias) dealias(buffer,width,height,ncomponents);
+    if(settings::getSetting<Int>("level") >= 3)
+      writeCompressed(buffer,count);
+    else {
+      encode85 e(out);
+      for(size_t i=0; i < count; ++i)
+	e.put(buffer[i]);
+    }
+    delete[] buffer;
+  }
+  
+  void writeByte(unsigned char n) {
+      buffer[count++]=n;
+  }
+  
+  void write2(unsigned n) {
+    *out << std::setw(2) << n;
+  }
+  
+  void writenewl() {
+    *out << newl;
   }
   
 protected:
@@ -54,6 +164,7 @@ protected:
   
 public: 
   psfile(const string& filename, bool pdfformat);
+  
   psfile() {pdf=settings::pdf(settings::getSetting<string>("tex"));}
 
   ~psfile();
@@ -80,8 +191,6 @@ public:
     *out << " " << z.getx() << " " << z.gety();
   }
 
-  void writeHex(pen *p, Int ncomponents);
-  
   void resetpen() {
     lastpen=pen(initialpen);
     lastpen.convert();
@@ -127,6 +236,11 @@ public:
     else *out << "stroke" << newl;
   }
   
+  void strokepath() {
+    if(pdf) reportError("PDF does not support strokepath");
+    else *out << "strokepath" << newl;
+  }
+  
   void fill(const pen &p) {
     if(p.evenodd()) {
       if(pdf) *out << "f*" << newl;
@@ -164,10 +278,11 @@ public:
   void tensorshade(const vm::array& pens, const vm::array& boundaries,
 		   const vm::array& z);
 
-  void imageheader(double width, double height, ColorSpace colorspace);
+  void imageheader(size_t width, size_t height, ColorSpace colorspace);
   
-  void image(const vm::array& a, const vm::array& p);
-  void image(const vm::array& a);
+  void image(const vm::array& a, const vm::array& p, bool antialias);
+  void image(const vm::array& a, bool antialias);
+  void rawimage(unsigned char *a, size_t width, size_t height, bool antialias);
 
   void gsave(bool tex=false) {
     if(pdf) *out << "q";

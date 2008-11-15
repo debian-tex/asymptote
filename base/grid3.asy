@@ -1,7 +1,6 @@
 // grid3.asy
-// Author: Philippe Ivaldi(Grids in 3D)
+// Author: Philippe Ivaldi (Grids in 3D)
 // Created: 10 janvier 2007
-// Last modified: 17 July 2007
 
 import graph3;
 
@@ -12,8 +11,7 @@ struct grid3 {
   valuetime vt;
   ticklocate locate;
   void create(picture pic, path3 axea, path3 axeb, path3 axelevel,
-              real min, real max,
-              position pos, autoscaleT t, projection P) {
+              real min, real max, position pos, autoscaleT t) {
     real position=pos.position.x;
     triple level;
     if(pos.relative) {
@@ -27,29 +25,35 @@ struct grid3 {
     this.axea=shift(level)*axea;
     this.axeb=shift(level)*axeb;
     bds=autoscale(min,max,t.scale);
-    vt= linear(pic,this.axea,t.T(),min,max,P);
-    locate=ticklocate(min,max,t,bds.min,bds.max,vt,
-                      dir(axea,unit(point(axeb,0)-point(axea,0)),P));
+    locate=ticklocate(min,max,t,bds.min,bds.max,
+		      Dir(point(axeb,0)-point(axea,0)));
   }
 };
 
-typedef grid3 grid3routine(picture pic, bbox3 b, projection P);
+typedef grid3 grid3routine(picture pic);
+
+triple X(picture pic) {return (pic.userMax.x,pic.userMin.y,pic.userMin.z);}
+triple XY(picture pic) {return (pic.userMax.x,pic.userMax.y,pic.userMin.z);}
+triple Y(picture pic) {return (pic.userMin.x,pic.userMax.y,pic.userMin.z);}
+triple YZ(picture pic) {return (pic.userMin.x,pic.userMax.y,pic.userMax.z);}
+triple Z(picture pic) {return (pic.userMin.x,pic.userMin.y,pic.userMax.z);}
+triple ZX(picture pic) {return (pic.userMax.x,pic.userMin.y,pic.userMax.z);}
 
 grid3routine XYgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.X(),b.Y()--b.XY(),b.min--b.Z(),
-              b.min.x,b.max.x,pos,pic.scale.x,P);
+    og.create(pic,pic.userMin--X(pic),Y(pic)--XY(pic),pic.userMin--Z(pic),
+              pic.userMin.x,pic.userMax.x,pos,pic.scale.x);
     return og;
   };
 };
 grid3routine XYgrid=XYgrid();
 
 grid3routine YXgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.Y(),b.X()--b.XY(),b.min--b.Z(),
-              b.min.y,b.max.y,pos,pic.scale.y,P);
+    og.create(pic,pic.userMin--Y(pic),X(pic)--XY(pic),pic.userMin--Z(pic),
+              pic.userMin.y,pic.userMax.y,pos,pic.scale.y);
     return og;
   };
 };
@@ -57,45 +61,44 @@ grid3routine YXgrid=YXgrid();
 
 
 grid3routine XZgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.X(),b.Z()--b.ZX(),b.min--b.Y(),
-              b.min.x,b.max.x,pos,pic.scale.x,P);
+    og.create(pic,pic.userMin--X(pic),Z(pic)--ZX(pic),pic.userMin--Y(pic),
+              pic.userMin.x,pic.userMax.x,pos,pic.scale.x);
     return og;
   };
 };
 grid3routine XZgrid=XZgrid();
 
 grid3routine ZXgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.Z(),b.X()--b.ZX(),b.min--b.Y(),
-              b.min.z,b.max.z,pos,pic.scale.z,P);
+    og.create(pic,pic.userMin--Z(pic),X(pic)--ZX(pic),pic.userMin--Y(pic),
+              pic.userMin.z,pic.userMax.z,pos,pic.scale.z);
     return og;
   };
 };
 grid3routine ZXgrid=ZXgrid();
 
 grid3routine YZgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.Y(),b.Z()--b.YZ(),b.min--b.X(),
-              b.min.y,b.max.y,pos,pic.scale.y,P);
+    og.create(pic,pic.userMin--Y(pic),Z(pic)--YZ(pic),pic.userMin--X(pic),
+              pic.userMin.y,pic.userMax.y,pos,pic.scale.y);
     return og;
   };
 };
 grid3routine YZgrid=YZgrid();
 
 grid3routine ZYgrid(position pos=Relative(0)) {
-  return new grid3(picture pic, bbox3 b, projection P) {
+  return new grid3(picture pic) {
     grid3 og;
-    og.create(pic,b.min--b.Z(),b.Y()--b.YZ(),b.min--b.X(),
-              b.min.z,b.max.z,pos,pic.scale.z,P);
+    og.create(pic,pic.userMin--Z(pic),Y(pic)--YZ(pic),pic.userMin--X(pic),
+              pic.userMin.z,pic.userMax.z,pos,pic.scale.z);
     return og;
   };
 };
 grid3routine ZYgrid=ZYgrid();
-
 
 typedef grid3routine grid3routines[] ;
 
@@ -141,7 +144,6 @@ grid3routines ZX_ZYgrid(position posa=Relative(0), position posb=Relative(0)) {
 };
 grid3routines ZX_ZYgrid=ZX_ZYgrid();
 
-
 typedef grid3routines[] grid3routinetype;
 
 grid3routinetype XYZgrid(position pos=Relative(0))
@@ -167,55 +169,50 @@ grid3routinetype operator cast(grid3routine gridroutine) {
   return og;
 }
 
-void grid3(picture pic=currentpicture, bbox3 b,
+void grid3(picture pic=currentpicture,
            grid3routinetype gridroutine=XYZgrid,
            int N=0, int n=0, real Step=0, real step=0,
            bool begin=true, bool end=true,
            pen pGrid=grey, pen pgrid=lightgrey,
-           bool put=Above,
-           projection P=currentprojection)
+           bool above=false)
 {
   for(int j=0; j < gridroutine.length; ++j) {
     grid3routines gridroutinej=gridroutine[j];
     for(int i=0; i < gridroutinej.length; ++i) {
-      grid3 gt=gridroutinej[i](pic,b,P);
-      path ga=project(gt.axea,P);
-      path gb=project(gt.axeb,P);
-      pic.add(new void(frame f, transform t, transform T, pair lb, pair rt) {
-	  frame d;
-          ticks ticks=Ticks(1,F="%",ticklabel=null,
-                            beginlabel=false,endlabel=false,
-                            N=N,n=n,Step=Step,step=step,
-                            begin=begin,end=end,
-                            Size=0,size=0,extend=true,
-                            pTick=pGrid,ptick=pgrid);
-          ticks(d,t,"",0,ga,gb,nullpen,None,gt.locate,gt.bds.divisor,
-                opposite=true);
-          (put ? add : prepend)(f,t*T*inverse(t)*d);
-	});
-      pic.addPath(ga,pGrid);
-      pic.addPath(gb,pGrid);
+      grid3 gt=gridroutinej[i](pic);
+      pic.add(new void(picture f, transform3 t, transform3 T, triple, triple) {
+	  picture d;
+          ticks3 ticks=Ticks3(1,F="%",ticklabel=null,
+			      beginlabel=false,endlabel=false,
+			      N=N,n=n,Step=Step,step=step,
+			      begin=begin,end=end,
+			      Size=0,size=0,extend=true,
+			      pTick=pGrid,ptick=pgrid);
+          ticks(d,t,"",gt.axea,gt.axeb,nullpen,None,gt.locate,gt.bds.divisor,
+                opposite=true,primary=false);
+	  add(f,t*T*inverse(t)*d);
+	},above=above);
+      addPath(pic,gt.axea,pGrid);
+      addPath(pic,gt.axeb,pGrid);
     }
   }
 }
 
-void grid3(picture pic=currentpicture, bbox3 b,
+void grid3(picture pic=currentpicture,
            grid3routinetype gridroutine,
            int N=0, int n=0, real Step=0, real step=0,
            bool begin=true, bool end=true,
            pen[] pGrid, pen[] pgrid,
-           bool put=Above,
-           projection P=currentprojection)
+           bool above=false)
 {
   if(pGrid.length != gridroutine.length || pgrid.length != gridroutine.length)
     abort("pen array has different length than grid");
   for(int i=0; i < gridroutine.length; ++i) {
-    grid3(pic=pic,b=b,gridroutine=gridroutine[i],
+    grid3(pic=pic,gridroutine=gridroutine[i],
           N=N,n=n,Step=Step,step=step,
           begin=begin,end=end,
           pGrid=pGrid[i],pgrid=pgrid[i],
-          put=put,
-          P=P);
+          above=above);
   }
 }
 
@@ -225,105 +222,101 @@ position middle=Relative(0.5);
 
 // Structure used to communicate ticks and axis settings to grid3 routines.
 struct ticksgridT {
-  ticks ticks;
+  ticks3 ticks;
   // Other arguments of grid3 are define by ticks and axis settings
-  void grid3(picture, bbox3, bool, projection);
+  void grid3(picture, bool);
 };
 
 typedef ticksgridT ticksgrid();
 
 
-ticksgrid Ticks(Label F="", ticklabel ticklabel=null,
-                bool beginlabel=true, bool endlabel=true,
-                int N=0, int n=0, real Step=0, real step=0,
-                bool begin=true, bool end=true,
-                real Size=0, real size=0,
-                pen pTick=nullpen, pen ptick=nullpen,
-                grid3routinetype gridroutine,
-                pen pGrid=grey, pen pgrid=lightgrey)
+ticksgrid InOutTicks(Label F="", ticklabel ticklabel=null,
+		     bool beginlabel=true, bool endlabel=true,
+		     int N=0, int n=0, real Step=0, real step=0,
+		     bool begin=true, bool end=true,
+		     real Size=0, real size=0,
+		     pen pTick=nullpen, pen ptick=nullpen,
+		     grid3routinetype gridroutine,
+		     pen pGrid=grey, pen pgrid=lightgrey)
 {
   return new ticksgridT()
     {
       ticksgridT otg;
-      otg.ticks=Ticks(0,F,ticklabel,beginlabel,endlabel,
-                      N,n,Step,step,begin,end,
-                      Size,size,false,pTick,ptick);
-      otg.grid3=new void(picture pic, bbox3 b, bool put, projection P) {
-        grid3(pic,b,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,put,P);
+      otg.ticks=Ticks3(0,F,ticklabel,beginlabel,endlabel,
+		       N,n,Step,step,begin,end,
+		       Size,size,false,pTick,ptick);
+      otg.grid3=new void(picture pic, bool above) {
+        grid3(pic,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,above);
       };
       return otg;
     };
 }
 
-ticksgrid LeftTicks(Label F="", ticklabel ticklabel=null,
-                    bool beginlabel=true, bool endlabel=true,
-                    int N=0, int n=0, real Step=0, real step=0,
-                    bool begin=true, bool end=true,
-                    real Size=0, real size=0,
-                    pen pTick=nullpen, pen ptick=nullpen,
-                    grid3routinetype gridroutine,
-                    pen pGrid=grey, pen pgrid=lightgrey)
+ticksgrid InTicks(Label F="", ticklabel ticklabel=null,
+		  bool beginlabel=true, bool endlabel=true,
+		  int N=0, int n=0, real Step=0, real step=0,
+		  bool begin=true, bool end=true,
+		  real Size=0, real size=0,
+		  pen pTick=nullpen, pen ptick=nullpen,
+		  grid3routinetype gridroutine,
+		  pen pGrid=grey, pen pgrid=lightgrey)
 {
   return new ticksgridT()
     {
       ticksgridT otg;
-      otg.ticks=Ticks(-1,F,ticklabel,beginlabel,endlabel,N,n,Step,step,
-                      begin,end,Size,size,false,pTick,ptick);
-      otg.grid3=new void(picture pic, bbox3 b, bool put, projection P) {
-        grid3(pic,b,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,put,P);
+      otg.ticks=Ticks3(-1,F,ticklabel,beginlabel,endlabel,N,n,Step,step,
+		       begin,end,Size,size,false,pTick,ptick);
+      otg.grid3=new void(picture pic, bool above) {
+        grid3(pic,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,above);
       };
       return otg;
     };
 }
 
-ticksgrid RightTicks(Label F="", ticklabel ticklabel=null,
-                     bool beginlabel=true, bool endlabel=true,
-                     int N=0, int n=0, real Step=0, real step=0,
-                     bool begin=true, bool end=true,
-                     real Size=0, real size=0,
-                     pen pTick=nullpen, pen ptick=nullpen,
-                     grid3routinetype gridroutine,
-                     pen pGrid=grey, pen pgrid=lightgrey)
+ticksgrid OutTicks(Label F="", ticklabel ticklabel=null,
+		   bool beginlabel=true, bool endlabel=true,
+		   int N=0, int n=0, real Step=0, real step=0,
+		   bool begin=true, bool end=true,
+		   real Size=0, real size=0,
+		   pen pTick=nullpen, pen ptick=nullpen,
+		   grid3routinetype gridroutine,
+		   pen pGrid=grey, pen pgrid=lightgrey)
 {
   return new ticksgridT()
     {
       ticksgridT otg;
-      otg.ticks=Ticks(1,F,ticklabel,beginlabel,endlabel,N,n,Step,step,
-                      begin,end,Size,size,false,pTick,ptick);
-      otg.grid3=new void(picture pic, bbox3 b, bool put, projection P) {
-        grid3(pic,b,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,put,P);
+      otg.ticks=Ticks3(1,F,ticklabel,beginlabel,endlabel,N,n,Step,step,
+		       begin,end,Size,size,false,pTick,ptick);
+      otg.grid3=new void(picture pic, bool above) {
+        grid3(pic,gridroutine,N,n,Step,step,begin,end,pGrid,pgrid,above);
       };
       return otg;
     };
 }
 
-void xaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
-           pen p=currentpen, ticksgrid ticks, triple dir=Y,
-           arrowbar arrow=None, bool put=Above,
-           projection P=currentprojection)
+void xaxis3(picture pic=currentpicture, Label L="", axis axis=YZZero,
+	    pen p=currentpen, ticksgrid ticks,
+	    arrowbar3 arrow=None, bool above=false)
 {
-  xaxis(pic,L,false,b,p,ticks().ticks,dir,arrow,put,P);
-  ticks().grid3(pic,b,put,P);
+  xaxis3(pic,L,axis,p,ticks().ticks,arrow,above);
+  ticks().grid3(pic,above);
 }
 
-void yaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
-           pen p=currentpen, ticksgrid ticks, triple dir=X,
-           arrowbar arrow=None, bool put=Above,
-           projection P=currentprojection)
+void yaxis3(picture pic=currentpicture, Label L="", axis axis=XZZero,
+	    pen p=currentpen, ticksgrid ticks,
+	    arrowbar3 arrow=None, bool above=false)
 {
-  yaxis(pic, L,false,b,p,ticks().ticks,dir,arrow,put,P);
-  ticks().grid3(pic,b,put,P);
+  yaxis3(pic,L,axis,p,ticks().ticks,arrow,above);
+  ticks().grid3(pic,above);
 }
 
-void zaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
-           pen p=currentpen, ticksgrid ticks, triple dir=Y,
-           arrowbar arrow=None, bool put=Above,
-           projection P=currentprojection)
+void zaxis3(picture pic=currentpicture, Label L="", axis axis=XYZero,
+	    pen p=currentpen, ticksgrid ticks,
+	    arrowbar3 arrow=None, bool above=false)
 {
-  zaxis(pic,L,false,b,p,ticks().ticks,dir,arrow,put,P);
-  ticks().grid3(pic,b,put,P);
+  zaxis3(pic,L,axis,p,ticks().ticks,arrow,above);
+  ticks().grid3(pic,above);
 }
-
 
 /* Example:
 
@@ -333,13 +326,10 @@ void zaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
    currentprojection=orthographic(0.5,1,0.5);
 
    defaultpen(overwrite(SuppressQuiet));
-   bbox3 b=limits((-2,-2,0),(0,2,2));
-   aspect(b,1,1,1);
 
    scale(Linear, Linear, Log);
 
    grid3(pic=currentpicture, // picture
-   b=b,                // bbox3: the 3D bounding box.
    gridroutine=XYZgrid(// grid3routine
    // or grid3routine[] (alias grid3routines)
    // or grid3routines[]:
@@ -362,7 +352,7 @@ void zaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
    // Aliases: top=Relative(1), middle=Relative(0.5)
    // and bottom=Relative(0).
 
-   // These arguments are similar to those of Ticks():
+   // These arguments are similar to those of InOutTicks():
    N=0,                // int
    n=0,                // int
    Step=0,             // real
@@ -371,13 +361,12 @@ void zaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
    end=true,           // bool
    pGrid=grey,         // pen
    pgrid=lightgrey,    // pen
-   put=Above,          // bool
-   P=currentprojection // projection
+   above=false,        // bool
    );
 
-   xaxis(Label("$x$",position=EndPoint,align=S),b,RightTicks());
-   yaxis(Label("$y$",position=EndPoint,align=S),b,RightTicks());
-   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,RightTicks());
+   xaxis3(Label("$x$",position=EndPoint,align=S),OutTicks());
+   yaxis3(Label("$y$",position=EndPoint,align=S),OutTicks());
+   zaxis3(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,OutTicks());
 
 */
 
@@ -385,30 +374,30 @@ void zaxis(picture pic=currentpicture, Label L="", bool all=false, bbox3 b,
 
    int N=10, n=2;
    grid3(b,N=N,n=n);
-   xaxis(Label("$x$",position=EndPoint,align=S),b,RightTicks());
-   yaxis(Label("$y$",position=EndPoint,align=S),b,RightTicks(N=N,n=n));
-   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,RightTicks());
+   xaxis(Label("$x$",position=EndPoint,align=S),b,OutTicks());
+   yaxis(Label("$y$",position=EndPoint,align=S),b,OutTicks(N=N,n=n));
+   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,OutTicks());
 
 
    grid3(b,new grid3routines[] {XYXgrid(top),XZXgrid(0)});
-   xaxis(Label("$x$",position=EndPoint,align=S),b,RightTicks());
-   yaxis(Label("$y$",position=EndPoint,align=S),b,RightTicks());
-   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,RightTicks());
+   xaxis(Label("$x$",position=EndPoint,align=S),b,OutTicks());
+   yaxis(Label("$y$",position=EndPoint,align=S),b,OutTicks());
+   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,OutTicks());
 
 
    grid3(b,new grid3routines[] {XYXgrid(-0.5),XYXgrid(1.5)},
    pGrid=new pen[] {red,blue},
    pgrid=new pen[] {0.5red,0.5blue});
-   xaxis(Label("$x$",position=EndPoint,align=S),b,RightTicks());
-   yaxis(Label("$y$",position=EndPoint,align=S),b,RightTicks());
-   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,RightTicks());
+   xaxis(Label("$x$",position=EndPoint,align=S),b,OutTicks());
+   yaxis(Label("$y$",position=EndPoint,align=S),b,OutTicks());
+   zaxis(Label("$z$",position=EndPoint,align=(0,0.5)+W),b,OutTicks());
 
    // Axes with grids:
 
    xaxis(Label("$x$",position=EndPoint,align=S),b,
-   RightTicks(Step=0.5,gridroutine=XYgrid));
+   OutTicks(Step=0.5,gridroutine=XYgrid));
    yaxis(Label("$y$",position=EndPoint,align=S),b,
-   Ticks(Label("",align=0.5project(X)),N=8,n=2,gridroutine=YX_YZgrid));
-   zaxis("$z$",b,RightTicks(ZYgrid));
+   InOutTicks(Label("",align=0.5X),N=8,n=2,gridroutine=YX_YZgrid));
+   zaxis("$z$",b,OutTicks(ZYgrid));
 
 */

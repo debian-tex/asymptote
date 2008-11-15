@@ -38,17 +38,37 @@ void texdocumentclass(T& out, bool pipe=false)
 }
   
 template<class T>
-void texpreamble(T& out, mem::list<string>& preamble=processData().TeXpreamble,
-		 bool ASYalign=true, bool ASYbase=true)
+void texuserpreamble(T& out,
+		     mem::list<string>& preamble=processData().TeXpreamble)
 {
-  string texengine=settings::getSetting<string>("tex");
   for(mem::list<string>::iterator p=preamble.begin();
       p != preamble.end(); ++p)
     out << stripblanklines(*p);
+}
+  
+template<class T>
+void texfontencoding(T& out) 
+{
+  if(settings::latex(settings::getSetting<string>("tex"))) {
+    out << "\\makeatletter%" << newl
+	<< "\\let\\ASYencoding\\f@encoding%" << newl
+	<< "\\let\\ASYfamily\\f@family%" << newl
+	<< "\\let\\ASYseries\\f@series%" << newl
+	<< "\\let\\ASYshape\\f@shape%" << newl
+	<< "\\makeatother%" << newl;
+  }
+}
+
+template<class T>
+void texpreamble(T& out, mem::list<string>& preamble=processData().TeXpreamble,
+		 bool ASYalign=true, bool ASYbase=true)
+{
+  texuserpreamble(out,preamble);
+  string texengine=settings::getSetting<string>("tex");
   if(ASYbase)
     out << "\\newbox\\ASYbox" << newl
 	<< "\\newdimen\\ASYdimen" << newl
-	<< "\\def\\ASYbase#1#2{\\setbox\\ASYbox=\\hbox{#1}"
+	<< "\\def\\ASYbase#1#2{\\leavevmode\\setbox\\ASYbox=\\hbox{#1}"
 	<< "\\ASYdimen=\\ht\\ASYbox%" << newl
 	<< "\\setbox\\ASYbox=\\hbox{#2}\\lower\\ASYdimen\\box\\ASYbox}" << newl;
   if(ASYalign)
@@ -83,14 +103,8 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
 	fout << s << endl;
     }
   }
+  texfontencoding(out);
   if(settings::latex(settings::getSetting<string>("tex"))) {
-    out << "\\makeatletter%" << newl
-	<< "\\let\\ASYencoding\\f@encoding%" << newl
-	<< "\\let\\ASYfamily\\f@family%" << newl
-	<< "\\let\\ASYseries\\f@series%" << newl
-	<< "\\let\\ASYshape\\f@shape%" << newl
-	<< "\\makeatother%" << newl;
-    
     if(pipe || !settings::getSetting<bool>("inlinetex")) {
       out << "\\usepackage{graphicx}" << newl;
       if(!pipe) out << "\\usepackage{color}" << newl;
@@ -106,20 +120,23 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
   
 class texfile : public psfile {
   bbox box;
-  string texengine;
   bool inlinetex;
   double Hoffset;
 
 public:
-  texfile(const string& texname, const bbox& box);
+  string texengine;
+  
+  texfile(const string& texname, const bbox& box, bool pipe=false);
   ~texfile();
 
   void prologue();
 
-  void epilogue();
+  void epilogue(bool pipe=false);
 
   void setlatexcolor(pen p);
   void setpen(pen p);
+  
+  void setfont(pen p);
   
   void gsave();
   
@@ -136,6 +153,8 @@ public:
   void writepair(pair z) {
     *out << z;
   }
+  
+  void miniprologue();
   
   void writeshifted(path p, bool newPath=true);
   

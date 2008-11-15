@@ -24,16 +24,18 @@ range Full=Range();
 
 void image(frame f, real[][] data, pair initial, pair final, pen[] palette,
            bool transpose=(initial.x < final.x && initial.y < final.y),
-           transform t=identity())
+           transform t=identity(), bool copy=true, bool antialias=false)
 {
-  _image(f,transpose ? transpose(data) : data,initial,final,palette,t);
+  _image(f,transpose ? transpose(data) : copy ? copy(data) : data,
+	 initial,final,palette,t,copy=false,antialias=antialias);
 }
 
 void image(frame f, pen[][] data, pair initial, pair final,
            bool transpose=(initial.x < final.x && initial.y < final.y),
-           transform t=identity())
+           transform t=identity(), bool copy=true, bool antialias=false)
 {
-  _image(f,transpose ? transpose(data) : data,initial,final,t);
+  _image(f,transpose ? transpose(data) : copy ? copy(data) : data,
+	 initial,final,t,copy=false,antialias=antialias);
 }
 
 // Reduce color palette to approximate range of data relative to "display"
@@ -61,7 +63,7 @@ private real[] sequencereal;
 bounds image(picture pic=currentpicture, real[][] f, range range=Full,
              pair initial, pair final, pen[] palette,
              bool transpose=(initial.x < final.x && initial.y < final.y),
-	     bool copy=true)
+	     bool copy=true, bool antialias=false)
 {
   if(transpose) f=transpose(f);
   else if(copy) f=copy(f);
@@ -88,7 +90,7 @@ bounds image(picture pic=currentpicture, real[][] f, range range=Full,
   final=Scale(pic,final);
 
   pic.add(new void(frame F, transform t) {
-      _image(F,f,initial,final,palette,t,copy=false);
+      _image(F,f,initial,final,palette,t,copy=false,antialias=antialias);
     },true);
   pic.addBox(initial,final);
   return bounds; // Return bounds used for color space
@@ -96,7 +98,7 @@ bounds image(picture pic=currentpicture, real[][] f, range range=Full,
 
 bounds image(picture pic=currentpicture, real f(real,real),
              range range=Full, pair initial, pair final,
-             int nx=ngraph, int ny=nx, pen[] palette)
+             int nx=ngraph, int ny=nx, pen[] palette, bool antialias=false)
 {
   // Generate data, taking scaling into account
   real xmin=pic.scale.x.T(initial.x);
@@ -112,12 +114,13 @@ bounds image(picture pic=currentpicture, real f(real,real),
         return f(Tinv(interp(xmin,xmax,(i+0.5)/ny)),y);
       },nx);
   }
-  return image(pic,data,range,initial,final,palette,false);
+  return image(pic,data,range,initial,final,palette,transpose=false,
+	       copy=false,antialias=antialias);
 }
 
 void image(picture pic=currentpicture, pen[][] data, pair initial, pair final,
            bool transpose=(initial.x < final.x && initial.y < final.y),
-	   bool copy=true)
+	   bool copy=true, bool antialias=false)
 {
   if(transpose) data=transpose(data);
   else if(copy) data=copy(data);
@@ -126,7 +129,7 @@ void image(picture pic=currentpicture, pen[][] data, pair initial, pair final,
   final=Scale(pic,final);
 
   pic.add(new void(frame F, transform t) {
-      _image(F,data,initial,final,t,copy=false);
+      _image(F,data,initial,final,t,copy=false,antialias=antialias);
     },true);
   pic.addBox(initial,final);
 }
@@ -162,9 +165,7 @@ bounds image(picture pic=currentpicture, pair[] z, real[] f,
   for(int i=0; i < trn.length; ++i) {
     int[] trni=trn[i];
     int i0=trni[0], i1=trni[1], i2=trni[2];
-    pen color(int i) {
-      return palette[round((f[i]-rmin)*step)];
-    }
+    pen color(int i) {return palette[round((f[i]-rmin)*step)];}
     gouraudshade(pic,z[i0]--z[i1]--z[i2]--cycle,
 		 new pen[] {color(i0),color(i1),color(i2)},edges);
   }
@@ -182,8 +183,19 @@ bounds image(picture pic=currentpicture, real[] x, real[] y, real[] f,
   return image(pic,z,f,range,palette);
 }
 
-// Use palette to construct a pen[][] array from f for use with latticeshade.
-pen[][] interpolate(real[][] f, pen[] palette)
+// Construct a pen[] array from f using the specified palette.
+pen[] palette(real[] f, pen[] palette)
+{
+  real Min=min(f);
+  real Max=max(f);
+  if(palette.length == 0) return new pen[];
+  real step=Max == Min ? 0.0 : (palette.length-1)/(Max-Min);
+  return sequence(new pen(int i) {return palette[round((f[i]-Min)*step)];},
+		  f.length);
+}
+
+// Construct a pen[][] array from f using the specified palette.
+pen[][] palette(real[][] f, pen[] palette)
 {
   real Min=min(f);
   real Max=max(f);
@@ -193,10 +205,7 @@ pen[][] interpolate(real[][] f, pen[] palette)
   real step=(Max == Min) ? 0.0 : (palette.length-1)/(Max-Min);
   for(int i=0; i < n; ++i) {
     real[] fi=f[i];
-    pen[] pi=p[i];
-    for(int j=0; j < m; ++j) {
-      pi[j]=palette[round((fi[j]-Min)*step)];
-    }
+    p[i]=sequence(new pen(int j) {return palette[round((fi[j]-Min)*step)];},m);
   }
   return p;
 }
@@ -220,7 +229,7 @@ paletteticks PaletteTicks=PaletteTicks();
 void palette(picture pic=currentpicture, Label L="", bounds bounds, 
              pair initial, pair final, axis axis=Right, pen[] palette, 
              pen p=currentpen, paletteticks ticks=PaletteTicks,
-	     bool copy=true)
+	     bool copy=true, bool antialias=false)
 {
   real initialz=pic.scale.z.T(bounds.min);
   real finalz=pic.scale.z.T(bounds.max);
@@ -228,7 +237,7 @@ void palette(picture pic=currentpicture, Label L="", bounds bounds,
   
   axisT axis;
   axis(pic,axis);
-  real angle=degrees(axis.align);
+  real angle=degrees(axis.align.dir);
 
   initial=Scale(pic,initial);
   final=Scale(pic,final);
@@ -242,7 +251,7 @@ void palette(picture pic=currentpicture, Label L="", bounds bounds,
   path g=(final-dot(lambda,par)*par)--final;
   path g2=initial--final-dot(lambda,perp)*perp;
 
-  if(sgn(dot(lambda,perp)*dot(axis.align,perp)) == -1) {
+  if(sgn(dot(lambda,perp)*dot(axis.align.dir,perp)) == -1) {
     path tmp=g;
     g=g2;
     g2=tmp;
@@ -263,12 +272,12 @@ void palette(picture pic=currentpicture, Label L="", bounds bounds,
   if(vertical) pdata=transpose(pdata);
   
   pic.add(new void(frame f, transform t) {
-      _image(f,pdata,initial,final,palette,t,copy=false);
+      _image(f,pdata,initial,final,palette,t,copy=false,antialias=antialias);
     },true);
   
   ticklocate locate=ticklocate(initialz,finalz,pic.scale.z,mz.min,mz.max);
   axis(pic,L,g,g2,p,ticks(sgn(axis.side.x*dot(lambda,par))),locate,mz.divisor,
-       Above);
+       true);
 
   pic.add(new void(frame f, transform t) {
       pair Z0=t*initial;
@@ -405,8 +414,9 @@ pen[] quantize(pen[] Palette, int n)
 {
   if(Palette.length == 0) abort("cannot quantize empty palette");
   if(n <= 1) abort("palette must contain at least two pens");
+  real step=(Palette.length-1)/(n-1);
   return sequence(new pen(int i) {
-      return Palette[round(i/(n-1)*(Palette.length-1))];
+      return Palette[round(i*step)];
     },n); 
 }
 
@@ -426,6 +436,22 @@ pen[] BWRainbow2(int NColors=32761)
   for(int i=0; i < n; ++i)
     Palette[i]=i*ninv*Palette[i];
   return Palette;
+}
+
+//A palette varying linearly over the specified array of pens, using
+// NColors in each interpolation interval.
+pen[] Gradient(int NColors=256 ... pen[] p) 
+{
+  pen[] P;
+  if(p.length < 2) abort("at least 2 colors must be specified");
+  for(int i=0; i < p.length-1; ++i) {
+    pen begin=p[i];
+    pen end=p[i+1];
+    P.append(sequence(new pen(int j) {
+	  return interp(begin,end,j/(NColors-1));
+	},NColors));
+  }
+  return P;
 }
 
 pen[] cmyk(pen[] Palette) 
