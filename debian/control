@@ -2,7 +2,7 @@ Source: asymptote
 Section: tex
 Priority: optional
 Maintainer: Hubert Chathi <uhoreg@debian.org>
-Build-Depends: cdbs, debhelper (>= 4.1.0), flex, bison, libfftw3-dev, libreadline5-dev, libncurses5-dev, libgc-dev (>= 1:6.4-1), libgsl0-dev, libsigsegv-dev, zlib1g-dev, mesa-common-dev, libglu1-mesa-dev
+Build-Depends: cdbs, debhelper (>= 4.1.0), flex, bison, libfftw3-dev, libreadline5-dev, libncurses5-dev, libgc-dev (>= 1:6.4-1), libgsl0-dev, libsigsegv-dev, zlib1g-dev, libgl1-mesa-dev, libglu1-mesa-dev
 Build-Depends-Indep: imagemagick, ghostscript, texlive-latex-base, texlive-base-bin, texlive-pstricks, texinfo
 Standards-Version: 3.7.3
 Homepage: http://asymptote.sourceforge.net/
