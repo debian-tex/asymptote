@@ -1,21 +1,21 @@
 ;;; asy-mode.el
 
-;; Copyright (C) 2006
+;; Copyright (C) 2006-8
 ;; Author: Philippe IVALDI 20 August 2006
 ;; Modified by: John Bowman
-;; Last modification: 24 April 2008 (Philippe Ivaldi)
+;; Last modification: 05 December 2008 (P. Ivaldi)
 ;;
 ;; This program is free software ; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
+;; it under the terms of the GNU Lesser General Public License as published by
 ;; the Free Software Foundation ; either version 3 of the License, or
 ;; (at your option) any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful, but
 ;; WITHOUT ANY WARRANTY ; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-;; General Public License for more details.
+;; Lesser General Public License for more details.
 ;;
-;; You should have received a copy of the GNU General Public License
+;; You should have received a copy of the GNU Lesser General Public License
 ;; along with this program ; if not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
@@ -43,7 +43,7 @@
 ;;
 ;; See also paragraph II of the documentation below to automate asy-insinuate-latex.
 
-(defvar asy-mode-version "1.4")
+(defvar asy-mode-version "1.5")
 
 ;;;###autoload
 (define-derived-mode asy-mode objc-mode "Asymptote"
@@ -104,12 +104,6 @@ Some variables can be customized: M-x customize-group <RET> asymptote <RET>."
 (require 'cl) ;; Common Lisp extensions for Emacs
 (require 'compile)
 (require 'wid-edit)
-
-(if (locate-library "cc-mode.el")
-    (load "cc-mode.el") ;; Force use of new c-lang-defconst (must not be byte-compiled).
-  (let ((phantom
-         (read-char "For better functioning, asy-mode needs cc-mode source code.
-Press any key to continue.")))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
@@ -290,7 +284,14 @@ This variable must be modified only using the function 'asy-set-master-tex by M-
 
   ;; External definitions of keywords:
   ;; asy-function-name and asy-variable-name
-  (load-library "asy-keywords.el")
+  (if (locate-library "asy-keywords.el")
+      (load "asy-keywords.el")
+    (progn
+      ;; Use dummy keyword definitions if asy-keywords.el is not found:
+      (defvar asy-keyword-name nil)
+      (defvar asy-type-name nil)
+      (defvar asy-function-name nil)
+      (defvar asy-variable-name nil)))
 
   (defcustom asy-extra-type-name '()
     "Extra user type names highlighted with 'font-lock-type-face"
@@ -345,20 +346,6 @@ This variable must be modified only using the function 'asy-set-master-tex by M-
    'asy-mode
    '(("\\[.*?\\.asy\\]" . 'asy-link-face)))
   )
-
-(when (fboundp 'c-lang-defconst)
-  (c-lang-defconst c-block-decls-with-vars
-    "Keywords introducing declarations that can contain a block which
-might be followed by variable declarations, e.g. like \"foo\" in
-\"class Foo { ... } foo;\".  So if there is a block in a declaration
-like that, it ends with the following ';' and not right away.
-
-The keywords on list are assumed to also be present on one of the
-`*-decl-kwds' lists."
-    t        nil
-    objc '("union" "enum" "typedef") ;; Asymptote doesn't require ';' after struct
-    c '("struct" "union" "enum" "typedef")
-    c++      '("class" "struct" "union" "enum" "typedef")))
 
 (setq buffers-menu-max-size nil)
 (setq mode-name "Asymptote")
@@ -622,15 +609,12 @@ Fields are defined as 'field1: field2.field3:field4' . Field=0 <-> all fields"
       (goto-char (point-min))
       (select-window cWindow))))
 
-(setq c-topmost-intro-cont c-basic-offset)
-(setq c-offsets-alist (quote ((topmost-intro-cont . c-topmost-intro-cont))))
-
 (add-hook 'asy-mode-hook
 	  (lambda ()
+	    (c-set-style "gnu");
+	    (c-set-offset (quote topmost-intro-cont) 0 nil)
 	    (make-local-variable 'c-label-minimum-indentation)
 	    (setq c-label-minimum-indentation 0)
-	    (make-local-variable 'c-topmost-intro-cont)
-	    (setq c-topmost-intro-cont 0)
             (when (fboundp 'flyspell-mode) (flyspell-mode -1))
             (turn-on-font-lock)
             (column-number-mode t)
@@ -1200,9 +1184,12 @@ See `asy-insinuate-latex'."
             (insert-file-contents Filename)
             (beginning-of-buffer)
             (if (re-search-forward "\\\\begin{asy}\\[\\(.*\\)\\]" (point-max) t)
-                (replace-match (concat asydef "size(" (match-string 1) ");"))
+                (let ((sz (match-string 1)))
+                  (replace-match "")
+                  (insert (concat asydef "\nsize(" sz ");")))
               (when (re-search-forward "\\\\begin{asy}" (point-max) t)
-                (replace-match asydef)))
+                (replace-match "")
+                (insert asydef)))
             (while (re-search-forward "\\\\end{asy}" (point-max) t)
               (replace-match "")))
           (let* ((asy-compile-command

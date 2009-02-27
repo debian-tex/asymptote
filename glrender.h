@@ -10,12 +10,18 @@
 
 #ifdef HAVE_LIBGLUT
 
+#include <csignal>
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
+#ifdef GLU_TESS_CALLBACK_TRIPLEDOT
 typedef GLvoid (* _GLUfuncptr)(...);
+#else
+typedef GLvoid (* _GLUfuncptr)();
+#endif
 #else
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -24,7 +30,7 @@ typedef GLvoid (* _GLUfuncptr)(...);
 #endif
 
 namespace camp {
-  class picture;
+class picture;
 
 inline void store(GLfloat *f, double *C)
 {
@@ -39,16 +45,24 @@ inline void store(GLfloat *control, const camp::triple& v)
   control[1]=v.gety();
   control[2]=v.getz();
 }
-
 }
 
 namespace gl {
+
 void glrender(const string& prefix, const camp::picture* pic,
-	      const string& format, double width, double height,
-	      double angle, const camp::triple& m, const camp::triple& M,
-	      size_t nlights, camp::triple *lights, double *diffuse,
-	      double *ambient, double *specular, bool viewportlighting,
-	      bool view, int oldpid);
+              const string& format, double width, double height,
+              double angle, const camp::triple& m, const camp::triple& M,
+              size_t nlights, camp::triple *lights, double *diffuse,
+              double *ambient, double *specular, bool viewportlighting,
+              bool view, int oldpid=0);
+
+#ifdef HAVE_LIBPTHREAD
+extern pthread_cond_t quitSignal;
+extern pthread_mutex_t quitLock;
+
+extern pthread_cond_t readySignal;
+extern pthread_mutex_t readyLock;
+#endif
 }
 
 #else

@@ -136,7 +136,8 @@ struct revolution {
     return camera;
   }
 
-  // add transverse slice to skeleton s
+  // add transverse slice to skeleton s;
+  // must be recomputed if camera is adjusted
   void transverse(skeleton s, real t, int n=nslice,
 		  projection P=currentprojection) {
     skeleton.curve s=s.transverse;
@@ -196,16 +197,93 @@ struct revolution {
   // add m evenly spaced transverse slices to skeleton s
   void transverse(skeleton s, int m=0, int n=nslice,
 		  projection P=currentprojection) {
-    int N=size(g);
-    int M=(m == 0) ? N : m;
-    real factor=m == 1 ? 0 : 1/(m-1);
-    for(int i=0; i < M; ++i) {
-      real t=(m == 0) ? i : reltime(g,i*factor);
-      transverse(s,t,n,P);
+    if(m == 0) {
+      int N=size(g);
+      for(int i=0; i < N; ++i)
+	transverse(s,(real) i,n,P);
+    } else if(m == 1)
+      transverse(s,reltime(g,0.5),n,P);
+    else {
+      real factor=1/(m-1);
+      for(int i=0; i < m; ++i)
+	transverse(s,reltime(g,i*factor),n,P);
     }
   }
 
-  // add longitudinal curves to skeleton
+  // return approximate silhouette based on m evenly spaced transverse slices;
+  // must be recomputed if camera is adjusted
+  path3[] silhouette(int m=64, projection P=currentprojection) {
+    if(is3D())
+      write("warning: silhouette routine is intended only for 2d projections");
+    path3 G,H;
+    int N=size(g);
+    int M=(m == 0) ? N : m;
+    real factor=m == 1 ? 0 : 1/(m-1);
+    int n=nslice;
+    
+    real tfirst=-1;
+    real tlast;
+    for(int i=0; i < M; ++i) {
+      real t=(m == 0) ? i : reltime(g,i*factor);
+      path3 S=slice(t,n);
+      triple camera=camera(P);
+      path3 Sp=slice(t+epsilon,n);
+      path3 Sm=slice(t-epsilon,n);
+      path sp=project(Sp,P);
+      path sm=project(Sm,P);
+      real[] t1=tangent(sp,sm,true);
+      real[] t2=tangent(sp,sm,false);
+      if(t1.length > 1 && t2.length > 1) {
+	real t1=t1[0]/P.ninterpolate;
+	real t2=t2[0]/P.ninterpolate;
+	if(t1 != t2) {
+	  G=G..point(S,t1);
+	  H=point(S,t2)..H;
+	  if(tfirst < 0) tfirst=t;
+	  tlast=t;
+	}
+      }
+    }
+    int L=length(g);
+    real midtime=0.5*L;
+    triple camera=camera(P);
+    real sign=sgn(dot(axis,camera-P.target))*sgn(dot(axis,dir(g,midtime)));
+
+    skeleton sfirst;
+    transverse(sfirst,tfirst,n,P);
+    triple delta=this.M-this.m;
+    path3 cap;
+    if(dot(delta,axis) == 0 || (tfirst <= epsilon && sign < 0)) {
+      cap=sfirst.transverse.front[0];
+    } else {
+      if(sign > 0) {
+	if(sfirst.transverse.front.length > 0)
+	  G=reverse(sfirst.transverse.front[0])..G;
+      } else {
+      if(sfirst.transverse.back.length > 0)
+	G=sfirst.transverse.back[0]..G;
+      }
+    }
+    
+    skeleton slast;
+    transverse(slast,tlast,n,P);
+    if(dot(delta,axis) == 0 || (tlast >= L-epsilon && sign > 0)) {
+      cap=slast.transverse.front[0];
+    } else {
+      if(sign > 0) {
+	if(slast.transverse.back.length > 0)
+	  H=reverse(slast.transverse.back[0])..H;
+      } else {
+	if(slast.transverse.front.length > 0)
+	  H=slast.transverse.front[0]..H;
+      }
+    }
+
+    return size(cap) == 0 ? G^^H : G^^H^^cap;
+  }
+
+  // add longitudinal curves to skeleton;
+  // must be recomputed if camera is adjusted
   void longitudinal(skeleton s, int n=nslice, projection P=currentprojection) {
     real t, d=0;
     // Find a point on g of maximal distance from the axis.
@@ -238,8 +316,8 @@ struct revolution {
 	path3 p2=subpath(p,t,length(p));
 	if(length(p1) > 0 &&
 	   abs(midpoint(p1)-camera) <= abs(midpoint(p2)-camera)) {
-	  s.transverse.front.push(p1);
-	  s.transverse.back.push(p2);
+	  s.longitudinal.front.push(p1);
+          s.longitudinal.back.push(p2);
 	} else {
 	  s.longitudinal.back.push(p1);
 	  s.longitudinal.front.push(p2);
@@ -250,7 +328,7 @@ struct revolution {
     push(t2);
   }
   
-skeleton skeleton(int m=0, int n=nslice, projection P=currentprojection) {
+  skeleton skeleton(int m=0, int n=nslice, projection P=currentprojection) {
     skeleton s;
     transverse(s,m,n,P);
     longitudinal(s,n,P);

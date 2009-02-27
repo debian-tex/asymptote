@@ -259,8 +259,8 @@ struct scaleT {
   scalefcn T,Tinv;
   bool logarithmic;
   bool automin,automax;
-  void init(scalefcn T, scalefcn Tinv, bool logarithmic=false,
-            bool automin=false, bool automax=false) {
+  void operator init(scalefcn T, scalefcn Tinv, bool logarithmic=false,
+                     bool automin=false, bool automax=false) {
     this.T=T;
     this.Tinv=Tinv;
     this.logarithmic=logarithmic;
@@ -268,16 +268,14 @@ struct scaleT {
     this.automax=automax;
   }
   scaleT copy() {
-    scaleT dest=new scaleT;
-    dest.init(T,Tinv,logarithmic,automin,automax);
+    scaleT dest=scaleT(T,Tinv,logarithmic,automin,automax);
     return dest;
   }
 };
 
 scaleT operator init()
 {
-  scaleT S=new scaleT;
-  S.init(identity,identity);
+  scaleT S=scaleT(identity,identity);
   return S;
 }
                                   
@@ -331,8 +329,8 @@ struct Legend {
   pen p;
   frame mark;
   bool above;
-  void init(string label, pen plabel=currentpen, pen p=nullpen,
-            frame mark=newframe, bool above=true) {
+  void operator init(string label, pen plabel=currentpen, pen p=nullpen,
+                     frame mark=newframe, bool above=true) {
     this.label=label;
     this.plabel=plabel;
     this.p=(p == nullpen) ? plabel : p;
@@ -410,8 +408,10 @@ struct projection {
   triple camera;
   triple up;
   triple target;
+  bool showtarget=true; // Expand bounding volume to include target?
   typedef transformation projector(triple camera, triple up, triple target);
   projector projector;
+  bool autoadjust=true;
   real angle; // Lens angle (currently only used by PRC viewpoint).
   int ninterpolate; // Used for projecting nurbs to 2D Bezier curves.
 
@@ -434,10 +434,13 @@ struct projection {
   }
 
   void operator init(triple camera, triple up=(0,0,1), triple target=(0,0,0),
-		     projector projector) {
+		     bool showtarget=true, bool autoadjust=true,
+                     projector projector) {
     this.camera=camera;
-    this.target=target;
     this.up=up;
+    this.target=target;
+    this.showtarget=showtarget;
+    this.autoadjust=autoadjust;
     this.projector=projector;
     calculate();
   }
@@ -449,8 +452,10 @@ struct projection {
     P.absolute=absolute;
     P.oblique=oblique;
     P.camera=camera;
-    P.target=target;
     P.up=up;
+    P.target=target;
+    P.showtarget=showtarget;
+    P.autoadjust=autoadjust;
     P.projector=projector;
     P.angle=angle;
     P.ninterpolate=ninterpolate;
@@ -468,7 +473,7 @@ struct projection {
   }
    
   void update() {
-    if(!infinity && settings.verbose > 0)
+    if(!infinity)
       write("adjusting camera to ",camera);
     calculate();
   }
@@ -491,8 +496,9 @@ struct projection {
   void adjust(triple m, triple M) {
     triple v=camera-target;
     real d=distance(m,M);
-    if(d > v.z) {
-      camera=target+2*d*unit(v);
+    static real lambda=2-1000*realEpsilon;
+    if(lambda*d >= abs(v)) {
+      camera=target+2d*unit(v);
       update();
     }
   }
@@ -593,6 +599,9 @@ struct picture {
   
   ScaleT scale; // Needed by graph
   Legend[] legend;
+
+  pair[] clipmax; // Used by beginclip/endclip
+  pair[] clipmin;
 
   // The maximum sizes in the x, y, and z directions; zero means no restriction.
   real xsize=0, ysize=0;
@@ -1281,16 +1290,15 @@ struct picture {
     return fit(s*t);
   }
 
-  static frame fitter(string,picture,string,real,real,bool,bool,bool,string,
-		      string,projection);
+  static frame fitter(string,picture,string,real,real,bool,bool,string,string,
+		      projection);
   frame fit(string prefix="", string format="",
 	    real xsize=this.xsize, real ysize=this.ysize,
-	    bool keepAspect=this.keepAspect, bool wait=false, bool view=false,
+	    bool keepAspect=this.keepAspect, bool view=false,
 	    string options="", string script="",
 	    projection P=currentprojection) {
     return fitter == null ? fit2(xsize,ysize,keepAspect) :
-      fitter(prefix,this,format,xsize,ysize,keepAspect,wait,view,options,
-	     script,P);
+      fitter(prefix,this,format,xsize,ysize,keepAspect,view,options,script,P);
   }
   
   // In case only an approximate picture size estimate is available, return the
@@ -1440,20 +1448,49 @@ void size(picture dest, picture src)
   dest.unitsize(src.xunitsize,src.yunitsize,src.zunitsize);
 }
 
-pair min(picture pic)
+pair min(picture pic, bool user=false)
 {
-  return pic.min();
+  transform t=pic.calculateTransform();
+  pair z=pic.min(t);
+  return user ? inverse(t)*z : z;
 }
   
-pair max(picture pic)
+pair max(picture pic, bool user=false)
 {
-  return pic.max();
+  transform t=pic.calculateTransform();
+  pair z=pic.max(t);
+  return user ? inverse(t)*z : z;
 }
   
-pair size(picture pic)
+pair size(picture pic, bool user=false)
 {
-  transform s=pic.calculateTransform();
-  return pic.max(s)-pic.min(s);
+  transform t=pic.calculateTransform();
+  pair M=pic.max(t);
+  pair m=pic.min(t);
+  if(!user) return M-m;
+  t=inverse(t);
+  return t*M-t*m;
+}
+
+pair point(picture pic=currentpicture, pair dir, bool user=true)
+{
+  pair z=pic.userMin()+realmult(rectify(dir),pic.userMax()-pic.userMin());
+  return user ? z : pic.calculateTransform()*z;
+}
+
+pair truepoint(picture pic=currentpicture, pair dir, bool user=true)
+{
+  transform t=pic.calculateTransform();
+  pair m=pic.min(t);
+  pair M=pic.max(t);
+  pair z=m+realmult(rectify(dir),M-m);
+  return user ? inverse(t)*z : z;
+}
+
+// Transform coordinate in [0,1]x[0,1] to current user coordinates.
+pair relative(picture pic=currentpicture, pair z)
+{
+  return pic.userMin()+realmult(z,pic.userMax()-pic.userMin());
 }
 
 void add(picture pic=currentpicture, drawer d, bool exact=false)
@@ -1675,6 +1712,29 @@ void clip(picture pic=currentpicture, path[] g, bool stroke=false,
     },true);
 }
 
+void beginclip(picture pic=currentpicture, path[] g, bool stroke=false,
+	       pen fillrule=currentpen, bool copy=true) 
+{
+  if(copy)
+    g=copy(g);
+
+  pic.clipmin.push(min(g));
+  pic.clipmax.push(max(g));
+
+  pic.add(new void(frame f, transform t) {
+      beginclip(f,t*g,stroke,fillrule,false);
+    },true);
+}
+
+void endclip(picture pic=currentpicture)
+{
+  if(pic.clipmin.length > 0 && pic.clipmax.length > 0)
+    pic.userClip(pic.clipmin.pop(),pic.clipmax.pop());
+  pic.clip(new void(frame f, transform) {
+      endclip(f);
+    },true);
+}
+
 void unfill(picture pic=currentpicture, path[] g, bool copy=true)
 {
   if(copy)
@@ -1825,27 +1885,6 @@ void layer(picture pic=currentpicture)
   pic.add(new void(frame f, transform) {
       layer(f);
     },true);
-}
-
-pair point(picture pic=currentpicture, pair dir, bool user=true)
-{
-  pair z=pic.userMin()+realmult(rectify(dir),pic.userMax()-pic.userMin());
-  return user ? z : pic.calculateTransform()*z;
-}
-
-pair truepoint(picture pic=currentpicture, pair dir, bool user=true)
-{
-  transform t=pic.calculateTransform();
-  pair m=pic.min(t);
-  pair M=pic.max(t);
-  pair z=m+realmult(rectify(dir),M-m);
-  return user ? inverse(t)*z : z;
-}
-
-// Transform coordinate in [0,1]x[0,1] to current user coordinates.
-pair relative(picture pic=currentpicture, pair z)
-{
-  return pic.userMin()+realmult(z,pic.userMax()-pic.userMin());
 }
 
 void erase(picture pic=currentpicture)

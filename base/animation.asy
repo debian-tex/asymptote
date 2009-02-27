@@ -22,10 +22,6 @@ fit BBox(real xmargin=0, real ymargin=xmargin,
 }
 
 struct animation {
-  string outname() {
-    return "_"+outprefix();
-  }
-
   picture[] pictures;
   string[] files;
   int index;
@@ -35,13 +31,14 @@ struct animation {
   // extra memory since the actual shipout is deferred until all frames have
   // been generated. 
 
-  void operator init(string s=outname(), bool global=true) {
-    this.prefix=s;
+  void operator init(string prefix="", bool global=true) {
+    prefix="_"+((prefix == "") ? outprefix() : stripdirectory(prefix));
+    this.prefix=prefix;
     this.global=global;
   }
   
   string basename(string prefix=prefix) {
-    return stripextension(stripdirectory(prefix));
+    return stripextension(prefix);
   }
 
   string name(string prefix, int index) {
@@ -77,7 +74,7 @@ struct animation {
   int merge(int loops=0, real delay=animationdelay, string format="gif",
             string options="", bool keep=settings.keep) {
     string args="-loop " +(string) loops+" -delay "+(string)(delay/10)+
-      " -alpha Off -dispose Background -layers optimize "+options;
+      " -alpha Off -dispose Background "+options;
     for(int i=0; i < files.length; ++i)
       args += " " +files[i];
     int rc=convert(args,format=format);
@@ -106,18 +103,18 @@ struct animation {
         add(multi,fit(pictures[i]));
         newpage(multi);
       } else {
-	if(pictures[i].empty3() || settings.render <= 0) {
-	  real render=settings.render;
-	  settings.render=0;
-	  this.shipout(name(prefix,i),fit(pictures[i]));
-	  settings.render=render;
-	} else { // Render 3D frames
-	  string name=defaultfilename;
-	  defaultfilename=name(prefix,i);
-	  files.push(defaultfilename+"."+nativeformat());
-	  fit(pictures[i]);
-	  defaultfilename=name;
-	}
+        if(pictures[i].empty3() || settings.render <= 0) {
+          real render=settings.render;
+          settings.render=0;
+          this.shipout(name(prefix,i),fit(pictures[i]));
+          settings.render=render;
+        } else { // Render 3D frames
+          string name=defaultfilename;
+          defaultfilename=name(prefix,i);
+          files.push(defaultfilename+"."+nativeformat());
+          fit(pictures[i]);
+          defaultfilename=name;
+        }
       }
     }
     if(multipage) {
@@ -135,7 +132,7 @@ struct animation {
   }
 
   string pdf(fit fit=NoBox, real delay=animationdelay, string options="",
-             bool keep=false, bool multipage=true) {
+             bool keep=settings.keep, bool multipage=true) {
     if(settings.tex != "pdflatex")
       abort("inline pdf animations require -tex pdflatex");
     
@@ -147,12 +144,12 @@ struct animation {
       export(filename,fit,multipage=multipage);
     shipped=false;
 
-    if(!settings.keep && !settings.inlinetex) {
+    if(!keep && !settings.inlinetex) {
       exitfcn currentexitfunction=atexit();
       void exitfunction() {
         if(currentexitfunction != null) currentexitfunction();
         this.purge();
-        if(!keep && single)
+        if(single)
           delete(pdfname);
       }
       atexit(exitfunction);
@@ -166,7 +163,7 @@ struct animation {
 
   int movie(fit fit=NoBox, int loops=0, real delay=animationdelay,
             string format=settings.outformat == "" ? "gif" : settings.outformat,
-            string options="", bool keep=false) {
+            string options="", bool keep=settings.keep) {
     if(global && format == "pdf") {
       export(settings.outname,fit,multipage=true,view=true);
       return 0;

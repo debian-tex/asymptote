@@ -27,7 +27,7 @@ void image(frame f, real[][] data, pair initial, pair final, pen[] palette,
            transform t=identity(), bool copy=true, bool antialias=false)
 {
   _image(f,transpose ? transpose(data) : copy ? copy(data) : data,
-	 initial,final,palette,t,copy=false,antialias=antialias);
+         initial,final,palette,t,copy=false,antialias=antialias);
 }
 
 void image(frame f, pen[][] data, pair initial, pair final,
@@ -35,7 +35,7 @@ void image(frame f, pen[][] data, pair initial, pair final,
            transform t=identity(), bool copy=true, bool antialias=false)
 {
   _image(f,transpose ? transpose(data) : copy ? copy(data) : data,
-	 initial,final,t,copy=false,antialias=antialias);
+         initial,final,t,copy=false,antialias=antialias);
 }
 
 // Reduce color palette to approximate range of data relative to "display"
@@ -63,7 +63,7 @@ private real[] sequencereal;
 bounds image(picture pic=currentpicture, real[][] f, range range=Full,
              pair initial, pair final, pen[] palette,
              bool transpose=(initial.x < final.x && initial.y < final.y),
-	     bool copy=true, bool antialias=false)
+             bool copy=true, bool antialias=false)
 {
   if(transpose) f=transpose(f);
   else if(copy) f=copy(f);
@@ -115,12 +115,12 @@ bounds image(picture pic=currentpicture, real f(real,real),
       },nx);
   }
   return image(pic,data,range,initial,final,palette,transpose=false,
-	       copy=false,antialias=antialias);
+               copy=false,antialias=antialias);
 }
 
 void image(picture pic=currentpicture, pen[][] data, pair initial, pair final,
            bool transpose=(initial.x < final.x && initial.y < final.y),
-	   bool copy=true, bool antialias=false)
+           bool copy=true, bool antialias=false)
 {
   if(transpose) data=transpose(data);
   else if(copy) data=copy(data);
@@ -167,7 +167,7 @@ bounds image(picture pic=currentpicture, pair[] z, real[] f,
     int i0=trni[0], i1=trni[1], i2=trni[2];
     pen color(int i) {return palette[round((f[i]-rmin)*step)];}
     gouraudshade(pic,z[i0]--z[i1]--z[i2]--cycle,
-		 new pen[] {color(i0),color(i1),color(i2)},edges);
+                 new pen[] {color(i0),color(i1),color(i2)},edges);
   }
   return bounds; // Return bounds used for color space
 }
@@ -191,7 +191,7 @@ pen[] palette(real[] f, pen[] palette)
   if(palette.length == 0) return new pen[];
   real step=Max == Min ? 0.0 : (palette.length-1)/(Max-Min);
   return sequence(new pen(int i) {return palette[round((f[i]-Min)*step)];},
-		  f.length);
+                  f.length);
 }
 
 // Construct a pen[][] array from f using the specified palette.
@@ -229,7 +229,7 @@ paletteticks PaletteTicks=PaletteTicks();
 void palette(picture pic=currentpicture, Label L="", bounds bounds, 
              pair initial, pair final, axis axis=Right, pen[] palette, 
              pen p=currentpen, paletteticks ticks=PaletteTicks,
-	     bool copy=true, bool antialias=false)
+             bool copy=true, bool antialias=false)
 {
   real initialz=pic.scale.z.T(bounds.min);
   real finalz=pic.scale.z.T(bounds.max);
@@ -295,6 +295,33 @@ pen[] Grayscale(int NColors=256)
   return sequence(new pen(int i) {return gray(i*ninv);},NColors);
 }
 
+// A color wheel palette
+pen[] Wheel(int NColors=32766)
+{
+  if(settings.gray) return Grayscale(NColors);
+  
+  int nintervals=6;
+  int n=quotient(NColors,nintervals);
+                
+  pen[] Palette;
+  if(n == 0) return Palette;
+  
+  Palette=new pen[n*nintervals];
+  real ninv=1.0/n;
+
+  for(int i=0; i < n; ++i) {
+    real ininv=i*ninv;
+    real ininv1=1.0-ininv;
+    Palette[i]=rgb(1.0,0.0,ininv);
+    Palette[n+i]=rgb(ininv1,0.0,1.0);
+    Palette[2n+i]=rgb(0.0,ininv,1.0);
+    Palette[3n+i]=rgb(0.0,1.0,ininv1);
+    Palette[4n+i]=rgb(ininv,1.0,0.0);    
+    Palette[5n+i]=rgb(1.0,ininv1,0.0);
+  }
+  return Palette;
+}
+
 // A rainbow palette
 pen[] Rainbow(int NColors=32766)
 {
@@ -310,19 +337,16 @@ pen[] Rainbow(int NColors=32766)
   Palette=new pen[n*nintervals+offset];
   real ninv=1.0/n;
 
-  int N2=2n;
-  int N3=3n;
-  int N4=4n;
   for(int i=0; i < n; ++i) {
     real ininv=i*ninv;
     real ininv1=1.0-ininv;
     Palette[i]=rgb(ininv1,0.0,1.0);
     Palette[n+i]=rgb(0.0,ininv,1.0);
-    Palette[N2+i]=rgb(0.0,1.0,ininv1);
-    Palette[N3+i]=rgb(ininv,1.0,0.0);    
-    Palette[N4+i]=rgb(1.0,ininv1,0.0);
+    Palette[2n+i]=rgb(0.0,1.0,ininv1);
+    Palette[3n+i]=rgb(ininv,1.0,0.0);    
+    Palette[4n+i]=rgb(1.0,ininv1,0.0);
   }
-  Palette[N4+n]=rgb(1.0,0.0,0.0);
+  Palette[4n+n]=rgb(1.0,0.0,0.0);
   
   return Palette;
 }
@@ -347,24 +371,18 @@ private pen[] BWRainbow(int NColors, bool two)
   Palette=new pen[NColors];
   real ninv=1.0/n;
 
-  int N1,N2,N3,N4,N5;
   int k=0;
   
   if(two) {
-    N1=n;
-    N2=2n;
-    N3=3n;
-    N4=4n;
-    N5=5n;
     for(int i=0; i < n; ++i) {
       real ininv=i*ninv;
       real ininv1=1.0-ininv;
       Palette[i]=rgb(ininv1,0.0,1.0);
-      Palette[N1+i]=rgb(0.0,ininv,1.0);
-      Palette[N2+i]=rgb(0.0,1.0,ininv1);
-      Palette[N3+i]=rgb(ininv,1.0,0.0);
-      Palette[N4+i]=rgb(1.0,ininv1,0.0);
-      Palette[N5+i]=rgb(1.0,0.0,ininv);
+      Palette[n+i]=rgb(0.0,ininv,1.0);
+      Palette[2n+i]=rgb(0.0,1.0,ininv1);
+      Palette[3n+i]=rgb(ininv,1.0,0.0);
+      Palette[4n+i]=rgb(1.0,ininv1,0.0);
+      Palette[5n+i]=rgb(1.0,0.0,ininv);
     }
     k += 6n;
   }
@@ -377,34 +395,25 @@ private pen[] BWRainbow(int NColors, bool two)
     int n23=2*n3;
     real third=n3*ninv;
     real twothirds=n23*ninv;
-    N1=k;
-    N2=k+n3;
-    N3=k+n23;
     for(int i=0; i < n3; ++i) {
       real ininv=i*ninv;
-      Palette[N1+i]=rgb(ininv,0.0,ininv);
-      Palette[N2+i]=rgb(third,0.0,third+ininv);
-      Palette[N3+i]=rgb(third-ininv,0.0,twothirds+ininv);
+      Palette[k+i]=rgb(ininv,0.0,ininv);
+      Palette[k+n3+i]=rgb(third,0.0,third+ininv);
+      Palette[k+n23+i]=rgb(third-ininv,0.0,twothirds+ininv);
     }
   }
   k += n;
 
-  N1=k;
-  N2=N1+n;
-  N3=N2+n;
-  N4=N3+n;
-  N5=N4+n;
   for(int i=0; i < n; ++i) {
     real ininv=i*ninv;
     real ininv1=1.0-ininv;
-    Palette[N1+i]=rgb(0.0,ininv,1.0);
-    Palette[N2+i]=rgb(0.0,1.0,ininv1);
-    Palette[N3+i]=rgb(ininv,1.0,0.0);    
-    Palette[N4+i]=rgb(1.0,ininv1,0.0);
-    Palette[N5+i]=rgb(1.0,ininv,ininv);
+    Palette[k+i]=rgb(0.0,ininv,1.0);
+    Palette[k+n+i]=rgb(0.0,1.0,ininv1);
+    Palette[k+2n+i]=rgb(ininv,1.0,0.0);    
+    Palette[k+3n+i]=rgb(1.0,ininv1,0.0);
+    Palette[k+4n+i]=rgb(1.0,ininv,ininv);
   }
-  k=N5+n;
-  Palette[k]=rgb(1.0,1.0,1.0);
+  Palette[k+5n]=rgb(1.0,1.0,1.0);
   
   return Palette;
 }
@@ -444,12 +453,13 @@ pen[] Gradient(int NColors=256 ... pen[] p)
 {
   pen[] P;
   if(p.length < 2) abort("at least 2 colors must be specified");
+  real step=NColors > 1 ? (1/(NColors-1)) : 1;
   for(int i=0; i < p.length-1; ++i) {
     pen begin=p[i];
     pen end=p[i+1];
     P.append(sequence(new pen(int j) {
-	  return interp(begin,end,j/(NColors-1));
-	},NColors));
+          return interp(begin,end,j*step);
+        },NColors));
   }
   return P;
 }
@@ -458,6 +468,6 @@ pen[] cmyk(pen[] Palette)
 {
   int n=Palette.length;
   for(int i=0; i < n; ++i)
-    Palette[i]=cmyk+Palette[i];
+    Palette[i]=cmyk(Palette[i]);
   return Palette;
 }

@@ -15,7 +15,23 @@
 #include "item.h"
 
 namespace types {
-  class record;
+class record;
+}
+
+namespace camp {
+void glrenderWrapper();
+}
+
+namespace gl {
+extern bool glthread;
+extern bool initialize;
+
+#ifdef HAVE_LIBPTHREAD
+extern pthread_cond_t initSignal;
+extern pthread_mutex_t initLock;
+extern pthread_t mainthread;
+void wait(pthread_cond_t& signal, pthread_mutex_t& lock);
+#endif
 }
 
 namespace settings {
@@ -25,11 +41,13 @@ extern const char BUGREPORT[];
 
 extern char *argv0;
 
+extern string systemDir;
 extern const string docdir;
+extern const string dirsep;
   
 extern bool safe;
   
-extern bool globalwrite();
+bool globalwrite();
 
 enum origin {CENTER,BOTTOM,TOP,ZERO};
   
@@ -81,6 +99,7 @@ const char *beginpicture(const string& texengine);
 const char *endpicture(const string& texengine);
 const char *beginspecial(const string& texengine);
 const char *endspecial();
+const char *texunits(const string& texengine);
   
 extern bool fataltex[];
 const char **texabort(const string& texengine);

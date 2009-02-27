@@ -17,7 +17,7 @@ namespace camp {
 
 static const string DEFPAT="<default>";
 static const string DEFLATEXFONT="\\usefont{\\ASYencoding}{\\ASYfamily}{\\ASYseries}{\\ASYshape}";
-static const string DEFTEXFONT="\\font\\ASYfont=cmr12\\ASYfont";
+static const string DEFTEXFONT="cmr12";
 static const double DEFWIDTH=-1;
 static const Int DEFCAP=-1;
 static const Int DEFJOIN=-1;
@@ -40,7 +40,7 @@ const Int nJoin=sizeof(Join)/sizeof(string);
   
 enum overwrite_t {DEFWRITE=-1,ALLOW,SUPPRESS,SUPPRESSQUIET,MOVE,MOVEQUIET};
 static const string OverwriteTag[]={"Allow","Suppress","SupressQuiet",
-					 "Move","MoveQuiet"};
+                                    "Move","MoveQuiet"};
 const Int nOverwrite=sizeof(OverwriteTag)/sizeof(string);
   
 enum FillRule {DEFFILL=-1,ZEROWINDING,EVENODD};
@@ -62,10 +62,10 @@ const unsigned nColorSpace=sizeof(ColorDeviceSuffix)/sizeof(string);
 class LineType
 {
 public:  
-  string pattern;	// The string for the PostScript style line pattern.
+  string pattern;       // The string for the PostScript style line pattern.
   double offset;        // The offset in the pattern at which to start drawing.
-  bool scale;		// Scale the line type values by the pen width?
-  bool adjust;		// Adjust the line type values to fit the arclength?
+  bool scale;           // Scale the line type values by the pen width?
+  bool adjust;          // Adjust the line type values to fit the arclength?
   
   LineType(string pattern, double offset, bool scale, bool adjust) : 
     pattern(pattern), offset(offset), scale(scale), adjust(adjust) {}
@@ -94,10 +94,10 @@ inline bool operator == (Transparency a, Transparency b) {
 }
   
 static const string BlendMode[]={"Compatible","Normal","Multiply","Screen",
-				      "Overlay","SoftLight","HardLight",
-				      "ColorDodge","ColorBurn","Darken",
-				      "Lighten","Difference","Exclusion",
-				      "Hue","Saturation","Color","Luminosity"};
+                                 "Overlay","SoftLight","HardLight",
+                                 "ColorDodge","ColorBurn","Darken",
+                                 "Lighten","Difference","Exclusion",
+                                 "Hue","Saturation","Color","Luminosity"};
 const Int nBlendMode=sizeof(BlendMode)/sizeof(string);
 
 static const transform nullTransform=transform(0.0,0.0,0.0,0.0,0.0,0.0);  
@@ -117,12 +117,12 @@ class pen : public gc {
   double lineskip;  
   
   ColorSpace color;
-  double r,g,b; 	// RGB or CMY value
-  double grey; 		// grayscale or K value
+  double r,g,b;         // RGB or CMY value
+  double grey;          // grayscale or K value
   
-  string pattern;	// The name of the user-defined fill/draw pattern
-  FillRule fillrule; 	// Zero winding-number (default) or even-odd rule
-  BaseLine baseline;	// Align to TeX baseline?
+  string pattern;       // The name of the user-defined fill/draw pattern
+  FillRule fillrule;    // Zero winding-number (default) or even-odd rule
+  BaseLine baseline;    // Align to TeX baseline?
   Transparency transparency;
   Int linecap;
   Int linejoin;
@@ -329,9 +329,9 @@ public:
   
   static pen initialpen() {
     return pen(LineType("",0,true,true),0.5,nullpath,"",12.0,12.0*1.2,
-	       GRAYSCALE,
-	       0.0,0.0,0.0,0.0,"",ZEROWINDING,NOBASEALIGN,
-	       DEFTRANSP,1,1,ALLOW,identity);
+               GRAYSCALE,
+               0.0,0.0,0.0,0.0,"",ZEROWINDING,NOBASEALIGN,
+               DEFTRANSP,1,1,ALLOW,identity);
   }
   
   pen(initialpen_t) : 
@@ -350,18 +350,24 @@ public:
     return P.empty() ? defaultpen().P : P;
   }
   
+  double size() const {
+    return fontsize == 0.0 ? defaultpen().fontsize : fontsize;
+  }
+  
   string Font() const {
     if(font.empty()) {
       if(defaultpen().font.empty())
-	return settings::latex(settings::getSetting<string>("tex")) ? 
-	  DEFLATEXFONT : DEFTEXFONT;
+        if(settings::latex(settings::getSetting<string>("tex")))
+          return DEFLATEXFONT;
+        else {
+          ostringstream buf;
+          buf << "\\font\\ASYfont=" << DEFTEXFONT << " at " << size() 
+              << "pt\\ASYfont";
+          return buf.str();
+        }
       else return defaultpen().font;
     }
     return font;
-  }
-  
-  double size() const {
-    return fontsize == 0.0 ? defaultpen().fontsize : fontsize;
   }
   
   double Lineskip() const {
@@ -475,15 +481,12 @@ public:
   
   void rgbtocmyk() {
     double sat=rgbsaturation();
-    r=1.0-r;
-    g=1.0-g;
-    b=1.0-b;
     grey=1.0-sat;
     if(sat) {
       double scale=1.0/sat;
-      r=(r-grey)*scale;
-      g=(g-grey)*scale;
-      b=(b-grey)*scale;
+      r=1.0-r*scale;
+      g=1.0-g*scale;
+      b=1.0-b*scale;
     }
     color=CMYK;
   }
@@ -522,29 +525,29 @@ public:
     if(color == c) return true;
     
     switch(color) {
-    case PATTERN:
-    case INVISIBLE:
-      break;
-    case DEFCOLOR:
+      case PATTERN:
+      case INVISIBLE:
+        break;
+      case DEFCOLOR:
       {
-	return true;
-	break;
+        return true;
+        break;
       }
       break;
-    case GRAYSCALE:
+      case GRAYSCALE:
       {
-	if(c == RGB) {greytorgb(); return true;}
-	else if(c == CMYK) {greytocmyk(); return true;}
-	break;
+        if(c == RGB) {greytorgb(); return true;}
+        else if(c == CMYK) {greytocmyk(); return true;}
+        break;
       }
-    case RGB:
+      case RGB:
       {
-	if(c == CMYK) {rgbtocmyk(); return true;}
-	break;
+        if(c == CMYK) {rgbtocmyk(); return true;}
+        break;
       }
-    case CMYK:
+      case CMYK:
       {
-	break;
+        break;
       }
     }
     return false;
@@ -554,39 +557,38 @@ public:
     pen p=q;
     if(x < 0.0) x = 0.0;
     switch(p.color) {
-    case PATTERN:
-    case INVISIBLE:
-    case DEFCOLOR:
-      break;
-    case GRAYSCALE:
+      case PATTERN:
+      case INVISIBLE:
+      case DEFCOLOR:
+        break;
+      case GRAYSCALE:
       {
-	p.grey *= x;
-	p.greyrange();
-	break;
+        p.grey *= x;
+        p.greyrange();
+        break;
       }
-    case RGB:
+      case RGB:
       {
-	p.r *= x;
-	p.g *= x;
-	p.b *= x;
-	p.rgbrange();
-	break;
+        p.r *= x;
+        p.g *= x;
+        p.b *= x;
+        p.rgbrange();
+        break;
       }
-    case CMYK:
+      case CMYK:
       {
-	p.r *= x;
-	p.g *= x;
-	p.b *= x;
-	p.grey *= x;
-	p.cmykrange();
-	break;
+        p.r *= x;
+        p.g *= x;
+        p.b *= x;
+        p.grey *= x;
+        p.cmykrange();
+        break;
       }
     }
     return p;
   }
   
   friend pen operator + (const pen& p, const pen& q) {
-    double R=0.0,G=0.0,B=0.0,greyval=0.0;
     pen P=p;
     pen Q=q;
     
@@ -596,84 +598,96 @@ public:
     if(!(p.transparency == DEFTRANSP && q.transparency == DEFTRANSP))
       P.transparency.opacity=max(p.opacity(),q.opacity());
     
-  switch(colorspace) {
-    case PATTERN:
-    case INVISIBLE:
-    case DEFCOLOR:
-      break;
-    case GRAYSCALE:
+    switch(colorspace) {
+      case PATTERN:
+      case INVISIBLE:
+      case DEFCOLOR:
+        break;
+      case GRAYSCALE:
       {
-	if(p.color != GRAYSCALE) greyval=q.grey;
-	else {
-	  if(q.color != GRAYSCALE) greyval=p.grey;
-	  else greyval=0.5*(p.grey+q.grey);
-	}
-	break;
+        P.grey += Q.grey;
+        P.greyrange();
+        break;
       }
       
-    case RGB:
+      case RGB:
       {
-	double sat;
-	if (P.color == GRAYSCALE) {
-	  P.greytorgb();
-	  sat=0.5*(P.rgbsaturation()+Q.rgbsaturation());
-	} else {
-	  if (Q.color == GRAYSCALE) {
-	    Q.greytorgb();
-	    sat=0.5*(P.rgbsaturation()+Q.rgbsaturation());
-	  } else sat=max(P.rgbsaturation(),Q.rgbsaturation());
-	}
-	// Mix colors
-	P.r += Q.r;
-	P.g += Q.g;
-	P.b += Q.b;
-	double newsat=P.rgbsaturation();
-	double scale=newsat ? sat/newsat: 1.0;
-	R=P.r*scale;
-	G=P.g*scale;
-	B=P.b*scale;
-	break;
+        if(P.color == GRAYSCALE) P.greytorgb();
+        else if(Q.color == GRAYSCALE) Q.greytorgb();
+        
+        P.r += Q.r;
+        P.g += Q.g;
+        P.b += Q.b;
+        P.rgbrange();
+        break;
       }
       
-    case CMYK:
+      case CMYK:
       {
-	if (P.color == GRAYSCALE) P.greytocmyk();
-	else if (Q.color == GRAYSCALE) Q.greytocmyk();
-	
-	if (P.color == RGB) P.rgbtocmyk();
-	else if (Q.color == RGB) Q.rgbtocmyk();
-	
-	double sat=max(P.cmyksaturation(),Q.cmyksaturation());      
-	// Mix colors
-	P.r += Q.r;
-	P.g += Q.g;
-	P.b += Q.b;
-	P.grey += Q.grey;
-	double newsat=P.cmyksaturation();
-	double scale=newsat ? sat/newsat: 1.0;
-	R=P.r*scale;
-	G=P.g*scale;
-	B=P.b*scale;
-	greyval=P.grey*scale;
-	break;
+        if(P.color == GRAYSCALE) P.greytocmyk();
+        else if(Q.color == GRAYSCALE) Q.greytocmyk();
+        
+        if(P.color == RGB) P.rgbtocmyk();
+        else if(Q.color == RGB) Q.rgbtocmyk();
+        
+        P.r += Q.r;
+        P.g += Q.g;
+        P.b += Q.b;
+        P.grey += Q.grey;
+        P.cmykrange();
+        break;
       }
     }
     
     return pen(q.line == DEFLINE ? p.line : q.line,
-	       q.linewidth == DEFWIDTH ? p.linewidth : q.linewidth,
-	       q.P.empty() ? p.P : q.P,
-	       q.font.empty() ? p.font : q.font,
-	       q.fontsize == 0.0 ? p.fontsize : q.fontsize,
-	       q.lineskip == 0.0 ? p.lineskip : q.lineskip,
-	       colorspace,R,G,B,greyval,
-	       q.pattern == DEFPAT ? p.pattern : q.pattern,
-	       q.fillrule == DEFFILL ? p.fillrule : q.fillrule,
-	       q.baseline == DEFBASE ? p.baseline : q.baseline,
-	       q.transparency == DEFTRANSP ? p.transparency : q.transparency,
-	       q.linecap == DEFCAP ? p.linecap : q.linecap,
-	       q.linejoin == DEFJOIN ? p.linejoin : q.linejoin,
-	       q.overwrite == DEFWRITE ? p.overwrite : q.overwrite,
-	       q.t.isNull() ? p.t : q.t);
+               q.linewidth == DEFWIDTH ? p.linewidth : q.linewidth,
+               q.P.empty() ? p.P : q.P,
+               q.font.empty() ? p.font : q.font,
+               q.fontsize == 0.0 ? p.fontsize : q.fontsize,
+               q.lineskip == 0.0 ? p.lineskip : q.lineskip,
+               colorspace,P.r,P.g,P.b,P.grey,
+               q.pattern == DEFPAT ? p.pattern : q.pattern,
+               q.fillrule == DEFFILL ? p.fillrule : q.fillrule,
+               q.baseline == DEFBASE ? p.baseline : q.baseline,
+               q.transparency == DEFTRANSP ? p.transparency : q.transparency,
+               q.linecap == DEFCAP ? p.linecap : q.linecap,
+               q.linejoin == DEFJOIN ? p.linejoin : q.linejoin,
+               q.overwrite == DEFWRITE ? p.overwrite : q.overwrite,
+               q.t.isNull() ? p.t : q.t);
+  }
+
+  friend pen interpolate(const pen& p, const pen& q, double t) {
+    pen P=p;
+    pen Q=q;
+  
+    if(P.color == PATTERN && P.pattern.empty()) P.color=DEFCOLOR;
+    ColorSpace colorspace=(ColorSpace) max((Int) P.color,(Int) Q.color);
+  
+    switch(colorspace) {
+      case PATTERN:
+      case INVISIBLE:
+      case DEFCOLOR:
+      case GRAYSCALE:
+        break;
+      case RGB:
+      {
+        if(P.color == GRAYSCALE) P.greytorgb();
+        else if(Q.color == GRAYSCALE) Q.greytorgb();
+        break;
+      }
+      
+      case CMYK:
+      {
+        if(P.color == GRAYSCALE) P.greytocmyk();
+        else if(Q.color == GRAYSCALE) Q.greytocmyk();
+        
+        if(P.color == RGB) P.rgbtocmyk();
+        else if(Q.color == RGB) Q.rgbtocmyk();
+        break;
+      }
+    }
+    
+    return (1-t)*P+t*Q;
   }
 
   friend bool operator == (const pen& p, const pen& q) {
@@ -686,8 +700,8 @@ public:
       && p.colorspace() == q.colorspace()
       && (!(p.grayscale() || p.cmyk()) || p.gray() == q.gray())
       && (!(p.rgb() || p.cmyk()) || (p.red() == q.red() &&
-				     p.green() == q.green() &&
-				     p.blue() == q.blue()))
+                                     p.green() == q.green() &&
+                                     p.blue() == q.blue()))
       && p.pattern == q.pattern
       && p.Fillrule() == q.Fillrule()
       && p.Baseline() == q.Baseline()
@@ -734,10 +748,10 @@ public:
       out << ", gray=" << p.grey;
     else if(p.color == RGB)
       out << ", red=" << p.red() << ", green=" << p.green() 
-	  << ", blue=" << p.blue();
+          << ", blue=" << p.blue();
     else if(p.color == CMYK)
       out << ", cyan=" << p.cyan() << ", magenta=" << p.magenta() 
-	  << ", yellow=" << p.yellow() << ", black=" << p.black();
+          << ", yellow=" << p.yellow() << ", black=" << p.black();
     if(p.pattern != DEFPAT)
       out << ", pattern=" << "\"" << p.pattern << "\"";
     if(p.fillrule != DEFFILL)
@@ -777,7 +791,7 @@ public:
       shift = pair(0,0);
     } else {
       double xx = t.getxx(), xy = t.getxy(),
-             yx = t.getyx(), yy = t.getyy();
+        yx = t.getyx(), yy = t.getyy();
 
       // These are the maximum x and y values that a linear transform can map
       // a point in the unit circle.  This can be proven by the Lagrange

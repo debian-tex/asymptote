@@ -1,3 +1,179 @@
+Release Notes for Version 1.66
+
+An alignment problem with the pdflatex tex engine was fixed.
+Problems in the animations module were fixed, including a broken
+ImageMagick layers optimization. Optional direction arguments
+were added for three-dimensional bars. The appearance and alignment of the
+planar arrowheads DefaultHead2, HookHead2, and TeXHead2 was improved; they
+now accept an optional normal argument and respect the filltype.
+A transverse/longitudinal confusion was fixed in the solids module.
+The camera adjustment routine was improved and is now controlled by the
+autoadjust=true option for perspective projections; the user is notified
+when the camera is moved. The obsolete featpost3D.asy module was
+removed. Midpoint interpolation was reinstated for drawing contours.
+The Asymptote license was upgraded to the GNU Lesser General Public License.
+
+Release Notes for Version 1.65
+
+The xelatex tex engine was implemented. Bugs in pdflatex output and the
+xelatex alignment were fixed.
+
+Release Notes for Version 1.64
+
+Support was added for XeLaTeX PDF specials. The target point is not forced
+to be part of the control volume for absolute projections. The directory is
+now stripped from the animation prefix; generated PDF animations are no longer
+automatically deleted. New parameters xsize and ysize of the asyinclude
+function of the slide module are illustrated in interactive 3D examples in
+intro.asy. A Protein Data Bank example was added to illustrate the
+generation of predefined views. The slidedemo example was fixed.
+The license of the PRC code and tools was upgraded from GPL to LGPL.  
+
+Release Notes for Version 1.63
+
+Support was added for XeLaTeX (which requires a modified version of
+movie15.sty; note however that PDF specials are not yet implemented in
+dvipdfmx). The 2D contour routines were generalized to handle nonuiform
+lattices; interpolation artifacts are now avoided when the midpoint
+function values are unknown. The ncell parameter for 3D contours was
+replaced by nmesh. The complex gamma function was implemented. Interactive
+rendering of preview images is now properly synchronized. The bounding
+volume is now automatically expanded to include the target position.
+An interactive 3D surface of revolution example was added to slidedemo;
+rendered images are now automatically included when fitting non-PRC
+pictures. Duplicate beginclip/endclip functions in pstoedit.asy were
+removed and the pstoedit-3.45 patch was updated to fix compilation errors.
+Errors on EOF after reading 0 values are no longer reported. One-column
+legends are now handled correctly. Old-style constructors were replaced
+with operator init. An electromagnetic spectrum example was added.
+
+Release Notes for Version 1.62
+
+Outputting PDF format to other directories was fixed. An int hex(string)
+function that casts a hexidecimal string to an integer and a 
+pen rgb(string) routine that returns a pen corresponding to a given
+6-character RGB hexidecimal string were added. In the dot routines, Label
+arguments were added and minor bugs were fixed. A parametric version of
+markuniform was added.
+
+Release Notes for Version 1.61
+
+A workaround was implemented for a dvips misconfiguration in TeXlive 2008
+that introduces unwanted %%BeginPaperSize commands into the EPS output.
+The -q option was reinstated; the asymptote.py Python module was fixed.
+The bezulate.asy module now enforces the same zerowinding fillrule as used by
+dvips. In solids.asy, a warning is issued if the silhouette routine is used
+in a fully 3d context. The freeglut extensions to support user-specified
+multisampling values were re-instated. A freeglut segmentation fault
+triggered by spurious window creation in the export loop was fixed. An
+aspect ratio problem was fixed. A string[] to int[] ecast was added. A
+Pentype function was added. The asydir() function was fixed under MSDOS.
+
+Release Notes for Version 1.60
+
+An optional bool3 condition was added to the graph functions, allowing one
+to skip points or segment a graph into distinct branches, based on a
+user-supplied test (see the example gamma.asy). A gettriple routine was
+added. The interp function first promotes its pen arguments to the highest
+colorspace. Export exceptions are now caught gracefully. Under UNIX,
+xasy can now be run from a write-protected directory again. A work around
+was implemented for the inability of the movie15.sty package to handle
+spaces in filenames. Stack overflow diagnostics were improved. A read from
+pipe failure under MSDOS was fixed.
+
+Release Notes for Version 1.59
+
+A missing filltype option for projected 2D arrowheads was added.
+The scaling of plain TeX fonts was fixed. Examples that mix 3D exporting and
+viewing now work properly. With the -nothreads option, the main process
+now waits for 3D exports to finish before proceeding. Conflicts in slide
+presentations were fixed; the asy(string) function assigns defaultfilename
+correctly. A bug in processing command-line options was fixed.
+
+Release Notes for Version 1.58
+
+Two-dimensional arrowheads are now drawn automatically for 2D projections.
+ArcArrow3 routines were added. Standard pen arithmetic is now used in all
+colorspaces, so that interp(pen,pen,real) and Gradient(pen[] p) now work as
+expected. A Wheel palette was added and is used in the example gamma3 to
+indicate the phase of the complex Gamma function. A silhouette routine for
+solids of revolution is illustrated in the examples spheresilhouette.asy
+and hyperboloidsilhouette.asy. Problems with 3D axis label alignments were
+fixed. The example scaledgraph illustrates how to factor out an axis
+scaling. Interactive mode is now exited on EOF, unless exitonEOF=false.
+Support for open function signatures was added. A conflict between
+asymptote.sty and the breqn package was fixed. PNG images for the manual
+are now built in a separate directory so that they don't take precedence
+over PDF files. A problem with xasy under MSDOS was fixed.
+
+Release Notes for Version 1.57
+
+The pdflatex texengine was fixed. The default MSDOS "start-in" directory is
+now %USERPROFILE%, for compatibility with the MSWindows Vista operating
+system. Temporary files are now generated in the directory specified by
+the -outname (-o) command-line option, so that write access to the current
+directory is no longer required. Various font size problems were fixed.
+The axis coverage calculation was improved. An object(Label, envelope, ...)
+constructor was added, along with support for object transformation and
+alignment. Clipping is now allowed across page boundaries;
+beginclip(picture, path[]) and endclip(picture) functions were implemented.
+
+Release Notes for Version 1.56
+
+A bounding box bug in the latex texengine was fixed.
+The font scaling is now rounded to the nearest integer. The wait=true
+argument of shipout was fixed. The documentation of grid3 was fixed;
+examples of using grid3 with scale(true) were added. The handling of the
+asydef environment within Emacs lasy-mode was fixed. An asyinclude function
+for embedding 3D PRC graphs in slides was implemented.
+
+Release Notes for Version 1.55
+
+A serious bug in drawing paths of length 0 that broke the dot(pair)
+routine was fixed. Problems in guide to path and path to guide conversions
+were fixed. A triple invert(pair) routine was added to invert a pair z
+onto the projection plane. The obsolete field of view factor was removed.
+
+Release Notes for Version 1.54
+
+The filltype of three-dimensional labels is now respected when render=0.
+Multiple file batch mode under MSWindows was fixed. The reverse(guide) and
+guide examination routines were fixed. A reverse(guide3) routine was added.
+Curved cyclic paths of size 1 were fixed. Fork is now used by default under
+MSWindows pending stable CYGWIN POSIX thread support; this can be overridden
+with settings.threads=true. The need to remove latexusage_.pre along with
+latexusage-* and latexusage.aux when switching between latex and pdflatex
+usage was documented.
+
+Release Notes for Version 1.53
+
+Forking problems under Windows 2000 were fixed and MS-DOS style path
+warnings were suppressed. Problems with PRC projection sizing and the
+rendering logic were fixed. The toolbar is now enabled by default within
+the asyattach environment. Two-dimensional transforms no longer prevent
+three-dimensional labels from being projected onto the initial viewing
+plane. Out-of-memory errors in the OpenGL renderer are caught again.
+The new tube module was documented and a trefoilknot example was added.
+
+Release Notes for Version 1.52
+
+Support for generating PRC output on bigendian machines was added.
+Multisampling was improved: by updating the freeglut library to svn version
+761, one can now specify an antialiasing pixel width with the parameter
+multisample, which is now an integer. The asymptote.sty and asycolors.sty
+files are now installed by default in $TEXMFLOCAL/tex/latex. The OpenGL
+renderer by default now uses POSIX threads instead of fork. A work around
+for the nonstandardized signature of gluNurbsCallback on various MacOS
+platforms was implemented. Planar vertex shading was fixed. A planar
+argument to surface was added. To work around rendering problems with some
+graphics cards, the window is now hidden only when iconify=true. A tube
+module was added. A setlocale segmentation fault was fixed. Now that we
+require a multithreaded version of the Boehm garbage collector, the
+installation instructions were updated for using the system version. An
+optional user=false argument was added to min(picture), max(picture), and
+size(picture). The dependency of asy-mode.el on the cc-mode.el source file
+was removed.
+
 Release Notes for Version 1.51
 
 A separate multisample setting is used to control screen antialiasing;

@@ -37,7 +37,7 @@ namespace types {
 
 enum ty_kind {
   ty_null,
-  ty_record,	// "struct" in Asymptote language
+  ty_record,    // "struct" in Asymptote language
   ty_function,
   ty_overloaded,
  
@@ -200,7 +200,7 @@ public:
 
 // Ostream output, just defer to print.
 inline ostream& operator<< (ostream& out, const ty& t)
-  { t.print(out); return out; }
+{ t.print(out); return out; }
 
 struct array : public ty {
   ty *celltype;
@@ -220,7 +220,7 @@ struct array : public ty {
 
   bool equiv(ty *other) {
     return other->kind==ty_array &&
-           equivalent(this->celltype,((array *)other)->celltype);
+      equivalent(this->celltype,((array *)other)->celltype);
   }
 
   size_t hash() {
@@ -235,7 +235,7 @@ struct array : public ty {
   }
 
   void print(ostream& out) const
-    { out << *celltype << "[]"; }
+  { out << *celltype << "[]"; }
 
   ty *pushType();
   ty *popType();
@@ -326,12 +326,19 @@ struct signature : public gc {
   // type is null.
   formal rest;
 
+  bool isOpen;
+
   signature()
-    : rest(0)
-    {}
+    : rest(0), isOpen(false)
+  {}
+
+  static const struct OPEN_t {} OPEN;
+
+  explicit signature(OPEN_t) : rest(0), isOpen(true) {}
 
   signature(signature &sig)
-    : formals(sig.formals), rest(sig.rest) {}
+    : formals(sig.formals), rest(sig.rest), isOpen(sig.isOpen)
+  {}
 
   virtual ~signature() {}
 
@@ -381,6 +388,8 @@ struct function : public ty {
 
   function(ty *result)
     : ty(ty_function), result(result) {}
+  function(ty *result, signature::OPEN_t)
+    : ty(ty_function), result(result), sig(signature::OPEN) {}
   function(ty *result, signature *sig)
     : ty(ty_function), result(result), sig(*sig) {}
   function(ty *result, formal f1)
@@ -424,7 +433,7 @@ struct function : public ty {
     if (other->kind==ty_function) {
       function *that=(function *)other;
       return equivalent(this->result,that->result) &&
-             equivalent(&this->sig,&that->sig);
+        equivalent(&this->sig,&that->sig);
     }
     else return false;
   }
@@ -434,7 +443,7 @@ struct function : public ty {
   }
 
   void print(ostream& out) const
-    { out << *result << sig; }
+  { out << *result << sig; }
 
   void printVar (ostream& out, symbol *name) const {
     result->printVar(out,name);
@@ -486,7 +495,7 @@ public:
     if (t->kind == ty_overloaded) {
       overloaded *ot = (overloaded *)t;
       copy(ot->sub.begin(), ot->sub.end(),
-	   inserter(this->sub, this->sub.end()));
+           inserter(this->sub, this->sub.end()));
     }
     else
       sub.push_back(t);
@@ -501,12 +510,12 @@ public:
   ty *simplify() {
     switch (sub.size()) {
       case 0:
-	return 0;
+        return 0;
       case 1: {
-	return sub.front();
+        return sub.front();
       }
       default:
-	return new overloaded(*this);
+        return new overloaded(*this);
     }
   }
 

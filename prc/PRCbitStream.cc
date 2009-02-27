@@ -4,16 +4,16 @@
 *   Copyright (C) 2008  Orest Shardt <shardtor (at) gmail dot com>
 *
 *   This program is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
+*   it under the terms of the GNU Lesser General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or
 *   (at your option) any later version.
 *
 *   This program is distributed in the hope that it will be useful,
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
+*   GNU Lesser General Public License for more details.
 *
-*   You should have received a copy of the GNU General Public License
+*   You should have received a copy of the GNU Lesser General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *************/
@@ -22,6 +22,7 @@
 #include <zlib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cassert>
 #include "PRCbitStream.h"
 #include "PRCdouble.h"
 
@@ -166,6 +167,7 @@ PRCbitStream& PRCbitStream::operator <<(double value)
   while(pcofdoe>acofdoe && EXPONENT(pcofdoe->u2uod.Value)==EXPONENT((pcofdoe-1)->u2uod.Value))
     pcofdoe--;
 
+  assert(pcofdoe);
   while(pcofdoe->Type==VT_double)
   {
     if(fabs(value)==pcofdoe->u2uod.Value)
@@ -196,9 +198,9 @@ PRCbitStream& PRCbitStream::operator <<(double value)
 
   writeBit(1);
 
-#if defined(TF_LITTLE_ENDIAN)
+#if defined(WORDS_LITTLE_ENDIAN)
   pb=((PRCbyte *)&value)+6;
-#elif defined(TF_BIG_ENDIAN)
+#elif defined(WORDS_BIG_ENDIAN)
   pb=((PRCbyte *)&value)+1;
 #endif
   //add_bits((*pb)&0x0f,4 STAT_V STAT_DOUBLE);
@@ -206,10 +208,10 @@ PRCbitStream& PRCbitStream::operator <<(double value)
 
   NEXTBYTE(pb);
   pbStart=pb;
-#if defined(TF_LITTLE_ENDIAN)
+#if defined(WORDS_LITTLE_ENDIAN)
   pbEnd=
   pbStop= ((PRCbyte *)&value);
-#elif defined(TF_BIG_ENDIAN)
+#elif defined(WORDS_BIG_ENDIAN)
   pbEnd=
   pbStop= ((PRCbyte *)(&value+1))-1;
 #endif

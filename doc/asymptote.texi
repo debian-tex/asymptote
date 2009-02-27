@@ -28,7 +28,8 @@ Debian systems, the @acronym{GPL} can be found at
 @titlepage
 @title Asymptote: the Vector Graphics Language
 @subtitle For version @value{VERSION}
-@image{logo}
+@sp 1
+@center @image{logo}
      
 @page
 @vskip 0pt plus 1filll
@@ -154,7 +155,7 @@ Base modules
 * graph3::                      3D linear & logarithmic graphs
 * grid3::                       3D grids
 * solids::                      3D solid geometry
-* featpost3D::                  Partial port of @code{featpost3d}
+* tube::                        3D rotation minimizing tubes
 * flowchart::                   Flowchart drawing routines
 * contour::                     Contour lines
 * contour3::                    Contour surfaces
@@ -305,11 +306,11 @@ The executable file will be @code{/usr/local/bin/asy}) and example code
 will be installed by default in @code{@value{Datadir}/doc/asymptote/examples}. 
 
 @noindent
-@cindex Fedora Core
-Fedora Core users can easily install @code{Asymptote}
-from the Fedora Extras mirrors:
+@cindex Fedora
+Fedora users can easily install the most recent version of @code{Asymptote}
+with the command
 @verbatim
-yum install asymptote
+yum --enablerepo=rawhide install asymptote
 @end verbatim
 
 @cindex Debian
@@ -325,8 +326,8 @@ prebuilt @code{Asymptote} binaries from
 
 @node MacOS X binary distributions
 @section MacOS X binary distributions
-@cindex MacOS X binary distributions
-MacOS users can either compile the @code{UNIX} source code
+@cindex @code{MacOS X} binary distributions
+@code{MacOS X} users can either compile the @code{UNIX} source code
 (@pxref{Compiling from UNIX source})
 or install the contributed @code{Asymptote} binary available at
 
@@ -341,10 +342,10 @@ official source:
 @url{http://sourceforge.net/project/showfiles.php?group_id=120000}
 
 @noindent
-Note that many MacOS X (and FreeBSD) systems inexplicably ship with an extremely
-old @acronym{GNU} @code{readline} version (4.1, dated 21 March 2000).
-For full interactive functionality, @code{readline} version 4.2 or later
-(16 April 2001) is required.
+Note that many @code{MacOS X} (and FreeBSD) systems inexplicably ship
+with an extremely old @acronym{GNU} @code{readline} version (4.1,
+dated 21 March 2000). For full interactive functionality,
+@code{readline} version 4.2 or later (16 April 2001) is required.
 
 @node Microsoft Windows
 @section Microsoft Windows
@@ -485,6 +486,7 @@ display
 animate
 xasy
 @end verbatim
+@noindent
 The @code{texdvicommand} is used for @code{3D} label typesetting, which
 requires @code{dvips} output. An empty string indicates the default setting
 of @code{latex}/@code{tex}, depending on the setting of @code{texengine}.
@@ -551,6 +553,10 @@ gunzip asymptote-x.xx.src.tgz
 tar -xf asymptote-x.xx.src.tar
 cd asymptote-x.xx
 @end verbatim
+By default the system version of the Boehm garbage collector will be
+used; if it is old we recommend first putting
+@url{http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.1.tar.gz}
+in the @code{Asymptote} source directory.
 
 @cindex @code{freeglut}
 @cindex 3D rendering
@@ -558,26 +564,26 @@ cd asymptote-x.xx
 @cindex multisampling
 @anchor{multisampling}
 @noindent
-We recommend patching @code{freeglut} to support antialiasing,
-via multisampling, in our adaptive @code{Asymptote} @code{OpenGL}-based
-3D renderer. Place
+If your graphics card supports multisampling, we recommend using SVN
+revision 761 (or later) of @code{freeglut} to support antialiasing in
+our adaptive @code{Asymptote} @code{OpenGL}-based 3D renderer
+(@code{MacOS X} users can skip this step since @code{Asymptote} is configured
+to use the native glut library on that platform). Download
 @quotation
-@url{http://prdownloads.sourceforge.net/freeglut/freeglut-2.4.0.tar.gz}
+@url{http://freeglut.svn.sourceforge.net/viewvc/freeglut/trunk/freeglut/freeglut.tar.gz}
 @end quotation
 @noindent
-in the @code{Asymptote} source directory, and type (as the root user):
+and type (as the root user):
 @verbatim
-tar -zxf freeglut-2.4.0.tar.gz
-cd freeglut-2.4.0
-patch -p1 < ../patches/freeglut-2.4.0multisample.patch
+tar -zxf freeglut.tar.gz
+cd freeglut
+sh autogen.sh
 ./configure --prefix=/usr
 make install
 cd ..
 @end verbatim
-
-@noindent Then put
-@url{http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.1.tar.gz}
-in the current directory and
+@noindent 
+Then compile @code{Asymptote} with the commands
 @verbatim
 ./configure
 make all
@@ -602,14 +608,7 @@ done as the root user. To install without root privileges, change the
 @verbatim
 ./configure --prefix=$HOME/asymptote
 @end verbatim
-The above steps will compile an optimized single-threaded static
-version of the Boehm garbage collector
-(@url{http://www.hpl.hp.com/personal/Hans_Boehm/gc/}).
-Alternatively, one can request use of a slower, likely multithreaded,
-shared system version of the Boehm garbage collector by configuring
-instead with @code{./configure --enable-gc=system} (provided
-that your system has the @code{libgc} and @code{libgccpp}
-libraries). One can disable use of the garbage collector by configuring
+One can disable use of the Boehm garbage collector by configuring
 with @code{./configure --disable-gc}. For a list of other configuration
 options, say @code{./configure --help}. For example, one can tell
 configure to look for header files and libraries in nonstandard locations:
@@ -702,11 +701,9 @@ setlocal errorformat=%f:\ %l.%c:\ %m
 The following commands are needed to install the latest development version of
 @code{Asymptote} using @acronym{Subversion}:
 @verbatim
-svn co https://asymptote.svn.sourceforge.net/svnroot/asymptote/trunk/asymptote
- 
+svn co http://asymptote.svn.sourceforge.net/svnroot/asymptote/trunk/asymptote
 cd asymptote
 ./autogen.sh
-wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-7.1.tar.gz
 ./configure
 make all
 make install
@@ -747,7 +744,8 @@ To draw a line from coordinate (0,0) to coordinate (100,100) using
 asy
 draw((0,0)--(100,100));
 @end verbatim
-@image{diagonal}
+@sp 1
+@center @image{diagonal}
 
 @cindex @code{bp}
 @cindex @code{pair}
@@ -794,7 +792,8 @@ the @code{-o} command-line option.
 One can draw a line with more than two points and create a cyclic path
 like this square:
 @verbatiminclude square.asy
-@image{square}
+@sp 1
+@center @image{square}
 
 It is often inconvenient to work directly with @code{PostScript} coordinates.
 The next example draws a unit square scaled to width 101 bp and height
@@ -818,7 +817,8 @@ If 0 is given as a size argument, no restriction is made in that direction;
 the overall scaling will be determined by the other direction
 (@pxref{size}):
 @verbatiminclude bigsquare.asy
-@image{bigsquare}
+@sp 1
+@center @image{bigsquare}
 
 @cindex user coordinates
 @cindex @code{unitsize}
@@ -838,7 +838,8 @@ Adding labels is easy in @code{Asymptote}; one specifies the
 label as a double-quoted @code{LaTeX} string, a
 coordinate, and an optional alignment direction:
 @verbatiminclude labelsquare.asy
-@image{labelsquare}
+@sp 1
+@center @image{labelsquare}
 
 @cindex compass directions
 @cindex @code{N}
@@ -855,7 +856,8 @@ of the module where it is defined: @code{plain.E}.
 
 This example draws a path that approximates a quarter circle:
 @verbatiminclude quartercircle.asy
-@image{quartercircle}
+@sp 1
+@center @image{quartercircle}
 
 In general, a path is specified as a list of pairs (or other paths)
 interconnected with
@@ -884,8 +886,8 @@ given direction specifiers only on their interior side.
 A cubic spline between the node @math{z_0}, with postcontrol point
 @math{c_0}, and the node @math{z_1}, with precontrol point @math{c_1},
 is computed as the Bezier curve
-
-@image{bezier,,,(1-t)^3*z_0+3t(1-t)^2*c_0+3t^2(1-t)*c_1+t^3*z_1 for 0 <=t <= 1.}
+@sp 1
+@center @image{bezier,,,(1-t)^3*z_0+3t(1-t)^2*c_0+3t^2(1-t)*c_1+t^3*z_1 for 0 <=t <= 1.}
 
 As illustrated in the diagram below, the third-order midpoint (@math{m_5})
 constructed from two endpoints @math{z_0} and @math{z_1} and two control points
@@ -895,7 +897,8 @@ the Bezier curve formed by the quadruple (@math{z_0}, @math{c_0},
 desired curve, by using the newly extracted third-order midpoint as an
 endpoint and the respective second- and first-order midpoints as control
 points:
-@image{bezier2}
+@sp 1
+@center @image{bezier2}
 
 Here @math{m_0}, @math{m_1} and @math{m_2} are the first-order
 midpoints, @math{m_3} and @math{m_4} are the second-order midpoints, and
@@ -962,11 +965,13 @@ convenient abbreviation @code{::} for @code{..tension atleast 1 ..}
 variable number of arguments; @pxref{Rest arguments}).  For example,
 compare
 @verbatiminclude dots.asy
-@image{dots}
+@sp 1
+@center @image{dots}
 @noindent
 with
 @verbatiminclude colons.asy
-@image{colons}
+@sp 1
+@center @image{colons}
 
 @cindex @code{---}
 @cindex @code{&}
@@ -987,7 +992,8 @@ initial point of the right-hand path, may be used to group several
 @code{Asymptote} paths into a @code{path[]} array (equivalent to a
 @code{PostScript} path):
 @verbatiminclude superpath.asy
-@image{superpath}
+@sp 1
+@center @image{superpath}
 
 @cindex evenodd
 The @code{PostScript} even-odd fill rule here specifies that only the
@@ -999,11 +1005,13 @@ orientation of the paths:
 filldraw(unitcircle^^reverse(g),yellow,black);
 @end verbatim
 
-The @code{^^} operator is used by the @code{box3d} function in
-@code{three.asy} to construct a two-dimensional projection of the edges of a 3D
-cube, without retracing steps:
+@cindex @code{unitbox}
+The @code{^^} operator is used by the @code{box(triple, triple)} function in
+@code{three.asy} to construct the edges of a cube @code{unitbox}
+without retracing steps:
 @verbatiminclude cube.asy
-@image{cube}
+@sp 1
+@center @image{cube}
 
 See section @ref{graph} (or the online @code{Asymptote} gallery and
 external links posted at @url{http://asymptote.sourceforge.net}) for
@@ -1078,13 +1086,14 @@ use in constructing an optional legend entry.
 @cindex @code{EndBar}
 @cindex @code{Bar}
 @cindex @code{Bars}
+@cindex @code{barsize}
 Bars are useful for indicating dimensions. The possible values of
 @code{bar} are @code{None}, @code{BeginBar}, @code{EndBar} (or
 equivalently @code{Bar}), and @code{Bars} (which draws a bar at both
 ends of the path). Each of these bar specifiers (except for
 @code{None}) will accept an optional real argument that denotes the
 length of the bar in @code{PostScript} coordinates. The default
-bar length is @code{barsize(p)}.
+bar length is @code{barsize(pen)}.
 
 @anchor{arrows}
 @cindex @code{None}
@@ -1100,6 +1109,7 @@ bar length is @code{barsize(p)}.
 @cindex @code{NoFill}
 @cindex @code{UnFill}
 @cindex @code{BeginArcArrow}
+@cindex @code{MidArcArrow}
 @cindex @code{EndArcArrow}
 @cindex @code{ArcArrow}
 @cindex @code{ArcArrows}
@@ -1200,23 +1210,27 @@ default linewidth magnified by @code{dotfactor} (6 by default),
 using the specified filltype (@pxref{filltype}):
 @verbatim
 void dot(picture pic=currentpicture, pair z, pen p=currentpen,
-        filltype filltype=Fill);
-void dot(picture pic=currentpicture, pair[] z, pen p=currentpen
-        filltype filltype=Fill);
+         filltype filltype=Fill);
 void dot(picture pic=currentpicture, Label L, pair z, align align=NoAlign,
          string format=defaultformat, pen p=currentpen, filltype filltype=Fill);
-void dot(picture pic=currentpicture, Label L, pen p=currentpen
-        filltype filltype=Fill);
+void dot(picture pic=currentpicture, Label[] L=new Label[], pair[] z,
+         align align=NoAlign, string format=defaultformat, pen p=currentpen,
+         filltype filltype=Fill)
+void dot(picture pic=currentpicture, Label L, pen p=currentpen,
+         filltype filltype=Fill);
 @end verbatim
 
 @cindex @code{Label}
-The second routine draws a dot at every point of a pair array @code{z}.
-If the special variable @code{Label} is given as the @code{Label}
-argument to the fourth routine, the @code{format} argument will be
+If the variable @code{Label} is given as the @code{Label}
+argument to the second routine, the @code{format} argument will be
 used to format a string based on the dot location (here @code{defaultformat}
-is @code{"$%.4g$"}). One can also draw a dot at every node of a path:
+is @code{"$%.4g$"}). 
+The third routine draws a dot at every point of a pair array @code{z}.
+One can also draw a dot at every node of a path:
 @verbatim
-void dot(picture pic=currentpicture, path g, pen p=currentpen);
+void dot(picture pic=currentpicture, Label[] L=new Label[],
+         path g, align align=RightSide, string format=defaultformat,
+         pen p=currentpen, filltype filltype=Fill);
 @end verbatim
 See @ref{pathmarkers} and @ref{markers} for more general
 methods for marking path nodes.
@@ -1564,8 +1578,8 @@ The @code{string minipage(string s, width=100pt)} function can be used
 to format string @code{s} into a paragraph of width @code{width}.
 This example uses @code{minipage}, @code{clip}, and @code{graphic} to
 produce a CD label:
-
-@image{CDlabel}
+@sp 1
+@center @image{CDlabel}
 @verbatiminclude CDlabel.asy
 @node Programming
 @chapter Programming
@@ -1656,7 +1670,7 @@ The void type is used only by functions that take or return no arguments.
 
 @item bool
 @cindex @code{bool}
-a boolean type that can only take on the values @code{true} and
+a boolean type that can only take on the values @code{true} or
 @code{false}. For example:
 @verbatim
 bool b=true;
@@ -1671,6 +1685,12 @@ bool b;
 
 @noindent
 the value @code{false} is assumed.
+
+@item bool3
+@cindex @code{bool3}
+an extended boolean type that can take on the values
+@code{true}, @code{default}, or @code{false}. A bool3 type can be cast
+to or from a bool. The default initializer for bool3 is @code{default}.
 
 @item int
 @cindex @code{int}
@@ -1736,7 +1756,7 @@ returns the angle of @code{z} in radians in the interval
 @item real degrees(pair z, bool warn=true)
 @cindex @code{degrees}
 returns the angle of @code{z} in degrees in the interval [0,360)
-or @code{0} if @code{warn} is false and @code{z.x=z.y=0} (rather than
+or @code{0} if @code{warn} is @code{false} and @code{z.x=z.y=0} (rather than
 producing an error);
 
 @item pair unit(pair z)
@@ -1810,7 +1830,7 @@ returns the latitude of @code{v} measured from the @math{xy} plane in degrees;
 @item real longitude(triple v, bool warn=true)
 @cindex @code{longitude}
 returns the longitude of @code{v} measured from the @math{x} axis in degrees;
-or @code{0} if @code{warn} is false and @code{v.x=v.y=0} (rather than
+or @code{0} if @code{warn} is @code{false} and @code{v.x=v.y=0} (rather than
 producing an error);
 
 @item triple unit(triple v)
@@ -1964,6 +1984,11 @@ empty string is specified), following the behaviour of the C function
 @code{fprintf}), except that only one data field is allowed, trailing
 zeros are removed by default (unless @code{#} is specified), and @TeX{}
 is used to typeset scientific notation;
+
+@cindex @code{hex}
+@cindex @code{hexidecimal}
+@item int hex(string s);
+casts a hexidecimal string @code{s} to an integer.
 
 @cindex @code{string}
 @item string string(real x, int digits=realDigits)
@@ -2121,7 +2146,8 @@ path ellipse(pair c, real a, real b)
 This example illustrates the use of all five guide connectors discussed
 in @ref{Tutorial}:
 @verbatiminclude join.asy
-@image{join}
+@sp 1
+@center @image{join}
 
 Here are some useful functions for paths:
 
@@ -2393,7 +2419,8 @@ incrementally resolved at each iteration, before the entire set of nodes
 (shown in red) is known:
 
 @verbatiminclude mexicanhat.asy
-@image{mexicanhat}
+@sp 1
+@center @image{mexicanhat}
 
 We point out an efficiency distinction in the use of guides and paths:
 @verbatim
@@ -2507,8 +2534,8 @@ The implicit initializer for pens is @code{defaultpen}.
 
 @cindex @code{+}
 @cindex @code{*}
-Pens may be added together with the binary operator @code{+}.
-This will mix the colors of the two pens.
+Pens may be added together with the nonassociative binary
+operator @code{+}. This will add the colors of the two pens.
 All other non-default attributes of the rightmost pen will
 override those of the leftmost pen. Thus, one can obtain a yellow
 dashed pen by saying @code{dashed+red+green} or @code{red+green+dashed}
@@ -2562,6 +2589,14 @@ arguments to the respective color spaces.
 The function @code{colorless(pen)} returns a copy of its argument
 with the color attributes stripped (to avoid color mixing).
 
+A 6-character RGB hexidecimal string can be converted to a pen with
+the routine
+@cindex @code{rgb}
+@cindex @code{hexidecimal}
+@verbatim
+pen rgb(string s);
+@end verbatim
+
 Various shades and mixtures of the grayscale primary colors
 @code{black} and @code{white}, @acronym{RGB} primary colors
 @code{red}, @code{green}, and @code{blue}, and
@@ -2569,8 +2604,8 @@ Various shades and mixtures of the grayscale primary colors
 are defined as named colors, along with the @acronym{CMYK} primary
 colors @code{Cyan}, @code{Magenta}, @code{Yellow}, and @code{Black}, in
 the module @code{plain}:
-
-@image{colors}
+@sp 1
+@center @image{colors}
 
 The standard 140 @acronym{RGB} @code{X11} colors can be imported with
 the command
@@ -2636,7 +2671,8 @@ pen longdashdotted=linetype("24 8 0 8");
 pen Dotted=dotted+1.0;
 pen Dotted(pen p=currentpen) {return dotted+2*linewidth(p);}
 @end verbatim
-@image{linetype}
+@sp 1
+@center @image{linetype}
 
 @cindex @code{defaultpen}
 The default linetype is @code{solid}; this may be changed with
@@ -2844,7 +2880,8 @@ filltype filltype=NoFill)},
 @cindex checker
 @cindex brick
 @verbatiminclude tile.asy
-@image{tile}
+@sp 1
+@center @image{tile}
 
 @cindex hatch
 @cindex crosshatch
@@ -2852,7 +2889,8 @@ Hatch patterns can be generated with the routines
 @code{picture hatch(real H=5mm, pair dir=NE, pen p=currentpen)},
 @code{picture crosshatch(real H=5mm, pen p=currentpen)}:
 @verbatiminclude hatch.asy
-@image{hatch}
+@sp 1
+@center @image{hatch}
 
 You may need to turn off aliasing in your @code{PostScript} viewer for
 patterns to appear correctly. Custom patterns can easily be constructed,
@@ -2871,7 +2909,8 @@ recovered from a pen with @code{path nib(pen)}. Unlike in
 @code{MetaPost}, the path need not be convex:
 
 @verbatiminclude makepen.asy
-@image{makepen}
+@sp 1
+@center @image{makepen}
 
 The value @code{nullpath} represents a circular pen nib (the default);
 an elliptical pen can be achieved simply by multiplying the pen by a
@@ -3242,11 +3281,14 @@ pen @code{p} with the function @code{bbox(p,Fill)}.
 
 The functions 
 @verbatim
-pair min(picture pic);
-pair max(picture pic);
+pair min(picture pic, user=false);
+pair max(picture pic, user=false);
+pair size(picture pic, user=false);
 @end verbatim 
 calculate the @code{PostScript} bounds that picture @code{pic} would
 have if it were currently fit to a frame using its default size specification.
+If @code{user} is @code{false} the returned value is in
+@code{PostScript} coordinates, otherwise it is in user coordinates.
 
 The function
 @verbatim
@@ -3255,7 +3297,7 @@ pair point(picture pic=currentpicture, pair dir, bool user=true);
 is a convenient way of determining the point on the bounding box of
 @code{pic} in the direction @code{dir} relative to its center, ignoring
 the contributions from fixed-size objects (such as labels and arrowheads).
-If @code{user} is true the returned value is in user coordinates,
+If @code{user} is @code{true} the returned value is in user coordinates,
 otherwise it is in @code{PostScript} coordinates.
 
 The function
@@ -3265,7 +3307,8 @@ pair truepoint(picture pic=currentpicture, pair dir, bool user=true);
 is identical to @code{point}, except that it also accounts for
 fixed-size objects, using the scaling transform that picture @code{pic}
 would have if currently fit to a frame using its default size
-specification.
+specification. If @code{user} is @code{true} the returned value is in
+user coordinates, otherwise it is in @code{PostScript} coordinates.
 
 @anchor{add}
 Sometimes it is useful to draw objects on separate pictures and add one
@@ -3320,7 +3363,8 @@ the examples @ref{errorbars} and @ref{image}. If you want to align three
 or more subpictures, group them two at a time:
 
 @verbatiminclude subpictures.asy
-@image{subpictures}
+@sp 1
+@center @image{subpictures}
 
 Alternatively, one can use @code{attach} to automatically increase the
 size of picture @code{dest} to accommodate adding a frame @code{src}
@@ -3572,6 +3616,8 @@ value, @code{settings.scroll=0}, specifies continuous scrolling.
 The routines
 @cindex @code{getstring}
 @cindex @code{getreal}
+@cindex @code{getpair}
+@cindex @code{gettriple}
 @verbatim
 string getstring(string name="", string default="", string prompt="",
                  bool store=true);
@@ -3580,7 +3626,9 @@ int getint(string name="", int default=0, string prompt="",
 real getreal(string name="", real default=0, string prompt="",
              bool store=true);
 pair getpair(string name="", pair default=0, string prompt="",
-             bool store=true)
+             bool store=true);
+triple gettriple(string name="", triple default=(0,0,0), string prompt="",
+                 bool store=true);
 @end verbatim
 @noindent
 defined in the module @code{plain} may be used to prompt for a value from
@@ -4067,8 +4115,10 @@ not
 bool positive=(pi >= 0) ? true : false;
 @end verbatim
 
-The function @code{T interp(T a, T b, real t)} returns @code{a+t*(b-a)}
-for all built-in arithmetic types @code{T}.
+@cindex @code{interp}
+The function @code{T interp(T a, T b, real t)} returns @code{(1-t)*a+t*b}
+for nonintegral built-in arithmetic types @code{T}. If @code{a} and
+@code{b} are pens, they are first promoted to the same color space.
 
 @cindex @code{AND}
 @cindex @code{OR}
@@ -4570,7 +4620,7 @@ For convenience, @code{Asymptote} defines variants @code{Sin},
 @code{Cos}, @code{Tan}, @code{aSin}, @code{aCos}, and @code{aTan} of
 the standard trigonometric functions that use degrees rather than radians.
 We also define complex versions of the @code{sqrt}, @code{sin}, @code{cos},
-@code{exp}, and @code{log} functions.
+@code{exp}, @code{log}, and @code{gamma} functions.
 
 @cindex @code{floor}
 @cindex @code{ceil}
@@ -4952,6 +5002,8 @@ returns the 3D transpose of @code{a} obtained by applying the permutation
 @cindex @code{sum}
 @item T sum(T[] a)
 For arithmetic types @code{T}, returns the sum of @code{a}.
+In the case where @code{T} is a boolean array, the number of true elements in
+@code{a} is returned.
 
 @cindex @code{min}
 @item T min(T[] a)
@@ -5712,10 +5764,12 @@ pdflatex latexusage
 @end verbatim
 
 To switch between using @code{latex} and @code{pdflatex} you may first
-need to remove the files @code{latexusage-.*} and @code{latexusage.aux}.
+need to remove the files @code{latexusage-*}, @code{latexusage_.pre}, and
+@code{latexusage.aux}.
 
 @cindex @code{attachfile2}
-The current (1.01) version of @code{asymptote.sty} supports the
+@cindex @code{asyattach}
+The current version of @code{asymptote.sty} supports the
 embedding of 3D @acronym{PRC} files, either inline or, using the
 @code{asyattach} environment with the @code{attachfile2} (or older
 @code{attachfile}) @code{LaTeX} package, as annotated attachments.
@@ -5744,7 +5798,7 @@ An excellent tutorial by Dario Teixeira on integrating @code{Asymptote} and
 Here now is @code{latexusage.tex}:
 @verbatiminclude latexusage.tex
 @page
-@image{latexusage,,30cm}
+@image{latexusage,,25cm}
 
 @node Base modules
 @chapter Base modules
@@ -5784,7 +5838,7 @@ Here now is @code{latexusage.tex}:
 * graph3::                      3D linear & logarithmic graphs
 * grid3::                       3D grids
 * solids::                      3D solid geometry
-* featpost3D::                  Partial port of @code{featpost3d}
+* tube::                        3D rotation minimizing tubes
 * flowchart::                   Flowchart drawing routines
 * contour::                     Contour lines
 * contour3::                    Contour surfaces
@@ -5943,7 +5997,8 @@ For convenience, this module also constructs the markers
 from the above frames. The example @code{markers1.asy} illustrates the
 use of these markers:
 
-@image{markers1}
+@sp 1
+@center @image{markers1}
 
 This package also provides a routine for marking an angle @math{AOB}:
 @cindex @code{markangle}
@@ -5957,7 +6012,8 @@ void markangle(picture pic=currentpicture, Label L="",
 @noindent
 as illustrated in the example @code{markers2.asy}.
 
-@image{markers2}
+@sp 1
+@center @image{markers2}
 
 @node tree
 @section @code{tree}
@@ -5971,7 +6027,8 @@ This module can be used to draw an arbitrary binary tree and includes an
 input routine for the special case of a binary search tree, as
 illustrated in the example @code{binarytreetest.asy}:
 @verbatiminclude binarytreetest.asy
-@image{binarytreetest}
+@sp 1
+@center @image{binarytreetest}
 
 @node drawtree
 @section @code{drawtree}
@@ -6023,8 +6080,8 @@ optional controls. This requires installing the package
 @end quotation
 @noindent
 (version 2007/11/30 or later) in a new directory @code{animate} in the
-@code{LaTeX} source directory (for example, in
-@code{/usr/share/texmf/tex/latex/animate}). On @code{UNIX} systems,
+local @code{LaTeX} directory (for example, in
+@code{/usr/local/share/texmf/tex/latex/animate}). On @code{UNIX} systems,
 one must then execute the command @code{texhash}.
 
 The example @code{pdfmovie.asy} in the @code{animations}
@@ -6054,15 +6111,24 @@ This module provides an interface to the @code{LaTeX} package
 @end quotation
 @noindent
 for embedding movies, sounds, and 3D objects into a @acronym{PDF} document.
-The latest version of the @code{movie15} package requires both
+@noindent
+@cindex @code{XeLaTeX}
+However, @code{XeLaTeX} users need to rename the modified version
+@code{movie15_dvipdfmx.sty} from
+@quotation
+@url{http://asymptote.svn.sourceforge.net/viewvc/asymptote/trunk/asymptote/patches/}
+@end quotation
+to @code{movie15.sty} and place it in their @code{LaTeX} path.
+
+The latest version (2008/10/08) of the @code{movie15} package requires both
 @code{pdflatex} version 1.20 or later and the file
 @quotation
 @url{http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/ifdraft.dtx}
 @end quotation
 @noindent
 which can be installed by placing it in a directory @code{ifdraft} in
-the @code{LaTeX} source directory
-(e.g.@ @code{/usr/share/texmf/tex/latex/ifdraft}) and executing in that
+the local @code{LaTeX} directory
+(e.g.@ @code{/usr/local/share/texmf/tex/latex/ifdraft}) and executing in that
 directory the commands:
 @verbatim
 tex ifdraft.dtx
@@ -6108,18 +6174,8 @@ contributions here are welcome.
 @cindex international characters
 Import this package at the beginning of the file to instruct
 @code{LaTeX} to accept @code{unicode} (UTF-8) standardized international
-characters. You will also need to set up @code{LaTeX} support for
-@code{unicode} by unpacking in your @code{LaTeX} source directory
-(e.g.@ @code{/usr/share/texmf/tex/latex}) the file
-@quotation
-@url{http://www.unruh.de/DniQ/latex/unicode/unicode.tgz}
-@end quotation
-
-and then running the command 
-@verbatim
-texhash
-@end verbatim
-
+characters.
+@noindent
 @cindex Cyrillic
 @cindex Russian
 To use Cyrillic fonts, you will need to change the font encoding:
@@ -6128,7 +6184,7 @@ import unicode;
 texpreamble("\usepackage{mathtext}\usepackage[russian]{babel}");
 defaultpen(font("T2A","cmr"));
 @end verbatim
-
+@noindent
 @cindex Chinese
 @cindex Japanese
 @cindex Korean
@@ -6221,13 +6277,24 @@ the following routines:
 @item
 @verbatim
 guide graph(picture pic=currentpicture, real f(real), real a, real b,
-            int n=ngraph, interpolate join=operator --);
+            int n=ngraph, real T(real)=identity,
+            interpolate join=operator --);
+guide[] graph(picture pic=currentpicture, real f(real), real a, real b,
+             int n=ngraph, real T(real)=identity, bool3 cond(real),
+             interpolate join=operator --);
 @end verbatim
 
 Returns a graph using the scaling information for picture @code{pic}
 (@pxref{automatic scaling}) of the function @code{f} on the interval
-[@code{a},@code{b}], sampling at @code{n} evenly spaced points, with
-one of these interpolation types:
+[@code{T}(@code{a}),@code{T}(@code{b})], sampling at @code{n} points
+evenly spaced in [@code{a},@code{b}], optionally restricted by the
+bool3 function @code{cond} on [@code{a},@code{b}]. If @code{cond} is:
+@itemize @bullet 
+@item @code{true}, the point is added to the existing guide;
+@item @code{default}, the point is added to a new guide;
+@item @code{false}, the point is omitted and a new guide is begun.
+@end itemize
+Th points are connected using the interpolation specified by @code{join}:
 @itemize @bullet 
 
 @cindex @code{operator --}
@@ -6254,68 +6321,64 @@ The abbreviation @code{Hermite} is equivalent to
 @item
 @verbatim
 guide graph(picture pic=currentpicture, real x(real), real y(real),
-            real a, real b, int n=ngraph,
+            real a, real b, int n=ngraph, real T(real)=identity,
             interpolate join=operator --);
+guide[] graph(picture pic=currentpicture, real x(real), real y(real),
+              real a, real b, int n=ngraph, real T(real)=identity,
+              bool3 cond(real), interpolate join=operator --);
 @end verbatim
 
 Returns a graph using the scaling information for picture @code{pic}
 of the parametrized function
-(@code{x}(@math{t}),@code{y}(@math{t})) for @math{t} in
-[@code{a},@code{b}], sampling at @code{n} evenly spaced points, with
-the given interpolation type.
+(@code{x}(@math{t}),@code{y}(@math{t})) for @math{t} in the interval
+[@code{T}(@code{a}),@code{T}(@code{b})], sampling at @code{n} points
+evenly spaced in [@code{a},@code{b}], optionally restricted by the
+bool3 function @code{cond} on [@code{a},@code{b}], using the given
+interpolation type.
 
 @item
 @verbatim
 guide graph(picture pic=currentpicture, pair z(real), real a, real b,
-            int n=ngraph, interpolate join=operator --);
+            int n=ngraph, real T(real)=identity,
+            interpolate join=operator --);
+guide[] graph(picture pic=currentpicture, pair z(real), real a, real b,
+              int n=ngraph, real T(real)=identity, bool3 cond(real),
+              interpolate join=operator --);
 @end verbatim
 
 Returns a graph using the scaling information for picture @code{pic}
 of the parametrized function
-@code{z}(@math{t}) for @math{t} in [@code{a},@code{b}], sampling at
-@code{n} evenly spaced points, with the given interpolation type.
+@code{z}(@math{t}) for @math{t} in the interval
+[@code{T}(@code{a}),@code{T}(@code{b})], sampling at @code{n} points
+evenly spaced in [@code{a},@code{b}], optionally restricted by the
+bool3 function @code{cond} on [@code{a},@code{b}], using the given
+interpolation type.
 
 @item
 @verbatim
-guide graph(picture pic=currentpicture, pair[] z, bool[] cond={},
+guide graph(picture pic=currentpicture, pair[] z,
             interpolate join=operator --);
+guide[] graph(picture pic=currentpicture, pair[] z, bool3[] cond,
+              interpolate join=operator --);
 @end verbatim
 
 Returns a graph using the scaling information for picture @code{pic}
-of those elements of the array
-@code{z} for which the corresponding elements of the boolean array
-@code{cond} are @code{true}, with the given interpolation type.
+of the elements of the array @code{z}, optionally restricted to
+those indices for which the elements of the boolean array @code{cond} are
+@code{true}, using the given interpolation type.
 
 @item
 @verbatim
 guide graph(picture pic=currentpicture, real[] x, real[] y,
-            bool[] cond={}, interpolate join=operator --);
-@end verbatim
-
-Returns a graph using the scaling information for picture @code{pic}
-of those elements of the arrays
-(@code{x},@code{y}) for which the corresponding elements of the boolean array
-@code{cond} are @code{true}, with the given interpolation type.
-
-@item
-@verbatim
-guide graph(picture pic=currentpicture, real f(real), real a, real b,
-            int n=ngraph, real T(real), interpolate join=operator --);
-@end verbatim
-
-Returns a graph using the scaling information for picture @code{pic}
-of the function @code{f} on the interval
-[@code{T}(@code{a}),@code{T}(@code{b})], sampling at @code{n} points evenly
-spaced in [@code{a},@code{b}], with the given interpolation
-type. These parametric versions also accept an arbitrary sampling
-function:
-@verbatim
-guide graph(picture pic=currentpicture, real x(real), real y(real),
-            real a, real b, int n=ngraph, real T(real),
             interpolate join=operator --);
-guide graph(picture pic=currentpicture, pair z(real), real a, real b,
-            int n=ngraph, real T(real), interpolate join=operator --)
+guide[] graph(picture pic=currentpicture, real[] x, real[] y,
+              bool3[] cond, interpolate join=operator --);
 @end verbatim
+
+Returns a graph using the scaling information for picture @code{pic}
+of the elements of the arrays (@code{x},@code{y}), optionally
+restricted to those indices for which the elements of the boolean
+array @code{cond} are @code{true}, using the given interpolation type.
 
 @item
 @cindex @code{polargraph}
@@ -6613,7 +6676,7 @@ returns the time corresponding to the value @code{v}, and
 function of @code{t} (zero means draw the tick perpendicular to the axis).
 
 @item These routines are useful for manually putting ticks and labels on axes
-(if the special variable @code{Label} is given as the @code{Label}
+(if the variable @code{Label} is given as the @code{Label}
 argument, the @code{format} argument will be used to format a string based on
 the tick location):
 @cindex xtick
@@ -6660,7 +6723,8 @@ Here are some simple examples of two-dimensional graphs:
 @item This example draws a textbook-style graph of
 @math{y=} exp@math{(x)}, with the @math{y} axis starting at @math{y=0}:
 @verbatiminclude exp.asy
-@image{exp}
+@sp 1
+@center @image{exp}
 
 
 @item The next example draws a scientific-style graph with a legend.
@@ -6673,7 +6737,8 @@ the picture covered by a label:
 
 @cindex scientific graph
 @verbatiminclude lineargraph0.asy
-@image{lineargraph0}
+@sp 1
+@center @image{lineargraph0}
 
 @cindex @code{attach}
 To specify a fixed size for the graph proper, use @code{attach}:
@@ -6682,17 +6747,20 @@ To specify a fixed size for the graph proper, use @code{attach}:
 @cindex @code{legend}
 A legend can have multiple entries per line:
 @verbatiminclude legend.asy
-@image{legend}
+@sp 1
+@center @image{legend}
 
 @item This example draws a graph of one array versus another (both of
 the same size) using custom tick locations and a smaller font size for
 the tick labels on the @math{y} axis.
 @verbatiminclude datagraph.asy
-@image{datagraph}
+@sp 1
+@center @image{datagraph}
 
 @item This example shows how to graph columns of data read from a file.
 @verbatiminclude filegraph.asy
-@image{filegraph}
+@sp 1
+@center @image{filegraph}
 
 @cindex @code{polygon}
 @cindex @code{cross}
@@ -6700,6 +6768,7 @@ the tick labels on the @math{y} axis.
 @cindex @code{marker}
 @cindex @code{marknodes}
 @cindex @code{markuniform}
+@cindex @code{mark}
 @anchor{pathmarkers}
 @item The next example draws two graphs of an array of coordinate pairs,
 using frame alignment and data markers. In the left-hand graph, the
@@ -6725,7 +6794,14 @@ Here @code{markuniform(bool centered=false, int n, bool rotated=false)}
 adds this frame at @code{n} uniformly spaced points along the arclength
 of the path, optionally rotated by the angle of the local tangent to the path
 (if centered is true, the frames will be centered within @code{n} evenly
-spaced arclength intervals). These markers are predefined:
+spaced arclength intervals). Alternatively, one can use
+markroutine @code{marknodes} to request that the marks be placed at each
+Bezier node of the path, or
+markroutine @code{markuniform(pair z(real t), real a, real b, int n)}
+to place marks at points @code{z(t)} for n evenly spaced values of
+@code{t} in @code{[a,b]}.
+
+These markers are predefined:
 @verbatim
 marker[] Mark={
   marker(scale(circlescale)*unitcircle),
@@ -6760,16 +6836,19 @@ optional pair array @code{dm}. If @code{dm} is not specified, the
 positive and negative extents of the error are assumed to be equal.
 @anchor{errorbars}
 @verbatiminclude errorbars.asy
-@image{errorbars}
+@sp 1
+@center @image{errorbars}
 
 @cindex custom mark routine
 @item A custom mark routine can be also be specified:
 @verbatiminclude graphmarkers.asy
-@image{graphmarkers}
+@sp 1
+@center @image{graphmarkers}
 
 @item This example shows how to label an axis with arbitrary strings.
 @verbatiminclude monthaxis.asy
-@image{monthaxis}
+@sp 1
+@center @image{monthaxis}
 
 @item This example draws a graph of a parametrized curve. 
 @cindex parametrized curve
@@ -6795,7 +6874,15 @@ within the given limits if @code{crop}=@code{Crop}. The function
 @code{crop(picture pic)} is equivalent to calling both
 @code{xlimits(Crop)} and @code{ylimits(Crop)}.
 @verbatiminclude parametricgraph.asy
-@image{parametricgraph}
+@sp 1
+@center @image{parametricgraph}
+
+@cindex scaled graph
+The next example illustrates how one can extract a common axis scaling
+factor.
+@verbatiminclude scaledgraph.asy
+@sp 1
+@center @image{scaledgraph}
 
 @anchor{automatic scaling}
 @cindex @code{scale}
@@ -6847,22 +6934,26 @@ multiplicative scaling factor and intercept (e.g.@ for a depth axis,
 @cindex log-log graph
 For example, to draw a log/log graph of a function, use @code{scale(Log,Log)}:
 @verbatiminclude loggraph.asy
-@image{loggraph}
+@sp 1
+@center @image{loggraph}
 
 @cindex grid
 By extending the ticks, one can easily produce a logarithmic grid:
 @verbatiminclude loggrid.asy
 
-@image{loggrid}
+@sp 1
+@center @image{loggrid}
 
 One can also specify custom tick locations and formats for logarithmic axes:
 @verbatiminclude logticks.asy
-@image{logticks}
+@sp 1
+@center @image{logticks}
 
 @cindex @code{log2} graph
 It is easy to draw logarithmic graphs with respect to other bases:
 @verbatiminclude log2graph.asy
-@image{log2graph}
+@sp 1
+@center @image{log2graph}
 
 @cindex broken axis
 Here is an example of "broken" linear @math{x} and logarithmic
@@ -6870,7 +6961,8 @@ Here is an example of "broken" linear @math{x} and logarithmic
 In the case of a logarithmic axis, the break endpoints are automatically
 rounded to the nearest integral power of the base.
 @verbatiminclude brokenaxis.asy
-@image{brokenaxis}
+@sp 1
+@center @image{brokenaxis}
 
 @cindex secondary axis
 @cindex @code{secondaryX}
@@ -6884,27 +6976,32 @@ picture secondaryY(picture primary=currentpicture, void f(picture));
 In this example, @code{secondaryY} is used to draw a secondary linear
 @math{y} axis against a primary logarithmic @math{y} axis:
 @verbatiminclude Bode.asy
-@image{Bode}
+@sp 1
+@center @image{Bode}
 
 A secondary logarithmic @math{y} axis can be drawn like this:
 @verbatiminclude secondaryaxis.asy
-@image{secondaryaxis}
+@sp 1
+@center @image{secondaryaxis}
 
 @item Here is a histogram example, which uses the @code{stats} module.
 @cindex @code{axis}
 @verbatiminclude histogram.asy
-@image{histogram}
+@sp 1
+@center @image{histogram}
 
 @item Here is an example of reading column data in from a file and a
 least-squares fit, using the @code{stats} module. 
 @cindex @code{leastsquares}
 @verbatiminclude leastsquares.asy
-@image{leastsquares}
+@sp 1
+@center @image{leastsquares}
 
 @item Here is an example that illustrates the general @code{axis} routine.
 @cindex @code{axis}
 @verbatiminclude generalaxis.asy
-@image{generalaxis}
+@sp 1
+@center @image{generalaxis}
 
 @item To draw a vector field of @code{n} arrows evenly spaced along the arclength of a path, use the routine
 @cindex @code{vectorfield}
@@ -6914,7 +7011,8 @@ picture vectorfield(path vector(real), path g, int n, bool truesize=false,
 @end verbatim
 as illustrated in this simple example of a flow field:
 @verbatiminclude flow.asy
-@image{flow}
+@sp 1
+@center @image{flow}
 
 @item To draw a vector field of @code{nx}@math{\times}@code{ny} arrows in @code{box(a,b)}, use the routine
 @cindex @code{vectorfield}
@@ -6926,7 +7024,8 @@ picture vectorfield(path vector(pair), pair a, pair b,
 @end verbatim
 as illustrated in this example:
 @verbatiminclude vectorfield.asy
-@image{vectorfield}
+@sp 1
+@center @image{vectorfield}
 
 @item The following scientific graphs, which illustrate many features of
 @code{Asymptote}'s graphics routines, were generated from the examples
@@ -6934,8 +7033,10 @@ as illustrated in this example:
 data in @code{diatom.csv} and @code{westnile.csv}.
 @page
 
-@image{diatom}
-@image{westnile,,7.5cm}
+@sp 1
+@center @image{diatom}
+@sp 1
+@center @image{westnile,,7.5cm}
 @end enumerate
 
 @page
@@ -6953,17 +7054,21 @@ and palettes. The following palettes are predefined in
 a grayscale palette;
 
 @cindex @code{Rainbow}
-@item pen[] Rainbow(int NColors=65501)
+@item pen[] Rainbow(int NColors=32766)
 a rainbow spectrum;
 
 @cindex @code{BWRainbow}
-@item pen[] BWRainbow(int NColors=65485)
+@item pen[] BWRainbow(int NColors=32761)
 a rainbow spectrum tapering off to black/white at the ends;
 
 @cindex @code{BWRainbow2}
-@item pen[] BWRainbow2(int NColors=65485)
+@item pen[] BWRainbow2(int NColors=32761)
 a double rainbow palette tapering off to black/white at the ends, with
 a linearly scaled intensity.
+
+@cindex @code{Wheel}
+@item pen[] Wheel(int NColors=32766)
+a full color wheel palette;
 
 @cindex @code{Gradient}
 @item pen[] Gradient(int NColors=256 ... pen[] p) 
@@ -7059,13 +7164,15 @@ optionally aligned to a picture at the desired location:
 
 @anchor{image}
 @verbatiminclude image.asy
-@image{image}
+@sp 1
+@center @image{image}
 
 Here is an example that uses logarithmic scaling of the function values:
 
 @anchor{logimage}
 @verbatiminclude logimage.asy
-@image{logimage}
+@sp 1
+@center @image{logimage}
 
 One can also draw an image directly from a two-dimensional pen array:
 @verbatim
@@ -7079,7 +7186,8 @@ as illustrated in the following example:
 
 @anchor{penimage}
 @verbatiminclude penimage.asy
-@image{penimage}
+@sp 1
+@center @image{penimage}
 
 For convenience, the module @code{palette} also defines functions
 that may be used to construct a pen array from a given function and palette:
@@ -7111,11 +7219,13 @@ Applied Mathematics and Mechanics, 7:1, 2010021-2010022 (2007)].
 For example, a unit circle in the @math{XY} plane may be filled and
 drawn like this:
 @verbatiminclude unitcircle3.asy
-@image{unitcircle3}
+@sp 1
+@center @image{unitcircle3}
 @noindent
 and then distorted into a saddle:
 @verbatiminclude saddle.asy
-@image{saddle}
+@sp 1
+@center @image{saddle}
 @noindent
 
 Module @code{three} provides constructors for converting two-dimensional
@@ -7176,7 +7286,7 @@ four vertex colors.
 @cindex @code{fill}
 There is no @code{fill} command for arbitrary three-dimensional cyclic paths
 (this would be an ill-posed operation). 
-However, a surface constructed from a convex path3 with the constructor
+However, a surface can be constructed from a convex path3 with the constructor
 @cindex @code{surface}
 @verbatim
 surface surface(path3 external, triple[] internal=new triple[],
@@ -7236,16 +7346,19 @@ There are four choices for viewing 3D @code{Asymptote} output:
 @cindex @code{OpenGL}
 @cindex @code{render}
 @cindex @code{outformat}
+@cindex @code{multisample}
 @item Use the default @code{Asymptote} adaptive @code{OpenGL}-based
 renderer (with the command-line option @code{-V} and the default settings
 @code{outformat=""} and @code{render=-1}). If you encounter warnings
 from your graphics card driver, try specifying @code{-glOptions=-indirect}
-on the command line. On @code{UNIX} systems, we recommend installing a patched
-version of the @code{freeglut} library to support antialiasing via
-multisampling (@pxref{multisampling}). An initial screen position can be
-specified with the pair setting @code{position}, where negative values
-are interpreted as relative to the corresponding maximum screen dimension.
-The mouse bindings are:
+on the command line. On @code{UNIX} systems with graphics support for
+multisampling, we recommend installing the latest SVN (antialiased)
+version of the @code{freeglut} library
+(@pxref{multisampling}); the sample width can be
+controlled with the setting @code{multisample}. An initial screen
+position can be specified with the pair setting @code{position}, where
+negative values are interpreted as relative to the corresponding
+maximum screen dimension. The mouse bindings are:
 @cindex mouse bindings
 @itemize
 @item Left: rotate
@@ -7288,26 +7401,32 @@ at the resolution of @code{n} pixels per @code{bp}, as specified by the
 setting @code{render=n}. A negative value of @code{n} is interpreted
 as @code{|2n|} for @acronym{EPS} and @acronym{PDF} formats and
 @code{|n|} for other formats. The default value of @code{render} is -1.
-By default, if the setting @code{antialias} is true, the scene is
-internally rendered at twice the specified resolution. High resolution
-rendering is done by tiling the image. If your graphics card allows
-it, the rendering can be made more efficient by increasing the maximum
-tile size @code{maxtile} beyond the screen dimensions (indicated by
-@code{maxtile=(0,0)}. The tile size is also limited by the setting
-@code{maxviewport}, which restricts the maximum width and height of the
-viewport. On @code{UNIX} systems some graphics card drivers support
-batch mode (@code{-noV}) rendering in an iconified window; this can be
-enabled with the setting @code{iconify=true}.
+By default, the scene is internally rendered at twice the specified
+resolution; this can be disabled by setting @code{antialias=1}.
+High resolution rendering is done by tiling the image. If your
+graphics card allows it, the rendering can be made more efficient by
+increasing the maximum tile size @code{maxtile} beyond the screen
+dimensions (indicated by @code{maxtile=(0,0)}. The tile size is also
+limited by the setting @code{maxviewport}, which restricts the maximum
+width and height of the viewport. On @code{UNIX} systems some graphics
+drivers support batch mode (@code{-noV}) rendering in an
+iconified window; this can be enabled with the setting @code{iconify=true}.
+Other @code{UNIX} graphics drivers may require the command line setting
+@code{-glOptions=-indirect}.
 
 @cindex @code{prc}
+@cindex @code{views}
 @item Embed the 3D @acronym{PRC} format in a @acronym{PDF} file
-(using the setting @code{outformat="pdf"} and the default setting
-@code{prc=true}) and view the resulting @acronym{PDF} file with
-version @code{8.0} or later of @code{Adobe Reader}. This requires
-version 2008/10/08 or later of the @code{movie15} package from
-@quotation
-@url{http://www.ctan.org/tex-archive/macros/latex/contrib/movie15}
-@end quotation
+and view the resulting @acronym{PDF} file with
+version @code{8.0} or later of @code{Adobe Reader}. 
+In addition to the default @code{settings.prc=true}, this requires
+@code{settings.outformat="pdf"}, which can be specified by the command
+line option @code{-f pdf}, put in the @code{Asymptote} configuration
+file (@pxref{configuration file}), or specified in the script before
+@code{three.asy} (or @code{graph3.asy}) is imported. 
+Version 2008/10/08 or later of the @code{movie15} package is also
+required (@pxref{embed}). The example @code{pdb.asy} illustrates
+how one can generate a list of predefined views (see @code{100d.views}).
 A stationary preview image with a resolution of @code{n} pixels per
 @code{bp} can be embedded with the setting @code{render=n}; this allows
 the file to be viewed with other @code{PDF} viewers. Alternatively, the
@@ -7404,6 +7523,7 @@ path3[] box(triple v1, triple v2);
 @end verbatim
 @noindent
 For example, a unit box is predefined as
+@cindex @code{box}
 @cindex @code{unitbox}
 @verbatim
 path3[] unitbox=box(O,(1,1,1));
@@ -7419,7 +7539,7 @@ along with the surfaces @code{unitdisk}, @code{unitplane}, @code{unitcube},
 These projections to two dimensions are predefined:
 @table @code
 @item oblique
-@item oblique(real angle)
+@item oblique(real angle);
 @cindex @code{oblique}
 @cindex @code{obliqueZ}
 The point @code{(x,y,z)} is projected to @code{(x-0.5z,y-0.5z)}.
@@ -7441,18 +7561,23 @@ The point @code{(x,y,z)} is projected to @code{(x+0.5y,z+0.5y)}.
 If an optional real argument is given, the
 positive @math{y} axis is drawn at this angle in degrees.
 
-@item orthographic(triple camera, triple up=Z)
+@item @w{orthographic(triple camera, triple up=Z, triple target=O, bool showtarget=true)}
 @cindex @code{orthographic}
+@cindex @code{up}
+@cindex @code{target}
+@cindex @code{showtarget}
 This projects from three to two dimensions using the view as seen at a point
 infinitely far away in the direction @code{unit(camera)}, orienting the camera
 so that, if possible, the vector @code{up} points upwards. Parallel
-lines are projected to parallel lines.
+lines are projected to parallel lines. The bounding volume is expanded
+to include @code{target} if @code{showtarget=true}.
 
-@item orthographic(real x, real y, real z, triple up=Z)
-This is equivalent to @code{orthographic((x,y,z),up)}.
+@item @w{orthographic(real x, real y, real z, triple up=Z, triple target=O, bool showtarget=true)}
+This is equivalent to @code{orthographic((x,y,z),up,target,showtarget)}.
 
-@item perspective(triple camera, triple up=Z, triple target=O)
+@item perspective(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true)
 @cindex @code{perspective}
+@cindex @code{autoadjust}
 @cindex @code{nurbs}
 This projects from three to two dimensions, taking account of
 perspective, as seen from the location @code{camera} looking at @code{target},
@@ -7460,10 +7585,12 @@ orienting the camera so that, if possible, the vector @code{up} points upwards.
 If @code{render=0}, projection of three-dimensional cubic Bezier splines
 is implemented by approximating a two-dimensional nonuniform rational B-spline
 (@acronym{nurbs}) with a two-dimensional Bezier curve containing
-additional nodes and control points. 
+additional nodes and control points. If @code{autoadjust=true},
+the camera will automatically be adjusted to lie outside the bounding volume
+for all possible interactive rotations about @code{target}.
 
-@item perspective(real x, real y, real z, triple up=Z, triple target=O)
-This is equivalent to @code{perspective((x,y,z),up,target)}.
+@item perspective(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true)
+This is equivalent to @code{perspective((x,y,z),up,target,showtarget,autoadjust)}.
 @end table
 
 @cindex @code{currentprojection}
@@ -7484,8 +7611,14 @@ triple invert(pair z, triple normal, triple point,
               projection P=currentprojection);
 @end verbatim
 @noindent
-A pair direction @code{dir} can be inverted to a triple direction
-relative to a point @code{v} with the routine
+A pair @code{z} on the projection plane can be inverted to a triple
+with the routine 
+@verbatim
+triple invert(pair z, projection P=currentprojection);
+@end verbatim
+@noindent
+A pair direction @code{dir} on the projection plane can be inverted to
+a triple direction relative to a point @code{v} with the routine
 @verbatim
 triple invert(pair dir, triple v, projection P=currentprojection).
 @end verbatim
@@ -7584,7 +7717,8 @@ Three-dimensional versions of the path functions @code{length},
 
 Here is an example showing all five guide3 connectors:
 @verbatiminclude join3.asy
-@image{join3}
+@sp 1
+@center @image{join3}
 
 @cindex @code{BeginBar3}
 @cindex @code{EndBar3}
@@ -7595,6 +7729,11 @@ Here is an example showing all five guide3 connectors:
 @cindex @code{EndArrow3}
 @cindex @code{Arrow3}
 @cindex @code{Arrows3}
+@cindex @code{BeginArcArrow3}
+@cindex @code{MidArcArrow3}
+@cindex @code{EndArcArrow3}
+@cindex @code{ArcArrow3}
+@cindex @code{ArcArrows3}
 @cindex @code{DefaultHead3}
 @cindex @code{HookHead3}
 @cindex @code{TeXHead3}
@@ -7602,22 +7741,19 @@ Three-dimensional versions of bars or arrows can be drawn with one of
 the specifiers @code{None}, @code{Blank}, 
 @code{BeginBar3}, @code{EndBar3} (or equivalently @code{Bar3}), @code{Bars3},
 @code{BeginArrow3}, @code{MidArrow3},
-@code{EndArrow3} (or equivalently @code{Arrow3}), and @code{Arrows3}.
-The predefined three-dimensional arrowhead styles are
-@code{DefaultHead3}, @code{HookHead3}, @code{TeXHead3}.
+@code{EndArrow3} (or equivalently @code{Arrow3}), @code{Arrows3},
+@code{BeginArcArrow3}, @code{EndArcArrow3} (or equivalently
+@code{ArcArrow3}), @code{MidArcArrow3}, and @code{ArcArrows3}.
+Three-dimensional bars accept the optional arguments @code{(real size=0,
+triple dir=O)}. If @code{size=O}, the default bar length is used; if
+@code{dir=O}, the bar is drawn perpendicular to the path
+and the initial viewing direction. The predefined three-dimensional
+arrowhead styles are @code{DefaultHead3}, @code{HookHead3}, @code{TeXHead3}.
 Versions of the two-dimensional arrowheads lifted to three-dimensional
-space and aligned according to the initial viewpoint are also defined:
-@cindex @code{DefaultHead2}
-@cindex @code{HookHead2}
-@cindex @code{TeXHead2}
-@verbatim
-arrowhead3 DefaultHead2(filltype filltype=Fill);
-arrowhead3 HookHead2(real dir=arrowdir, real barb=arrowbarb,
-                     filltype filltype=Fill);
-arrowhead3 TeXHead2;
-@end verbatim
-@noindent
-An unfilled arrow will be drawn if @code{filltype=NoFill}.
+space and aligned according to the initial viewpoint (or an optionally
+specified @code{normal} vector) are also defined:
+@code{DefaultHead2(triple normal=O)}, @code{HookHead2(triple normal=O)},
+@code{TeXHead2(triple normal=O)}.
 
 @cindex @code{NoMargin3}
 @cindex @code{BeginMargin3}
@@ -7677,7 +7813,8 @@ transform transform(triple u, triple v, triple O=O,
 Here is an example that shows how a binary space partition may be used to draw a
 @code{PostScript} vector image of three orthogonal intersecting planes:
 @verbatiminclude planes.asy
-@image{planes}
+@sp 1
+@center @image{planes}
 
 @node obj
 @section @code{obj}
@@ -7751,18 +7888,21 @@ the direction that would be used for the @code{Bounds(Min,Min)} axis.
 Here is an example of a helix and bounding box axes with ticks
 and axis labels, using orthographic projection:
 @verbatiminclude helix.asy
-@image{helix}
+@sp 1
+@center @image{helix}
 
 The next example illustrates three-dimensional @math{x}, @math{y}, and
 @math{z} axes, without autoscaling of the axis limits:
 @cindex @code{axis}
 @verbatiminclude axis3.asy
-@image{axis3}
+@sp 1
+@center @image{axis3}
 
 One can also place ticks along a general three-dimensional axis:
 @cindex @code{axis}
 @verbatiminclude generalaxis3.asy
-@image{generalaxis3}
+@sp 1
+@center @image{generalaxis3}
 
 Surface plots of matrices and functions over the region
 @code{box(a,b)} in the @math{XY} plane are also implemented: 
@@ -7796,7 +7936,8 @@ Lighting can be disabled by setting @code{light=nolight}, as in this example
 of a Gaussian surface:
 @anchor{GaussianSurface}
 @verbatiminclude GaussianSurface.asy
-@image{GaussianSurface}
+@sp 1
+@center @image{GaussianSurface}
 @noindent
 Surface lighting is illustrated in the example files
 @code{parametricsurface.asy} and @code{sinc.asy}.
@@ -7812,7 +7953,8 @@ This module, contributed by Philippe Ivaldi, can be used for drawing
 3D grids. Here is an example (further examples can be found in
 @code{grid3.asy} and at @url{http://piprim.tuxfamily.org/asymptote/grid3/}):  
 @verbatiminclude grid3xyz.asy
-@image{grid3xyz}
+@sp 1
+@center @image{grid3xyz}
 
 @node solids
 @section @code{solids}
@@ -7822,7 +7964,8 @@ can be used to fill and draw surfaces of revolution. The following example
 uses it to display the outline of a circular cylinder of radius 1
 with axis @code{O--1.5unit(Y+Z)} with perspective projection:
 @verbatiminclude cylinderskeleton.asy
-@image{cylinderskeleton}
+@sp 1
+@center @image{cylinderskeleton}
 
 Further illustrations are provided in the example files @code{cylinder.asy},
 @code{cones.asy}, @code{hyperboloid.asy}, and @code{torus.asy}.
@@ -7842,25 +7985,71 @@ struct skeleton {
 }
 @end verbatim
 
-@node featpost3D
-@section @code{featpost3D}
-@cindex @code{featpost3D}
-To facilitate the conversion of existing MetaPost programs,
-this module contains a partial port of the @code{MetaPost} 3D package
-@code{featpost3D}  of L. Nobre G., C. Barbarosie, and J. Schwaiger to
-@code{Asymptote}. However, much of the functionality of
-this port is now obsoleted by the package @code{three},
-which fully extends the notion of a path to three dimensions,
-together with the packages @code{solids} and @code{graph3}.
-The original @code{featpost3D} package is documented at
-@quotation
-@url{http://matagalatlante.org/nobre/featpost/doc/featpost.html}
-@end quotation
+@node tube
+@section @code{tube}
+@cindex @code{tube}
+This package extends the routine @code{tube} defined in @code{three_arrows.asy}
+to arbitrary cross sections, colors, and spine transformations.
+The routine
+@verbatim
+surface tube(path3 g, coloredpath section,
+             transform T(real)=new transform(real t) {return identity();},
+             real corner=1, real relstep=0);
+@end verbatim
+@noindent
+draws a tube along @code{g} with cross section @code{section}, after
+applying the transformation @code{T(t)} at @code{relpoint(g,t)}.
+The parameter @code{corner} controls the number of elementary tubes at
+the angular points of @code{g}. A nonzero value of @code{relstep}
+specifies a fixed relative time step (in the sense of
+@code{relpoint(g,t)}) to use in constructing elementary tubes along @code{g}. 
+The type @code{coloredpath} is a generalization of @code{path} to
+which a @code{path} can be cast:
+@cindex @code{coloredpath}
+@verbatim
+struct coloredpath
+{
+  path p;
+  pen[] pens(real);
+  int colortype=coloredSegments;
+}
+@end verbatim
+@noindent
+@cindex @code{coloredSegments}
+@cindex @code{coloredNodes}
+Here @code{p} defines the cross section and
+the method @code{pens(real t)} returns an array of pens (interpreted
+as a cyclic array) used for shading the tube patches at
+@code{relpoint(g,t)}. If @code{colortype=coloredSegments}, the tube patches
+are filled as if each segment of the section was colored with the pen
+returned by @code{pens(t)}, whereas if @code{colortype=coloredNodes}, the
+tube components are vertex shaded as if the nodes of the section were colored.
+
+A @code{coloredpath} can be constructed with one of the routines:
+@verbatim
+coloredpath coloredpath(path p, pen[] pens(real),
+                        int colortype=coloredSegments);
+coloredpath coloredpath(path p, pen[] pens=new pen[] {currentpen},
+                        int colortype=coloredSegments);
+coloredpath coloredpath(path p, pen pen(real));
+@end verbatim
+@noindent
+In the second case, the pens are independent of the relative time.
+In the third case, the array of pens contains only one pen, which
+depends of the relative time.
+
+The casting of @code{path} to @code{coloredpath} allows the
+use of a @code{path} instead of a @code{coloredpath}; in this case the
+shading behaviour is the default shading behavior for a surface.
+
+An example of @code{tube} is provided in the file
+@code{trefoilknot.asy}. Further examples can be found at
+@url{http://piprim.tuxfamily.org/asymptote/tube/}.
 
 @node flowchart
 @section @code{flowchart}
 @cindex @code{flowchart}
-This package provides routines to assist in drawing flowcharts. The primary
+This package provides routines for drawing flowcharts. The primary
 structure is a @code{block}, which represents a single block on the
 flowchart. The following eight functions return a position on the appropriate
 edge of the block, given picture transform @code{t}:
@@ -7912,47 +8101,52 @@ frame for their object argument:
 @item rectangular block with an optional header (and padding @code{dx} around header and body): 
 @cindex @code{rectangle}
 @verbatim
-block rectangle(object header, object body, pair center=(0,0),
+block rectangle(object header=new object, object body, pair center=(0,0),
                 pen headerpen=mediumgray, pen bodypen=invisible,
                 pen drawpen=currentpen,
-                real dx=3, real minheaderwidth=0, real minheaderheight=0,
-                real minbodywidth=0, real minbodyheight=0);
-block rectangle(object body, pair center=(0,0), pen fillpen=invisible,
-                pen drawpen=currentpen, real dx=3, real minwidth=0,
-                real minheight=0);
+                real dx=3, real minheaderwidth=minblockwidth,
+                real minheaderheight=minblockwidth,
+                real minbodywidth=minblockheight,
+                real minbodyheight=minblockheight);
+block rectangle(object body=new object, pair center=(0,0),
+                pen fillpen=invisible, pen drawpen=currentpen,
+                real dx=3, real minwidth=minblockwidth,
+                real minheight=minblockheight);
 @end verbatim
 
 @item diamond-shaped flowchart block:
 @cindex @code{diamond}
 @verbatim
-block diamond(object body, pair center=(0,0),
+block diamond(object body=new object, pair center=(0,0),
               pen fillpen=invisible, pen drawpen=currentpen,
               real ds=5, real dw=1,
-              real height=20, real minwidth=0, real minheight=0);
+              real height=20, real minwidth=minblockwidth,
+              real minheight=minblockheight);
 @end verbatim
 
 @item circular flowchart block:
 @cindex @code{circle}
 @verbatim
-block circle(object body, pair center=(0,0), pen fillpen=invisible,
-             pen drawpen=currentpen, real dr=3, real mindiameter=0);
+block circle(object body=new object, pair center=(0,0), pen fillpen=invisible,
+             pen drawpen=currentpen, real dr=3,
+             real mindiameter=mincirclediameter);
 @end verbatim
 
 @item rectangular flowchart block with rounded corners:
 @cindex @code{roundrectangle}
 @verbatim
-block roundrectangle(object body, pair center=(0,0),
+block roundrectangle(object body=new object, pair center=(0,0),
                      pen fillpen=invisible, pen drawpen=currentpen,
-                     real ds=5, real dw=0, real minwidth=0,
-                     real minheight=0);
+                     real ds=5, real dw=0, real minwidth=minblockwidth,
+                     real minheight=minblockheight);
 @end verbatim
 
 @item rectangular flowchart block with beveled edges:
 @cindex @code{bevel}
 @verbatim
-block bevel(object body, pair center=(0,0), pen fillpen=invisible,
-            pen drawpen=currentpen, real dh=5,
-            real dw=5, real minwidth=0, real minheight=0);
+block bevel(object body=new object, pair center=(0,0), pen fillpen=invisible,
+            pen drawpen=currentpen, real dh=5, real dw=5,
+            real minwidth=minblockwidth, real minheight=minblockheight);
 @end verbatim 
 
 @end table
@@ -7960,18 +8154,21 @@ block bevel(object body, pair center=(0,0), pen fillpen=invisible,
 To draw paths joining the pairs in @code{point} with right-angled lines,
 use the routine:
 @cindex @code{path}
+@cindex @code{Horizontal}
+@cindex @code{Vertical}
 @verbatim
-path path(pair point[] ... bool horizontal[]);
+path path(pair point[] ... flowdir dir[]);
 @end verbatim
 @noindent
-The entries in @code{horizontal} identify whether successive
+The entries in @code{dir} identify whether successive
 segments between the pairs specified by @code{point} should be drawn
-horizontal (@code{true}) or vertical (@code{false}).
+in the @code{Horizontal} or @code{Vertical} direction.
 
 Here is a simple flowchart example:
 
 @verbatiminclude flowchartdemo.asy
-@image{flowchartdemo}
+@sp 1
+@center @image{flowchartdemo}
 
 @node contour
 @section @code{contour}
@@ -8001,8 +8198,8 @@ guide[][] contour(real[][] f, real[][] midpoint=new real[][],
 @end verbatim
 
 To construct contours for an array of data values on a nonoverlapping
-mesh specified by the two-dimensional array @code{z}, optionally
-specifying an estimate for the values of @code{f} at the mesh midpoints, use
+regular mesh specified by the two-dimensional array @code{z}, optionally
+specifying the values of @code{f} at the mesh midpoints, use
 @verbatim
 guide[][] contour(pair[][] z, real[][] f,
                   real[][] midpoint=new real[][], real[] c,
@@ -8029,23 +8226,27 @@ void draw(picture pic=currentpicture, Label[] L=new Label[],
 The following simple example draws the contour at value @code{1}
 for the function @math{z=x^2+y^2}, which is a unit circle:
 @verbatiminclude onecontour.asy
-@image{onecontour}
+@sp 1
+@center @image{onecontour}
 
 The next example draws and labels multiple contours for the function
 @math{z=x^2-y^2} with the resolution @code{100 x 100}, using a dashed
 pen for negative contours and a solid pen for positive (and zero) contours:
 @verbatiminclude multicontour.asy
-@image{multicontour}
+@sp 1
+@center @image{multicontour}
 
 The next example illustrates how contour lines can be drawn on color
 density images:
 @verbatiminclude imagecontour.asy
-@image{imagecontour}
+@sp 1
+@center @image{imagecontour}
 
 Finally, here is an example that illustrates the construction of contours
 from irregularly spaced data:
 @verbatiminclude irregularcontour.asy
-@image{irregularcontour}
+@sp 1
+@center @image{irregularcontour}
 
 In the above example, the contours of irregularly spaced data are constructed by
 first creating a triangular mesh from an array @code{z} of pairs:
@@ -8056,7 +8257,8 @@ int[][] triangulate(pair[] z);
 @end verbatim
 
 @verbatiminclude triangulate.asy
-@image{triangulate}
+@sp 1
+@center @image{triangulate}
 
 The example @code{Gouraudcontour} illustrates how to produce color
 density images over such irregular triangular meshes.
@@ -8107,7 +8309,8 @@ Both @code{slopefield} and @code{curve} alternatively accept a function
 @code{real f(real)} that depends on @math{x} only, as seen in this example:
 
 @verbatiminclude slopefield1.asy
-@image{slopefield1}
+@sp 1
+@center @image{slopefield1}
 
 @node Options
 @chapter Options
@@ -8186,11 +8389,13 @@ at the beginning of the configuration file, it can contain arbitrary
 @cindex @code{size}
 @anchor{convert}
 The default output format is @acronym{EPS} for the (default)
-@code{latex} tex engine and @acronym{PDF} for the @code{pdflatex} tex engine.
+@code{latex} tex engine and @acronym{PDF} for the @code{pdflatex} and
+@code{xelatex} tex engines.
 Alternative output formats may be produced using the @code{-f} option 
 (or @code{outformat} setting). The optional setting @code{-render n} requests
 an output resolution of @code{n} pixels per @code{bp}. Antialiasing is
-controlled by the setting @code{antialias} (enabled by default).
+controlled by the parameter @code{antialias}, which by default
+specifies a sampling width of 2 pixels.
 @code{Asymptote} can produce any output format supported
 by the @code{ImageMagick} @code{convert} program (version 6.3.5 or
 later recommended; an @code{Invalid Parameter} error message indicates
@@ -8378,13 +8583,15 @@ As @code{xasy} is written in the interactive scripting language
 (@url{http://www.python.org}), the Python Imaging Library
 (@url{http://www.pythonware.com/products/pil/}), and the @code{tkinter}
 package (included with s@code{Python} under @code{Microsoft Windows}) be
-installed. @code{Fedora Core Linux} users can either install
-@code{tkinter} with the command
+installed. @code{Fedora Linux} users can either install
+@code{tkinter} with the commands
 @verbatim
 yum install tkinter
+yum install tk-devel
 @end verbatim
 @noindent
-or manually install the @code{tkinter}, @code{tix}, and @code{tk} packages.
+or manually install the @code{tkinter}, @code{tix}, @code{tk},
+and @code{tk-devel} packages.
 
 Pictures are deconstructed into the @acronym{PNG} image format, which
 supports full alpha channel transparency. Under @code{Microsoft
@@ -8695,7 +8902,7 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  ticksize subintervals xlimits filetype plugin setlocal makeprg
 @c  LocalWords:  ylimits uncommented automin automax cp uninstall reals ecast
 @c  LocalWords:  scaleT unicode RightSide yx yy NoAlign legendmargin opic CCW
-@c  LocalWords:  arrowbar LeftSide EndBar BeginArrow lly featpost feynman isi
+@c  LocalWords:  arrowbar LeftSide EndBar BeginArrow lly feynman isi showtarget
 @c  LocalWords:  EndArrow BeginArcArrow EndArcArrow ArcArrow ArcArrows NoFill
 @c  LocalWords:  filldraw fillpen drawpen errorformat bigsquare bezier darkblue
 @c  LocalWords:  quartercircle darkgreen lightblue urx ury texpreamble sgn texi
@@ -8739,7 +8946,7 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  intersectpoint cyrillic mathtext russian brokenaxis Datadir ds
 @c  LocalWords:  resetdefaultpen latticeshade axialshade radialshade erfc det
 @c  LocalWords:  gouraudshade unescaped nmesh surfacepen getpair MikTeX dw YZ
-@c  LocalWords:  meshpen localhistory axisT roundedpath unitsize aSin accel
+@c  LocalWords:  meshpen localhistory axisT roundedpath unitsize aSin accel pre
 @c  LocalWords:  fontcommand makepen aCos aTan Knorr roundpath BeginPoint nView
 @c  LocalWords:  MidPoint EndPoint nmask antialiasing autoplain batchMask libgc
 @c  LocalWords:  batchView clearGUI ignoreGUI interactiveMask interactiveView
@@ -8783,13 +8990,13 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  onecontour multicontour irregularcontour dvipsOptions saveline
 @c  LocalWords:  dirSpecifier controlSpecifier tensionSpecifier atleastflag bsp
 @c  LocalWords:  curlSpecifier cputimeformat initializers arbitary redeclaring
-@c  LocalWords:  firstname lastname multdiagonal Raphson OmitTick OmitFormat
+@c  LocalWords:  firstname lastname multdiagonal Raphson OmitTick OmitFormat sp
 @c  LocalWords:  NoZero NoZeroFormat abbrevation gsOptions namespace redeclared
 @c  LocalWords:  atLeast intMin globalwrite quarticroots deconsruct substrings
 @c  LocalWords:  usleep currentpatterns trailingzero Orest Shardt DefaultHead
 @c  LocalWords:  SimpleHead HookHead TeXHead multipage nurbs inlinemovie dxmax
 @c  LocalWords:  simpson NoBox truesize autoscale shadestroke recurses mintimes
-@c  LocalWords:  nonoverlapping texdvicommand texengine maxtimes maxheight
+@c  LocalWords:  nonoverlapping texdvicommand texengine maxtimes maxheight pdb
 @c  LocalWords:  piecewisestraight unitrand graphmarkers antialias nolight newl
 @c  LocalWords:  Delaunay Shewchuk convertOptions APPDATA pdfreload tempFile
 @c  LocalWords:  pdfreloadOptions deferred OpenGL Phong Blinn renderer unitbox
@@ -8804,4 +9011,8 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  maxviewport maxtile antialiased sphericalharmonic attachfile
 @c  LocalWords:  vertexshading smoothelevation glOptions iconified iconify
 @c  LocalWords:  psviewerOptions pdfviewerOptions viewportmargin asyattach
-@c  LocalWords:  multisampling
+@c  LocalWords:  multisampling autogen multisample coloredpath relstep flowdir
+@c  LocalWords:  colortype coloredSegments coloredNodes trefoilknot scaledgraph
+@c  LocalWords:  minblockwidth minblockheight mincirclediameter nonassociative
+@c  LocalWords:  nonintegral gettriple enablerepo hexidecimal XeLaTeX xelatex
+@c  LocalWords:  dvipdfmx autoadjust

@@ -47,7 +47,7 @@ typedef void markroutine(picture pic=currentpicture, frame f, path g);
 
 // On picture pic, add frame f about every node of path g.
 void marknodes(picture pic=currentpicture, frame f, path g) {
-  for(int i=0; i <= length(g); ++i)
+  for(int i=0; i < size(g); ++i)
     add(pic,f,point(g,i));
 }
 
@@ -78,11 +78,23 @@ markroutine markuniform(bool centered=false, int n, bool rotated=false) {
   };
 }
 
+// On picture pic, add frame f at points z(t) for n evenly spaced values of
+// t in [a,b].
+markroutine markuniform(pair z(real t), real a, real b, int n)
+{
+  return new void(picture pic=currentpicture, frame f, path) {
+    real width=b-a;
+    for(int i=0; i <= n; ++i) {
+      add(pic,f,z(a+i/n*width));
+    }
+  };
+}
+
 struct marker {
   frame f;
   bool above=true;
   markroutine markroutine=marknodes;
-  void mark(picture pic, path g) {
+  void mark(picture pic=currentpicture, path g) {
     markroutine(pic,f,g);
   };
 }
@@ -101,7 +113,7 @@ marker marker(path[] g, markroutine markroutine=marknodes, pen p=currentpen,
               filltype filltype=NoFill, bool above=true)
 {
   frame f;
-  filltype(f,g,p);
+  filltype.fill(f,g,p);
   return marker(f,markroutine,above);
 }
 
@@ -232,10 +244,17 @@ picture legend(Legend[] Legend, int perline=1, real linelength,
       vskip=(maxheight/heightPerEntry-rows)/(rows-1)+1;
     }
 
-    for(int i=0; i < Legend.length; ++i)
-      add(inset,legenditem(Legend[i],linelength),
-          ((i%perline)*widthPerEntry*hskip,
-           -floor(i/perline)*heightPerEntry*vskip));
+    if(hstretch && (perline == 1)) {
+      Draw(inset,(0,0)--(maxwidth,0),invisible());
+      for(int i=0; i < Legend.length; ++i)
+        add(inset,legenditem(Legend[i],linelength),
+            (0.5*(maxwidth-widthPerEntry),
+             -quotient(i,perline)*heightPerEntry*vskip));
+    } else
+      for(int i=0; i < Legend.length; ++i)
+        add(inset,legenditem(Legend[i],linelength),
+            ((i%perline)*widthPerEntry*hskip,
+             -quotient(i,perline)*heightPerEntry*vskip));
   }
 
   return inset;
@@ -273,7 +292,7 @@ void dot(frame f, pair z, pen p=currentpen, filltype filltype=Fill)
     transform t=shift(z);
     path g=t*scale(0.5*(dotsize(p)-linewidth(p)))*unitcircle;
     begingroup(f);
-    filltype(f,g,p);
+    filltype.fill(f,g,p);
     draw(f,g,p);
     endgroup(f);
   }
@@ -286,24 +305,6 @@ void dot(picture pic=currentpicture, pair z, pen p=currentpen,
       dot(f,t*z,p,filltype);
     },true);
   pic.addPoint(z,dotsize(p)+p);
-}
-
-void dot(picture pic=currentpicture, pair[] z, pen p=currentpen,
-         filltype filltype=Fill)
-{
-  for(int i=0; i < z.length; ++i) dot(pic,z[i],p,filltype);
-}
-
-void dot(picture pic=currentpicture, explicit path g, pen p=currentpen,
-         filltype filltype=Fill)
-{
-  for(int i=0; i <= length(g); ++i) dot(pic,point(g,i),p,filltype);
-}
-
-void dot(picture pic=currentpicture, path[] g, pen p=currentpen,
-         filltype filltype=Fill)
-{
-  for(int i=0; i < g.length; ++i) dot(pic,g[i],p,Fill);
 }
 
 void dot(picture pic=currentpicture, Label L, pair z, align align=NoAlign,
@@ -319,6 +320,36 @@ void dot(picture pic=currentpicture, Label L, pair z, align align=NoAlign,
   L.p(p);
   dot(pic,z,p,filltype);
   add(pic,L);
+}
+
+void dot(picture pic=currentpicture, Label[] L=new Label[], pair[] z,
+	 align align=NoAlign, string format=defaultformat, pen p=currentpen,
+	 filltype filltype=Fill)
+{
+  int stop=min(L.length,z.length);
+  for(int i=0; i < stop; ++i)
+    dot(pic,L[i],z[i],align,format,p,filltype);
+  for(int i=stop; i < z.length; ++i)
+    dot(pic,z[i],p,filltype);
+}
+
+void dot(picture pic=currentpicture, Label[] L=new Label[],
+	 explicit path g, align align=RightSide, string format=defaultformat,
+	 pen p=currentpen, filltype filltype=Fill)
+{
+  int n=size(g);
+  int stop=min(L.length,n);
+  for(int i=0; i < stop; ++i)
+    dot(pic,L[i],point(g,i),-sgn(align.dir.x)*I*dir(g,i),format,p,filltype);
+  for(int i=stop; i < n; ++i)
+    dot(pic,point(g,i),p,filltype);
+}
+
+void dot(picture pic=currentpicture, path[] g, pen p=currentpen,
+         filltype filltype=Fill)
+{
+  for(int i=0; i < g.length; ++i)
+    dot(pic,g[i],p,filltype);
 }
 
 void dot(picture pic=currentpicture, Label L, pen p=currentpen,
@@ -343,3 +374,4 @@ marker dot(pen p=currentpen, filltype filltype=Fill)
 }
 
 marker dot=dot();
+    

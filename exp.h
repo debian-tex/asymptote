@@ -583,10 +583,6 @@ struct argument {
 #endif
 
   void prettyprint(ostream &out, Int indent);
-
-  // Tests if a named argument could be mistaken for an assignment, and
-  // prints a warning if so.
-  void assignAmbiguity(coenv &e);
 };
 
 class arglist : public gc {
@@ -646,10 +642,8 @@ private:
   // Per object caching - Cache the application when it's determined.
   application *ca;
 
-  // Warns of ambiguity with assign expression in named arguments.
-  void argAmbiguity(coenv &e);
-
   types::signature *argTypes(coenv& e);
+  void reportArgErrors(coenv &e);
   application *resolve(coenv &e,
                        types::overloaded *o,
                        types::signature *source,
@@ -672,21 +666,21 @@ public:
 
   callExp(position pos, exp *callee, exp *arg1)
     : exp(pos), callee(callee), args(new arglist()), ca(0) {
-      args->add(arg1);
-    }
+    args->add(arg1);
+  }
 
   callExp(position pos, exp *callee, exp *arg1, exp *arg2)
     : exp(pos), callee(callee), args(new arglist()), ca(0) {
-      args->add(arg1);
-      args->add(arg2);
-    }
+    args->add(arg1);
+    args->add(arg2);
+  }
 
   callExp(position pos, exp *callee, exp *arg1, exp *arg2, exp *arg3)
     : exp(pos), callee(callee), args(new arglist()), ca(0) {
-      args->add(arg1);
-      args->add(arg2);
-      args->add(arg3);
-    }
+    args->add(arg1);
+    args->add(arg2);
+    args->add(arg3);
+  }
 
   void prettyprint(ostream &out, Int indent);
 
@@ -730,7 +724,7 @@ class transformExp : public exp {
 
 public:
   transformExp(position pos, exp *x, exp *y, exp *xx, exp *xy, exp *yx,
-	       exp *yy)
+               exp *yy)
     : exp(pos), x(x), y(y), xx(xx), xy(xy), yx(yx), yy(yy) {}
 
   void prettyprint(ostream &out, Int indent);

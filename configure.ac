@@ -3,9 +3,15 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[1.51],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[1.66],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
+
+test "$CFLAGS" || CFLAGS="-g -O3"
+
+AC_C_BIGENDIAN(AC_DEFINE(WORDS_BIG_ENDIAN, 1,
+			   [Define if words are stored with the most significant byte first.]),AC_DEFINE(WORDS_LITTLE_ENDIAN, 1 ,
+			   [Define if words are stored with the least significant byte first.]))
 
 test "$prefix" = NONE && prefix=/usr/local
 Datadir=$datadir
@@ -21,8 +27,7 @@ AC_ARG_WITH(latex,
 		     ],[
 AC_CHECK_PROG(kpsewhich,kpsewhich,true)
 if test "x$kpsewhich" = "xtrue"; then
-  latexdir=`kpsewhich base/latex.ltx`
-  latexdir=`echo $latexdir | sed -e 's;/base/latex.ltx;;'`
+  latexdir=`kpsewhich -expand-var='$TEXMFLOCAL'/tex/latex`
 else
   latexdir=$prefix/share/texmf/tex/latex
   AC_CHECK_FILE($latexdir/base/latex.ltx,,
@@ -59,8 +64,6 @@ AC_CONFIG_SRCDIR([absyn.cc])
 
 AC_LANG([C++])
 
-test "$CFLAGS" || CFLAGS="-g -O3"
-
 # Checks for programs.
 AC_PROG_LEX
 AC_PROG_CXX
@@ -88,8 +91,8 @@ ac_cv_use_gc=$GCVERSION,
 [GC_SYSTEM="$GCVERSION.tar.gz not found: using system Boehm garbage collector"
 ac_cv_use_gc="system"])
 AC_ARG_ENABLE(gc,
-	[  --enable-gc[[=VERSION]]   enable Boehm garbage collector]
-	[     [[=system]]    force use of system Boehm garbage collector]
+	[  --enable-gc[[=system]]    enable system Boehm garbage collector]
+	[     [[=VERSION]]   enable local VERSION of Boehm garbage collector]
 	[     [[=PREFIX]]    use Boehm garbage collector installed in PREFIX],
 			[
 			if test "x$enableval" != "xyes"; then
@@ -130,7 +133,7 @@ if test "x$ac_cv_use_gc" != "xno" ; then
       ;;
    *)
       GCDIR=$ac_cv_use_gc
-      GCOPTIONS="--disable-threads --disable-shared "
+      GCOPTIONS="--disable-shared "
       AC_MSG_NOTICE([enabling local $GCNAME $GCDIR])
       GCLIB="\$(GC)/.libs/libgc.a"
       INCL="-I\$(GC)/include"
@@ -182,6 +185,7 @@ AC_CHECK_LIB([ncurses], [setupterm], [AC_DEFINE(HAVE_LIBCURSES)
 			 AC_CHECK_LIB([curses], [setupterm]))
 AC_CHECK_LIB([m], [sqrt])
 AC_CHECK_LIB([z], [deflate])
+AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
 
 AC_CHECK_LIB([readline], [rl_completion_matches],,
@@ -214,6 +218,16 @@ case "$OSTYPE" in
      darwin*) AC_CHECK_HEADER(GLUT/glut.h,
                                 [AC_DEFINE(HAVE_LIBGLUT, 1,
 		   [Define if you have the `glut' library (-lglut).])
+AC_COMPILE_IFELSE(AC_LANG_PROGRAM([
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#ifndef GLU_TESS_CALLBACK_TRIPLEDOT
+typedef GLvoid (* _GLUfuncptr)(...);
+void f(void) {
+  gluNurbsCallback(gluNewNurbsRenderer(),GLU_NURBS_BEGIN,(_GLUfuncptr) glBegin);
+}
+#endif
+]),[AC_DEFINE(GLU_TESS_CALLBACK_TRIPLEDOT, 1, [Define if gluNurbsCallback expects a variadic function.])])
 			   LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa"],
 				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]));;
      *) AC_CHECK_LIB([glut], [glutMainLoop],,
@@ -250,7 +264,7 @@ AC_FUNC_FSEEKO
 
 AC_CONFIG_HEADERS(config.h)
 
-AC_CONFIG_FILES([Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile doc/png/Makefile])
 AC_OUTPUT
 
 if test "x$GCDIR" != "x" ; then
@@ -262,8 +276,4 @@ if test "x$GCDIR" != "x" ; then
    echo wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$GCDIR.tar.gz
    exit 1
    ])
-else
-  if test "x$GC_SYSTEM" != "x" ; then
-   AC_MSG_NOTICE(*** $GC_SYSTEM ***)
-  fi
 fi

@@ -35,6 +35,11 @@ path[] operator cast(guide[] g)
   return sequence(new path(int i) {return g[i];},g.length);
 }
 
+guide[] operator cast(path[] g)
+{
+  return sequence(new guide(int i) {return g[i];},g.length);
+}
+
 path[] operator cast(path p)
 {
   return new path[] {p};
@@ -87,9 +92,19 @@ void write(file file, string s="", explicit path[] x, suffix suffix=none)
   write(file,suffix);
 }
 
+void write(file file, string s="", explicit guide[] x, suffix suffix=none)
+{
+  write(file,s,(path[]) x,suffix);
+}
+
 void write(string s="", explicit path[] x, suffix suffix=endl) 
 {
   write(stdout,s,x,suffix);
+}
+
+void write(string s="", explicit guide[] x, suffix suffix=endl) 
+{
+  write(stdout,s,(path[]) x,suffix);
 }
 
 private string nopoints="nullpath has no points";

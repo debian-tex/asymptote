@@ -42,7 +42,6 @@ pen red=rgb(1,0,0);
 pen green=rgb(0,1,0);
 pen blue=rgb(0,0,1);
 
-pen cmyk=cmyk(0,0,0,0);
 pen Cyan=cmyk(1,0,0,0);
 pen Magenta=cmyk(0,1,0,0);
 pen Yellow=cmyk(0,0,1,0);
@@ -123,11 +122,6 @@ pen heavygrey=gray;
 pen deepgrey=deepgray;
 pen darkgrey=darkgray;
 
-pen cmyk(pen p) 
-{
-  return p+cmyk;
-}
-
 real linewidth() 
 {
   return linewidth(currentpen);
@@ -160,6 +154,11 @@ pen Pen(int n)
   return (settings.gray || settings.bw) ? monoPen[n] : colorPen[n];
 }
 
+pen Pentype(int n)
+{
+  return (settings.gray || settings.bw) ? monoPen[n] : monoPen[n]+colorPen[n];
+}
+
 real dotsize(pen p=currentpen) 
 {
   return dotfactor*linewidth(p);
@@ -180,9 +179,10 @@ real labelmargin(pen p=currentpen)
   return labelmargin*fontsize(p);
 }
 
-pen interp(pen a, pen b, real t) 
+void write(file file=stdout, string s="", pen[] p)
 {
-  return (1-t)*a+t*b;
+  for(int i=0; i < p.length; ++i)
+    write(file,s,p[i],endl);
 }
 
 pen font(string name) 
@@ -192,16 +192,7 @@ pen font(string name)
 
 pen font(string name, real size) 
 {
-  // Extract size of requested TeX font
-  string basesize;
-  for(int i=0; i < length(name); ++i) {
-    string c=substr(name,i,1);
-    if(c >= "0" && c <= "9") basesize += c;
-    else if(basesize != "") break;
-  }
-  return fontsize(size)+
-    (basesize == "" ? font(name) :
-     font(name+" scaled "+(string) (1000*size/(int) basesize)));
+  return fontsize(size)+font(name+" at "+(string) size+"pt");
 }
 
 pen font(string encoding, string family, string series="m", string shape="n") 
@@ -318,6 +309,13 @@ pen rgba(real[] a)
   return rgb(a[0],a[1],a[2])+opacity(a[3]);
 }
 
+// Return a pen corresponding to a given 6-character RGB hexidecimal string.
+pen rgb(string s) 
+{
+  real value(string s, int i) {return hex(substr(s,2i,2))/255;}
+  return rgb(value(s,0),value(s,1),value(s,2));
+}
+
 // Interpolate an array of pens in rgb space using by default their minimum
 // opacity.
 pen mean(pen[] p, real opacity(real[])=min)
@@ -340,3 +338,5 @@ pen[] mean(pen[][] palette, real opacity(real[])=min)
   return sequence(new pen(int i) {return mean(palette[i],opacity);},
 		  palette.length);
 }
+
+
