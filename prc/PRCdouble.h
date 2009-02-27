@@ -4,9 +4,11 @@
 #include <cstdlib>
 #include <cmath>
 
-// from Adobe's documentation
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#define TF_LITTLE_ENDIAN
+// from Adobe's documentation
 
 union ieee754_double
 {
@@ -14,14 +16,14 @@ union ieee754_double
  /* This is the IEEE 754 double-precision format. */
  struct
  {
-#if defined(TF_BIG_ENDIAN)
+#if defined(WORDS_BIG_ENDIAN)
   unsigned int negative:1;
   unsigned int exponent:11;
   /* Together these comprise the mantissa.  */
   unsigned int mantissa0:20;
   unsigned int mantissa1:32;
 #endif
-#if defined(TF_LITTLE_ENDIAN)
+#if defined(WORDS_LITTLE_ENDIAN)
   /* Together these comprise the mantissa.  */
   unsigned int mantissa1:32;
   unsigned int mantissa0:20;
@@ -47,7 +49,7 @@ struct sCodageOfFrequentDoubleOrExponent
   } u2uod;
 };
 
-#if defined(TF_LITTLE_ENDIAN)
+#if defined(WORDS_LITTLE_ENDIAN)
 #       define DOUBLEWITHTWODWORD(upper,lower)  lower,upper
 #       define UPPERPOWER       (1)
 #       define LOWERPOWER       (!UPPERPOWER)
@@ -61,7 +63,7 @@ struct sCodageOfFrequentDoubleOrExponent
 #       define SEARCHBYTE(pbstart,b,nb) (unsigned char *)memchr((pbstart),(b),(nb))
 #       define BYTEAT(pb,i)     *((pb)+(i))
 
-#elif defined(TF_BIG_ENDIAN)
+#elif defined(WORDS_BIG_ENDIAN)
 #       define DOUBLEWITHTWODWORD(upper,lower)  upper,lower
 #       define UPPERPOWER       (0)
 #       define LOWERPOWER       (!UPPERPOWER)
@@ -93,9 +95,9 @@ extern PRCdword stadwZero[2],stadwNegativeZero[2];
 
 #define NUMBEROFELEMENTINACOFDOE   (2077)
 
-#if defined( TF_BIG_ENDIAN )
+#if defined( WORDS_BIG_ENDIAN )
 #       define DOUBLEWITHTWODWORDINTREE(upper,lower)    {upper,lower} 
-#elif defined( TF_LITTLE_ENDIAN )
+#elif defined( WORDS_LITTLE_ENDIAN )
 #       define DOUBLEWITHTWODWORDINTREE(upper,lower)    {lower,upper}
 #endif
 extern sCodageOfFrequentDoubleOrExponent acofdoe[NUMBEROFELEMENTINACOFDOE];
@@ -107,7 +109,7 @@ struct sCodageOfFrequentDoubleOrExponent* getcofdoe(unsigned,short);
 
 int stCOFDOECompare(const void*,const void*);
 
-#if defined(TF_BIG_ENDIAN)
+#if defined(WORDS_BIG_ENDIAN)
 void *memrchr(const void *,int,size_t);
 #endif
 

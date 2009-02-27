@@ -70,8 +70,8 @@ void exp::testCachedType(coenv &e) {
 
 void exp::transCall(coenv &e, types::ty *target)
 {
-    transAsType(e, target);
-    e.c.encode(inst::popcall);
+  transAsType(e, target);
+  e.c.encode(inst::popcall);
 }
 
 exp *exp::evaluate(coenv &e, types::ty *target) {
@@ -237,7 +237,7 @@ types::ty *subscriptExp::trans(coenv &e)
     index->transToType(e, types::primInt());
     e.c.encode(inst::builtin,
                a->celltype->kind==ty_array ? run::arrayArrayRead :
-                                             run::arrayRead);
+               run::arrayRead);
     return a->celltype;
   }
 }
@@ -246,7 +246,7 @@ types::ty *subscriptExp::getType(coenv &e)
 {
   array *a = getArrayType(e);
   return a ? (isAnArray(e, index) ? a : a->celltype) :
-             primError();
+    primError();
 }
      
 void subscriptExp::transWrite(coenv &e, types::ty *t)
@@ -303,7 +303,7 @@ types::ty *sliceExp::trans(coenv &e)
   index->trans(e);
 
   e.c.encode(inst::builtin, index->getRight() ? run::arraySliceRead :
-                                                run::arraySliceReadToEnd);
+             run::arraySliceReadToEnd);
 
   return a;
 }
@@ -324,7 +324,7 @@ void sliceExp::transWrite(coenv &e, types::ty *t)
   index->trans(e);
 
   e.c.encode(inst::builtin, index->getRight() ? run::arraySliceWrite :
-                                                run::arraySliceWriteToEnd);
+             run::arraySliceWriteToEnd);
 }
 
 void thisExp::prettyprint(ostream &out, Int indent)
@@ -515,14 +515,6 @@ void argument::prettyprint(ostream &out, Int indent)
   val->prettyprint(out, indent+1);
 }
 
-void argument::assignAmbiguity(coenv &e) {
-  if (name && e.e.varGetType(name) && settings::getSetting<bool>("debug")) {
-    em.warning(val->getPos());
-    em << "named argument may be mistaken for assignment";
-  }
-}
-
-
 void arglist::prettyprint(ostream &out, Int indent)
 {
   prettyname(out, "arglist",indent);
@@ -537,13 +529,6 @@ void callExp::prettyprint(ostream &out, Int indent)
 
   callee->prettyprint(out, indent+1);
   args->prettyprint(out, indent+1);
-}
-
-void callExp::argAmbiguity(coenv &e)
-{
-  size_t n = args->size();
-  for (size_t i = 0; i < n; i++)
-    (*args)[i].assignAmbiguity(e);
 }
 
 signature *callExp::argTypes(coenv &e)
@@ -610,6 +595,13 @@ application *callExp::resolve(coenv &e, overloaded *o, signature *source,
   }
 }
 
+bool hasNamedParameters(signature *sig) {
+  for (size_t i=0; i < sig->getNumFormals(); ++i)
+    if (sig->getFormal(i).name)
+      return true;
+  return false;
+}
+
 void callExp::reportMismatch(symbol *s, function *ft, signature *source)
 {
   const char *separator=ft->getSignature()->getNumFormals() > 1 ? "\n" : " ";
@@ -620,16 +612,30 @@ void callExp::reportMismatch(symbol *s, function *ft, signature *source)
     em << *s;
   em << *ft->getSignature() << "'" << separator;
 
-  switch(source->getNumFormals()) {
-    case 0:
-      em << "without parameters";
-      break;
-    case 1:
-      em << "with parameter '" << *source << "'";
-      break;
-    default:
-      em << "with parameters\n'" << *source << "'";
+  if (ft->getSignature()->isOpen && hasNamedParameters(source))
+    em << "with named parameters";
+  else
+    switch(source->getNumFormals()) {
+      case 0:
+        em << "without parameters";
+        break;
+      case 1:
+        em << "with parameter '" << *source << "'";
+        break;
+      default:
+        em << "with parameters\n'" << *source << "'";
+    }
+}
+
+void callExp::reportArgErrors(coenv &e)
+{
+  // Cycle through the parameters to report all errors.
+  // NOTE: This may report inappropriate ambiguity errors. 
+  for (size_t i = 0; i < args->size(); i++) {
+    (*args)[i].val->trans(e);
   }
+  if (args->rest.val)
+    args->rest.val->trans(e);
 }
 
 application *callExp::getApplication(coenv &e)
@@ -637,16 +643,8 @@ application *callExp::getApplication(coenv &e)
   // First figure out the signature of what we want to call.
   signature *source=argTypes(e);
 
-  if (!source) {
-    // Cycle through the parameters to report all errors.
-    // NOTE: This may report inappropriate ambiguity errors. 
-    for (size_t i = 0; i < args->size(); i++) {
-      (*args)[i].val->trans(e);
-    }
-    if (args->rest.val)
-      args->rest.val->trans(e);
+  if (!source)
     return 0;
-  }
 
   // Figure out what function types we can call.
   trans::ty *ft = callee->cgetType(e);
@@ -689,8 +687,6 @@ types::ty *callExp::trans(coenv &e)
   cerr << endl;
 #endif
 
-  argAmbiguity(e);
-
 #ifdef DEBUG_CACHE
   if (ca)
     assert(equivalent(ca->getType(), getApplication(e)->getType()));
@@ -701,8 +697,10 @@ types::ty *callExp::trans(coenv &e)
   // let it be garbage collected.
   ca=0;
 
-  if (!a)
+  if (!a) {
+    reportArgErrors(e);
     return primError();
+  }
 
   // To simulate left-to-right order of evaluation, produce the
   // side-effects for the callee.
@@ -930,9 +928,9 @@ types::ty *promote(coenv &e, types::ty *x, types::ty *y)
         bool castToSecond=e.castable(y, x, symbol::castsym);
 
         return (castToFirst && castToSecond) ? both(x,y) : 
-                                 castToFirst ? x :
-                                castToSecond ? y :
-                                               0;
+          castToFirst ? x :
+          castToSecond ? y :
+          0;
       }
     }
   };
@@ -1036,7 +1034,7 @@ void specExp::prettyprint(ostream &out, Int indent)
   out << "specExp '" << *op << "' " 
       << (s==camp::OUT ? "out" :
           s==camp::IN  ? "in" :
-	  "invalid side") << '\n';
+          "invalid side") << '\n';
 
   arg->prettyprint(out, indent+1);
 }

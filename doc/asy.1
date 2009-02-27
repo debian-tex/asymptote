@@ -37,8 +37,8 @@ View output; command-line only.
 .B \-a,\-align C|B|T|Z   
 Center, Bottom, Top, or Zero page alignment [Center].
 .TP
-.B \-antialias          
-Antialias rendered output [true].
+.B \-antialias n        
+Antialiasing width for rasterized output [2].
 .TP
 .B \-autoimport string  
 Module to automatically import.
@@ -78,6 +78,9 @@ Free space divisor for garbage collection [2].
 .TP
 .B \-embed              
 Embed rendered preview image [true].
+.TP
+.B \-exitonEOF          
+Exit interactive mode on EOF [true].
 .TP
 .B \-fitscreen          
 Fit rendered image to screen [true].
@@ -142,8 +145,8 @@ Input code over multiple lines at the prompt [false].
 .B \-multipleView       
 View output from multiple batch-mode files [false].
 .TP
-.B \-multisample        
-Multisample rendered screen images [true].
+.B \-multisample n      
+Multisampling width for screen images [4].
 .TP
 .B \-O,\-offset pair     
 PostScript offset [(0,0)].
@@ -152,7 +155,7 @@ PostScript offset [(0,0)].
 Convert each output file to specified format.
 .TP
 .B \-o,\-outname name    
-Alternative output name for first file.
+Alternative output directory/filename.
 .TP
 .B \-p,\-parseonly       
 Parse file [false].
@@ -175,6 +178,9 @@ Prompt [> ].
 .B \-prompt2 string     
 Continuation prompt for multiline input  [..].
 .TP
+.B \-q,\-quiet           
+Suppress welcome message [false].
+.TP
 .B \-render n           
 Render 3D graphics using n pixels per bp (-1=auto) [-1].
 .TP
@@ -189,15 +195,16 @@ Scroll standard output n lines at a time [0].
 .TP
 .B \-tabcompletion      
 Interactive prompt auto-completion [true].
-.TP
-.B \-tex engine         
-TeX engine ("latex|pdflatex|tex|pdftex|none") [latex].
+-tex engine           latex|pdflatex|xelatex|tex|pdftex|none [latex]
 .TP
 .B \-thick              
 Render thick 3D lines [true].
 .TP
 .B \-thin               
 Render thin 3D lines [true].
+.TP
+.B \-threads            
+Use POSIX threads for 3D rendering [true].
 .TP
 .B \-toolbar            
 Show 3D toolbar in PDF output [true].

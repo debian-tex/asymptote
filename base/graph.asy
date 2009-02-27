@@ -5,10 +5,8 @@ import graph_settings;
 
 scaleT Linear;
 
-scaleT Log;
-scaleT Logarithmic;
-Log.init(log10,pow10,logarithmic=true);
-Logarithmic=Log;
+scaleT Log=scaleT(log10,pow10,logarithmic=true);
+scaleT Logarithmic=Log;
 
 // A linear scale, with optional autoscaling of minimum and maximum values,
 // scaling factor s and intercept.
@@ -16,7 +14,6 @@ scaleT Linear(bool automin=false, bool automax=automin, real s=1,
               real intercept=0)
 {
   real sinv=1/s;
-  scaleT scale;
   scalefcn T,Tinv;
   if(s == 1 && intercept == 0)
     T=Tinv=identity;
@@ -24,24 +21,20 @@ scaleT Linear(bool automin=false, bool automax=automin, real s=1,
     T=new real(real x) {return (x-intercept)*s;};
     Tinv=new real(real x) {return x*sinv+intercept;};
   }
-  scale.init(T,Tinv,logarithmic=false,automin,automax);
-  return scale;
+  return scaleT(T,Tinv,logarithmic=false,automin,automax);
 }
 
 // A logarithmic scale, with optional autoscaling of minimum and maximum
 // values.
 scaleT Log(bool automin=false, bool automax=automin)
 {
-  scaleT scale;
-  scale.init(Log.T,Log.Tinv,logarithmic=true,automin,automax);
-  return scale;
+  return scaleT(Log.T,Log.Tinv,logarithmic=true,automin,automax);
 }
 
 // A "broken" linear axis omitting the segment [a,b].
 scaleT Broken(real a, real b, bool automin=false, bool automax=automin)
 {
   real skip=b-a;
-  scaleT scale;
   real T(real x) {
     if(x <= a) return x;
     if(x <= b) return a;
@@ -51,8 +44,7 @@ scaleT Broken(real a, real b, bool automin=false, bool automax=automin)
     if(x <= a) return x; 
     return x+skip; 
   }
-  scale.init(T,Tinv,logarithmic=false,automin,automax);
-  return scale;
+  return scaleT(T,Tinv,logarithmic=false,automin,automax);
 }
 
 // A "broken" logarithmic axis omitting the segment [a,b], where a and b are
@@ -64,7 +56,6 @@ scaleT BrokenLog(real a, real b, bool automin=false, bool automax=automin)
   a=Log.Tinv(A);
   b=Log.Tinv(B);
   real skip=B-A;
-  scaleT scale;
   real T(real x) {
     if(x <= a) return Log.T(x);
     if(x <= b) return A;
@@ -75,8 +66,7 @@ scaleT BrokenLog(real a, real b, bool automin=false, bool automax=automin)
     if(X <= a) return X;
     return Log.Tinv(x+skip);
   }
-  scale.init(T,Tinv,logarithmic=true,automin,automax);
-  return scale;
+  return scaleT(T,Tinv,logarithmic=true,automin,automax);
 }
 
 Label Break=Label("$\approx$",UnFill(0.2mm));
@@ -449,8 +439,8 @@ void labelaxis(frame f, transform T, Label L, path g,
   add(f,d);
 }
 
-// Compute the fractional coverage of a linear axis.
-real axiscoverage(int N, transform T, path g, ticklocate locate, real Step,
+// Check the tick coverage of a linear axis.
+bool axiscoverage(int N, transform T, path g, ticklocate locate, real Step,
                   pair side, int sign, real Size, Label F, ticklabel ticklabel,
                   real norm, real limit)
 {
@@ -460,21 +450,30 @@ real axiscoverage(int N, transform T, path g, ticklocate locate, real Step,
   real b=locate.S.Tinv(locate.b);
   real tickmin=finite(locate.S.tickMin) ? locate.S.Tinv(locate.S.tickMin) : a;
   if(Size > 0) {
+    int count=0;
+    if(loop) count=N+1;
+    else {
+      for(int i=0; i <= N; ++i) {
+        real val=tickmin+i*Step;
+        if(val >= a && val <= b)
+          ++count;
+      }
+    }
+    if(count > 0) limit /= count;
     for(int i=0; i <= N; ++i) {
       real val=tickmin+i*Step;
       if(loop || (val >= a && val <= b)) {
         frame d;
         pair dir=labeltick(d,T,g,locate,val,side,sign,Size,ticklabel,F,norm);
-        coverage += abs(dot(size(d),dir));
-        if(coverage > limit) break;
+        if(abs(dot(size(d),dir)) > limit) return false;
       }
     }
   }
-  return coverage;
+  return true;
 }
 
-// Compute the fractional coverage of a logarithmic axis.
-real logaxiscoverage(int N, transform T, path g, ticklocate locate, pair side,
+// Check the tick coverage of a logarithmic axis.
+bool logaxiscoverage(int N, transform T, path g, ticklocate locate, pair side,
                      int sign, real Size, Label F, ticklabel ticklabel, 
                      real limit, int first, int last)
 {
@@ -482,15 +481,20 @@ real logaxiscoverage(int N, transform T, path g, ticklocate locate, pair side,
   real coverage=0;
   real a=locate.a;
   real b=locate.b;
+  int count=0;
+  for(int i=first-1; i <= last+1; i += N) {
+    if(loop || i >= a && i <= b)
+      ++count;
+  }
+  if(count > 0) limit /= count;
   for(int i=first-1; i <= last+1; i += N) {
     if(loop || i >= a && i <= b) {
       frame d;
       pair dir=labeltick(d,T,g,locate,i,side,sign,Size,ticklabel,F);
-      coverage += abs(dot(size(d),dir));
-      if(coverage > limit) return coverage;
+      if(abs(dot(size(d),dir)) > limit) return false;
     }
   }
-  return coverage;
+  return true;
 }
 
 struct tickvalues {
@@ -602,18 +606,18 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
             while(Step > 0.5*(b-a)) {
               N=m*N0;
               Step=len/N;
-              ++m;
+              m *= 2;
             }
           }
           if(axiscoverage(N,T,g,locate,Step,side,sign,Size,F,ticklabel,norm,
-                          limit) <= limit) {
+                          limit)) {
             if(N == 1 && !autoscale && d < divisor.length-1) {
               // Try using 2 ticks (otherwise 1);
               int div=divisor[d+1];
               Step=quotient(div,2)*len/div;
               calcStep=false; 
               if(axiscoverage(2,T,g,locate,Step,side,sign,Size,F,ticklabel,
-                              norm,limit) <= limit) N=2;
+                              norm,limit)) N=2;
               else Step=len;
             }
             // Found a good divisor; now compute subtick divisor
@@ -673,14 +677,14 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
     real b=locate.S.postscale.Tinv(locate.b);
     if(a > b) {real temp=a; a=b; b=temp;}
       
-    int first=ceil(a-epsilon);
-    int last=floor(b+epsilon);
+    int first=floor(a-epsilon);
+    int last=ceil(b+epsilon);
       
     if(N == 0) {
       N=1;
       while(N <= last-first) {
         if(logaxiscoverage(N,T,g,locate,side,sign,Size,F,ticklabel,limit,
-                           first,last) <= limit) break;
+                           first,last)) break;
         ++N;
       }
     }
@@ -936,9 +940,9 @@ ticks Ticks(Label format="", ticklabel ticklabel=null,
 }
 
 ticks NoTicks=NoTicks(),
-  LeftTicks=LeftTicks(),
-  RightTicks=RightTicks(),
-  Ticks=Ticks();
+LeftTicks=LeftTicks(),
+RightTicks=RightTicks(),
+Ticks=Ticks();
 
 pair tickMin(picture pic)
 {
@@ -1088,13 +1092,13 @@ axis YZero(bool extend=true)
 }
 
 axis Bottom=Bottom(),
-  Top=Top(),
-  BottomTop=BottomTop(),
-  Left=Left(),
-  Right=Right(),
-  LeftRight=LeftRight(),
-  XZero=XZero(),
-  YZero=YZero();
+Top=Top(),
+BottomTop=BottomTop(),
+Left=Left(),
+Right=Right(),
+LeftRight=LeftRight(),
+XZero=XZero(),
+YZero=YZero();
 
 // Draw a general axis.
 void axis(picture pic=currentpicture, Label L="", path g, path g2=nullpath,
@@ -1565,7 +1569,7 @@ void yaxis(picture pic=currentpicture, Label L="", axis axis=XZero,
 
 // Draw x and y axes.
 void axes(picture pic=currentpicture, Label xlabel="", Label ylabel="",
-	  pair min=(-infinity,-infinity), pair max=(infinity,infinity),
+          pair min=(-infinity,-infinity), pair max=(infinity,infinity),
           pen p=currentpen, arrowbar arrow=None, bool above=false)
 {
   xaxis(pic,xlabel,min.x,max.x,p,arrow,above);
@@ -1794,15 +1798,41 @@ picture secondaryY(picture primary=currentpicture, void f(picture))
 }
 
 typedef guide graph(pair f(real), real, real, int);
+typedef guide[] multigraph(pair f(real), real, real, int);
                        
 graph graph(interpolate join)
 {
   return new guide(pair f(real), real a, real b, int n) {
     real width=b-a;
     return n == 0 ? join(f(a)) :
-      join(...sequence(new guide(int i) {
-            return f(a+(i/n)*width);
-          },n+1));
+      join(...sequence(new guide(int i) {return f(a+(i/n)*width);},n+1));
+  };
+}
+
+multigraph graph(interpolate join, bool3 cond(real))
+{
+  return new guide[](pair f(real), real a, real b, int n) {
+    real width=b-a;
+    if(n == 0) return new guide[] {join(cond(a) ? f(a) : nullpath)};
+    guide[] G;
+    guide[] g;
+    for(int i=0; i < n+1; ++i) {
+      real t=a+(i/n)*width;
+      bool3 b=cond(t);
+      if(b)
+        g.push(f(t));
+      else {
+        if(g.length > 0) {
+          G.push(join(...g));
+          g=new guide[] {};
+        }
+        if(b == default)
+          g.push(f(t));
+      }
+    }
+    if(g.length > 0)
+      G.push(join(...g));
+    return G;
   };
 }
 
@@ -1837,23 +1867,78 @@ interpolate Hermite(splinetype splinetype)
 interpolate Hermite=Hermite(defaultspline);
 
 guide graph(picture pic=currentpicture, real f(real), real a, real b,
-            int n=ngraph, interpolate join=operator --)
+            int n=ngraph, real T(real)=identity, interpolate join=operator --)
 {
-  return graph(join)(new pair(real x) {
-      return (x,pic.scale.y.T(f(pic.scale.x.Tinv(x))));},
-    pic.scale.x.T(a),pic.scale.x.T(b),n);
+  if(T == identity)
+    return graph(join)(new pair(real x) {
+        return (x,pic.scale.y.T(f(pic.scale.x.Tinv(x))));},
+      pic.scale.x.T(a),pic.scale.x.T(b),n);
+  else
+    return graph(join)(new pair(real x) {
+        return Scale(pic,(T(x),f(T(x))));},
+      a,b,n);
+}
+
+guide[] graph(picture pic=currentpicture, real f(real), real a, real b,
+              int n=ngraph, real T(real)=identity,
+              bool3 cond(real), interpolate join=operator --)
+{
+  if(T == identity)
+    return graph(join,cond)(new pair(real x) {
+        return (x,pic.scale.y.T(f(pic.scale.x.Tinv(x))));},
+      pic.scale.x.T(a),pic.scale.x.T(b),n);
+  else
+    return graph(join,cond)(new pair(real x) {
+        return Scale(pic,(T(x),f(T(x))));},
+      a,b,n);
 }
 
 guide graph(picture pic=currentpicture, real x(real), real y(real), real a,
-            real b, int n=ngraph, interpolate join=operator --)
+            real b, int n=ngraph, real T(real)=identity,
+            interpolate join=operator --)
 {
-  return graph(join)(new pair(real t) {return Scale(pic,(x(t),y(t)));},a,b,n);
+  if(T == identity)
+    return graph(join)(new pair(real t) {return Scale(pic,(x(t),y(t)));},a,b,n);
+  else
+    return graph(join)(new pair(real t) {
+        return Scale(pic,(x(T(t)),y(T(t))));
+      },a,b,n);
+}
+
+guide[] graph(picture pic=currentpicture, real x(real), real y(real), real a,
+              real b, int n=ngraph, real T(real)=identity, bool3 cond(real),
+              interpolate join=operator --)
+{
+  if(T == identity)
+    return graph(join,cond)(new pair(real t) {return Scale(pic,(x(t),y(t)));},
+                            a,b,n);
+  else
+    return graph(join,cond)(new pair(real t) {
+        return Scale(pic,(x(T(t)),y(T(t))));},
+      a,b,n);
 }
 
 guide graph(picture pic=currentpicture, pair z(real), real a, real b,
-            int n=ngraph, interpolate join=operator --)
+            int n=ngraph, real T(real)=identity, interpolate join=operator --)
 {
-  return graph(join)(new pair(real t) {return Scale(pic,z(t));},a,b,n);
+  if(T == identity)
+    return graph(join)(new pair(real t) {return Scale(pic,z(t));},a,b,n);
+  else
+    return graph(join)(new pair(real t) {
+        return Scale(pic,z(T(t)));
+      },a,b,n);
+}
+
+guide[] graph(picture pic=currentpicture, pair z(real), real a, real b,
+              int n=ngraph, real T(real)=identity, bool3 cond(real),
+              interpolate join=operator --)
+{
+  if(T == identity)
+    return graph(join,cond)(new pair(real t) {return Scale(pic,z(t));},a,b,n);
+  else
+    return graph(join,cond)(new pair(real t) {
+        return Scale(pic,z(T(t)));
+      },a,b,n);
 }
 
 string differentlengths="attempt to graph arrays of different lengths";
@@ -1865,64 +1950,74 @@ void checklengths(int x, int y, string text=differentlengths)
     abort(text+": "+string(x)+" != "+string(y));
 }
 
-int[] conditional(pair[] z, bool[] cond)
+void checkconditionlength(int x, int y)
 {
-  if(cond.length > 0) {
-    checklengths(cond.length,z.length,conditionlength);
-    return cond ? sequence(cond.length) : null;
-  } else return sequence(z.length);
+  checklengths(x,y,conditionlength);
 }
 
-guide graph(picture pic=currentpicture, pair[] z, bool[] cond={},
+guide graph(picture pic=currentpicture, pair[] z, interpolate join=operator --)
+{
+  int i=0;
+  return graph(join)(new pair(real) {
+      pair w=Scale(pic,z[i]);
+      ++i;
+      return w;
+    },0,0,z.length-1);
+}
+
+guide[] graph(picture pic=currentpicture, pair[] z, bool3[] cond,
+              interpolate join=operator --)
+{
+  int n=z.length;
+  int i=0;
+  pair w;
+  checkconditionlength(cond.length,n);
+  bool3 condition(real) {
+    bool3 b=cond[i];
+    if(b != false) w=Scale(pic,z[i]);
+    ++i;
+    return b;
+  }
+  return graph(join,condition)(new pair(real) {return w;},0,0,n-1);
+}
+
+guide graph(picture pic=currentpicture, real[] x, real[] y,
             interpolate join=operator --)
 {
-  int[] I=conditional(z,cond);
-  int k=0;
+  int n=x.length;
+  checklengths(n,y.length);
+  int i=0;
   return graph(join)(new pair(real) {
-      int i=I[k]; ++k;
-      return Scale(pic,z[i]);
-    },0,0,I.length-1);
+      pair w=Scale(pic,(x[i],y[i]));
+      ++i;
+      return w;
+    },0,0,n-1);
 }
 
-guide graph(picture pic=currentpicture, real[] x, real[] y, bool[] cond={},
-            interpolate join=operator --)
+guide[] graph(picture pic=currentpicture, real[] x, real[] y, bool3[] cond,
+              interpolate join=operator --)
 {
-  checklengths(x.length,y.length);
-  int[] I=conditional(x,cond);
-  int k=0;
-  return graph(join)(new pair(real) {
-      int i=I[k]; ++k;
-      return Scale(pic,(x[i],y[i]));
-    },0,0,I.length-1);
-}
-
-guide graph(picture pic=currentpicture, real f(real), real a, real b,
-            int n=ngraph, real T(real), interpolate join=operator --)
-{
-  return graph(join)(new pair(real x) {return Scale(pic,(T(x),f(T(x))));},
-                     a,b,n);
-}
-
-guide graph(picture pic=currentpicture, real x(real), real y(real), real a,
-            real b, int n=ngraph, real T(real), interpolate join=operator --)
-{
-  return graph(join)(new pair(real t) {return Scale(pic,(x(T(t)),y(T(t))));},
-                     a,b,n);
-}
-
-guide graph(picture pic=currentpicture, pair z(real), real a, real b,
-            int n=ngraph, real T(real), interpolate join=operator --)
-{
-  return graph(join)(new pair(real t) {return Scale(pic,z(T(t)));},a,b,n);
+  int n=x.length;
+  checklengths(n,y.length);
+  int i=0;
+  pair w;
+  checkconditionlength(cond.length,n);
+  bool3 condition(real) {
+    bool3 b=cond[i];
+    if(b != false) w=Scale(pic,(x[i],y[i]));
+    ++i;
+    return b;
+  }
+  return graph(join,condition)(new pair(real) {return w;},0,0,n-1);
 }
 
 // Connect points in z into segments corresponding to consecutive true elements
 // of b using interpolation operator join. 
-path[] segment(pair[] z, bool[] b, interpolate join=operator --)
+path[] segment(pair[] z, bool[] cond, interpolate join=operator --)
 {
-  checklengths(z.length,b.length,conditionlength);
-  int[][] segment=segment(b);
-  return sequence(new path(int i) {return join(... z[segment[i]]);},
+  checkconditionlength(cond.length,z.length);
+  int[][] segment=segment(cond);
+  return sequence(new path(int i) {return join(...z[segment[i]]);},
                   segment.length);
 }
 
@@ -1956,14 +2051,15 @@ void errorbars(picture pic=currentpicture, pair[] z, pair[] dp, pair[] dm={},
                bool[] cond={}, pen p=currentpen, real size=0)
 {
   if(dm.length == 0) dm=dp;
-  checklengths(z.length,dm.length);
-  checklengths(z.length,dp.length);
-
-  int[] I=conditional(z,cond);
-  int i=0;
-  for(int k=0; k < I.length; ++k) {
-    int i=I[k];
-    errorbar(pic,z[i],dp[i],dm[i],p,size);
+  int n=z.length;
+  checklengths(n,dm.length);
+  checklengths(n,dp.length);
+  bool all=cond.length == 0;
+  if(!all)
+    checkconditionlength(cond.length,n);
+  for(int i=0; i < n; ++i) {
+    if(all || cond[i])
+      errorbar(pic,z[i],dp[i],dm[i],p,size);
   }
 }
 
@@ -1973,15 +2069,18 @@ void errorbars(picture pic=currentpicture, real[] x, real[] y,
 {
   if(dmx.length == 0) dmx=dpx;
   if(dmy.length == 0) dmy=dpy;
-  checklengths(x.length,y.length);
-  checklengths(x.length,dpx.length);
-  checklengths(x.length,dpy.length);
-  checklengths(x.length,dmx.length);
-  checklengths(x.length,dmy.length);
-  int[] I=conditional(x,cond);
-  for(int k=0; k < I.length; ++k) {
-    int i=I[k];
-    errorbar(pic,(x[i],y[i]),(dpx[i],dpy[i]),(dmx[i],dmy[i]),p,size);
+  int n=x.length;
+  checklengths(n,y.length);
+  checklengths(n,dpx.length);
+  checklengths(n,dpy.length);
+  checklengths(n,dmx.length);
+  checklengths(n,dmy.length);
+  bool all=cond.length == 0;
+  if(!all)
+    checkconditionlength(cond.length,n);
+  for(int i=0; i < n; ++i) {
+    if(all || cond[i])
+      errorbar(pic,(x[i],y[i]),(dpx[i],dpy[i]),(dmx[i],dmy[i]),p,size);
   }
 }
 

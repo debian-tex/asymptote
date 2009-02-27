@@ -11,6 +11,7 @@
 #include "common.h"
 #include <typeinfo>
 
+
 namespace vm {
 
 class item;
@@ -73,7 +74,11 @@ public:
   
   const std::type_info &type() const
   { return *kind; }
+
+  friend ostream& operator<< (ostream& out, const item& i);
+
 private:
+  
   const std::type_info *kind;
   
   union {
@@ -91,7 +96,7 @@ private:
     static T* unwrap(const item& it)
     {
       if (*it.kind == typeid(T))
-	return (T*) it.p;
+        return (T*) it.p;
       throw vm::bad_item_value();
     }
   };
@@ -101,7 +106,7 @@ private:
     static T& unwrap(const item& it)
     {
       if (*it.kind == typeid(T))
-	return *(T*) it.p;
+        return *(T*) it.p;
       throw vm::bad_item_value();
     }
   };
@@ -116,12 +121,12 @@ public:
   {}
 
   item& operator[] (size_t n)
-    { return vars[n]; }
+  { return vars[n]; }
   item operator[] (size_t n) const
-    { return vars[n]; }
+  { return vars[n]; }
 
   size_t size()
-    { return vars.size(); }
+  { return vars.size(); }
   
   // Extends vars to ensure it has a place for any variable indexed up to n.
   void extend(size_t n) {
@@ -175,6 +180,19 @@ inline bool isdefault(const item& it)
 {
   return *it.kind == typeid(default_t);
 } 
+
+inline ostream& operator<< (ostream& out, const item& i)
+{
+  out << "type " << i.type().name();
+  if (i.type() == typeid(Int))
+    cout << ", value = " << get<Int>(i) << endl;
+  else if (i.type() == typeid(double))
+    cout << ", value = " << get<double>(i) << endl;
+  else if (i.type() == typeid(string))
+    cout << ", value = " << get<string>(i) << endl;
+  else out << endl;
+  return out;
+}
 
 } // namespace vm
 

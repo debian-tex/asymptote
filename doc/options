@@ -4,7 +4,7 @@ Options (negate by replacing - with -no):
 
 -V,-View              View output; command-line only
 -a,-align C|B|T|Z     Center, Bottom, Top, or Zero page alignment [Center]
--antialias            Antialias rendered output [true]
+-antialias n          Antialiasing width for rasterized output [2]
 -autoimport string    Module to automatically import
 -autoplain            Enable automatic importing of plain [true]
 -autorotate           Enable automatic PDF page rotation [false]
@@ -18,6 +18,7 @@ Options (negate by replacing - with -no):
 -d,-debug             Enable debugging messages [false]
 -divisor n            Free space divisor for garbage collection [2]
 -embed                Embed rendered preview image [true]
+-exitonEOF            Exit interactive mode on EOF [true]
 -fitscreen            Fit rendered image to screen [true]
 -globalwrite          Allow write to other directory [false]
 -gray                 Convert all colors to grayscale [false]
@@ -39,10 +40,10 @@ Options (negate by replacing - with -no):
 -maxviewport pair     Maximum viewport size [(2048,2048)]
 -multiline            Input code over multiple lines at the prompt [false]
 -multipleView         View output from multiple batch-mode files [false]
--multisample          Multisample rendered screen images [true]
+-multisample n        Multisampling width for screen images [4]
 -O,-offset pair       PostScript offset [(0,0)]
 -f,-outformat format  Convert each output file to specified format
--o,-outname name      Alternative output name for first file
+-o,-outname name      Alternative output directory/filename
 -p,-parseonly         Parse file [false]
 -pdfreload            Automatically reload document in pdfviewer [false]
 -pdfreloaddelay usec  Delay before attempting initial pdf reload [750000]
@@ -50,14 +51,16 @@ Options (negate by replacing - with -no):
 -prc                  Embed 3D PRC graphics in PDF output [true]
 -prompt string        Prompt [> ]
 -prompt2 string       Continuation prompt for multiline input  [..]
+-q,-quiet             Suppress welcome message [false]
 -render n             Render 3D graphics using n pixels per bp (-1=auto) [-1]
 -rgb                  Convert cmyk colors to rgb [false]
 -safe                 Disable system call [true]
 -scroll n             Scroll standard output n lines at a time [0]
 -tabcompletion        Interactive prompt auto-completion [true]
--tex engine           TeX engine ("latex|pdflatex|tex|pdftex|none") [latex]
+-tex engine           latex|pdflatex|xelatex|tex|pdftex|none [latex]
 -thick                Render thick 3D lines [true]
 -thin                 Render thin 3D lines [true]
+-threads              Use POSIX threads for 3D rendering [true]
 -toolbar              Show 3D toolbar in PDF output [true]
 -s,-translate         Show translated virtual machine code [false]
 -twice                Run LaTeX twice (to resolve references) [false]

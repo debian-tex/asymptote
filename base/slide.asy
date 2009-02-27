@@ -1,9 +1,12 @@
 import fontsize;
 usepackage("asycolors");
 
-bool reverse=false; // Set to true to enable reverse video
-bool stepping=false; // Set to true to enable stepping
-bool itemstep=true;  // Set to false to disable stepping on each item
+bool reverse=false;     // Set to true to enable reverse video.
+bool stepping=false;    // Set to true to enable stepping.
+bool itemstep=true;     // Set to false to disable stepping on each item.
+
+settings.toolbar=false; // Disable 3D toolbar by default.
+if(settings.render < 0) settings.render=4;
 
 bool allowstepping=false; // Allow stepping for current slide.
 
@@ -399,6 +402,21 @@ void figure(string s, string options="", string caption="", pair align=S,
   figure(new string[] {s},options,caption,align,p,figuremattpen);
 }
 
+string[] codefile;
+
+void asyinclude(string s, real xsize=0, real ysize=xsize)
+{
+  picture currentpictureSave=currentpicture;
+  currentpicture=new picture;
+  _eval("include \""+s+"\";",true);
+  s=stripdirectory(settings.outname+"_"+s);
+  codefile.push(s);
+  frame f=(xsize > 0 || ysize > 0) ?
+    currentpicture.fit(xsize,ysize) : currentpicture.fit();
+  currentpicture=currentpictureSave;
+  display(f);
+}
+
 string cropcode(string s)
 {
   while(substr(s,0,1) == '\n') s=substr(s,1,length(s));
@@ -434,12 +452,10 @@ void asyfigure(string s, string options="", string caption="", pair align=S,
   figure(s,options,caption,align,p,figuremattpen);
 }
 
-string[] codefile;
-
 string asywrite(string s, string preamble="")
 {
   static int count=0;
-  string name="_slide"+(string) count;
+  string name=settings.outname+"_slide"+(string) count;
   ++count;
   file temp=output(name+".asy");
   write(temp,preamble);
@@ -503,6 +519,7 @@ void bibliographystyle(string name)
 {
   settings.twice=true;
   settings.keepaux=true;
+  delete(outprefix()+"_.aux");
   texpreamble("\bibliographystyle{"+name+"}");
 }
 

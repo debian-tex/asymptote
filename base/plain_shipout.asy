@@ -4,8 +4,16 @@ string defaultfilename;
 string outprefix(string prefix=defaultfilename) {
   string s=prefix != "" ? prefix :
     (settings.outname == "" && interactive()) ? "out" : settings.outname;
-return stripdirectory(stripextension(s));
+  return stripextension(s);
 }
+
+string outformat(string format="") 
+{
+  if(format == "") format=settings.outformat;
+  if(format == "") format=nativeformat();
+  return format;
+}
+
 
 bool shipped; // Was a picture or frame already shipped out?
 
@@ -22,9 +30,9 @@ object embed3(string, frame, string, string, string, projection);
 string Embed(string name, string options="", real width=0, real height=0);
 string Link(string label, string text, string options="");
 
-bool prc0(string format="") {
-  if(format == "") format=settings.outformat;
-  return settings.prc && ((format == "pdf" || pdf()) || settings.inlineimage);
+bool prc0(string format="")
+{
+  return settings.prc && (outformat(format) == "pdf" || settings.inlineimage);
 }
 
 bool prc(string format="") {
@@ -86,23 +94,19 @@ void shipout(string prefix=defaultfilename, picture pic=currentpicture,
     bool prc=prc(format);
     if(prc && !pic.empty3())
       settings.inlinetex=settings.inlineimage;
-    frame f=pic.fit(prefix,format,wait=wait,view=view,options,script,P);    
+    frame f=pic.fit(prefix,format,view=view,options,script,P);    
     if(!pic.empty2() || settings.render == 0 || prc)
       shipout(prefix,orientation(f),format,wait,view);
     settings.inlinetex=inlinetex;
   }
   
   pic.uptodate=true;
+  shipped=true;
 }
 
-void newpage(frame f)
+void newpage(picture pic=currentpicture)
 {
-  tex(f,"\newpage");
-  layer(f);
-}
-
-void newpage(picture pic=currentpicture) 
-{
-  tex(pic,"\newpage");
-  layer(pic);
+  pic.add(new void(frame f, transform) {
+      newpage(f);
+    },true);
 }

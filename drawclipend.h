@@ -25,9 +25,8 @@ public:
   bool endclip() {return true;}
   
   void bounds(bbox& b, iopipestream&, boxvector&, bboxlist& bboxstack) {
-    if(bboxstack.size() < 2) {
+    if(bboxstack.size() < 2)
       reportError("endclip without matching beginclip");
-    }
     b.clip(bboxstack.back());
     bboxstack.pop_back();
     b += bboxstack.back();
@@ -51,7 +50,8 @@ public:
     out->verbatim("\\kern");
     double width=bpath.right-bpath.left;
     out->write(-width*ps2tex);
-    out->verbatimline("pt%");
+    out->verbatim(settings::texunits(out->texengine));
+    out->verbatimline("%");
     if(grestore) out->grestore();
     return true;
   }

@@ -26,7 +26,7 @@
 using namespace settings;
 
 namespace run {
-  void init_readline(bool);
+void init_readline(bool);
 }
 
 namespace interact {
@@ -87,7 +87,7 @@ void pre_readline()
     Readline=readline;
   } else
 #endif
-  Readline=verbatimreadline;
+    Readline=verbatimreadline;
 }
 
 void init_interactive()
@@ -120,7 +120,7 @@ string simpleline(string prompt) {
     return s;
   } else {
     cout << endl;
-    if(!tty)
+    if(!tty || getSetting<bool>("exitonEOF"))
       throw eof();
     return "\n";
   }
@@ -137,7 +137,7 @@ void addToHistory(string line) {
 
 string getLastHistoryLine() {
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
-  if(tty) {
+  if(tty && history_length > 0) {
     HIST_ENTRY *entry=history_list()[history_length-1];
     if(!entry) {
       em.compiler();
@@ -147,22 +147,24 @@ string getLastHistoryLine() {
       return entry->line;
   } else
 #endif
-  return "";
+    return "";
 }
 
 void setLastHistoryLine(string line) {
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
   if(tty) {
-    HIST_ENTRY *entry=remove_history(history_length-1);
-    if(!entry) {
-      em.compiler();
-      em << "cannot modify last history line";
-    } else {
-      addToHistory(line);
+    if (history_length > 0) {
+      HIST_ENTRY *entry=remove_history(history_length-1);
 
-      free(entry->line);
-      free(entry);
+      if(!entry) {
+        em.compiler();
+        em << "cannot modify last history line";
+      } else {
+        free(entry->line);
+        free(entry);
+      }
     }
+    addToHistory(line);
   }
 #endif
 }

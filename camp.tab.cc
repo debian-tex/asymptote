@@ -308,7 +308,7 @@ typedef union YYSTYPE
   absyntax::formal *fl;
   absyntax::formals *fls;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 313 "camp.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

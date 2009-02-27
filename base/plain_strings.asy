@@ -39,6 +39,12 @@ pair getpair(string name="", pair default=0, string prompt="", bool store=true)
   return (pair) getstring(name,(string) default,prompt,store);
 }
 
+triple gettriple(string name="", triple default=(0,0,0), string prompt="",
+		 bool store=true)
+{
+  return (triple) getstring(name,(string) default,prompt,store);
+}
+
 // returns a string with all occurrences of string 'before' in string 's'
 // changed to string 'after'.
 string replace(string s, string before, string after) 
@@ -93,12 +99,14 @@ string[] split(string s, string delimiter)
   return S;
 }
 
+int[] operator ecast(string[] a)
+{
+  return sequence(new int(int i) {return (int) a[i];},a.length);
+}
+
 real[] operator ecast(string[] a)
 {
-  real[] b=new real[a.length];
-  for(int i=0; i < a.length; ++i)
-    b[i]=(real) a[i];
-  return b;
+  return sequence(new real(int i) {return (real) a[i];},a.length);
 }
 
 // Read contents of file as a string.

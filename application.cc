@@ -32,15 +32,15 @@ bool castable(env &e, formal& target, formal& source) {
 
 score castScore(env &e, formal& target, formal& source) {
   return equivalent(target.t,source.t) ? EXACT :
-         (!target.Explicit &&
-          e.castable(target.t,source.t, symbol::castsym)) ? CAST : FAIL;
+    (!target.Explicit &&
+     e.castable(target.t,source.t, symbol::castsym)) ? CAST : FAIL;
 }
 
 defaultArg::defaultArg(types::ty *t)
   : arg(new absyntax::callExp(position(), 
-            new absyntax::varEntryExp(position(),
-                new function(t),
-                run::pushDefault)),
+                              new absyntax::varEntryExp(position(),
+                                                        new function(t),
+                                                        run::pushDefault)),
         t)
 {}
 
@@ -48,7 +48,7 @@ void restArg::transMaker(coenv &e, Int size, bool rest) {
   // Push the number of cells and call the array maker.
   e.c.encode(inst::intpush, size);
   e.c.encode(inst::builtin, rest ? run::newAppendedArray :
-                                   run::newInitializedArray);
+             run::newInitializedArray);
 }
 
 void restArg::trans(coenv &e, temp_vector &temps)
@@ -68,6 +68,15 @@ class maximizer {
 
   // Tests if x is as good (or better) an application as y.
   bool asgood(application *x, application *y) {
+    // Matches to open signatures are always worse than matches to normal
+    // signatures.
+    if (x->sig->isOpen)
+      return y->sig->isOpen;
+    else if (y->sig->isOpen)
+      return true;
+
+    assert (x->scores.size() == y->scores.size());
+
     // Test if each score in x is no higher than the corresponding score in
     // y.
     return std::equal(x->scores.begin(), x->scores.end(), y->scores.begin(),
@@ -120,9 +129,12 @@ void application::initRest() {
     if(!a)
       vm::error("formal rest argument must be an array");
 
-    rest=new restArg();
     static symbol *null=0;
     rf=types::formal(a->celltype, null, false, f.Explicit);
+  }
+
+  if (f.t || sig->isOpen) {
+    rest=new restArg();
   }
 }
 
@@ -195,7 +207,7 @@ bool application::matchArgument(env &e, formal &source,
     // Match here, or failing that use a default and try to match at the next
     // spot.
     return matchAtSpot(index, e, source, a, evalIndex) ||
-           (matchDefault() && matchArgument(e, source, a, evalIndex));
+      (matchDefault() && matchArgument(e, source, a, evalIndex));
 }
 
 bool application::matchNamedArgument(env &e, formal &source,
@@ -272,11 +284,33 @@ application *application::match(env &e, signature *target, signature *source) {
 }
 #endif
 
+bool application::matchOpen(env &e, signature *source, arglist &al) {
+  assert(rest);
+
+  // Pack all given parameters into the rest argument.
+  formal_vector &f=source->formals;
+  for (size_t i = 0; i < f.size(); ++i)
+    if (al[i].name)
+      // Named arguments are not handled by open signatures.
+      return false;
+    else
+      rest->add(seq.addArg(al[i].val, f[i].t, i));
+
+  if (source->hasRest())
+    rest->addRest(new arg(al.rest.val, source->getRest().t));
+
+  return true;
+}
+
 application *application::match(env &e, function *t, signature *source,
                                 arglist &al) {
   assert(t->kind==ty_function);
   application *app=new application(t);
-  return app->matchSignature(e, source, al) ? app : 0;
+
+  if (t->getSignature()->isOpen)
+    return app->matchOpen(e, source, al) ? app : 0;
+  else
+    return app->matchSignature(e, source, al) ? app : 0;
 }
 
 void application::transArgs(coenv &e) {

@@ -4,16 +4,16 @@
 *   Copyright (C) 2008 Orest Shardt <shardtor (at) gmail dot com>
 *
 *   This program is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
+*   it under the terms of the GNU Lesser General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or
 *   (at your option) any later version.
 *
 *   This program is distributed in the hope that it will be useful,
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
+*   GNU Lesser General Public License for more details.
 *
-*   You should have received a copy of the GNU General Public License
+*   You should have received a copy of the GNU Lesser General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *************/
@@ -188,11 +188,11 @@ double BitByBitData::readDouble()
     b4 |= readBit();
   }
 
-#if defined(TF_LITTLE_ENDIAN)
+#if defined(WORDS_LITTLE_ENDIAN)
   *(reinterpret_cast<unsigned char*>(&value)+6) |= b4;
   unsigned char *lastByte = reinterpret_cast<unsigned char*>(&value)+0;
   unsigned char *currentByte = reinterpret_cast<unsigned char*>(&value)+5;
-#elif defined(TF_BIG_ENDIAN)
+#elif defined(WORDS_BIG_ENDIAN)
   *(reinterpret_cast<unsigned char*>(&value)+1) |= b4;
   unsigned char *lastByte = reinterpret_cast<unsigned char*>(&value)+7;
   unsigned char *currentByte = reinterpret_cast<unsigned char*>(&value)+2;
