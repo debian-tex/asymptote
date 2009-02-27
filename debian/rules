@@ -12,7 +12,7 @@ DEB_MAKE_INSTALL_TARGET =
 DEB_CONFIGURE_EXTRA_FLAGS = --enable-gc=system --with-latex=/usr/share/texmf/tex/latex
 
 DEB_INSTALL_INFO_asymptote-doc = doc/asymptote.info* doc/FAQ/asy-faq.info
-DEB_INSTALL_DOCS_asymptote-doc = doc/asymptote.pdf doc/asymptote doc/FAQ/asy-faq.ascii
+DEB_INSTALL_DOCS_asymptote-doc = doc/asymptote.pdf doc/png doc/FAQ/asy-faq.ascii
 DEB_INSTALL_MANPAGES_asymptote = doc/asy.1 doc/xasy.1x
 
 DEB_COMPRESS_EXCLUDE = .pdf
@@ -42,4 +42,4 @@ common-install-prehook-indep::
 	make all html
 
 binary-install/asymptote-doc::
-	mv -f debian/asymptote-doc/usr/share/doc/asymptote-doc/asymptote debian/asymptote-doc/usr/share/doc/asymptote-doc/html
+	mv -f debian/asymptote-doc/usr/share/doc/asymptote-doc/png debian/asymptote-doc/usr/share/doc/asymptote-doc/html
