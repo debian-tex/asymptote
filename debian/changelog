@@ -1,3 +1,9 @@
+asymptote (1.70-1) experimental; urgency=low
+
+  * New upstream version.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Tue, 21 Apr 2009 01:07:28 -0400
+
 asymptote (1.66-1) experimental; urgency=low
 
   * New upstream version. (closes: #505549)
