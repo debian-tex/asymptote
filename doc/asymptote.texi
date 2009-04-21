@@ -146,6 +146,7 @@ Base modules
 * latin1::                      Accept @code{ISO 8859-1} characters
 * babel::                       Interface to @code{LaTeX} @code{babel} package
 * labelpath::                   Drawing curved labels
+* labelpath3::                  Drawing curved labels in 3D
 * annotate::                    Annotate your @acronym{PDF} files
 * CAD::                         2D CAD pen and measurement functions (DIN 15)
 * graph::                       2D linear & logarithmic graphs
@@ -274,7 +275,7 @@ please see also @ref{Configuring}.
 @noindent
 We recommend subscribing to new release announcements at
 @quotation
-@url{http://freshmeat.net/subscribe/50750}
+@url{http://freshmeat.net/projects/asy}
 @end quotation
 @noindent
 Users may also wish to monitor the @code{Asymptote} forum:
@@ -282,10 +283,6 @@ Users may also wish to monitor the @code{Asymptote} forum:
 @url{http://sourceforge.net/forum/monitor.php?forum_id=409349}
 @end quotation
 @noindent
-and provide guidance to others by rating the @code{Asymptote} project:
-@quotation
-@url{http://freshmeat.net/projects/asy}
-@end quotation
 
 @node UNIX binary distributions
 @section UNIX binary distributions
@@ -566,7 +563,7 @@ in the @code{Asymptote} source directory.
 @noindent
 If your graphics card supports multisampling, we recommend using SVN
 revision 761 (or later) of @code{freeglut} to support antialiasing in
-our adaptive @code{Asymptote} @code{OpenGL}-based 3D renderer
+@code{Asymptote}'s adaptive @code{OpenGL} 3D renderer
 (@code{MacOS X} users can skip this step since @code{Asymptote} is configured
 to use the native glut library on that platform). Download
 @quotation
@@ -1164,7 +1161,7 @@ in multiples of the units @code{labelmargin(p)} used for aligning labels.
 Alternatively, @code{BeginPenMargin}, @code{EndPenMargin}
 (or equivalently @code{PenMargin}), @code{PenMargins},
 @code{PenMargin(real begin, real end)} specify a margin in units of
-the pen linewidth, taking account of the pen linewidth when drawing
+the pen line width, taking account of the pen line width when drawing
 the path or arrow. For example, use @code{DotMargin}, an
 abbreviation for @code{PenMargin(-0.5*dotfactor,0.5*dotfactor)},
 to draw from the usual beginning point just up to the boundary of an
@@ -1172,7 +1169,7 @@ end dot of width @code{dotfactor*linewidth(p)}.  The qualifiers
 @code{BeginDotMargin}, @code{EndDotMargin}, and @code{DotMargins} work
 similarly. The qualifier @code{TrueMargin(real begin, real end)} allows one to
 specify a margin directly in @code{PostScript} units, independent of
-the pen linewidth.
+the pen line width.
 
 The use of arrows, bars, and margins is illustrated by the examples
 @code{Pythagoras.asy}, @code{sqrtx01.asy}, and @code{triads.asy}.
@@ -1205,8 +1202,8 @@ point on a picture @code{dest} using @code{add} or @code{attach}
 @cindex @code{dot}
 To draw a dot, simply draw a path containing a single point.
 The @code{dot} command defined in the module @code{plain} draws a
-dot having a diameter equal to an explicit pen linewidth or the
-default linewidth magnified by @code{dotfactor} (6 by default),
+dot having a diameter equal to an explicit pen line width or the
+default line width magnified by @code{dotfactor} (6 by default),
 using the specified filltype (@pxref{filltype}):
 @verbatim
 void dot(picture pic=currentpicture, pair z, pen p=currentpen,
@@ -1424,6 +1421,9 @@ Draw Label @code{L} on picture @code{pic} using pen @code{p}. If
 coordinate @code{position}; otherwise it will be aligned in the
 direction of @code{align} and displaced from @code{position} by
 the @code{PostScript} offset @code{align*labelmargin(p)}.
+@cindex @code{Align}
+The constant @code{Align} can be used to align the
+bottom-left corner of the label at @code{position}.
 @cindex @code{nullpen}
 If @code{p} is @code{nullpen}, the pen specified within the
 Label, which defaults to @code{currentpen}, will be used.
@@ -1537,11 +1537,10 @@ layer();
 @end verbatim
 
 @cindex @code{baseline}
-The @code{string baseline(string s, align align=S, string template="M")} 
-function can be used to enlarge the bounding box of letters aligned
-below a horizontal line to match a given template, so that their
-baselines lie on a horizontal line. See @code{Pythagoras.asy} for an
-example.
+The @code{string baseline(string s, string template="\strut")} 
+function can be used to enlarge the bounding box of labels to match a
+given template, so that their baselines will be typeset on a
+horizontal line. See @code{Pythagoras.asy} for an example.
 
 One can prevent labels from overwriting one another with the
 @code{overwrite} pen attribute (@pxref{overwrite}).
@@ -2064,7 +2063,7 @@ pauses for the given number of seconds;
 pauses for the given number of microseconds;
 
 @cindex @code{beep}
-@item void beep
+@item void beep()
 produces a beep on the console;
 
 @end table
@@ -2193,13 +2192,13 @@ in the case where @code{p} is cyclic or else converted to the corresponding
 endpoint of @code{p}.
 
 @cindex @code{dir}
-@item pair dir(path p, int t, int sign=0, int normalize=true);
+@item pair dir(path p, int t, int sign=0, bool normalize=true);
 If @code{sign < 0}, return the direction (as a pair) of the incoming tangent 
 to path @code{p} at node @code{t}; if @code{sign > 0}, return the
 direction of the outgoing tangent. If @code{sign=0}, the mean of these
 two directions is returned.
 
-@item pair dir(path p, real t, int normalize=true);
+@item pair dir(path p, real t, bool normalize=true);
 returns the direction of the tangent to path @code{p} at the point
 between node @code{floor(t)} and @code{floor(t)+1} corresponding to the
 cubic spline parameter @code{t-floor(t)} (@pxref{Bezier}).
@@ -2298,11 +2297,13 @@ paths @code{p} and @code{q} as a sorted array of real arrays of length 2
 specified by @code{fuzz}, or, if @code{fuzz < 0}, to machine precision.
 
 @cindex @code{intersections}
-@item real[] intersections(path p, pair a, pair b, real fuzz=-1);
+@item real[] intersections(path p, explicit pair a, explicit pair b,
+                           real fuzz=-1);
 Return all (unless there are infinitely many) intersection times of path
 @code{p} with the (infinite) line through points @code{a} and @code{b}
-as a sorted array. The computations are performed to the absolute error
-specified by @code{fuzz}, or, if @code{fuzz < 0}, to machine precision. 
+as a sorted array. The intersections returned are guaranteed to be
+correct to within the absolute error specified by @code{fuzz}, or, if
+@code{fuzz < 0}, to machine precision.
 
 @cindex @code{times}
 @item real[] times(path p, real x)
@@ -2329,9 +2330,17 @@ reaches its maximal horizontal and vertical extents, respectively.
 returns the intersection point @code{point(p,intersect(p,q,fuzz)[0])}.
 
 @cindex @code{intersectionpoints}
-@item pair[] intersectionpoints(path p, path q);
+@item pair[] intersectionpoints(path p, path q, real fuzz=-1);
 returns an array containing all intersection points of the paths
 @code{p} and @code{q}.
+
+@anchor{extension}
+@cindex @code{whatever}
+@cindex @code{extension}
+@item pair extension(pair P, pair Q, pair p, pair q);
+returns the intersection point of the extensions of the line segments 
+@code{P--Q} and @code{p--q}, or, if the lines are parallel,
+@code{(infinity,infinity)}.
 
 @cindex @code{cut}
 @cindex @code{slice}
@@ -2396,6 +2405,11 @@ returns @code{1} if the cyclic path @code{p} strictly contains @code{q}
 according to the fill rule @code{fillrule} (@pxref{fillrule}), @code{-1}
 if the cyclic path @code{q} strictly contains @code{p}, and @code{0}
 otherwise.
+
+@cindex @code{inside}
+@item pair inside(path p, pen fillrule=currentpen);
+returns an arbitrary point strictly inside a cyclic path @code{p}
+according to the fill rule @code{fillrule} (@pxref{fillrule}).
 
 @cindex @code{strokepath}
 @item path[] strokepath(path g, pen p=currentpen);
@@ -2586,7 +2600,7 @@ The functions @code{pen gray(pen)}, @code{pen rgb(pen)},  and
 @code{pen cmyk(pen)} return new pens obtained by converting their
 arguments to the respective color spaces. 
 @cindex @code{colorless}
-The function @code{colorless(pen)} returns a copy of its argument
+The function @code{colorless(pen=currentpen)} returns a copy of its argument
 with the color attributes stripped (to avoid color mixing).
 
 A 6-character RGB hexidecimal string can be converted to a pen with
@@ -2655,7 +2669,7 @@ write(q.h,q.s,q.v); // 180     0.5     0.75
 where @code{s} is a string of integer or real numbers separated by spaces.
 The optional parameter @code{offset} specifies where in the pattern
 to begin. The first number specifies how far (if @code{scale} is
-@code{true}, in units of the pen linewidth; otherwise in
+@code{true}, in units of the pen line width; otherwise in
 @code{PostScript} units) to draw with the pen on, the second number
 specifies how far to draw with the pen off, and so on. If
 @code{adjust} is @code{true}, these spacings are automatically
@@ -2675,27 +2689,27 @@ pen Dotted(pen p=currentpen) {return dotted+2*linewidth(p);}
 @center @image{linetype}
 
 @cindex @code{defaultpen}
-The default linetype is @code{solid}; this may be changed with
+The default line type is @code{solid}; this may be changed with
 @code{defaultpen(pen)}.
+The line type of a pen is returned by @code{int linetype(pen p=currentpen)}.
 
 @cindex @code{linewidth}
 @cindex @code{defaultpen}
 @item The pen line width is specified in @code{PostScript} units with
 @code{pen linewidth(real)}. The default line width is 0.5 bp; this value
 may be changed with @code{defaultpen(pen)}. The line width of a pen
-is returned by @code{real linewidth(pen p=currentpen);}.
+is returned by @code{real linewidth(pen p=currentpen)}.
 For convenience, in the module @code{plain} we define
 @verbatim
 static void defaultpen(real w) {defaultpen(linewidth(w));}
 static pen operator +(pen p, real w) {return p+linewidth(w);}
 static pen operator +(real w, pen p) {return linewidth(w)+p;}
 @end verbatim
-so that one may set the linewidth like this:
+so that one may set the line width like this:
 @verbatim
 defaultpen(2);
 pen p=red+0.5;
 @end verbatim
-
 
 @cindex @code{linecap}
 @cindex @code{squarecap}
@@ -2712,8 +2726,8 @@ pen extendcap=linecap(2);
 
 @noindent
 The default line cap, @code{roundcap}, may be changed with
-@code{defaultpen(pen)}.
-
+@code{defaultpen(pen)}. The line cap of a pen is returned by
+@code{int linecap(pen p=currentpen)}.
 
 @cindex @code{linejoin}
 @cindex @code{miterjoin}
@@ -2729,7 +2743,15 @@ pen beveljoin=linejoin(2);
 
 @noindent
 The default join style, @code{roundjoin}, may be changed with
-@code{defaultpen(pen)}.
+@code{defaultpen(pen)}.The join style of a pen is returned by
+@code{int linejoin(pen p=currentpen)}.
+
+@cindex @code{miterlimit}
+@item A pen with a specific @code{PostScript} miter limit is returned by
+calling @code{miterlimit(real)}.
+The default miterlimit, @code{10.0}, may be changed with
+@code{defaultpen(pen)}. The miter limit of a pen is returned by
+@code{real miterlimit(pen p=currentpen)}.
 
 @cindex @code{fillrule}
 @cindex @code{zerowinding}
@@ -2752,7 +2774,8 @@ line @code{z--z+infinity} minus the number of downward intersections
 is zero. For the @code{evenodd} fill rule, @code{z} is considered to
 be outside the region if the total number of such intersections is even.
 The default fill rule, @code{zerowinding}, may be changed with
-@code{defaultpen(pen)}.
+@code{defaultpen(pen)}. The fill rule of a pen is returned by
+@code{int fillrule(pen p=currentpen)}.
 
 @cindex @code{nobasealign}
 @cindex @code{basealign}
@@ -2769,6 +2792,8 @@ The default setting, @code{nobasealign},which may be changed with
 @code{defaultpen(pen)}, causes the label alignment routines to use the
 full label bounding box for alignment. In contrast, @code{basealign}
 requests that the @TeX{} baseline be respected.
+The base align setting of a pen is returned by
+@code{int basealigin(pen p=currentpen)}.
 
 @cindex @code{fontsize}
 @cindex @code{lineskip}
@@ -2787,8 +2812,9 @@ available from
 @url{http://www.ctan.org/tex-archive/help/Catalogue/entries/fix-cm}
 @end quotation
 and included in recent @code{LaTeX} distributions). The font size and line
-skip of a pen can be examined with the routines @code{real fontsize(pen
-p=currentpen)} and @code{real lineskip(pen p=currentpen)}, respectively.
+skip of a pen can be examined with the routines 
+@code{real fontsize(pen p=currentpen)} and 
+@code{real lineskip(pen p=currentpen)}, respectively.
 
 @cindex @code{font}
 @cindex @code{LaTeX fonts}
@@ -2798,8 +2824,10 @@ p=currentpen)} and @code{real lineskip(pen p=currentpen)}, respectively.
 by calling the function @code{pen font(string encoding, string family,
 string series="m", string shape="n")}. The default setting,
 @code{font("OT1","cmr","m","n")}, corresponds to 12pt Computer Modern Roman;
-this may be changed with @code{defaultpen(pen)}. Support for
-standardized international characters is provided by the
+this may be changed with @code{defaultpen(pen)}. 
+The font setting of a pen is returned by
+@code{string font(pen p=currentpen)}.
+Support for standardized international characters is provided by the
 @code{unicode} package (@pxref{unicode}).
 
 @cindex @code{TeX fonts}
@@ -3343,11 +3371,6 @@ void add(picture dest, picture src, pair position,
          bool group=true, filltype filltype=NoFill, bool above=true);
 void add(picture dest=currentpicture, frame src, pair position=0,
          bool group=true, filltype filltype=NoFill, bool above=true);
-void add(picture src, pair position, pair align, bool group=true,
-         filltype filltype=NoFill, bool above=true);
-void add(picture dest, picture src, pair position,
-         pair align, bool group=true, filltype filltype=NoFill,
-         bool above=true);
 void add(picture dest=currentpicture, frame src, pair position,
          pair align, bool group=true, filltype filltype=NoFill,
          bool above=true);
@@ -4648,6 +4671,8 @@ function (equivalent to @code{fabs(real)}), an @code{abs(pair)} function
 @cindex @code{unitrand}
 @cindex @code{Gaussrand}
 @cindex @code{histogram}
+@cindex @code{factorial}
+@cindex @code{choose}
 Random numbers can be seeded with @code{srand(int)} and generated with
 the @code{int rand()} function, which returns a random integer between 0
 and the integer @code{randMax}. The @code{unitrand()} function returns
@@ -4655,6 +4680,9 @@ a random number uniformly distributed in the interval [0,1].
 A Gaussian random number generator
 @code{Gaussrand} and a collection of statistics routines, including
 @code{histogram}, are provided in the base file @code{stats.asy}.
+The functions @code{factorial(int n)}, which returns @math{n!}, and
+@code{choose(int n, int k)}, which returns @math{n!/(k!(n-k)!)}, are
+also defined.
 
 @cindex @acronym{GNU} Scientific Library
 @cindex @code{gsl}
@@ -4921,7 +4949,7 @@ returns the complement of the integer array @code{a} in
 complement of @code{b[a]}.
 
 @cindex @code{uniform}
-@item int[] uniform(real a, real b, int n)
+@item real[] uniform(real a, real b, int n)
 if @code{n >= 1} returns a uniform partition of @code{[a,b]} into
 @code{n} subintervals (otherwise returns a null array);
 
@@ -5002,7 +5030,7 @@ returns the 3D transpose of @code{a} obtained by applying the permutation
 @cindex @code{sum}
 @item T sum(T[] a)
 For arithmetic types @code{T}, returns the sum of @code{a}.
-In the case where @code{T} is a boolean array, the number of true elements in
+In the case where @code{T} is @code{bool}, the number of true elements in
 @code{a} is returned.
 
 @cindex @code{min}
@@ -5767,14 +5795,22 @@ To switch between using @code{latex} and @code{pdflatex} you may first
 need to remove the files @code{latexusage-*}, @code{latexusage_.pre}, and
 @code{latexusage.aux}.
 
-@cindex @code{attachfile2}
-@cindex @code{asyattach}
-The current version of @code{asymptote.sty} supports the
+@cindex @code{width}
+@cindex @code{height}
+@cindex @code{viewportwidth}
+@cindex @code{viewportheight}
+@cindex @code{attach}
+One can specify @code{width}, @code{height},
+@code{viewportwidth}, @code{viewportheight}, and @code{attach}
+@code{keyval}-style options to the @code{asy} environment.
+The current version (1.06) of @code{asymptote.sty} supports the
 embedding of 3D @acronym{PRC} files, either inline or, using the
-@code{asyattach} environment with the @code{attachfile2} (or older
-@code{attachfile}) @code{LaTeX} package, as annotated attachments.
-For most applications, the annotated attachment method tends to be more
-convenient.
+@code{attach} option with the @code{attachfile2} (or older
+@code{attachfile}) @code{LaTeX} package,
+as annotated (but printable) attachments. For many applications, the
+annotated attachment method tends to be more convenient. 
+The default value of @code{viewportwidth} is @code{\the\linewidth} for
+inline 3D figures and @code{0} for attachments.
 
 If the @code{inline} option is given to the
 @code{asymptote.sty} package, inline @code{LaTeX} code is generated instead of
@@ -5829,6 +5865,7 @@ Here now is @code{latexusage.tex}:
 * latin1::                      Accept @code{ISO 8859-1} characters
 * babel::                       Interface to @code{LaTeX} @code{babel} package
 * labelpath::                   Drawing curved labels
+* labelpath3::                  Drawing curved labels in 3D
 * annotate::                    Annotate your @acronym{PDF} files
 * CAD::                         2D CAD pen and measurement functions (DIN 15)
 * graph::                       2D linear & logarithmic graphs
@@ -5873,24 +5910,7 @@ sizing of pictures.
 @section @code{math}
 @cindex @code{math}
 This package extends @code{Asymptote}'s mathematical capabilities with
-intersection algorithms and matrix arithmetic.
-
-@cindex @code{implicit linear solver}
-@cindex @code{MetaPost whatever}
-@cindex @code{extension}
-Unlike @code{MetaPost}, @code{Asymptote} does not implicitly solve
-linear equations and therefore does not have the notion of a
-@code{whatever} unknown. Use the built-in explicit linear equation
-solver @code{solve} instead. The following routine provides a useful
-replacement for a common use of @code{whatever}: finding the
-intersection point of the lines through @code{P}, @code{Q} and
-@code{p}, @code{q}, respectively:
-
-@verbatim
-pair extension(pair P, pair Q, pair p, pair q);
-@end verbatim
-
-Here are some additional routines provided in the @code{math} package:
+intersection algorithms and matrix arithmetic:
 
 @table @code
 
@@ -6087,12 +6107,13 @@ one must then execute the command @code{texhash}.
 The example @code{pdfmovie.asy} in the @code{animations}
 directory, along with the slide presentations @code{slidemovies.asy}
 and @code{intro.asy}, illustrate the use of embedded @acronym{PDF} movies.
-The example @code{inlinemovie.tex} shows how to generate and embed @acronym{PDF}
-movies directly within a @code{LaTeX} file (@pxref{LaTeX usage}).
+The examples @code{inlinemovie.tex} and @code{inlinemovie3.tex} 
+show how to generate and embed @acronym{PDF} movies directly within a
+@code{LaTeX} file (@pxref{LaTeX usage}).
 The member function
 @verbatim
 string pdf(fit fit=NoBox, real delay=animationdelay, string options="",
-           bool keep=false, bool multipage=true);
+           bool keep=settings.keep, bool multipage=true);
 @end verbatim
 @noindent
 of the @code{animate} structure accepts any of the @code{animate.sty} options,
@@ -6168,6 +6189,17 @@ This package provides some useful routines to help @code{MetaPost} users
 migrate old @code{MetaPost} code to @code{Asymptote}. Further
 contributions here are welcome.
 
+@cindex @code{implicit linear solver}
+@cindex @code{MetaPost whatever}
+@cindex @code{extension}
+Unlike @code{MetaPost}, @code{Asymptote} does not implicitly solve
+linear equations and therefore does not have the notion of a
+@code{whatever} unknown. The routine @code{extension} (@pxref{extension})
+provides a useful replacement for a common use of @code{whatever}: finding the
+intersection point of the lines through @code{P}, @code{Q} and
+@code{p}, @code{q}. For less common occurrences of @code{whatever}, one
+can use the built-in explicit linear equation solver @code{solve} instead. 
+
 @node unicode
 @section @code{unicode}
 @cindex @code{unicode}
@@ -6240,6 +6272,13 @@ the @math{y} component is interpreted as a shift away from the curve.
 All other Label transforms are ignored. This package requires the
 @code{latex} tex engine and inherits the limitations of the
 @code{PSTricks} @code{\pstextpath} macro.
+
+@node labelpath3
+@section @code{labelpath3}
+@cindex @code{labelpath3}
+This module, contributed by Jens Schwaiger, implements a 3D version of
+@code{labelpath} that does not require the @code{PSTricks} package.
+An example is provided in @code{curvedlabel3.asy}.
 
 @node annotate
 @section @code{annotate}
@@ -6850,29 +6889,30 @@ positive and negative extents of the error are assumed to be equal.
 @sp 1
 @center @image{monthaxis}
 
-@item This example draws a graph of a parametrized curve. 
+@item The next example draws a graph of a parametrized curve. 
 @cindex parametrized curve
 @cindex cropping graphs
-@cindex @code{limits}
 @cindex @code{xlimits}
 @cindex @code{ylimits}
+@cindex @code{limits}
 @cindex @code{crop}
-
 The calls to 
 @verbatim
 xlimits(picture pic=currentpicture, real min=-infinity,
         real max=infinity, bool crop=NoCrop);
 @end verbatim 
-
+@noindent
 and the analogous function @code{ylimits} can be uncommented
 to set the respective axes limits for picture @code{pic} to the
-specified @code{min} and @code{max} values (alternatively, the function
-@code{limits(pair, pair)} can be used to limit the axes to the
-box having opposite vertices at the given pairs).
-Existing objects in picture @code{pic} will be cropped to lie
+specified @code{min} and @code{max} values. Alternatively, the function
+@verbatim
+void limits(picture pic=currentpicture, pair min, pair max, bool crop=NoCrop);
+@end verbatim 
+can be used to limit the axes to the box having opposite vertices at
+the given pairs). Existing objects in picture @code{pic} will be cropped to lie
 within the given limits if @code{crop}=@code{Crop}. The function
-@code{crop(picture pic)} is equivalent to calling both
-@code{xlimits(Crop)} and @code{ylimits(Crop)}.
+@code{crop(picture pic)} can be used to crop a graph to the current
+graph limits.
 @verbatiminclude parametricgraph.asy
 @sp 1
 @center @image{parametricgraph}
@@ -7278,19 +7318,18 @@ The examples
 illustrate how to draw a surface with patch-dependent colors.
 The examples @code{vertexshading} and @code{smoothelevation} illustrate
 vertex-dependent colors, which is supported for both
-the @code{OpenGL} renderer and two-dimensional projections.
-Since the @acronym{PRC} output format does not support vertex shading of
-Bezier surfaces, @acronym{PRC} patches are shaded with the mean of the
-four vertex colors.
+@code{Asymptote}'s native @code{OpenGL} renderer and two-dimensional
+projections. Since the @acronym{PRC} output format does not currently support
+vertex shading of Bezier surfaces, @acronym{PRC} patches are shaded
+with the mean of the four vertex colors.
 
-@cindex @code{fill}
-There is no @code{fill} command for arbitrary three-dimensional cyclic paths
-(this would be an ill-posed operation). 
-However, a surface can be constructed from a convex path3 with the constructor
 @cindex @code{surface}
+@cindex @code{planar}
+A surface can be constructed from a cyclic @code{path3} with the constructor
 @verbatim
 surface surface(path3 external, triple[] internal=new triple[],
-                triple[] normals=new triple[], pen[] colors=new pen[]);
+                triple[] normals=new triple[], pen[] colors=new pen[],
+                bool3 planar=default);
 @end verbatim
 @noindent
 and then filled:
@@ -7301,23 +7340,24 @@ draw(surface(unitcircle3,new pen[] {red,green,blue,black}));
 @end verbatim
 @noindent
 The last example constructs a patch with vertex-specific colors.
-
-@cindex @code{bezulate}
-Alternatively, a three-dimensional planar path constructed from a
-two-dimensional (possibly nonconvex) cyclic and nonselfintersecting path 
-@code{p} can be filled by first using Orest Shardt's @code{bezulate} routine
-to decompose @code{p} into an array of cyclic paths of length @code{4}
-or less. This array can then be used to construct and draw a planar
-surface:
+A three-dimensional planar surface in the plane @code{plane} can be
+constructed from a two-dimensional cyclic path @code{g} with the constructor
+@cindex @code{surface}
 @verbatim
-draw(surface(bezulate((0,0)--E+2N--2E--E+N..0.2E..cycle)),red);
+surface surface(path p, triple plane(pair)=XYplane);
 @end verbatim
 @noindent
-@cindex @code{planar}
+and then filled:
+@verbatim
+draw(surface((0,0)--E+2N--2E--E+N..0.2E..cycle),red);
+@end verbatim
 @noindent
-The routine @code{surface planar(path3 p)} uses @code{bezulate} to convert
-a three-dimensional planar (possibly nonconvex) cyclic and
-nonselfintersecting path to a surface.
+@cindex @code{bezulate}
+Planar Bezier surfaces patches are constructed using Orest Shardt's
+@code{bezulate} routine, which decomposes (possibly nonsimply
+connected) regions bounded by cyclic paths (according to the
+@code{zerowinding} fill rule) into subregions bounded by cyclic paths
+of length @code{4} or less.
 
 @cindex @code{thin}
 @cindex @code{thick}
@@ -7335,7 +7375,7 @@ especially with the @code{Adobe Reader} renderer. The setting
 @code{thick=false} can be used to disable this feature and force all
 lines to be drawn with @code{linewidth(0)} (one pixel wide, regardless
 of the resolution). By default mesh and contour lines in three-dimensions
-are always drawn thin, unless an explicit linewidth is given in the pen
+are always drawn thin, unless an explicit line width is given in the pen
 parameter or the setting @code{thin} is set to @code{false}. The pens
 @code{thin()} and @code{thick()} defined in plain_pens.asy can also be used
 to override these defaults for specific draw commands. 
@@ -7347,7 +7387,7 @@ There are four choices for viewing 3D @code{Asymptote} output:
 @cindex @code{render}
 @cindex @code{outformat}
 @cindex @code{multisample}
-@item Use the default @code{Asymptote} adaptive @code{OpenGL}-based
+@item Use the native @code{Asymptote} adaptive @code{OpenGL}-based
 renderer (with the command-line option @code{-V} and the default settings
 @code{outformat=""} and @code{render=-1}). If you encounter warnings
 from your graphics card driver, try specifying @code{-glOptions=-indirect}
@@ -7456,13 +7496,14 @@ void size3(picture pic=currentpicture, real x, real y=x, real z=y,
 @noindent
 @cindex margins
 @cindex @code{viewportmargin}
+@cindex @code{viewportsize}
 The resulting simplex linear programming problem is then solved to
 produce a 3D version of a frame (actually implemented as a 3D picture). 
 The result is then fit with another application of deferred drawing
 to the viewport dimensions corresponding to the usual two-dimensional
 picture @code{size} parameters. The global pair @code{viewportmargin}
 may be used to add horizontal and vertical margins to the viewport
-dimensions.
+dimensions. Alternatively, a minimum @code{viewportsize} may be specified.
 
 @cindex @code{O}
 @cindex @code{X}
@@ -7561,36 +7602,46 @@ The point @code{(x,y,z)} is projected to @code{(x+0.5y,z+0.5y)}.
 If an optional real argument is given, the
 positive @math{y} axis is drawn at this angle in degrees.
 
-@item @w{orthographic(triple camera, triple up=Z, triple target=O, bool showtarget=true)}
 @cindex @code{orthographic}
 @cindex @code{up}
 @cindex @code{target}
 @cindex @code{showtarget}
+@cindex @code{autoadjust}
+@cindex @code{center}
+@item orthographic(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
 This projects from three to two dimensions using the view as seen at a point
 infinitely far away in the direction @code{unit(camera)}, orienting the camera
 so that, if possible, the vector @code{up} points upwards. Parallel
 lines are projected to parallel lines. The bounding volume is expanded
-to include @code{target} if @code{showtarget=true}.
+to include @code{target} if @code{showtarget=true}. If @code{autoadjust=true},
+the camera will automatically be adjusted to lie outside the bounding volume
+for all possible interactive rotations about @code{target}.
+If @code{center=true}, the target will be adjusted to the center of the 
+bounding volume. 
 
-@item @w{orthographic(real x, real y, real z, triple up=Z, triple target=O, bool showtarget=true)}
-This is equivalent to @code{orthographic((x,y,z),up,target,showtarget)}.
+@item orthographic(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
+This is equivalent to 
+@code{orthographic((x,y,z),up,target,showtarget,autoadjust,
+center)}.
 
-@item perspective(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true)
+@item perspective(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
 @cindex @code{perspective}
-@cindex @code{autoadjust}
-@cindex @code{nurbs}
+@cindex @code{NURBS}
 This projects from three to two dimensions, taking account of
 perspective, as seen from the location @code{camera} looking at @code{target},
 orienting the camera so that, if possible, the vector @code{up} points upwards.
 If @code{render=0}, projection of three-dimensional cubic Bezier splines
 is implemented by approximating a two-dimensional nonuniform rational B-spline
-(@acronym{nurbs}) with a two-dimensional Bezier curve containing
+(@acronym{NURBS}) with a two-dimensional Bezier curve containing
 additional nodes and control points. If @code{autoadjust=true},
 the camera will automatically be adjusted to lie outside the bounding volume
 for all possible interactive rotations about @code{target}.
+If @code{center=true}, the target will be adjusted to the center of the 
+bounding volume. 
 
-@item perspective(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true)
-This is equivalent to @code{perspective((x,y,z),up,target,showtarget,autoadjust)}.
+@item perspective(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
+This is equivalent to @code{perspective((x,y,z),up,target,showtarget,
+autoadjust,center)}.
 @end table
 
 @cindex @code{currentprojection}
@@ -7753,13 +7804,18 @@ Versions of the two-dimensional arrowheads lifted to three-dimensional
 space and aligned according to the initial viewpoint (or an optionally
 specified @code{normal} vector) are also defined:
 @code{DefaultHead2(triple normal=O)}, @code{HookHead2(triple normal=O)},
-@code{TeXHead2(triple normal=O)}.
+@code{TeXHead2(triple normal=O)}. These are illustrated in the example
+@code{arrows3.asy}. 
 
 @cindex @code{NoMargin3}
 @cindex @code{BeginMargin3}
 @cindex @code{EndMargin3}
 @cindex @code{Margin3}
 @cindex @code{Margins3}
+@cindex @code{BeginPenMargin2}
+@cindex @code{EndPenMargin2}
+@cindex @code{PenMargin2}
+@cindex @code{PenMargins2}
 @cindex @code{BeginPenMargin3}
 @cindex @code{EndPenMargin3}
 @cindex @code{PenMargin3}
@@ -7772,8 +7828,11 @@ specified @code{normal} vector) are also defined:
 @cindex @code{TrueMargin3}
 Module @code{three} also defines the three-dimensional margins
 @code{NoMargin3}, @code{BeginMargin3}, @code{EndMargin3},
-@code{Margin3}, @code{Margins3}, @code{BeginPenMargin3},
-@code{EndPenMargin3}, @code{PenMargin3}, @code{PenMargins3},
+@code{Margin3}, @code{Margins3},
+@code{BeginPenMargin2}, @code{EndPenMargin2}, @code{PenMargin2},
+@code{PenMargins2},
+@code{BeginPenMargin3}, @code{EndPenMargin3}, @code{PenMargin3},
+@code{PenMargins3},
 @code{BeginDotMargin3}, @code{EndDotMargin3}, @code{DotMargin3},
 @code{DotMargins3}, @code{Margin3}, and @code{TrueMargin3}.
 
@@ -7811,7 +7870,8 @@ transform transform(triple u, triple v, triple O=O,
 @end verbatim
 
 Here is an example that shows how a binary space partition may be used to draw a
-@code{PostScript} vector image of three orthogonal intersecting planes:
+two-dimensional vector graphics projection of three orthogonal
+intersecting planes:
 @verbatiminclude planes.asy
 @sp 1
 @center @image{planes}
@@ -7921,17 +7981,14 @@ surface surface(triple f(pair z), pair a, pair b, int nu=nmesh, int nv=nu,
                 bool cond(pair z)=null);
 @end verbatim
 @noindent
+The final version draws a parametric surface for a function
+@math{f(u,v)} over the parameter space @code{box(a,b)},
+as illustrated in the example @code{parametricsurface.asy}.
 The boolean array or function @code{cond} can be used to control which
 surface mesh cells are actually drawn (by default all mesh cells over
 @code{box(a,b)} are drawn).
-A parametric surface for a function @math{f(u,v)} over the parameter
-space @code{box(a,b)} may be created with
-@verbatim
-surface surface(triple f(pair z), pair a, pair b, int nu=nmesh,
-                int nv=nu, bool cond(pair z)=null);
-@end verbatim
-@noindent
-as illustrated in the example @code{parametricsurface.asy}.
+Surface lighting is illustrated in the example files
+@code{parametricsurface.asy} and @code{sinc.asy}.
 Lighting can be disabled by setting @code{light=nolight}, as in this example
 of a Gaussian surface:
 @anchor{GaussianSurface}
@@ -7939,8 +7996,6 @@ of a Gaussian surface:
 @sp 1
 @center @image{GaussianSurface}
 @noindent
-Surface lighting is illustrated in the example files
-@code{parametricsurface.asy} and @code{sinc.asy}.
 A mesh can be drawn without surface filling by specifying @code{nullpen}
 for the surfacepen.
 
@@ -8419,8 +8474,8 @@ disables this call.
 
 @cindex offset
 @cindex @code{align}
-A @code{PostScript} offset may be specified as a pair (in bp units) with the
-@code{-O} option:
+A @code{PostScript} offset may be specified as a pair (in @code{bp}
+units) with the @code{-O} option:
 @verbatim
 asy -O 0,0 file
 @end verbatim
@@ -8722,7 +8777,7 @@ posted here:
 To receive announcements of upcoming releases, please subscribe to
 @code{Asymptote} at
 @quotation
-@url{http://freshmeat.net/subscribe/50750}
+@url{http://freshmeat.net/projects/asy}
 @end quotation
 @cindex bug reports
 @noindent
@@ -8994,7 +9049,7 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  NoZero NoZeroFormat abbrevation gsOptions namespace redeclared
 @c  LocalWords:  atLeast intMin globalwrite quarticroots deconsruct substrings
 @c  LocalWords:  usleep currentpatterns trailingzero Orest Shardt DefaultHead
-@c  LocalWords:  SimpleHead HookHead TeXHead multipage nurbs inlinemovie dxmax
+@c  LocalWords:  SimpleHead HookHead TeXHead multipage NURBS inlinemovie dxmax
 @c  LocalWords:  simpson NoBox truesize autoscale shadestroke recurses mintimes
 @c  LocalWords:  nonoverlapping texdvicommand texengine maxtimes maxheight pdb
 @c  LocalWords:  piecewisestraight unitrand graphmarkers antialias nolight newl
@@ -9006,8 +9061,8 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  unithemisphere versa XYplane xypart unitsolidcone YZEquals
 @c  LocalWords:  XZEquals XYEquals XZZero XYZero InTicks OutTicks InOutTicks
 @c  LocalWords:  fitscreen planeproject strokepath meshlight nullpens arrowdir
-@c  LocalWords:  diffusepen ambientpen emissivepen specularpen arrowbarb
-@c  LocalWords:  nonselfintersecting hstretch vstretch roundbox nonconvex
+@c  LocalWords:  diffusepen ambientpen emissivepen specularpen arrowbarb keyval
+@c  LocalWords:  hstretch vstretch roundbox nonconvex miterlimit basealigin
 @c  LocalWords:  maxviewport maxtile antialiased sphericalharmonic attachfile
 @c  LocalWords:  vertexshading smoothelevation glOptions iconified iconify
 @c  LocalWords:  psviewerOptions pdfviewerOptions viewportmargin asyattach
@@ -9015,4 +9070,5 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  colortype coloredSegments coloredNodes trefoilknot scaledgraph
 @c  LocalWords:  minblockwidth minblockheight mincirclediameter nonassociative
 @c  LocalWords:  nonintegral gettriple enablerepo hexidecimal XeLaTeX xelatex
-@c  LocalWords:  dvipdfmx autoadjust
+@c  LocalWords:  dvipdfmx autoadjust viewportsize viewportwidth viewportheight
+@c  LocalWords:  subregions nonsimply

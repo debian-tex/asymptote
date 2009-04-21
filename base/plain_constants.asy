@@ -1,4 +1,3 @@
-restricted real infinity=cbrt(realMax); // Reduced for tension atleast infinity
 restricted int undefined=intMax+((intMax % 2)-1);
 
 restricted real inches=72;
@@ -33,6 +32,9 @@ restricted pair SSW=unit(S+SW);
 restricted pair SSE=unit(S+SE);
 restricted pair ESE=unit(E+SE);
   
+restricted real sqrtEpsilon=sqrt(realEpsilon);
+restricted pair Align=sqrtEpsilon*NE; 
+
 int min(... int[] a) {return min(a);}
 int max(... int[] a) {return max(a);}
 

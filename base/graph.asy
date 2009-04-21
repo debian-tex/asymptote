@@ -8,6 +8,8 @@ scaleT Linear;
 scaleT Log=scaleT(log10,pow10,logarithmic=true);
 scaleT Logarithmic=Log;
 
+string baselinetemplate="$10^4$";
+
 // A linear scale, with optional autoscaling of minimum and maximum values,
 // scaling factor s and intercept.
 scaleT Linear(bool automin=false, bool automax=automin, real s=1,
@@ -317,7 +319,7 @@ private struct locateT {
   pair dir;     // tick direction in frame coordinates
   
   void dir(transform T, path g, ticklocate locate, real t) {
-    pathdir=unit(T*dir(g,t));
+    pathdir=unit(shiftless(T)*dir(g,t));
     pair Dir=locate.dir(t);
     dir=Dir == 0 ? -I*pathdir : unit(Dir);
   }
@@ -380,10 +382,9 @@ pair labeltick(frame d, transform T, path g, ticklocate locate, real val,
   }
 
   string s=ticklabel(label);
-  if(s != "") {
-    s=baseline(s,align,"$10^4$");
-    label(d,F.T*s,locate1.Z+shift,align,F.p,F.filltype);
-  }
+  if(s != "")
+    label(d,F.T*baseline(s,baselinetemplate),locate1.Z+shift,align,F.p,
+          F.filltype);
   return locate1.pathdir;
 }  
 
@@ -595,23 +596,24 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
     bool calcStep=true;
     real len=tickmax-tickmin;
     if(Step == 0 && N == 0) {
+      N=1;
       if(divisor.length > 0) {
         bool autoscale=locate.S.automin && locate.S.automax;
+        real h=0.5*(b-a);
         for(int d=divisor.length-1; d >= 0; --d) {
-          N=divisor[d];
-          Step=len/N;
-          if(b > a && !autoscale) {
-            int N0=N;
-            int m=2;
-            while(Step > 0.5*(b-a)) {
-              N=m*N0;
-              Step=len/N;
-              m *= 2;
-            }
+          int N0=divisor[d];
+          Step=len/N0;
+          int N1=N0;
+          int m=2;
+          while(Step > h) {
+            N0=m*N1;
+            Step=len/N0;
+            m *= 2;
           }
-          if(axiscoverage(N,T,g,locate,Step,side,sign,Size,F,ticklabel,norm,
+          if(axiscoverage(N0,T,g,locate,Step,side,sign,Size,F,ticklabel,norm,
                           limit)) {
-            if(N == 1 && !autoscale && d < divisor.length-1) {
+            N=N0;
+            if(N0 == 1 && !autoscale && d < divisor.length-1) {
               // Try using 2 ticks (otherwise 1);
               int div=divisor[d+1];
               Step=quotient(div,2)*len/div;
@@ -622,14 +624,17 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
             }
             // Found a good divisor; now compute subtick divisor
             if(n == 0) {
-              n=quotient(divisor[divisor.length-1],N);
-              if(N == 1) n=(a*b >= 0) ? 2 : 1;
-              if(n == 1) n=2;
+              if(step != 0) n=ceil(Step/step);
+              else {
+                n=quotient(divisor[divisor.length-1],N);
+                if(N == 1) n=(a*b >= 0) ? 2 : 1;
+                if(n == 1) n=2;
+              }
             }
             break;
           }
         }
-      } else N=1;
+      }
     }
       
     if(inStep != 0 && !locate.S.automin) {
@@ -641,7 +646,7 @@ tickvalues generateticks(int sign, Label F="", ticklabel ticklabel=null,
       if(N == 0) N=(int) (len/Step);
       else Step=len/N;
     }
-
+    
     if(n == 0) {
       if(step != 0) n=ceil(Step/step);
     } else step=Step/n;
@@ -1351,8 +1356,10 @@ void xlimits(picture pic=currentpicture, real min=-infinity, real max=infinity,
     pair userMin=pic.userMin();
     pair userMax=pic.userMax();
     pic.bounds.xclip(userMin.x,userMax.x);
-    pic.clip(new void (frame f, transform t) {
-        clip(f,box(((t*userMin).x,min(f).y),((t*userMax).x,max(f).y)));
+    pic.clip(new void (frame f, transform t, transform T, pair, pair) {
+        frame Tinvf=T == identity() ? f : t*inverse(T)*inverse(t)*f;
+        clip(f,T*box(((t*userMin).x,(min(Tinvf)).y),
+                     ((t*userMax).x,(max(Tinvf)).y)));
       });
   }
 }
@@ -1382,8 +1389,10 @@ void ylimits(picture pic=currentpicture, real min=-infinity, real max=infinity,
     pair userMin=pic.userMin();
     pair userMax=pic.userMax();
     pic.bounds.yclip(userMin.y,userMax.y);
-    pic.clip(new void (frame f, transform t) {
-        clip(f,box((min(f).x,(t*userMin).y),(max(f).x,(t*userMax).y)));
+    pic.clip(new void (frame f, transform t, transform T, pair, pair) {
+        frame Tinvf=T == identity() ? f : t*inverse(T)*inverse(t)*f;
+        clip(f,T*box(((min(Tinvf)).x,(t*userMin).y),
+                     ((max(Tinvf)).x,(t*userMax).y)));
       });
   }
 }
@@ -1400,8 +1409,10 @@ void crop(picture pic=currentpicture)
 // Restrict the x and y limits to box(min,max).
 void limits(picture pic=currentpicture, pair min, pair max, bool crop=NoCrop)
 {
-  xlimits(pic,min.x,max.x,crop);
-  ylimits(pic,min.y,max.y,crop);
+  xlimits(pic,min.x,max.x);
+  ylimits(pic,min.y,max.y);
+  if(crop && pic.userSetx && pic.userSety)
+    clip(pic,box(pic.userMin(),pic.userMax()));
 }
   
 // Internal routine to autoscale the user limits of a picture.
@@ -1482,14 +1493,16 @@ void xaxis(picture pic=currentpicture, Label L="", axis axis=YZero,
   axis(pic,axis);
   
   if(xmin == -infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.x.automin())
-      xmin=pic.scale.x.tickMin;
+    if(pic.scale.set)
+      xmin=pic.scale.x.automin() ? pic.scale.x.tickMin :
+        max(pic.scale.x.tickMin,pic.userMin.x);
     else xmin=pic.userMin.x;
   }
   
   if(xmax == infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.x.automax())
-      xmax=pic.scale.x.tickMax;
+    if(pic.scale.set)
+      xmax=pic.scale.x.automax() ? pic.scale.x.tickMax :
+        min(pic.scale.x.tickMax,pic.userMax.x);
     else xmax=pic.userMax.x;
   }
 
@@ -1541,14 +1554,17 @@ void yaxis(picture pic=currentpicture, Label L="", axis axis=XZero,
   axis(pic,axis);
   
   if(ymin == -infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.y.automin())
-      ymin=pic.scale.y.tickMin;
+    if(pic.scale.set)
+      ymin=pic.scale.y.automin() ? pic.scale.y.tickMin :
+        max(pic.scale.y.tickMin,pic.userMin.y);
     else ymin=pic.userMin.y;
   }
   
+  
   if(ymax == infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.y.automax())
-      ymax=pic.scale.y.tickMax;
+    if(pic.scale.set)
+      ymax=pic.scale.y.automax() ? pic.scale.y.tickMax :
+        min(pic.scale.y.tickMax,pic.userMax.y);
     else ymax=pic.userMax.y;
   }
 
@@ -1656,7 +1672,7 @@ void tick(picture pic=currentpicture, Label L, real value, explicit pair z,
               ticklabelshift(L.align.dir,p))*L.T;
   L.p(p);
   if(L.s == "") L.s=format(format == "" ? defaultformat : format,value);
-  L.s=baseline(L.s,L.align,"$10^4$");
+  L.s=baseline(L.s,baselinetemplate);
   add(pic,L);
   xtick(pic,z,dir,size,p);
 }
@@ -1695,7 +1711,7 @@ private void label(picture pic, Label L, pair z, real x, align align,
   if(shift(L.T)*0 == 0)
     L.T=shift(ticklabelshift(L.align.dir,L.p))*L.T;
   if(L.s == "") L.s=format(format == "" ? defaultformat : format,x);
-  L.s=baseline(L.s,L.align,"$10^4$");
+  L.s=baseline(L.s,baselinetemplate);
   add(pic,L);
 }
 

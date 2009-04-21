@@ -219,7 +219,29 @@ namespace vm {
 
 namespace run {
   
+const char *invalidargument="invalid argument";
 const char *arrayempty="cannot take min or max of empty array";
+
+// Return the factorial of a non-negative integer using a lookup table.
+Int factorial(Int n)
+{
+  static Int *table;
+  static Int size=0;
+  if(size == 0) {
+    Int f=1;
+    size=2;
+    while(f <= Int_MAX/size)
+      f *= (size++);
+    table=new Int[size];
+    table[0]=f=1;
+    for(Int i=1; i < size; ++i) {
+      f *= i;
+      table[i]=f;
+    }
+  }
+  if(n >= size) integeroverflow(0);
+  return table[n];
+}
 
 static inline Int Round(double x) 
 {
@@ -657,9 +679,10 @@ void cleanup()
 #endif
 }
 
-void purge()
+void purge(Int divisor=0)
 {
 #ifdef USEGC
+  if(divisor > 0) GC_set_free_space_divisor((GC_word) divisor);
   GC_gcollect();
 #endif
 }
@@ -901,22 +924,36 @@ array *readpath(const string& psname, bool tex, bool keep)
       case 'M':
       {
         if(active) {
-          node.post=node.point;
-          nodes.push_back(node);
+          if(cyclic) {
+            if(node.point == nodes[0].point)
+              nodes[0].pre=node.pre;
+            else {
+              pair delta=(nodes[0].point-node.point)*third;
+              node.post=node.point+delta;
+              nodes[0].pre=nodes[0].point-delta;
+              node.straight=true;
+              nodes.push_back(node);
+            }
+          } else {
+            node.post=node.point;
+            node.straight=false;
+            nodes.push_back(node);
+          }
           P->push(path(nodes,nodes.size(),cyclic));
           nodes.clear();
         }
         active=false;
         cyclic=false;
         node.pre=node.point=readpair(buf,tex)-offset;
+        node.straight=false;
         break;
       }
       case 'L':
       {
         pair point=readpair(buf,tex)-offset;
-        static const double third=1.0/3.0;
         pair delta=(point-node.point)*third;
         node.post=node.point+delta;
+        node.straight=true;
         nodes.push_back(node);
         active=true;
         node.pre=point-delta;
@@ -928,6 +965,7 @@ array *readpath(const string& psname, bool tex, bool keep)
         pair point=readpair(buf,tex)-offset;
         pair pre=readpair(buf,tex)-offset;
         node.post=readpair(buf,tex)-offset;
+        node.straight=false;
         nodes.push_back(node);
         active=true;
         node.pre=pre;
@@ -1654,9 +1692,9 @@ void deconstruct(picture *f, picture *preamble=NULL, real magnification=1,
   }
 }
 
-void purge()
+void purge(Int divisor=0)
 {
-  purge();
+  purge(divisor);
 }
 
 
@@ -1849,7 +1887,7 @@ pen linetype(string *s, real offset=0, bool scale=true, bool adjust=true)
   return pen(LineType(*s,offset,scale,adjust)); 
 }
 
-string linetype(pen p)
+string linetype(pen p=CURRENTPEN)
 {
   return p.stroke();  
 }
@@ -1879,7 +1917,7 @@ pen linecap(Int n)
   return pen(setlinecap,n >= 0 && n < nCap ? n : DEFCAP);
 }
 
-Int linecap(pen p)
+Int linecap(pen p=CURRENTPEN)
 {
   return p.cap();  
 }
@@ -1889,9 +1927,19 @@ pen linejoin(Int n)
   return pen(setlinejoin,n >= 0 && n < nJoin ? n : DEFJOIN);
 }
 
-Int linejoin(pen p)
+Int linejoin(pen p=CURRENTPEN)
 {
   return p.join();  
+}
+
+pen miterlimit(real x)
+{
+  return pen(setmiterlimit,x >= 1.0 ? x : DEFJOIN);
+}
+
+real miterlimit(pen p=CURRENTPEN)
+{
+  return p.miter();  
 }
 
 pen linewidth(real x)
@@ -1899,7 +1947,7 @@ pen linewidth(real x)
   return pen(setlinewidth,x >= 0.0 ? x : DEFWIDTH);
 }
 
-real linewidth(pen p)
+real linewidth(pen p=CURRENTPEN)
 {
   return p.width();  
 }
@@ -1909,7 +1957,7 @@ pen fontcommand(string *s)
   return pen(setfont,*s);
 }
 
-string font(pen p)
+string font(pen p=CURRENTPEN)
 {
   return p.Font();
 }
@@ -1920,12 +1968,12 @@ pen fontsize(real size, real lineskip)
              lineskip > 0.0 ? lineskip : 0.0);
 }
 
-real fontsize(pen p)
+real fontsize(pen p=CURRENTPEN)
 {
   return p.size();
 }
 
-real lineskip(pen p)
+real lineskip(pen p=CURRENTPEN)
 {
   return p.Lineskip();  
 }
@@ -1936,7 +1984,7 @@ pen overwrite(Int n)
              DEFWRITE);
 }
 
-Int overwrite(pen p)
+Int overwrite(pen p=CURRENTPEN)
 {
   return p.Overwrite();  
 }
@@ -1946,7 +1994,7 @@ pen basealign(Int n)
   return pen(n >= 0 && n < nBaseLine ? (BaseLine) n : DEFBASE);
 }
 
-Int basealign(pen p)
+Int basealign(pen p=CURRENTPEN)
 {
   return p.Baseline();
 }
@@ -2247,12 +2295,13 @@ real dirtime(path p, pair z)
 
 realarray* intersect(path p, path q, real fuzz=-1)
 {
+  bool exact=fuzz <= 0.0;
   if(fuzz < 0)
     fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
                        ::max(length(q.max()),length(q.min())));
   std::vector<real> S,T;
   real s,t;
-  if(intersections(s,t,S,T,p,q,fuzz,true)) {
+  if(intersections(s,t,S,T,p,q,fuzz,true,exact)) {
     array *V=new array(2);
     (*V)[0]=s;
     (*V)[1]=t;
@@ -2263,13 +2312,24 @@ realarray* intersect(path p, path q, real fuzz=-1)
 
 realarray2* intersections(path p, path q, real fuzz=-1)
 {
-  if(fuzz < 0)
+  bool exact=fuzz <= 0.0;
+  if(fuzz < 0.0)
     fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
                        ::max(length(q.max()),length(q.min())));
   real s,t;
   std::vector<real> S,T;
-  intersections(s,t,S,T,p,q,fuzz,false);
+  intersections(s,t,S,T,p,q,fuzz,false,true);
   size_t n=S.size();
+  if(n == 0 && !exact) {
+    if(intersections(s,t,S,T,p,q,fuzz,true,false)) {
+      array *V=new array(1);
+      array *Vi=new array(2);
+      (*V)[0]=Vi;
+      (*Vi)[0]=s;
+      (*Vi)[1]=t;
+      return V;
+    }
+  }
   array *V=new array(n);
   for(size_t i=0; i < n; ++i) {
     array *Vi=new array(2);
@@ -2281,7 +2341,7 @@ realarray2* intersections(path p, path q, real fuzz=-1)
   return V;
 }
 
-realarray* intersections(path p, pair a, pair b, real fuzz=-1)
+realarray* intersections(path p, explicit pair a, explicit pair b, real fuzz=-1)
 {
   if(fuzz < 0)
     fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
@@ -2294,6 +2354,17 @@ realarray* intersections(path p, pair a, pair b, real fuzz=-1)
   for(size_t i=0; i < n; ++i)
     (*V)[i]=S[i];
   return V;
+}
+
+// Return the intersection point of the extensions of the line segments 
+// PQ and pq.
+pair extension(pair P, pair Q, pair p, pair q)
+{
+  pair ac=P-Q;
+  pair bd=q-p;
+  real det=ac.getx()*bd.gety()-ac.gety()*bd.getx();
+  if(det == 0) return pair(infinity,infinity);
+  return P+((p.getx()-P.getx())*bd.gety()-(p.gety()-P.gety())*bd.getx())*ac/det;
 }
 
 Int size(path p)
@@ -2524,12 +2595,14 @@ real arctime(path3 p, real dval)
 
 realarray* intersect(path3 p, path3 q, real fuzz=-1)
 {
-  if(fuzz < 0) 
+  bool exact=fuzz <= 0.0;
+  if(fuzz < 0)
     fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
                        ::max(length(q.max()),length(q.min())));
+  
   std::vector<real> S,T;
   real s,t;
-  if(intersections(s,t,S,T,p,q,fuzz,true)) {
+  if(intersections(s,t,S,T,p,q,fuzz,true,exact)) {
     array *V=new array(2);
     (*V)[0]=s;
     (*V)[1]=t;
@@ -2540,19 +2613,32 @@ realarray* intersect(path3 p, path3 q, real fuzz=-1)
 
 realarray2* intersections(path3 p, path3 q, real fuzz=-1)
 {
+  bool exact=fuzz <= 0.0;
   if(fuzz < 0)
     fuzz=BigFuzz*::max(::max(length(p.max()),length(p.min())),
                        ::max(length(q.max()),length(q.min())));
+  bool single=!exact;
+  
   real s,t;
   std::vector<real> S,T;
-  intersections(s,t,S,T,p,q,fuzz,false);
-  size_t n=S.size();
-  array *V=new array(n);
-  for(size_t i=0; i < n; ++i) {
+  bool found=intersections(s,t,S,T,p,q,fuzz,single,exact);
+  if(!found) return new array(0);
+  array *V;
+  if(single) {
+    V=new array(1);
     array *Vi=new array(2);
-    (*V)[i]=Vi;
-    (*Vi)[0]=S[i];
-    (*Vi)[1]=T[i];
+    (*V)[0]=Vi;
+    (*Vi)[0]=s;
+    (*Vi)[1]=t;
+  } else {
+    size_t n=S.size();
+    V=new array(n);
+    for(size_t i=0; i < n; ++i) {
+      array *Vi=new array(2);
+      (*V)[i]=Vi;
+      (*Vi)[0]=S[i];
+      (*Vi)[1]=T[i];
+    }
   }
   stable_sort(V->begin(),V->end(),run::compare2<real>());
   return V;
@@ -2985,6 +3071,28 @@ real change2(triplearray2 *a)
 bool is3D(picture *f)
 {
   return f->have3D();
+}
+
+pair bezier(pair a, pair b, pair c, pair d, real t) 
+{
+  real onemt=1-t;
+  real onemt2=onemt*onemt;
+  return onemt2*onemt*a+t*(3.0*(onemt2*b+t*onemt*c)+t*t*d);
+}
+
+pair bezierP(pair a, pair b, pair c, pair d, real t) 
+{
+  return 3.0*(t*t*(d-a+3.0*(b-c))+t*(2.0*(a+c)-4.0*b)+b-a);
+}
+
+pair bezierPP(pair a, pair b, pair c, pair d, real t) 
+{
+  return 6.0*(t*(d-a+3.0*(b-c))+a+c-2.0*b);
+}
+
+pair bezierPPP(pair a, pair b, pair c, pair d) 
+{
+  return 6.0*(d-a+3.0*(b-c));
 }
 
 triple bezier(triple a, triple b, triple c, triple d, real t) 
@@ -3426,6 +3534,22 @@ real erf(real x)
 real erfc(real x)
 {
   return erfc(x);
+}
+
+Int factorial(Int n) {
+  if(n < 0) error(invalidargument);
+  return factorial(n);
+}
+
+Int choose(Int n, Int k) {
+  if(n < 0 || k < 0 || k > n) error(invalidargument);
+  Int f=1;
+  Int r=n-k;
+  for(Int i=n; i > r; --i) {
+    if(f > Int_MAX/i) integeroverflow(0);
+    f=(f*i)/(n-i+1);
+  }
+  return f;
 }
 
 real gamma(real x)
@@ -3994,7 +4118,8 @@ Int convert(string args=emptystring, string file=emptystring,
   string name=convertname(file,format);
   cmd << "'" << getSetting<string>("convert") << "' " << args
       << " '" << name << "'";
-  Int ret=System(cmd,2,true,"convert","your ImageMagick convert utility");
+  bool quiet=verbose <= 1;
+  Int ret=System(cmd,quiet ? 1 : 0,true,"convert","your ImageMagick convert utility");
   
   if(ret == 0 && verbose > 0)
     cout << "Wrote " << ((file.empty()) ? name : file) << endl;

@@ -25,6 +25,10 @@ restricted pen beveljoin=linejoin(2);
 
 restricted pen zerowinding=fillrule(0);
 restricted pen evenodd=fillrule(1);
+bool inside(int windingnumber, pen fillrule) {
+  return windingnumber != undefined &&
+    (fillrule(fillrule) == 1 ? windingnumber % 2 == 1 : windingnumber != 0);
+}
 
 restricted pen nobasealign=basealign(0);
 restricted pen basealign=basealign(1);
@@ -122,16 +126,6 @@ pen heavygrey=gray;
 pen deepgrey=deepgray;
 pen darkgrey=darkgray;
 
-real linewidth() 
-{
-  return linewidth(currentpen);
-}
-
-real lineskip() 
-{
-  return lineskip(currentpen);
-}
-
 // Options for handling label overwriting
 restricted int Allow=0;
 restricted int Suppress=1;
@@ -167,11 +161,6 @@ real dotsize(pen p=currentpen)
 pen fontsize(real size) 
 {
   return fontsize(size,1.2*size);
-}
-
-real fontsize() 
-{
-  return fontsize(currentpen);
 }
 
 real labelmargin(pen p=currentpen)

@@ -2,22 +2,22 @@
  * animation.asy
  * Andy Hammerlindl and John Bowman 2005/11/06
  *
- * Produce animated gifs.
+ * Produce GIF, inline PDF, or other animations.
  *****/
 
 // animation delay is in milliseconds
 real animationdelay=50;
 
-typedef frame fit(picture);
+typedef frame fit(string prefix="",picture);
 
-frame NoBox(picture pic) {
-  return pic.fit();
+frame NoBox(string prefix="", picture pic) {
+  return pic.fit(prefix);
 }
 
-fit BBox(real xmargin=0, real ymargin=xmargin,
+fit BBox(string prefix="", real xmargin=0, real ymargin=xmargin,
          pen p=currentpen, filltype filltype=NoFill) {
-  return new frame(picture pic) {
-    return bbox(pic,xmargin,ymargin,p,filltype);
+  return new frame(string prefix, picture pic) {
+    return bbox(prefix,pic,xmargin,ymargin,p,filltype);
   };
 }
 
@@ -32,17 +32,18 @@ struct animation {
   // been generated. 
 
   void operator init(string prefix="", bool global=true) {
-    prefix="_"+((prefix == "") ? outprefix() : stripdirectory(prefix));
+    prefix=replace((prefix == "") ? outprefix() : stripdirectory(prefix),
+                   " ","_");
     this.prefix=prefix;
     this.global=global;
   }
   
   string basename(string prefix=prefix) {
-    return stripextension(prefix);
+    return "_"+stripextension(prefix);
   }
 
   string name(string prefix, int index) {
-    return basename(prefix)+string(index);
+    return stripextension(prefix)+"+"+string(index);
   }
 
   private string nextname() {
@@ -61,7 +62,7 @@ struct animation {
   void add(picture pic=currentpicture, fit fit=NoBox) {
     if(global) {
       pictures.push(pic.copy());
-    } else this.shipout(nextname(),fit(pic));
+    } else this.shipout(nextname(),fit(prefix,pic));
   }
   
   void purge(bool keep=settings.keep) {
@@ -77,9 +78,9 @@ struct animation {
       " -alpha Off -dispose Background "+options;
     for(int i=0; i < files.length; ++i)
       args += " " +files[i];
-    int rc=convert(args,format=format);
+    int rc=convert(args,prefix+"."+format,format=format);
     this.purge(keep);
-    if(rc == 0) animate(format=format);
+    if(rc == 0) animate(file=prefix+"."+format,format=format);
     else abort("merge failed");
     return rc;
   }
@@ -88,53 +89,49 @@ struct animation {
   void export(string prefix=prefix, fit fit=NoBox,
               bool multipage=false, bool view=false) {
     if(pictures.length == 0) return;
-    picture all;
-    size(all,pictures[0]);
-    for(int i=0; i < pictures.length; ++i)
-      add(all,pictures[i]);
-    transform t=inverse(all.calculateTransform()*pictures[0].T);
-    pair m=t*min(all);
-    pair M=t*max(all);
+    rescale(pictures);
     frame multi;
+    bool inlinetex=settings.inlinetex;
+    if(multipage)
+      settings.inlinetex=false;
     for(int i=0; i < pictures.length; ++i) {
-      draw(pictures[i],m,nullpen);
-      draw(pictures[i],M,nullpen);
       if(multipage) {
-        add(multi,fit(pictures[i]));
+        add(multi,fit(prefix,pictures[i]));
         newpage(multi);
       } else {
         if(pictures[i].empty3() || settings.render <= 0) {
           real render=settings.render;
           settings.render=0;
-          this.shipout(name(prefix,i),fit(pictures[i]));
+          this.shipout(name(prefix,i),fit(prefix,pictures[i]));
           settings.render=render;
         } else { // Render 3D frames
-          string name=defaultfilename;
-          defaultfilename=name(prefix,i);
-          files.push(defaultfilename+"."+nativeformat());
-          fit(pictures[i]);
-          defaultfilename=name;
+          files.push(name(prefix,i)+"."+nativeformat());
+          fit(prefix,pictures[i]);
         }
       }
     }
     if(multipage) {
-      bool inlinetex=settings.inlinetex;
-      settings.inlinetex=false;
       plain.shipout(prefix,multi,view=view);
       settings.inlinetex=inlinetex;
     }
     shipped=true;
   }
 
-  string load(int frames, real delay=animationdelay, string options="") {
-    return "\animategraphics["+options+"]{"+format("%.18f",1000/delay,"C")+"}{"+
-      basename()+"}{0}{"+string(frames-1)+"}";
+  string load(int frames, real delay=animationdelay, string options="",
+              bool multipage=false) {
+    string s="\animategraphics["+options+"]{"+format("%.18f",1000/delay,"C")+
+      "}{"+basename();
+    if(!multipage) s += "+";
+    s += "}{0}{"+string(frames-1)+"}";
+    return s;
   }
 
   string pdf(fit fit=NoBox, real delay=animationdelay, string options="",
              bool keep=settings.keep, bool multipage=true) {
+    if(settings.inlinetex) multipage=true;
     if(settings.tex != "pdflatex")
       abort("inline pdf animations require -tex pdflatex");
+    if(settings.outformat != "") settings.outformat="pdf";
     
     string filename=basename();
     string pdfname=filename+".pdf";
@@ -142,6 +139,7 @@ struct animation {
 
     if(global)
       export(filename,fit,multipage=multipage);
+    
     shipped=false;
 
     if(!keep && !settings.inlinetex) {
@@ -158,14 +156,14 @@ struct animation {
     if(!single)
       delete(pdfname);
 
-    return load(pictures.length,delay,options);
+    return load(pictures.length,delay,options,multipage);
   }
 
   int movie(fit fit=NoBox, int loops=0, real delay=animationdelay,
             string format=settings.outformat == "" ? "gif" : settings.outformat,
             string options="", bool keep=settings.keep) {
     if(global && format == "pdf") {
-      export(settings.outname,fit,multipage=true,view=true);
+      export(fit,multipage=true,view=true);
       return 0;
     }
 

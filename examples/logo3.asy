@@ -29,4 +29,5 @@ for(path p : outline)
 
 draw(path3(outline),red+linewidth(0));
 
-draw(surface(bezulate(text)),red,nolight);
+draw(surface(text),red,nolight);
+

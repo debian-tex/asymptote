@@ -40,6 +40,9 @@ Center, Bottom, Top, or Zero page alignment [Center].
 .B \-antialias n        
 Antialiasing width for rasterized output [2].
 .TP
+.B \-auto3D             
+Automatically activate 3D scene [true].
+.TP
 .B \-autoimport string  
 Module to automatically import.
 .TP
@@ -74,7 +77,7 @@ Conserve memory at the expense of speed [false].
 Enable debugging messages [false].
 .TP
 .B \-divisor n          
-Free space divisor for garbage collection [2].
+Garbage collect using purge(divisor=n) [2].
 .TP
 .B \-embed              
 Embed rendered preview image [true].

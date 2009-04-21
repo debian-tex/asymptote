@@ -1,3 +1,6 @@
+real camerafactor=2;       // Factor used for camera adjustment.
+pair viewportsize=0;       // Horizontal and vertical viewport limits.
+
 restricted bool Aspect=true;
 restricted bool IgnoreAspect=false;
 
@@ -148,8 +151,8 @@ struct coords3 {
     for(int i=0; i < c1.x.length; ++i) {
       coord cx=c1.x[i], cy=c2.y[i], cz=c3.z[i];
       triple tinf=shiftless(t)*((finite(cx.user) ? 0 : 1),
-				(finite(cy.user) ? 0 : 1),
-				(finite(cz.user) ? 0 : 1));
+                                (finite(cy.user) ? 0 : 1),
+                                (finite(cz.user) ? 0 : 1));
       triple z=t*(cx.user,cy.user,cz.user);
       triple w=(cx.truesize,cy.truesize,cz.truesize);
       w=length(w)*unit(shiftless(t)*w);
@@ -411,7 +414,8 @@ struct projection {
   bool showtarget=true; // Expand bounding volume to include target?
   typedef transformation projector(triple camera, triple up, triple target);
   projector projector;
-  bool autoadjust=true;
+  bool autoadjust=true; // Adjust camera to lie outside bounding volume?
+  bool center=false; // Center target within bounding volume?
   real angle; // Lens angle (currently only used by PRC viewpoint).
   int ninterpolate; // Used for projecting nurbs to 2D Bezier curves.
 
@@ -434,13 +438,14 @@ struct projection {
   }
 
   void operator init(triple camera, triple up=(0,0,1), triple target=(0,0,0),
-		     bool showtarget=true, bool autoadjust=true,
-                     projector projector) {
+                     bool showtarget=true, bool autoadjust=true,
+                     bool center=false, projector projector) {
     this.camera=camera;
     this.up=up;
     this.target=target;
     this.showtarget=showtarget;
     this.autoadjust=autoadjust;
+    this.center=center;
     this.projector=projector;
     calculate();
   }
@@ -456,6 +461,7 @@ struct projection {
     P.target=target;
     P.showtarget=showtarget;
     P.autoadjust=autoadjust;
+    P.center=center;
     P.projector=projector;
     P.angle=angle;
     P.ninterpolate=ninterpolate;
@@ -465,42 +471,22 @@ struct projection {
   // Return the maximum distance of box(m,M) from target.
   real distance(triple m, triple M) {
     triple[] c={m,(m.x,m.y,M.z),(m.x,M.y,m.z),(m.x,M.y,M.z),
-		(M.x,m.y,m.z),(M.x,m.y,M.z),(M.x,M.y,m.z),M};
-    real d=0;
-    for(int i=0; i < 8; ++i)
-      d=max(d,abs(c[i]-target));
-    return d;
+                (M.x,m.y,m.z),(M.x,m.y,M.z),(M.x,M.y,m.z),M};
+    return max(abs(c-target));
   }
    
-  void update() {
-    if(!infinity)
-      write("adjusting camera to ",camera);
-    calculate();
-  }
-  
-  // Check if v is on or behind the clipping plane.
-  bool behind(triple v) {
-    return dot(camera-v,camera-target) <= 0;
-  }
-
-  // Move the camera so that v is on or in front of clipping plane.
-  void adjust(triple v) {
-    if(!absolute && behind(v)) {
-      camera=target+abs(v-target)*unit(camera-target);
-      update();
-    }
-  }
-  
   // Move the camera so that the box(m,M) rotated about target will always
   // lie in front of the clipping plane.
-  void adjust(triple m, triple M) {
+  bool adjust(triple m, triple M) {
     triple v=camera-target;
     real d=distance(m,M);
-    static real lambda=2-1000*realEpsilon;
+    static real lambda=camerafactor*(1-sqrtEpsilon);
     if(lambda*d >= abs(v)) {
-      camera=target+2d*unit(v);
-      update();
+      camera=target+camerafactor*d*unit(v);
+      calculate();
+      return true;
     }
+    return false;
   }
 }
 
@@ -527,7 +513,7 @@ struct picture {
   // Three-dimensional version of drawer and drawerBound:
   typedef void drawer3(frame f, transform3 t, picture pic, projection P);
   typedef void drawerBound3(frame f, transform3 t, transform3 T,
-			    picture pic, projection P, triple lb, triple rt);
+                            picture pic, projection P, triple lb, triple rt);
 
   // The functions to do the deferred drawing.
   drawerBound[] nodes;
@@ -612,7 +598,7 @@ struct picture {
   // xsize, ysize, and zsize.
   real xunitsize=0, yunitsize=0, zunitsize=0;
   
-   // If true, the x and y directions must be scaled by the same amount.
+  // If true, the x and y directions must be scaled by the same amount.
   bool keepAspect=true;
 
   // A fixed scaling transform.
@@ -691,12 +677,12 @@ struct picture {
   }
   
   void userCorners(triple c000, triple c001, triple c010, triple c011,
-		   triple c100, triple c101, triple c110, triple c111) {
+                   triple c100, triple c101, triple c110, triple c111) {
     userMin=(min(c000.x,c001.x,c010.x,c011.x,c100.x,c101.x,c110.x,c111.x),
-	     min(c000.y,c001.y,c010.y,c011.y,c100.y,c101.y,c110.y,c111.y),
+             min(c000.y,c001.y,c010.y,c011.y,c100.y,c101.y,c110.y,c111.y),
              min(c000.z,c001.z,c010.z,c011.z,c100.z,c101.z,c110.z,c111.z));
     userMax=(max(c000.x,c001.x,c010.x,c011.x,c100.x,c101.x,c110.x,c111.x),
-	     max(c000.y,c001.y,c010.y,c011.y,c100.y,c101.y,c110.y,c111.y),
+             max(c000.y,c001.y,c010.y,c011.y,c100.y,c101.y,c110.y,c111.y),
              max(c000.z,c001.z,c010.z,c011.z,c100.z,c101.z,c110.z,c111.z));
   }
   
@@ -790,12 +776,17 @@ struct picture {
 
   void add(drawer3 d, bool exact=false, bool above=true) {
     add(new void(frame f, transform3 t, transform3 T, picture pic,
-		 projection P, triple, triple) {
-	  d(f,t*T,pic,P);
-	},exact,above);
+                 projection P, triple, triple) {
+          d(f,t*T,pic,P);
+        },exact,above);
   }
 
   void clip(drawer d, bool exact=false) {
+    bounds.clip(userMin,userMax);
+    this.add(d,exact);
+  }
+
+  void clip(drawerBound d, bool exact=false) {
     bounds.clip(userMin,userMax);
     this.add(d,exact);
   }
@@ -830,7 +821,7 @@ struct picture {
   }
 
   void addBox(triple userMin, triple userMax, triple trueMin=(0,0,0),
-	      triple trueMax=(0,0,0)) {
+              triple trueMax=(0,0,0)) {
     bounds3.min.push(userMin,trueMin);
     bounds3.max.push(userMax,trueMax);
     userBox(userMin,userMax);
@@ -1071,7 +1062,7 @@ struct picture {
     if(sx == 0) {
       sx=sy;
       if(sx == 0)
-	return identity();
+        return identity();
     } else if(sy == 0) sy=sx;
 
 
@@ -1114,7 +1105,7 @@ struct picture {
     if(sx == 0) {
       sx=max(sy,sz);
       if(sx == 0)
-	return identity(4);
+        return identity(4);
     }
     if(sy == 0) sy=max(sz,sx);
     if(sz == 0) sz=max(sx,sy);
@@ -1137,7 +1128,7 @@ struct picture {
   }
 
   frame fit3(transform3 t, transform3 T0=T3, picture pic, projection P,
-	     triple m, triple M) {
+             triple m, triple M) {
     frame f;
     for(int i=0; i < nodes3.length; ++i)
       nodes3[i](f,t,T0,pic,P,m,M);
@@ -1156,28 +1147,28 @@ struct picture {
 
   void add(void d(picture, transform), bool exact=false) {
     add(new void(frame f, transform t) {
-	  picture opic=new picture;
-	  d(opic,t);
-	  add(f,opic.fit(identity()));
-	},exact);
+        picture opic=new picture;
+        d(opic,t);
+        add(f,opic.fit(identity()));
+      },exact);
   }
 
   void add(void d(picture, transform3), bool exact=false, bool above=true) {
     add(new void(frame f, transform3 t, picture pic2, projection P) {
-	  picture opic=new picture;
-	  d(opic,t);
-	  add(f,opic.fit3(identity4,pic2,P));
+        picture opic=new picture;
+        d(opic,t);
+        add(f,opic.fit3(identity4,pic2,P));
       },exact,above);
   }
 
   void add(void d(picture, transform3, transform3, triple, triple),
-	   bool exact=false, bool above=true) {
+           bool exact=false, bool above=true) {
     add(new void(frame f, transform3 t, transform3 T, picture pic2,
-		 projection P, triple lb, triple rt) {
-	  picture opic=new picture;
-	  d(opic,t,T,lb,rt);
-	  add(f,opic.fit3(identity4,pic2,P));
-	},exact,above);
+                 projection P, triple lb, triple rt) {
+          picture opic=new picture;
+          d(opic,t,T,lb,rt);
+          add(f,opic.fit3(identity4,pic2,P));
+        },exact,above);
   }
 
   frame scaled() {
@@ -1196,7 +1187,7 @@ struct picture {
   // Calculate additional scaling required if only an approximate picture
   // size estimate is available.
   transform scale(frame f, real xsize=this.xsize, real ysize=this.ysize,
-		  bool keepaspect=this.keepAspect) {
+                  bool keepaspect=this.keepAspect) {
     if(bounds.exact) return identity();
     pair m=min(f);
     pair M=max(f);
@@ -1216,8 +1207,8 @@ struct picture {
   // Calculate additional scaling required if only an approximate thisture
   // size estimate is available.
   transform3 scale3(frame f, real xsize3=this.xsize3,
-		    real ysize3=this.ysize3, real zsize3=this.zsize3,
-		    bool keepaspect=this.keepAspect) {
+                    real ysize3=this.ysize3, real zsize3=this.zsize3,
+                    bool keepaspect=this.keepAspect) {
     if(bounds3.exact) return identity(4);
     triple m=min3(f);
     triple M=max3(f);
@@ -1249,9 +1240,9 @@ struct picture {
   }
 
   transform3 calculateTransform3(real xsize=xsize3, real ysize=ysize3,
-				 real zsize=zsize3,
-				 bool keepAspect=true, bool warn=true,
-				 projection P) {
+                                 real zsize=zsize3,
+                                 bool keepAspect=true, bool warn=true,
+                                 projection P=currentprojection) {
     transform3 t=scaling(xsize,ysize,zsize,keepAspect,warn);
     return scale3(fit3(t,null,P),keepAspect)*t;
   }
@@ -1267,20 +1258,20 @@ struct picture {
   }
   
   triple min3(real xsize=this.xsize3, real ysize=this.ysize3,
-	      real zsize=this.zsize3, bool keepAspect=this.keepAspect,
-	      bool warn=true, projection P) {
+              real zsize=this.zsize3, bool keepAspect=this.keepAspect,
+              bool warn=true, projection P) {
     return min(calculateTransform3(xsize,ysize,zsize,keepAspect,warn,P));
   }
   
   triple max3(real xsize=this.xsize3, real ysize=this.ysize3,
-	      real zsize=this.zsize3, bool keepAspect=this.keepAspect,
-	      bool warn=true, projection P) {
+              real zsize=this.zsize3, bool keepAspect=this.keepAspect,
+              bool warn=true, projection P) {
     return max(calculateTransform3(xsize,ysize,zsize,keepAspect,warn,P));
   }
   
   // Returns the 2D picture fit to the requested size.
   frame fit2(real xsize=this.xsize, real ysize=this.ysize,
-	     bool keepAspect=this.keepAspect) {
+             bool keepAspect=this.keepAspect) {
     if(fixed) return scaled();
     if(empty2()) return newframe;
     transform t=scaling(xsize,ysize,keepAspect);
@@ -1291,12 +1282,12 @@ struct picture {
   }
 
   static frame fitter(string,picture,string,real,real,bool,bool,string,string,
-		      projection);
+                      projection);
   frame fit(string prefix="", string format="",
-	    real xsize=this.xsize, real ysize=this.ysize,
-	    bool keepAspect=this.keepAspect, bool view=false,
-	    string options="", string script="",
-	    projection P=currentprojection) {
+            real xsize=this.xsize, real ysize=this.ysize,
+            bool keepAspect=this.keepAspect, bool view=false,
+            string options="", string script="",
+            projection P=currentprojection) {
     return fitter == null ? fit2(xsize,ysize,keepAspect) :
       fitter(prefix,this,format,xsize,ysize,keepAspect,view,options,script,P);
   }
@@ -1362,14 +1353,14 @@ struct picture {
     // Draw by drawing the copied picture.
     if(srcCopy.nodes.length > 0)
       nodes.push(new void(frame f, transform t, transform T, pair m, pair M) {
-	  add(f,srcCopy.fit(t,T*srcCopy.T,m,M),group,filltype,above);
-	});
+          add(f,srcCopy.fit(t,T*srcCopy.T,m,M),group,filltype,above);
+        });
     
     if(srcCopy.nodes3.length > 0) {
       nodes3.push(new void(frame f, transform3 t, transform3 T3, picture pic,
-			   projection P, triple m, triple M) {
-		    add(f,srcCopy.fit3(t,T3*srcCopy.T3,pic,P,m,M),group,above);
-		  });
+                           projection P, triple m, triple M) {
+                    add(f,srcCopy.fit3(t,T3*srcCopy.T3,pic,P,m,M),group,above);
+                  });
     }
     
     legend.append(src.legend);
@@ -1403,7 +1394,7 @@ picture operator * (transform3 t, picture orig)
   picture pic=orig.copy();
   pic.T3=t*pic.T3;
   pic.userCorners(t*pic.userMin,
-		  t*(pic.userMin.x,pic.userMin.y,pic.userMax.z),
+                  t*(pic.userMin.x,pic.userMin.y,pic.userMax.z),
                   t*(pic.userMin.x,pic.userMax.y,pic.userMin.z),
                   t*(pic.userMin.x,pic.userMax.y,pic.userMax.z),
                   t*(pic.userMax.x,pic.userMin.y,pic.userMin.z),
@@ -1423,7 +1414,7 @@ void size(picture pic=currentpicture, real x, real y=x,
 }
 
 void size3(picture pic=currentpicture, real x, real y=x, real z=y,
-          bool keepAspect=pic.keepAspect)
+           bool keepAspect=pic.keepAspect)
 {
   pic.size3(x,y,z,keepAspect);
 }
@@ -1499,7 +1490,7 @@ void add(picture pic=currentpicture, drawer d, bool exact=false)
 }
 
 void add(picture pic=currentpicture, void d(picture,transform),
-	 bool exact=false)
+         bool exact=false)
 {
   pic.add(d,exact);
 }
@@ -1713,7 +1704,7 @@ void clip(picture pic=currentpicture, path[] g, bool stroke=false,
 }
 
 void beginclip(picture pic=currentpicture, path[] g, bool stroke=false,
-	       pen fillrule=currentpen, bool copy=true) 
+               pen fillrule=currentpen, bool copy=true) 
 {
   if(copy)
     g=copy(g);
@@ -1780,12 +1771,12 @@ void add(picture dest=currentpicture, frame src, pair position=0,
 {
   if(is3D(src)) {
     dest.add(new void(frame f, transform3, picture, projection) {
-	add(f,src); // always add about 3D origin (ignore position)
+        add(f,src); // always add about 3D origin (ignore position)
       },true);
     dest.addBox((0,0,0),(0,0,0),min3(src),max3(src));
   } else {
     dest.add(new void(frame f, transform t) {
-	add(f,shift(t*position)*src,group,filltype,above);
+        add(f,shift(t*position)*src,group,filltype,above);
       },true);
     dest.addBox(position,position,min(src),max(src));
   }
@@ -1824,7 +1815,8 @@ void add(picture dest, picture src, bool group=true, filltype filltype=NoFill,
   dest.add(src,group,filltype,above);
 }
 
-void add(picture src, bool group=true, filltype filltype=NoFill, bool above=true)
+void add(picture src, bool group=true, filltype filltype=NoFill,
+         bool above=true)
 {
   currentpicture.add(src,group,filltype,above);
 }
