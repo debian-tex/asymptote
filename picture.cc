@@ -403,8 +403,11 @@ bool picture::postprocess(const string& prename, const string& outname,
   
   if((pdf && Labels) || !epsformat) {
     if(pdfformat) {
-      if(pdf && Labels) status=rename(prename.c_str(),outname.c_str());
-      else status=epstopdf(prename,outname);
+      if(pdf && Labels) {
+        status=rename(prename.c_str(),outname.c_str());
+        if(status != 0)
+          reportError("Cannot rename "+prename+" to "+outname);
+      } else status=epstopdf(prename,outname);
     } else {
       ostringstream cmd;
       double render=fabs(getSetting<double>("render"));
@@ -514,6 +517,8 @@ bool picture::shipout(picture *preamble, const string& Prefix,
   string outname=Outname(prefix,outputformat,standardout);
   string epsname=epsformat ? (standardout ? "" : outname) :
     auxname(prefix,"eps");
+  if(Labels)
+    spaceToUnderscore(prefix);
   string prename=((epsformat && !pdf) || !Labels) ? epsname : 
     auxname(prefix,preformat);
   
@@ -563,7 +568,6 @@ bool picture::shipout(picture *preamble, const string& Prefix,
   texfile *tex=NULL;
   
   if(Labels) {
-    spaceToUnderscore(prefix);
     texname=auxname(prefix,"tex");
     tex=new texfile(texname,b);
     tex->prologue();
@@ -723,21 +727,6 @@ void glrenderWrapper()
 #endif  
 }
 
-void hold(bool View) 
-{
-#ifdef HAVE_LIBGLUT  
-#ifdef HAVE_LIBPTHREAD
-  if(glthread) {
-    if(!View)
-      wait(readySignal,readyLock);
-  
-    if(!interact::interactive || !View)
-      wait(quitSignal,quitLock);
-  }
-#endif  
-#endif  
-}
-
 extern bool glinitialize;
 
 bool picture::shipout3(const string& prefix, const string& format,
@@ -780,7 +769,15 @@ bool picture::shipout3(const string& prefix, const string& format,
       com.viewportlighting=viewportlighting;
       com.view=View;
       wait(initSignal,initLock);
-      hold(View);
+#ifdef HAVE_LIBGLUT  
+#ifdef HAVE_LIBPTHREAD
+    if(!View)
+      wait(readySignal,readyLock);
+  
+    if(!interact::interactive || !View)
+      wait(quitSignal,quitLock);
+#endif  
+#endif  
       return true;
     }
 #endif
@@ -795,10 +792,25 @@ bool picture::shipout3(const string& prefix, const string& format,
     }
   }
   
+#ifdef HAVE_LIBPTHREAD
+  if(glthread && !interact::interactive)
+    pthread_mutex_lock(&quitLock);
+#endif  
   glrender(prefix,this,outputformat,width,height,angle,m,M,
            nlights,lights,diffuse,ambient,specular,viewportlighting,View,
            oldpid);
-  hold(View);
+#ifdef HAVE_LIBPTHREAD
+  if(glthread) {
+    if(!View)
+      wait(readySignal,readyLock);
+    
+    if(!interact::interactive) {
+      pthread_cond_wait(&quitSignal,&quitLock);
+      pthread_mutex_unlock(&quitLock);
+    }
+  }
+  return true;
+#endif  
 #else
   reportError("Cannot render image; please install glut, run ./configure, and recompile"); 
 #endif

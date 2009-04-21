@@ -23,6 +23,7 @@ const double BigFuzz=10000.0*DBL_EPSILON;
 const double Fuzz=1000.0*DBL_EPSILON;
 const double Fuzz2=Fuzz*Fuzz;
 const double sqrtFuzz=sqrt(Fuzz);
+const double third=1.0/3.0;
 
 path nullpath;
   
@@ -150,12 +151,11 @@ static inline double costhetapi3(double w)
 // Solve for the real roots of the cubic equation ax^3+bx^2+cx+d=0.
 cubicroots::cubicroots(double a, double b, double c, double d) 
 {
-  static const double third=1.0/3.0;
   static const double ninth=1.0/9.0;
   static const double fiftyfourth=1.0/54.0;
   
   // Remove roots at numerical infinity.
-  if(fabs(a) <= Fuzz*(fabs(b)+fabs(c)*Fuzz+fabs(d)*Fuzz*Fuzz)) {
+  if(fabs(a) <= Fuzz*(fabs(b)+fabs(c)*Fuzz+fabs(d)*Fuzz2)) {
     quadraticroots q(b,c,d);
     roots=q.roots;
     if(q.roots >= 1) t1=q.t1;
@@ -164,7 +164,7 @@ cubicroots::cubicroots(double a, double b, double c, double d)
   }
   
   // Detect roots at numerical zero.
-  if(fabs(d) <= Fuzz*(fabs(c)+fabs(b)*Fuzz+fabs(a)*Fuzz*Fuzz)) {
+  if(fabs(d) <= Fuzz*(fabs(c)+fabs(b)*Fuzz+fabs(a)*Fuzz2)) {
     quadraticroots q(a,b,c);
     roots=q.roots+1;
     t1=0;
@@ -367,12 +367,23 @@ inline void splitCubic(solvedKnot sn[], double t, const solvedKnot& left_,
                        const solvedKnot& right_)
 {
   solvedKnot &left=(sn[0]=left_), &mid=sn[1], &right=(sn[2]=right_);
-  pair x=split(t,left.post,right.pre); // m1
-  left.post=split(t,left.point,left.post); // m0
-  right.pre=split(t,right.pre,right.point); // m2
-  mid.pre=split(t,left.post,x); // m3
-  mid.post=split(t,x,right.pre); // m4 
-  mid.point=split(t,mid.pre,mid.post); // m5
+  if(left.straight) {
+    mid.point=split(t,left.point,right.point);
+    pair deltaL=third*(mid.point-left.point);
+    left.post=left.point+deltaL;
+    mid.pre=mid.point-deltaL;
+    pair deltaR=third*(right.point-mid.point);
+    mid.post=mid.point+deltaR;
+    right.pre=right.point-deltaR;
+    mid.straight=true;
+  } else {
+    pair x=split(t,left.post,right.pre); // m1
+    left.post=split(t,left.point,left.post); // m0
+    right.pre=split(t,right.pre,right.point); // m2
+    mid.pre=split(t,left.post,x); // m3
+    mid.post=split(t,x,right.pre); // m4 
+    mid.point=split(t,mid.pre,mid.post); // m5
+  }
 }
 
 path path::subpath(double a, double b) const
@@ -430,7 +441,7 @@ path path::subpath(double a, double b) const
   return p;
 }
 
-// Special case of subpath used by intersect.
+// Special case of subpath for paths of length 1 used by intersect.
 void path::halve(path &first, path &second) const
 {
   solvedKnot sn[3];
@@ -598,10 +609,10 @@ double path::cubiclength(Int i, double goal) const
   L=3.0*integral;
   if(goal < 0 || goal >= L) return L;
   
-  static const double third=1.0/3.0;
   double t=goal/L;
   goal *= third;
-  if(!unsimpson(goal,ds,0.0,t,10.0*DBL_EPSILON,integral,1.0,sqrt(DBL_EPSILON)))
+  static double dxmin=sqrt(DBL_EPSILON);
+  if(!unsimpson(goal,ds,0.0,t,100.0*DBL_EPSILON,integral,1.0,dxmin))
     reportError("nesting capacity exceeded in computing arctime");
   return -t;
 }
@@ -938,21 +949,21 @@ void intersections(std::vector<double>& S, path& g,
 }
 
 bool intersections(double &s, double &t, std::vector<double>& S,
-                   std::vector<double>& T,
-                   path& p, path& q, double fuzz, bool single, unsigned depth)
+                   std::vector<double>& T, path& p, path& q,
+                   double fuzz, bool single, bool exact, unsigned depth)
 {
   if(errorstream::interrupt) throw interrupted();
   
   Int lp=p.length();
-  if((lp == 1 && p.straight(0)) || lp == 0) {
+  if(((lp == 1 && p.straight(0)) || lp == 0) && exact) {
     std::vector<double> T1,S1;
     intersections(T1,S1,q,p.point((Int) 0),p.point(lp),fuzz);
     add(s,t,S,T,S1,T1,p,q,fuzz,single);
     return S1.size() > 0;
   }
-  
+
   Int lq=q.length();
-  if((lq == 1 && q.straight(0)) || lq == 0) {
+  if(((lq == 1 && q.straight(0)) || lq == 0) && exact) {
     std::vector<double> S1,T1;
     intersections(S1,T1,p,q.point((Int) 0),q.point(lq),fuzz);
     add(s,t,S,T,S1,T1,p,q,fuzz,single);
@@ -986,8 +997,8 @@ bool intersections(double &s, double &t, std::vector<double>& S,
     double pscale,poffset;
     
     if(lp <= 1) {
-      p.halve(p1,p2);
-      if(p1 == p || p2 == p) {
+      if(lp == 1) p.halve(p1,p2);
+      if(lp == 0 || p1 == p || p2 == p) {
         std::vector<double> T1,S1;
         intersections(T1,S1,q,p.point((Int) 0),p.point((Int) 0),fuzz);
         add(s,t,S,T,S1,T1,p,q,fuzz,single);
@@ -1006,8 +1017,8 @@ bool intersections(double &s, double &t, std::vector<double>& S,
     double qscale,qoffset;
     
     if(lq <= 1) {
-      q.halve(q1,q2);
-      if(q1 == q || q2 == q) {
+      if(lq == 1) q.halve(q1,q2);
+      if(lq == 0 || q1 == q || q2 == q) {
         std::vector<double> S1,T1;
         intersections(S1,T1,p,q.point((Int) 0),q.point((Int) 0),fuzz);
         add(s,t,S,T,S1,T1,p,q,fuzz,single);
@@ -1028,17 +1039,17 @@ bool intersections(double &s, double &t, std::vector<double>& S,
     size_t count=0;
     
     std::vector<double> S1,T1;
-    if(intersections(s,t,S1,T1,p1,q1,fuzz,single,depth)) {
+    if(intersections(s,t,S1,T1,p1,q1,fuzz,single,exact,depth)) {
       add(s,t,S,T,S1,T1,pscale,qscale,0.0,0.0,p,q,fuzz,single);
       if(single || depth <= mindepth)
         return true;
       count += S1.size();
       if(Short && count > maxcount) return true;
     }
-    
+     
     S1.clear();
     T1.clear();
-    if(intersections(s,t,S1,T1,p1,q2,fuzz,single,depth)) {
+    if(intersections(s,t,S1,T1,p1,q2,fuzz,single,exact,depth)) {
       add(s,t,S,T,S1,T1,pscale,qscale,0.0,qoffset,p,q,fuzz,single);
       if(single || depth <= mindepth)
         return true;
@@ -1048,7 +1059,7 @@ bool intersections(double &s, double &t, std::vector<double>& S,
     
     S1.clear();
     T1.clear();
-    if(intersections(s,t,S1,T1,p2,q1,fuzz,single,depth)) {
+    if(intersections(s,t,S1,T1,p2,q1,fuzz,single,exact,depth)) {
       add(s,t,S,T,S1,T1,pscale,qscale,poffset,0.0,p,q,fuzz,single);
       if(single || depth <= mindepth)
         return true;
@@ -1058,7 +1069,7 @@ bool intersections(double &s, double &t, std::vector<double>& S,
     
     S1.clear();
     T1.clear();
-    if(intersections(s,t,S1,T1,p2,q2,fuzz,single,depth)) {
+    if(intersections(s,t,S1,T1,p2,q2,fuzz,single,exact,depth)) {
       add(s,t,S,T,S1,T1,pscale,qscale,poffset,qoffset,p,q,fuzz,single);
       if(single || depth <= mindepth)
         return true;
@@ -1173,7 +1184,7 @@ double orient2d(const pair& a, const pair& b, const pair& c)
   return orient;
 }
 
-// Returns true iff the point z lies strictly inside the bounding box
+// Returns true iff the point z lies in or on the bounding box
 // of a,b,c, and d.
 bool insidebbox(const pair& a, const pair& b, const pair& c, const pair& d,
                 const pair& z)
@@ -1182,8 +1193,8 @@ bool insidebbox(const pair& a, const pair& b, const pair& c, const pair& d,
   B.addnonempty(b);
   B.addnonempty(c);
   B.addnonempty(d);
-  return B.left < z.getx() && z.getx() < B.right && B.bottom < z.gety() 
-    && z.gety() < B.top;
+  return B.left <= z.getx() && z.getx() <= B.right && B.bottom <= z.gety() 
+    && z.gety() <= B.top;
 }
 
 inline bool inrange(double x0, double x1, double x)
@@ -1191,9 +1202,27 @@ inline bool inrange(double x0, double x1, double x)
   return (x0 <= x && x <= x1) || (x1 <= x && x <= x0);
 }
 
+// Return true if point z is on z0--z1; otherwise compute contribution to 
+// winding number.
+bool checkstraight(const pair& z0, const pair& z1, const pair& z, Int& count)
+{
+  if(z0.gety() <= z.gety() && z.gety() <= z1.gety()) {
+    double side=orient2d(z0,z1,z);
+    if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
+      return true;
+    if(z.gety() < z1.gety() && side > 0) ++count;
+  } else if(z1.gety() <= z.gety() && z.gety() <= z0.gety()) {
+    double side=orient2d(z0,z1,z);
+    if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
+      return true;
+    if(z.gety() < z0.gety() && side < 0) --count;
+  }
+  return false;
+}
+
 // returns true if point is on curve; otherwise compute contribution to 
 // winding number.
-bool checkside(const pair& z0, const pair& c0, const pair& c1,
+bool checkcurve(const pair& z0, const pair& c0, const pair& c1,
                const pair& z1, const pair& z, Int& count, unsigned depth) 
 {
   if(depth == 0) return true;
@@ -1205,22 +1234,10 @@ bool checkside(const pair& z0, const pair& c0, const pair& c1,
     const pair m3=0.5*(m0+m1);
     const pair m4=0.5*(m1+m2);
     const pair m5=0.5*(m3+m4);
-    if(checkside(z0,m0,m3,m5,z,count,depth) || 
-       checkside(m5,m4,m2,z1,z,count,depth)) return true;
-  } else {
-    if(z0.gety() <= z.gety() && z.gety() <= z1.gety()) {
-      double side=orient2d(z0,z1,z);
-      if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
-        return true;
-      if(z.gety() < z1.gety() && side > 0) ++count;
-    }
-    else if(z1.gety() <= z.gety() && z.gety() <= z0.gety()) {
-      double side=orient2d(z0,z1,z);
-      if(side == 0.0 && inrange(z0.getx(),z1.getx(),z.getx()))
-        return true;
-      if(z.gety() < z0.gety() && side < 0) --count;
-    }
-  }
+    if(checkcurve(z0,m0,m3,m5,z,count,depth) || 
+       checkcurve(m5,m4,m2,z1,z,count,depth)) return true;
+  } else
+    if(checkstraight(z0,z1,z,count)) return true;
   return false;
 }
 
@@ -1229,7 +1246,7 @@ bool checkside(const pair& z0, const pair& c0, const pair& c1,
 // the path.
 Int path::windingnumber(const pair& z) const
 {
-  static const Int infinity=Int_MAX+((Int_MAX % 2)-1);;
+  static const Int undefined=Int_MAX+((Int_MAX % 2)-1);;
   
   if(!cycles)
     reportError("path is not cyclic");
@@ -1241,8 +1258,12 @@ Int path::windingnumber(const pair& z) const
   
   Int count=0;
   for(Int i=0; i < n; ++i)
-    if(checkside(point(i),postcontrol(i),precontrol(i+1),point(i+1),z,count,
-                 maxdepth)) return infinity;
+    if(straight(i)) {
+      if(checkstraight(point(i),point(i+1),z,count))
+        return undefined;
+    } else
+      if(checkcurve(point(i),postcontrol(i),precontrol(i+1),point(i+1),z,count,
+                    maxdepth)) return undefined;
   return count;
 }
 
@@ -1296,23 +1317,22 @@ path nurb(pair z0, pair z1, pair z2, pair z3,
     nodes[i].point=(W0*z0+W1*z1+W2*z2+W3*z3)/(W0+W1+W2+W3);
   }
   
-  static const double onethird=1.0/3.0;
   static const double twothirds=2.0/3.0;
   pair z=nodes[0].point;
   nodes[0].pre=z;
-  nodes[0].post=twothirds*z+onethird*nodes[1].point;
+  nodes[0].post=twothirds*z+third*nodes[1].point;
   for(int i=1; i < m; ++i) {
     pair z0=nodes[i].point;
     pair zm=nodes[i-1].point;
     pair zp=nodes[i+1].point;
-    pair pre=twothirds*z0+onethird*zm;
-    pair pos=twothirds*z0+onethird*zp;
+    pair pre=twothirds*z0+third*zm;
+    pair pos=twothirds*z0+third*zp;
     pair dir=unit(pos-pre);
     nodes[i].pre=z0-length(z0-pre)*dir;
     nodes[i].post=z0+length(pos-z0)*dir;
   }
   z=nodes[m].point;
-  nodes[m].pre=twothirds*z+onethird*nodes[m-1].point;
+  nodes[m].pre=twothirds*z+third*nodes[m-1].point;
   nodes[m].post=z;
   return path(nodes,m+1);
 }

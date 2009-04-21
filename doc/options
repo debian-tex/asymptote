@@ -5,6 +5,7 @@ Options (negate by replacing - with -no):
 -V,-View              View output; command-line only
 -a,-align C|B|T|Z     Center, Bottom, Top, or Zero page alignment [Center]
 -antialias n          Antialiasing width for rasterized output [2]
+-auto3D               Automatically activate 3D scene [true]
 -autoimport string    Module to automatically import
 -autoplain            Enable automatic importing of plain [true]
 -autorotate           Enable automatic PDF page rotation [false]
@@ -16,7 +17,7 @@ Options (negate by replacing - with -no):
 -c,-command string    Command to autoexecute
 -compact              Conserve memory at the expense of speed [false]
 -d,-debug             Enable debugging messages [false]
--divisor n            Free space divisor for garbage collection [2]
+-divisor n            Garbage collect using purge(divisor=n) [2]
 -embed                Embed rendered preview image [true]
 -exitonEOF            Exit interactive mode on EOF [true]
 -fitscreen            Fit rendered image to screen [true]

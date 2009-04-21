@@ -257,11 +257,10 @@ path operator &(path p, cycleToken tok)
 {
   int n=length(p);
   if(n < 0) return nullpath;
-  pair a=point(p,0);
-  pair b=point(p,n);
-  return straight(p,n) ? subpath(p,0,n-1)--cycle :
-    subpath(p,0,n-1)..controls postcontrol(p,n-1) and precontrol(p,n)..
-    cycle;
+  if(n == 0) return p--cycle;
+  if(cyclic(p)) return p;
+  return straight(p,n-1) ? subpath(p,0,n-1)--cycle :
+    subpath(p,0,n-1)..controls postcontrol(p,n-1) and precontrol(p,n)..cycle;
 }
 
 // return a cyclic path enclosing a region bounded by a list of two or more
@@ -297,13 +296,16 @@ path buildcycle(... path[] p)
 
   path G;
   for(int i=0; i < n ; ++i) {
+    real Ta=ta[i];
     real Tb=tb[i];
     if(cyclic(p[i])) {
-      real t=Tb-length(p[i]);
-      if(abs(c-point(p[i],0.5(ta[i]+t))) <
-	 abs(c-point(p[i],0.5(ta[i]+tb[i])))) Tb=t;
+      int L=length(p[i]);
+      real t=Tb-L;
+      if(abs(c-point(p[i],0.5(Ta+t))) <
+	 abs(c-point(p[i],0.5(Ta+Tb)))) Tb=t;
+      while(Tb < Ta) Tb += L;
     }
-    G=G&subpath(p[i],ta[i],Tb);
+    G=G&subpath(p[i],Ta,Tb);
   }
   return G&cycle;
 }
@@ -316,6 +318,29 @@ int inside(path p, path q, pen fillrule=currentpen)
   if(intersect(p,q).length > 0) return 0;
   if(cyclic(p) && inside(p,point(q,0),fillrule)) return 1;
   if(cyclic(q) && inside(q,point(p,0),fillrule)) return -1;
+  return 0;
+}
+
+// Return an arbitrary point strictly inside a cyclic path p according to
+// the specified fill rule.
+pair inside(path p, pen fillrule=currentpen)
+{
+  if(!cyclic(p)) abort("path is not cyclic");
+  int n=length(p);
+  for(int i=0; i < n; ++i) {
+    pair z=point(p,i);
+    real[] T=intersections(p,z,z+I*dir(p,i));
+    // Check midpoints of line segments formed between the
+    // corresponding intersection points and z.
+    for(int j=0; j < T.length; ++j) {
+      if(T[j] != i) {
+        pair w=point(p,T[j]);
+        pair m=0.5*(z+w);
+        if(inside(windingnumber(p,m),fillrule)) return m;
+      }
+    }
+  }
+  abort("cannot find an interior point");
   return 0;
 }
 

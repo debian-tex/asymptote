@@ -4,13 +4,14 @@ int nslice=12;
 real camerafactor=1.2;
 
 private real Fuzz=10.0*realEpsilon;
+private real nineth=1/9;
 
 struct patch {
   triple[][] P=new triple[4][4];
   triple[] normals; // Optionally specify 4 normal vectors at the corners.
   pen[] colors;     // Optionally specify 4 corner colors.
-  bool3 planar;     // Patch is planar.
   bool straight;    // Patch is based on a piecewise straight external path.
+  bool3 planar;     // Patch is planar.
 
   path3 external() {
     return
@@ -72,23 +73,23 @@ struct patch {
 
   // compute normal vectors for degenerate cases
   private triple normal0(real u, real v, real epsilon) {
-    triple n=0.5*(cross(bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v),
-                        bezier(BvP(0,v),BvP(1,v),BvP(2,v),BvP(3,v),u))+
-                  cross(bezier(BuP(0,u),BuP(1,u),BuP(2,u),BuP(3,u),v),   
-                        bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u)));
-    return -((abs(n) > epsilon) ? n :
-             1/6*cross(bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v),
-                       bezier(BvP(0,v),BvP(1,v),BvP(2,v),BvP(3,v),u))+
-             0.25*cross(bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v),   
-                        bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u))+
-             1/6*cross(bezier(BuP(0,u),BuP(1,u),BuP(2,u),BuP(3,u),v),   
-                       bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u))+
-             1/12*(cross(bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v),
-                         bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u))+
-                   cross(bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v),   
-                         bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u)))+
-             1/36*cross(bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v),   
-                        bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u)));
+    triple n=0.5*(cross(bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u),
+                        bezier(BuP(0,u),BuP(1,u),BuP(2,u),BuP(3,u),v))+
+                  cross(bezier(BvP(0,v),BvP(1,v),BvP(2,v),BvP(3,v),u),   
+                        bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v)));
+    return abs(n) > epsilon ? n :
+      0.25*cross(bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u),   
+                 bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v))+
+      1/6*(cross(bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u),
+                 bezier(BuP(0,u),BuP(1,u),BuP(2,u),BuP(3,u),v))+
+           cross(bezier(BvP(0,v),BvP(1,v),BvP(2,v),BvP(3,v),u),   
+                 bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v)))+
+      1/12*(cross(bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u),
+                  bezier(BuPP(0,u),BuPP(1,u),BuPP(2,u),BuPP(3,u),v))+
+            cross(bezier(BvPP(0,v),BvPP(1,v),BvPP(2,v),BvPP(3,v),u),   
+                  bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v)))+
+      1/36*cross(bezier(BvPPP(0),BvPPP(1),BvPPP(2),BvPPP(3),u),   
+                 bezier(BuPPP(0),BuPPP(1),BuPPP(2),BuPPP(3),v));
   }
 
   static real fuzz=1000*realEpsilon;
@@ -166,8 +167,6 @@ struct patch {
   void init() {
     havemin3=false;
     havemax3=false;
-    straight=false;
-    planar=default;
   }
 
   triple min(triple bound=P[0][0]) {
@@ -207,18 +206,32 @@ struct patch {
     this.straight=straight;
   }
 
+  void operator init(pair[][] P, triple plane(pair)=XYplane,
+                     bool straight=false) {
+    triple[][] Q=new triple[4][];
+    for(int i=0; i < 4; ++i) {
+      pair[] Pi=P[i];
+      Q[i]=sequence(new triple(int j) {return plane(Pi[j]);},4);
+    }
+    operator init(Q,straight);
+    planar=true;
+  }
+
   void operator init(patch s) {
     operator init(s.P,s.normals,s.colors,s.straight);
   }
   
-  static real nineth=1/9;
-
-  // A constructor for a convex cyclic path of length <= 4 with optional
-  // arrays of 4 internal points, corner normals and pens.
+  // A constructor for a convex cyclic path3 of length <= 4 with optional
+  // arrays of 4 internal points, corner normals, and pens.
   void operator init(path3 external, triple[] internal=new triple[],
                      triple[] normals=new triple[], pen[] colors=new pen[],
                      bool3 planar=default) {
     init();
+
+    if(internal.length == 0 && planar == default)
+      this.planar=normal(external) != O;
+    else this.planar=planar;
+
     int L=length(external);
     if(L > 4 || !cyclic(external))
       abort("cyclic path3 of length <= 4 expected");
@@ -242,39 +255,24 @@ struct patch {
 
     if(internal.length == 0) {
       straight=piecewisestraight(external);
-      if(planar == default) this.planar=normal(external) != O;
-      else this.planar=planar;
       internal=new triple[4];
-      for(int j=0; j < 4; ++j) {
+      for(int j=0; j < 4; ++j)
         internal[j]=nineth*(-4*point(external,j)
-                            +6*(precontrol(external,j)+
-                                postcontrol(external,j))
+                            +6*(precontrol(external,j)+postcontrol(external,j))
                             -2*(point(external,j-1)+point(external,j+1))
                             +3*(precontrol(external,j-1)+
-                                postcontrol(external,j+1))-
-                            point(external,j+2));
-      }
-    }
+                                postcontrol(external,j+1))
+                            -point(external,j+2));
+    } else straight=false;
 
-    P[1][0]=precontrol(external,0);
-    P[0][0]=point(external,0);
-    P[0][1]=postcontrol(external,0);
-    P[1][1]=internal[0];
-
-    P[0][2]=precontrol(external,1);
-    P[0][3]=point(external,1);
-    P[1][3]=postcontrol(external,1);
-    P[1][2]=internal[1];
-
-    P[2][3]=precontrol(external,2);
-    P[3][3]=point(external,2);
-    P[3][2]=postcontrol(external,2);
-    P[2][2]=internal[2];
-
-    P[3][1]=precontrol(external,3);
-    P[3][0]=point(external,3);
-    P[2][0]=postcontrol(external,3);
-    P[2][1]=internal[3];
+    P=new triple[][] {
+      {point(external,0),postcontrol(external,0),precontrol(external,1),
+       point(external,1)},
+      {precontrol(external,0),internal[0],internal[1],postcontrol(external,1)},
+      {postcontrol(external,3),internal[3],internal[2],precontrol(external,2)},
+      {point(external,3),precontrol(external,3),postcontrol(external,2),
+       point(external,2)}
+    };
   }
 
   // A constructor for a convex quadrilateral.
@@ -282,49 +280,35 @@ struct patch {
                      triple[] normals=new triple[], pen[] colors=new pen[],
                      bool3 planar=default) {
     init();
+
+    if(internal.length == 0 && planar == default)
+      this.planar=normal(external) != O;
+    else this.planar=planar;
+
     if(normals.length != 0)
       this.normals=copy(normals);
     if(colors.length != 0)
       this.colors=copy(colors);
 
-    straight=true;
-
     if(internal.length == 0) {
-      if(planar == default) this.planar=normal(external) != O;
-      else this.planar=planar;
       internal=new triple[4];
-      for(int j=0; j < 4; ++j) {
+      for(int j=0; j < 4; ++j)
         internal[j]=nineth*(4*external[j]+2*external[(j+1)%4]+
                             external[(j+2)%4]+2*external[(j+3)%4]);
-      }
     }
 
-    triple delta;
+    straight=true;
 
-    P[0][0]=external[0];
-    delta=(external[1]-external[0])/3;
-    P[0][1]=external[0]+delta;
-    P[1][1]=internal[0];
+    triple delta[]=new triple[4];
+    for(int j=0; j < 4; ++j)
+      delta[j]=(external[(j+1)% 4]-external[j])/3;
 
-    P[0][2]=external[1]-delta;
-    P[0][3]=external[1];
-    delta=(external[2]-external[1])/3;
-    P[1][3]=external[1]+delta;
-    P[1][2]=internal[1];
-
-    P[2][3]=external[2]-delta;
-    P[3][3]=external[2];
-    delta=(external[3]-external[2])/3;
-    P[3][2]=external[2]+delta;
-    P[2][2]=internal[2];
-
-    P[3][1]=external[3]-delta;
-    P[3][0]=external[3];
-    delta=(external[0]-external[3])/3;
-    P[2][0]=external[3]+delta;
-    P[2][1]=internal[3];
-
-    P[1][0]=external[0]-delta;
+    P=new triple[][] {
+      {external[0],external[0]+delta[0],external[1]-delta[0],external[1]},
+      {external[0]-delta[3],internal[0],internal[1],external[1]+delta[1]},
+      {external[3]+delta[3],internal[3],internal[2],external[2]-delta[1]},
+      {external[3],external[3]-delta[2],external[2]+delta[2],external[2]}
+    };
   }
 }
 
@@ -383,11 +367,6 @@ struct surface {
       this.s[i]=patch(s.s[i]);
   }
 
-  void operator init(triple[][] P, triple[] normals=new triple[],
-                     pen[] colors=new pen[], bool3 planar=default) {
-    s=new patch[] {patch(P,normals,colors,planar)};
-  }
-
   void operator init(triple[][][] P, triple[][] normals=new triple[][],
                      pen[][] colors=new pen[][], bool3 planar=default) {
     s=sequence(new patch(int i) {
@@ -421,15 +400,271 @@ struct surface {
     return sequence(new triple(int i) {return s[i].cornermean();},s.length);
   }
 
-  void split(path3 external, triple[] internal=new triple[],
-             triple[] normals=new triple[], pen[] colors=new pen[],
-             bool3 planar=default) {
+  // A constructor for a possibly nonconvex cyclic path in a given plane.
+  void operator init (path p, triple plane(pair)=XYplane,
+                      bool checkboundary=true) {
+    if(!cyclic(p))
+      abort("cyclic path expected");
+
+    int L=length(p);
+
+    if(L > 4) {
+      for(path g : bezulate(p))
+        s.append(surface(g,plane,checkboundary).s);
+      return;
+    }
+        
+    pair[][] P(path p) {
+      if(L == 1)
+        p=p--cycle--cycle--cycle;
+      else if(L == 2)
+        p=p--cycle--cycle;
+      else if(L == 3)
+        p=p--cycle;
+ 
+      pair[] internal=new pair[4];
+      for(int j=0; j < 4; ++j) {
+        internal[j]=nineth*(-4*point(p,j)
+                            +6*(precontrol(p,j)+postcontrol(p,j))
+                            -2*(point(p,j-1)+point(p,j+1))
+                            +3*(precontrol(p,j-1)+postcontrol(p,j+1))
+                            -point(p,j+2));
+      }
+    
+      return new pair[][] {
+        {point(p,0),postcontrol(p,0),precontrol(p,1),point(p,1)},
+          {precontrol(p,0),internal[0],internal[1],postcontrol(p,1)},
+            {postcontrol(p,3),internal[3],internal[2],precontrol(p,2)},
+              {point(p,3),precontrol(p,3),postcontrol(p,2),point(p,2)}
+      };
+    }
+
+    bool straight=piecewisestraight(p);
+    if(L <= 3 && straight) {
+      s=new patch[] {patch(P(p),plane,straight)};
+      return;
+    }
+    
+    // Split p along the angle bisector at t.
+    bool split(path p, real t) {
+      pair dir=dir(p,t);
+      if(dir != 0) {
+        path g=subpath(p,t,t+length(p));
+        int L=length(g);
+        pair z=point(g,0);
+        real[] T=intersections(g,z,z+I*dir);
+        for(int i=0; i < T.length; ++i) {
+          real cut=T[i];
+          if(cut > sqrtEpsilon && cut < L-sqrtEpsilon) {
+            pair w=point(g,cut);
+            if(!inside(p,0.5*(z+w),zerowinding)) continue;
+            pair delta=sqrtEpsilon*(w-z);
+            if(intersections(g,z-delta--w+delta).length != 2) continue;
+            s=surface(subpath(g,0,cut)--cycle,plane,checkboundary).s;
+            s.append(surface(subpath(g,cut,L)--cycle,plane,checkboundary).s);
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Ensure that all interior angles are less than 180 degrees.
+    real fuzz=1e-4;
+    int sign=sgn(windingnumber(p,inside(p,zerowinding)));
+    for(int i=0; i < L; ++i) {
+      if(sign*(conj(dir(p,i,-1))*dir(p,i,1)).y < -fuzz) {
+        if(split(p,i)) return;
+      }
+    }
+
+    pair[][] P=P(p);
+
+    if(straight) {
+      s=new patch[] {patch(P,plane,straight)};
+      return;
+    }
+    
+    // Check for degeneracy.
+    pair[][] U=new pair[3][4];
+    pair[][] V=new pair[4][3];
+
+    for(int i=0; i < 3; ++i) {
+      for(int j=0; j < 4; ++j)
+        U[i][j]=P[i+1][j]-P[i][j];
+    }
+      
+    for(int i=0; i < 4; ++i) {
+      for(int j=0; j < 3; ++j)
+        V[i][j]=P[i][j+1]-P[i][j];
+    }
+      
+    int[] choose2={1,2,1};
+    int[] choose3={1,3,3,1};
+
+    real T[][]=new real[6][6];
+    for(int p=0; p < 6; ++p) {
+      int kstart=max(p-2,0);
+      int kstop=min(p,3);
+      real[] Tp=T[p];
+      for(int q=0; q < 6; ++q) {
+        real Tpq;
+        int jstop=min(q,3);
+        int jstart=max(q-2,0);
+        for(int k=kstart; k <= kstop; ++k) {
+          int choose3k=choose3[k];
+          for(int j=jstart; j <= jstop; ++j) {
+            int i=p-k;
+            int l=q-j;
+            Tpq += (conj(U[i][j])*V[k][l]).y*
+              choose2[i]*choose3k*choose3[j]*choose2[l];
+          }
+        }
+        Tp[q]=Tpq;
+      }
+    }
+
+    bool3 aligned=default;
+    bool degenerate=false;
+
+    for(int p=0; p < 6; ++p) {
+      for(int q=0; q < 6; ++q) {
+        if(aligned == default) {
+          if(T[p][q] < -sqrtEpsilon) aligned=true;
+          if(T[p][q] > sqrtEpsilon) aligned=false;
+        } else {
+          if((T[p][q] < -sqrtEpsilon && aligned == false) ||
+             (T[p][q] > sqrtEpsilon && aligned == true)) degenerate=true;
+        }
+      }
+    }
+
+    if(!degenerate) {
+      if(aligned == (sign >= 0))
+        s=new patch[] {patch(P,plane)};
+      return;
+    }
+
+    if(checkboundary) {
+      // Polynomial coefficients of (B_i'' B_j + B_i' B_j')/3.
+      static real[][][] fpv0={
+        {{5, -20, 30, -20, 5},
+         {-3, 24, -54, 48, -15},
+         {0, -6, 27, -36, 15},
+         {0, 0, -3, 8, -5}},
+        {{-7, 36, -66, 52, -15},
+         {3, -36, 108, -120, 45},
+         {0, 6, -45, 84, -45},
+         {0, 0, 3, -16, 15}},
+        {{2, -18, 45, -44, 15},
+         {0, 12, -63, 96, -45},
+         {0, 0, 18, -60, 45},
+         {0, 0, 0, 8, -15}},
+        {{0, 2, -9, 12, -5},
+         {0, 0, 9, -24, 15},
+         {0, 0, 0, 12, -15},
+         {0, 0, 0, 0, 5}}
+      };
+
+      // Compute one-ninth of the derivative of the Jacobian along the boundary.
+      real[][] c=array(4,array(5,0.0));
+      for(int i=0; i < 4; ++i) {
+        real[][] fpv0i=fpv0[i];
+        for(int j=0; j < 4; ++j) {
+          real[] w=fpv0i[j];
+          c[0] += w*(conj(P[0][j]-P[1][j])*P[0][i]).y;   // u=0
+          c[1] += w*(conj(P[i][3])*(P[j][3]-P[j][2])).y; // v=1
+          c[2] += w*(conj(P[3][j]-P[2][j])*P[3][i]).y;   // u=1
+          c[3] += w*(conj(P[i][0])*(P[j][1]-P[j][0])).y; // v=0
+        }
+      }
+    
+      pair BuP(int j, real u) {
+        return bezierP(P[0][j],P[1][j],P[2][j],P[3][j],u);
+      }
+      pair BvP(int i, real v) {
+        return bezierP(P[i][0],P[i][1],P[i][2],P[i][3],v);
+      }
+      real normal(real u, real v) {
+        return (conj(bezier(BvP(0,v),BvP(1,v),BvP(2,v),BvP(3,v),u))*
+                bezier(BuP(0,u),BuP(1,u),BuP(2,u),BuP(3,u),v)).y;
+      }
+
+      // Use Rolle's theorem to check for degeneracy on the boundary.
+      real M=0;
+      real cut;
+      for(int i=0; i < 4; ++i) {
+        if(!straight(p,i)) {
+          real[] ci=c[i];
+          pair[] R=quarticroots(ci[4],ci[3],ci[2],ci[1],ci[0]);
+          for(pair r : R) {
+            if(fabs(r.y) < sqrtEpsilon) {
+              real t=r.x;
+              if(0 <= t && t <= 1) {
+                real[] U={0,t,1,t};
+                real[] V={t,1,t,0};
+                real[] T={t,t,1-t,1-t};
+                real N=sign*normal(U[i],V[i]);
+                if(N < M) {
+                  M=N; cut=i+T[i];
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Split at the worst boundary degeneracy.
+      if(M < 0 && split(p,cut)) return;
+    }
+    
+    // Split arbitrarily to resolve any remaining (internal) degeneracy.
+    checkboundary=false;
+    for(int i=0; i < L; ++i)
+      if(!straight(p,i) && split(p,i+0.5)) return;
+
+    while(true)
+      for(int i=0; i < L; ++i)
+        if(!straight(p,i) && split(p,i+unitrand())) return;
+  }
+
+  void operator init(explicit path[] g, triple plane(pair)=XYplane) {
+    for(path p : bezulate(g))
+      s.append(surface(p,plane).s);
+  }
+
+  // A general surface constructor for both planar and nonplanar 3D paths.
+  void construct(path3 external, triple[] internal=new triple[],
+                 triple[] normals=new triple[], pen[] colors=new pen[],
+                 bool3 planar=default) {
     int L=length(external);
+    if(!cyclic(external)) abort("cyclic path expected");
+
+    if(L <= 3 && piecewisestraight(external)) {
+      s.push(patch(external,internal,normals,colors,planar=true));
+      return;
+    }
+
+    // Construct a surface from a possibly nonconvex planar cyclic path3.
+    if(planar != false && internal.length == 0 && normals.length == 0 &&
+       colors.length == 0) {
+      triple n=normal(external);
+      if(n != O) {
+        transform3 T=align(n);
+        external=transpose(T)*external;
+        T *= shift(0,0,point(external,0).z);
+        for(patch p : surface(path(external)).s)
+          s.push(T*p);
+        return;
+      }
+    }
+    
     if(L <= 4 || internal.length > 0) {
       s.push(patch(external,internal,normals,colors,planar));
       return;
     }
-    if(!cyclic(external)) abort("cyclic path expected");
+      
+    // Path is not planar; split into patches.
     real factor=1/L;
     pen[] p;
     triple[] n;
@@ -458,79 +693,29 @@ struct surface {
                  nocolors ? p : concat(colors[i:],colors[0:1],p),planar));
   }
 
-  // A constructor for a convex path3.
   void operator init(path3 external, triple[] internal=new triple[],
                      triple[] normals=new triple[], pen[] colors=new pen[],
                      bool3 planar=default) {
     s=new patch[];
-    split(external,internal,normals,colors,planar);
+    construct(external,internal,normals,colors,planar);
   }
 
   void operator init(explicit path3[] external,
                      triple[][] internal=new triple[][],
                      triple[][] normals=new triple[][],
                      pen[][] colors=new pen[][], bool3 planar=default) {
+    s=new patch[];
     for(int i=0; i < external.length; ++i)
-      split(external[i],
-            internal.length == 0 ? new triple[] : internal[i],
-            normals.length == 0 ? new triple[] : normals[i],
-            colors.length == 0 ? new pen[] : colors[i],planar);
+      construct(external[i],
+                internal.length == 0 ? new triple[] : internal[i],
+                normals.length == 0 ? new triple[] : normals[i],
+                colors.length == 0 ? new pen[] : colors[i],planar);
   }
 
   void push(path3 external, triple[] internal=new triple[],
             triple[] normals=new triple[] ,pen[] colors=new pen[],
             bool3 planar=default) {
     s.push(patch(external,internal,normals,colors,planar));
-  }
-
-  // A constructor for a (possibly) nonconvex cyclic path of length <= 4 that
-  // returns an array of one or two surfaces in a given plane.
-  void operator init (path g, triple plane(pair)=XYplane) {
-    int L=length(g);
-    if(L > 4 || !cyclic(g))
-      abort("cyclic path of length <= 4 expected");
-    if(L <= 3) {
-      s=new patch[] {patch(path3(g,plane),planar=true)};
-      return;
-    }
-    for(int i=0; i < 4; ++i) {
-      pair z=point(g,i);
-      int w=windingnumber(subpath(g,i+1,i+3)--cycle,z);
-      if(w != 0 && w != undefined) {
-        pair w=point(g,i+2);
-        real[][] T=intersections(z--w,g);
-        path c,d;
-        if(T.length > 2) {
-          real t=T[1][1];
-          real s=t-i;
-          if(s < -1) s += 4;
-          else if(s > 3) s -= 4;
-          path close(path p, pair m) {
-            return length(p) == 3 ? p--cycle : p--0.5*(m+point(g,t))--cycle;
-          }
-          if(s < 1) {
-            c=close(subpath(g,i+s,i+2),w);
-            d=close(subpath(g,i-2,i+s),w);
-          } else {
-            c=close(subpath(g,i+s,i+4),z);
-            d=close(subpath(g,i,i+s),z);
-          }
-        } else {
-          pair m=0.5*(z+w);
-          c=subpath(g,i-2,i)--m--cycle;
-          d=subpath(g,i,i+2)--m--cycle;
-        }
-        s=new patch[] {patch(path3(c,plane),planar=true),
-                       patch(path3(d,plane),planar=true)};
-        return;
-      }
-    }
-    s=new patch[] {patch(path3(g,plane),planar=true)};
-  }
-
-  void operator init(explicit path[] g, triple plane(pair)=XYplane) {
-    for(int i=0; i < g.length; ++i)
-      s.append(surface(g[i],plane).s);
   }
 
   // Construct the surface of rotation generated by rotating g
@@ -557,7 +742,6 @@ struct surface {
       triple max=max(h);
       triple min=min(h);
       triple perp(triple m) {
-        static real epsilon=sqrt(realEpsilon);
         triple perp=m-c;
         return perp-dot(perp,axis)*axis;
       }
@@ -591,6 +775,11 @@ struct surface {
   void append(surface s) {
     this.s.append(s.s);
   }
+
+  void operator init(... surface[] s) {
+    for(surface S : s)
+      this.s.append(S.s);
+  }
 }
 
 surface operator * (transform3 t, surface s)
@@ -600,17 +789,6 @@ surface operator * (transform3 t, surface s)
   for(int i=0; i < s.s.length; ++i)
     S.s[i]=t*s.s[i];
   return S;
-}
-
-// Construct a surface from a (possibly) nonconvex planar cyclic path3.
-surface planar(path3 p)
-{
-  if(length(p) <= 3) return surface(patch(p,planar=true));
-  triple n=normal(p);
-  if(n == O) return new surface; // p is not planar!
-  transform3 T=align(n);
-  p=transpose(T)*p;
-  return T*shift(0,0,point(p,0).z)*surface(bezulate(path(p)));
 }
 
 private string nullsurface="null surface";
@@ -655,36 +833,76 @@ pair max(surface s, projection P)
   return bound;
 }
 
-patch subpatchu(patch s, real ua, real ub)
+private triple[] split(triple z0, triple c0, triple c1, triple z1, real t=0.5)
 {
-  path3 G=s.uequals(ua)&subpath(s.vequals(1),ua,ub)&reverse(s.uequals(ub));
-  path3 w=subpath(s.vequals(0),ub,ua);
-  path3 i1=s.P[0][1]..controls s.P[1][1] and s.P[2][1]..s.P[3][1];
-  path3 i2=s.P[0][2]..controls s.P[1][2] and s.P[2][2]..s.P[3][2];
-  path3 s1=subpath(i1,ua,ub);
-  path3 s2=subpath(i2,ua,ub);
-  return patch(G..controls postcontrol(w,0) and precontrol(w,1)..cycle,
-               new triple[] {postcontrol(s1,0),postcontrol(s2,0),
-                   precontrol(s2,1),precontrol(s1,1)});
+  triple m0=interp(z0,c0,t);
+  triple m1=interp(c0,c1,t);
+  triple m2=interp(c1,z1,t);
+  triple m3=interp(m0,m1,t);
+  triple m4=interp(m1,m2,t);
+  triple m5=interp(m3,m4,t);
+
+  return new triple[] {m0,m3,m5,m4,m2};
 }
 
-patch subpatchv(patch s, real va, real vb)
+// Return the control points for a subpatch of P on [u,1] x [v,1].
+triple[][] subpatchbegin(triple[][] P, real u, real v)
 {
-  path3 G=subpath(s.uequals(0),va,vb)&s.vequals(vb)&subpath(s.uequals(1),vb,va);
-  path3 w=s.vequals(va);
-  path3 j1=s.P[1][0]..controls s.P[1][1] and s.P[1][2]..s.P[1][3];
-  path3 j2=s.P[2][0]..controls s.P[2][1] and s.P[2][2]..s.P[2][3];
-  path3 t1=subpath(j1,va,vb);
-  path3 t2=subpath(j2,va,vb);
+  triple[] P0=P[0];
+  triple[] P1=P[1];
+  triple[] P2=P[2];
+  triple[] P3=P[3];
 
-  return patch(G..controls precontrol(w,1) and postcontrol(w,0)..cycle,
-               new triple[] {postcontrol(t1,0),precontrol(t1,1),
-                   precontrol(t2,1),postcontrol(t2,0)});
+  triple[] c0=split(P0[0],P0[1],P0[2],P0[3],v);
+  triple[] c1=split(P1[0],P1[1],P1[2],P1[3],v);
+  triple[] c2=split(P2[0],P2[1],P2[2],P2[3],v);
+  triple[] c3=split(P3[0],P3[1],P3[2],P3[3],v);
+
+  u=1.0-u;
+  
+  triple[] c7=split(c3[2],c2[2],c1[2],c0[2],u);
+  triple[] c8=split(c3[3],c2[3],c1[3],c0[3],u);
+  triple[] c9=split(c3[4],c2[4],c1[4],c0[4],u);
+  triple[] c10=split(P3[3],P2[3],P1[3],P0[3],u);
+
+  return new triple[][] {{c7[2],c8[2],c9[2],c10[2]},
+      {c7[1],c8[1],c9[1],c10[1]},
+        {c7[0],c8[0],c9[0],c10[0]},
+          {c3[2],c3[3],c3[4],P3[3]}};
 }
 
-patch subpatch(patch s, real ua, real ub, real va, real vb)
+// Return the control points for a subpatch of P on [0,u] x [0,v].
+triple[][] subpatchend(triple[][] P, real u, real v)
 {
-  return subpatchu(subpatchv(s,va,vb),ua,ub);
+  triple[] P0=P[0];
+  triple[] P1=P[1];
+  triple[] P2=P[2];
+  triple[] P3=P[3];
+
+  triple[] c0=split(P0[0],P0[1],P0[2],P0[3],v);
+  triple[] c1=split(P1[0],P1[1],P1[2],P1[3],v);
+  triple[] c2=split(P2[0],P2[1],P2[2],P2[3],v);
+  triple[] c3=split(P3[0],P3[1],P3[2],P3[3],v);
+
+  u=1.0-u;
+  
+  triple[] c4=split(P3[0],P2[0],P1[0],P0[0],u);
+  triple[] c5=split(c3[0],c2[0],c1[0],c0[0],u);
+  triple[] c6=split(c3[1],c2[1],c1[1],c0[1],u);
+  triple[] c7=split(c3[2],c2[2],c1[2],c0[2],u);
+
+  return new triple[][] {
+    {P0[0],c0[0],c0[1],c0[2]},
+      {c4[4],c5[4],c6[4],c7[4]},
+        {c4[3],c5[3],c6[3],c7[3]},
+          {c4[2],c5[2],c6[2],c7[2]}};
+}
+
+patch subpatch(patch s, real ua, real va, real ub, real vb)
+{
+  assert(ua >= 0 && va >= 0 && ub <= 1 && vb <= 1 && ua < ub && va < vb);
+  return patch(subpatchbegin(subpatchend(s.P,ub,vb),ua/ub,va/vb),
+               s.straight,s.planar);
 }
 
 triple point(patch s, real u, real v)
@@ -746,12 +964,9 @@ void draw(transform t=identity(), frame f, surface s, int nu=1, int nv=1,
       camera=P.target+camerafactor*(abs(M-m)+abs(m-P.target))*unit(P.vector());
     }
 
-    real[][] depth;
-    
-    for(int i=0; i < s.s.length; ++i) {
-      real d=abs(camera-s.s[i].cornermean());
-      depth.push(new real[] {d,i});
-    }
+    real[][] depth=new real[s.s.length][];
+    for(int i=0; i < depth.length; ++i)
+      depth[i]=new real[] {abs(camera-s.s[i].cornermean()),i};
 
     depth=sort(depth);
 
@@ -840,10 +1055,10 @@ void draw(picture pic=currentpicture, surface s, int nu=1, int nv=1,
   draw(pic,s,nu,nv,surfacepen,meshpen,light,meshlight);
 }
 
-surface extrude(path g, triple elongation=Z)
+surface extrude(path p, triple elongation=Z)
 {
   static patch[] allocate;
-  path3 G=path3(g);
+  path3 G=path3(p);
   path3 G2=shift(elongation)*G;
   return surface(...sequence(new patch(int i) {
         return patch(subpath(G,i,i+1)--subpath(G2,i+1,i)--cycle);
@@ -880,8 +1095,7 @@ surface align(surface s, transform3 t=identity4, triple position,
 
 surface surface(Label L, triple position=O)
 {
-  path[] g=texpath(L);
-  surface s=surface(bezulate(g));
+  surface s=surface(texpath(L));
   return L.align.is3D ? align(s,L.T3,position,L.align.dir3,L.p) :
     shift(position)*L.T3*s;
 }

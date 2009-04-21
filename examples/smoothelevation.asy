@@ -2,9 +2,9 @@ import graph3;
 import grid3;
 import palette;
 
-currentprojection=orthographic(1,2,13);
+if(settings.render <= 0) settings.prc=false;
 
-settings.prc=false;
+currentprojection=orthographic(1,2,13);
 
 size(400,300,IgnoreAspect);
 
@@ -17,8 +17,8 @@ draw(s);
 
 scale(true);
 
-xaxis3(Label("$x$",0.5),Bounds,InTicks());
-yaxis3(Label("$y$",0.5),Bounds,InTicks());
+xaxis3(Label("$x$",0.5),Bounds,InTicks);
+yaxis3(Label("$y$",0.5),Bounds,InTicks);
 zaxis3(Label("$z$",0.5),Bounds,InTicks(beginlabel=false));
 
 grid3(XYZgrid);

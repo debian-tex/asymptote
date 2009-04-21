@@ -70,7 +70,7 @@ DefaultHead.head=new path(path g, position position=EndPoint, pen p=currentpen,
   path left=rotate(-angle,x)*r;
   path right=rotate(angle*factor,x)*r;
   real[] T=arrowbasepoints(base,left,right);
-  return subpath(left,0,T[0])--subpath(right,T[1],0)..cycle;
+  return subpath(left,0,T[0])--subpath(right,T[1],0)&cycle;
 };
 
 arrowhead SimpleHead;
@@ -129,7 +129,7 @@ arrowhead HookHead(real dir=arrowdir, real barb=arrowbarb)
       pl1=pl1+v; pr0=pr0+v;
       left=pl0{dir(-dir+degrees(M-pl0,false))}..pl1--M;
       right=M--pr0..pr1{dir(dir+degrees(pr1-M,false))};
-      return left--right--cycle;
+      return left--right&cycle;
     };
   return a;
 }
@@ -203,8 +203,7 @@ void drawarrow(frame f, arrowhead arrowhead=DefaultHead,
   path r=subpath(g,position,0);
   size=min(arrowsizelimit*arclength(r),size);
   path head=arrowhead.head(g,position,p,size,angle);
-  static real fuzz=sqrt(realEpsilon);
-  if(cyclic(head) && (filltype == NoFill || position > L-fuzz)) {
+  if(cyclic(head) && (filltype == NoFill || position > L-sqrtEpsilon)) {
     if(position > 0)
       draw(f,subpath(r,arctime(r,size),length(r)),p);
     if(position < L)
@@ -541,4 +540,29 @@ void arrow(picture pic=currentpicture, Label L="", pair b, pair dir,
   marginT margin=margin(b--b,p); // Extract margin.begin and margin.end
   pair a=(margin.begin+length+margin.end)*unit(dir);
   draw(b,pic,L,a--(0,0),align,p,arrow,margin);
+}
+
+// Force an array of 2D pictures to be as least as large as picture all.
+void rescale2(picture[] pictures, picture all)
+{
+  if(!all.empty2()) {
+    transform t=inverse(all.calculateTransform()*pictures[0].T);
+    pair m=t*min(all);
+    pair M=t*max(all);
+    for(int i=0; i < pictures.length; ++i) {
+      draw(pictures[i],m,nullpen);
+      draw(pictures[i],M,nullpen);
+    }
+  }
+}
+
+// Force an array of pictures to have a uniform scaling.
+void rescale(picture[] pictures)
+{
+  if(pictures.length == 0) return;
+  picture all;
+  size(all,pictures[0]);
+  for(picture pic : pictures)
+    add(all,pic);
+  rescale2(pictures,all);
 }

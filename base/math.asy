@@ -11,34 +11,6 @@ pair unityroot(int n, int k=1)
   return expi(2pi*k/n);
 }
 
-// Return an arbitrary point on or inside a cyclic path p.
-pair inside(path p)
-{
-  if(!cyclic(p)) abort("path is not cyclic");
-  pair c=point(p,0);
-  int n=length(p);
-  real r;
-  int i=0;
-  do {
-    ++i;
-    if(i == n) return c;
-    r=abs(point(p,i)-c);
-  } while (r == 0);
-  pair w=I*0.5*r;
-  // Search in a circle of radius r about c.
-  int n=2;
-  while(true) {
-    for(int k=0; k < n; ++k) {
-      pair z=c+w*unityroot(n,k);
-      if(inside(p,z)) return z;
-    }
-    w *= 0.5; // Reduce the radius of the circle and try again with more points.
-    if(w == 0) return c;
-    ++n;
-  }
-  return 0;
-}
-
 real csc(real x) {return 1/sin(x);}
 real sec(real x) {return 1/cos(x);}
 real cot(real x) {return tan(pi/2-x);}
@@ -64,17 +36,6 @@ picture grid(int Nx, int Ny, pen p=currentpen)
 bool polygon(path p)
 {
   return cyclic(p) && piecewisestraight(p);
-}
-
-// Return the intersection point of the extensions of the line segments 
-// PQ and pq.
-pair extension(pair P, pair Q, pair p, pair q)
-{
-  pair ac=P-Q;
-  pair bd=q-p;
-  real det=(conj(ac)*bd).y;
-  if(det == 0) return (infinity,infinity);
-  return P+(conj(p-P)*bd).y*ac/det;
 }
 
 // Return the intersection time of the extension of the line segment PQ
@@ -396,10 +357,15 @@ real slope(path g, explicit pair z, int n=0)
 // Oxford (1965).
 pair[] quarticroots(real a, real b, real c, real d, real e)
 {
-  real Fuzz=10.0*realEpsilon;
+  real Fuzz=100000*realEpsilon;
 
+  // Remove roots at numerical infinity.
   if(abs(a) <= Fuzz*(abs(b)+Fuzz*(abs(c)+Fuzz*(abs(d)+Fuzz*abs(e)))))
     return cubicroots(b,c,d,e);
+  
+  // Detect roots at numerical zero.
+  if(abs(e) <= Fuzz*(abs(d)+Fuzz*(abs(c)+Fuzz*(abs(b)+Fuzz*abs(a)))))
+    return cubicroots(a,b,c,d);
 
   real ainv=1/a;
   b *= ainv;
@@ -407,7 +373,11 @@ pair[] quarticroots(real a, real b, real c, real d, real e)
   d *= ainv;
   e *= ainv;
   
-  real t0=cubicroots(1,-2c,c^2+b*d-4e,d^2+b^2*e-b*c*d)[0];
+  pair[] roots;
+  real[] T=cubicroots(1,-2c,c^2+b*d-4e,d^2+b^2*e-b*c*d);
+  if(T.length == 0) return roots;
+
+  real t0=T[0];
   pair[] sum=quadraticroots((1,0),(b,0),(t0,0));
   pair[] product=quadraticroots((1,0),(t0-c,0),(e,0));
 
@@ -415,7 +385,6 @@ pair[] quarticroots(real a, real b, real c, real d, real e)
      abs(sum[0]*product[1]+sum[1]*product[0]+d))
     product=reverse(product);
 
-  pair[] roots;
   for(int i=0; i < 2; ++i)
     roots.append(quadraticroots((1,0),-sum[i],product[i]));
 

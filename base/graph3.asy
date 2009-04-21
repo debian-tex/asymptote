@@ -33,7 +33,7 @@ private struct locateT {
   triple dir;     // tick direction in frame coordinates
   
   void dir(transform3 T, path3 g, ticklocate locate, real t) {
-    pathdir=unit(T*dir(g,t));
+    pathdir=unit(shiftless(T)*dir(g,t));
     triple Dir=locate.dir3(t);
     dir=unit(Dir);
   }
@@ -99,10 +99,9 @@ void labeltick(picture pic, transform3 T, path3 g,
 
   string s=ticklabel(label);
   triple v=locate1.V+shift;
-  if(s != "") {
-    s=baseline(s,align,"$10^4$");
-    label(pic,F.defaulttransform3 ? s : F.T3*s,v,align,F.p);
-  }
+  if(s != "")
+    label(pic,F.defaulttransform3 ? baseline(s,baselinetemplate) : F.T3*s,v,
+          align,F.p);
 }  
 
 // Add axis label L to frame f.
@@ -940,14 +939,16 @@ void xaxis3(picture pic=currentpicture, Label L="", axis axis=YZZero,
   axis(pic,axis);
   
   if(xmin == -infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.x.automin())
-      xmin=pic.scale.x.tickMin;
+    if(pic.scale.set)
+      xmin=pic.scale.x.automin() ? pic.scale.x.tickMin :
+        max(pic.scale.x.tickMin,pic.userMin.x);
     else xmin=pic.userMin.x;
   }
   
   if(xmax == infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.x.automax())
-      xmax=pic.scale.x.tickMax;
+    if(pic.scale.set)
+      xmax=pic.scale.x.automax() ? pic.scale.x.tickMax :
+        min(pic.scale.x.tickMax,pic.userMax.x);
     else xmax=pic.userMax.x;
   }
 
@@ -1011,14 +1012,17 @@ void yaxis3(picture pic=currentpicture, Label L="", axis axis=XZZero,
   axis(pic,axis);
   
   if(ymin == -infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.y.automin())
-      ymin=pic.scale.y.tickMin;
+    if(pic.scale.set)
+      ymin=pic.scale.y.automin() ? pic.scale.y.tickMin :
+        max(pic.scale.y.tickMin,pic.userMin.y);
     else ymin=pic.userMin.y;
   }
   
+  
   if(ymax == infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.y.automax())
-      ymax=pic.scale.y.tickMax;
+    if(pic.scale.set)
+      ymax=pic.scale.y.automax() ? pic.scale.y.tickMax :
+        min(pic.scale.y.tickMax,pic.userMax.y);
     else ymax=pic.userMax.y;
   }
 
@@ -1082,14 +1086,16 @@ void zaxis3(picture pic=currentpicture, Label L="", axis axis=XYZero,
   axis(pic,axis);
   
   if(zmin == -infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.z.automin())
-      zmin=pic.scale.z.tickMin;
+    if(pic.scale.set)
+      zmin=pic.scale.z.automin() ? pic.scale.z.tickMin :
+        max(pic.scale.z.tickMin,pic.userMin.z);
     else zmin=pic.userMin.z;
   }
   
   if(zmax == infinity && !axis.extend) {
-    if(pic.scale.set && pic.scale.z.automax())
-      zmax=pic.scale.z.tickMax;
+    if(pic.scale.set)
+      zmax=pic.scale.z.automax() ? pic.scale.z.tickMax :
+        min(pic.scale.z.tickMax,pic.userMax.z);
     else zmax=pic.userMax.z;
   }
 
@@ -1228,7 +1234,7 @@ void tick(picture pic=currentpicture, Label L, real value, triple v,
   }
   L.p(p);
   if(L.s == "") L.s=format(format == "" ? defaultformat : format,value);
-  L.s=baseline(L.s,L.align,"$10^4$");
+  L.s=baseline(L.s,baselinetemplate);
   label(pic,L,v);
   xtick(pic,v,dir,size,p);
 }
@@ -1281,7 +1287,7 @@ private void label(picture pic, Label L, triple v, real x, align align,
   if(shift(L.T3)*O == O)
     L.T3=shift(ticklabelshift(L.align.dir3,L.p))*L.T3;
   if(L.s == "") L.s=format(format == "" ? defaultformat : format,x);
-  L.s=baseline(L.s,L.align,"$10^4$");
+  L.s=baseline(L.s,baselinetemplate);
   label(pic,L,v);
 }
 
@@ -1867,8 +1873,7 @@ path3 Arc(triple c, triple v1, triple v2, triple normal=O, bool direction=CCW,
   v1=Tinv*v1;
   v2=Tinv*v2;
 
-  static real epsilon=sqrt(realEpsilon);
-  real fuzz=epsilon*max(abs(v1),abs(v2));
+  real fuzz=sqrtEpsilon*max(abs(v1),abs(v2));
   if(abs(v1.z) > fuzz || abs(v2.z) > fuzz)
     abort("invalid normal vector");
 

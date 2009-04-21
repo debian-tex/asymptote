@@ -12,6 +12,11 @@
 
 #include "common.h"
 
+namespace gl {
+bool glthread=false;
+bool initialize=true;
+}
+
 #ifdef HAVE_LIBGLUT
 
 // For CYGWIN
@@ -119,9 +124,6 @@ int window;
   
 void *glrenderWrapper(void *a);
 
-bool glthread=true;
-bool initialize=true;
-
 #ifdef HAVE_LIBPTHREAD
 pthread_t mainthread;
 
@@ -168,11 +170,20 @@ void lighting()
 {
   for(size_t i=0; i < Nlights; ++i) {
     GLenum index=GL_LIGHT0+i;
-    glEnable(index);
-    
     triple Lighti=Lights[i];
     GLfloat position[]={Lighti.getx(),Lighti.gety(),Lighti.getz(),0.0};
     glLightfv(index,GL_POSITION,position);
+  }
+}
+
+void initlighting() 
+{
+  glEnable(GL_LIGHTING);
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,getSetting<bool>("twosided"));
+    
+  for(size_t i=0; i < Nlights; ++i) {
+    GLenum index=GL_LIGHT0+i;
+    glEnable(index);
     
     size_t i4=4*i;
     
@@ -186,6 +197,16 @@ void lighting()
                         Specular[i4+3]};
     glLightfv(index,GL_SPECULAR,specular);
   }
+  
+  static size_t lastNlights=0;
+  for(size_t i=Nlights; i < lastNlights; ++i) {
+    GLenum index=GL_LIGHT0+i;
+    glDisable(index);
+  }
+  lastNlights=Nlights;
+  
+  if(ViewportLighting)
+    lighting();
 }
 
 void setDimensions(int Width, int Height, double X, double Y)
@@ -460,10 +481,12 @@ void togglefitscreen()
 
 void updateHandler(int)
 {
+  initlighting();
   update();
-  if(glthread && !interact::interactive) fitscreen();
-  glutShowWindow();
-  glutShowWindow(); // Call twice to work around apparent freeglut bug.
+  if(interact::interactive) {
+    glutShowWindow();
+    glutShowWindow(); // Call twice to work around apparent freeglut bug.
+  } else if(glthread) fitscreen();
 }
 
 void autoExport()
@@ -478,13 +501,11 @@ void autoExport()
 void exportHandler(int)
 {
 #ifdef HAVE_LIBPTHREAD
-  wait(readySignal,readyLock);
+  if(glthread)
+    wait(readySignal,readyLock);
 #endif
+  initlighting();
   autoExport();
-#ifdef HAVE_LIBPTHREAD
-  if(!interact::interactive || !View)
-    wait(quitSignal,quitLock);
-#endif
 }
 
 void reshape(int width, int height)
@@ -506,23 +527,36 @@ void reshape(int width, int height)
 }
   
 #ifdef HAVE_LIBPTHREAD
+void endwait(pthread_cond_t& signal, pthread_mutex_t& lock)
+{
+  pthread_cond_signal(&signal);
+}
 void wait(pthread_cond_t& signal, pthread_mutex_t& lock)
 {
   pthread_mutex_lock(&lock);
   pthread_cond_signal(&signal);
   pthread_cond_wait(&signal,&lock);
-  pthread_cond_signal(&signal);
+  endwait(signal,lock);
   pthread_mutex_unlock(&lock);
 }
+
 #endif
 
 void quit() 
 {
   if(glthread) {
-    glutHideWindow();
+    if(interact::interactive) {
+      glutHideWindow();
+    } else {
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glutSwapBuffers();
+    }
 #ifdef HAVE_LIBPTHREAD
-    if(!interact::interactive)
-      wait(quitSignal,quitLock);
+    if(!interact::interactive) {
+      pthread_mutex_lock(&quitLock);
+      pthread_cond_signal(&quitSignal);
+      pthread_mutex_unlock(&quitLock);
+    }
 #endif
   } else {
     glutDestroyWindow(window);
@@ -1191,11 +1225,7 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   gluNurbsCallback(nurb,GLU_NURBS_COLOR,(_GLUfuncptr) glColor4fv);
   mode();
   
-  glEnable(GL_LIGHTING);
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,getSetting<bool>("twosided"));
-    
-  if(ViewportLighting)
-    lighting();
+  initlighting();
   
   if(View) {
     initializedView=true;
