@@ -22,7 +22,7 @@ case "$1" in
     purge|remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 	if [ -x /usr/bin/texhash ] ; then
 	    echo "Running texhash.  This may take a long time."
-	    /usr/bin/texhash
+	    texhash
 	fi
 
 

@@ -1,3 +1,11 @@
+asymptote (1.70-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Don't use absolute path when calling texhash in maintainer scripts.
+  * Fix build-depends on libgc-dev.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 30 Apr 2009 21:38:48 -0400
+
 asymptote (1.70-1) experimental; urgency=low
 
   * New upstream version.
