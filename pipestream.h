@@ -1,5 +1,5 @@
 /* Pipestream: A simple C++ interface to UNIX pipes
-   Version 0.02
+   Version 0.04
    Copyright (C) 2005-2009 John C. Bowman
 
    This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include "common.h"
 #include "errormsg.h"
@@ -41,7 +42,9 @@ protected:
   static const int BUFSIZE=SHRT_MAX;
   char buffer[BUFSIZE];
   int pid;
+  bool Running;
   bool pipeopen;
+  bool pipein;
   ostringstream transcript;
 public:
   
@@ -99,9 +102,20 @@ public:
     close(in[0]);
     *buffer=0;
     pipeopen=true;
-    waitpid(pid,NULL,WNOHANG);
+    pipein=true;
+    Running=true;
   }
 
+  void block(bool block=true) {
+    if(pipeopen) {
+      int flags=fcntl(out[0],F_GETFL);
+      if(block)
+        fcntl(out[0],F_SETFL,flags & ~O_NONBLOCK);
+      else
+        fcntl(out[0],F_SETFL,flags | O_NONBLOCK);
+    }
+  }
+  
   bool isopen() {return pipeopen;}
   
   iopipestream(): pid(0), pipeopen(false) {}
@@ -112,11 +126,21 @@ public:
     open(command,hint,application,out_fileno);
   }
   
+  void eof() {
+    if(pipeopen && pipein) {
+      close(in[1]);
+      pipein=false;
+    }
+  }
+  
   virtual void pipeclose() {
     if(pipeopen) {
-      close(in[1]);
+      kill(pid,SIGQUIT);
+      eof();
       close(out[0]);
+      Running=false;
       pipeopen=false;
+      waitpid(pid,NULL,0); // Avoid zombies.
     }
   }
   
@@ -129,10 +153,16 @@ public:
     char *p=buffer;
     ssize_t size=BUFSIZE-1;
     for(;;) {
-      if((nc=read(out[0],p,size)) < 0)
-        camp::reportError("read from pipe failed");
+      if((nc=read(out[0],p,size)) < 0) {
+        if(errno == EAGAIN) {p[0]=0; break;}
+        else camp::reportError("read from pipe failed");
+      }
       p[nc]=0;
-      if(nc == 0) break;
+      if(nc == 0) {
+        if(waitpid(pid, NULL, WNOHANG) == pid)
+          Running=false;
+        break;
+      }
       if(nc > 0) {
         if(settings::verbose > 2) cerr << p;
         if(strchr(p,'\n')) break;
@@ -143,6 +173,8 @@ public:
     return p+nc-buffer;
   }
 
+  bool running() {return Running;}
+  
   typedef iopipestream& (*imanip)(iopipestream&);
   iopipestream& operator << (imanip func) { return (*func)(*this); }
   
@@ -227,8 +259,10 @@ public:
   void Write(const string &s) {
     ssize_t size=s.length();
     if(settings::verbose > 2) cerr << s;
-    if(write(in[1],s.c_str(),size) != size)
-      camp::reportError("write to pipe failed");
+    if(write(in[1],s.c_str(),size) != size) {
+      camp::reportFatal("write to pipe failed");
+    }
+    
   }
   
   iopipestream& operator << (const string& s) {

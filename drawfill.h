@@ -159,6 +159,30 @@ public:
   drawElement *transformed(const transform& t);
 };
   
+class drawFunctionShade : public drawFill {
+protected:  
+  string shader;
+public:
+  drawFunctionShade(const vm::array& src, bool stroke, pen pentype,
+                    const string& shader)
+    : drawFill(src,stroke,pentype), shader(shader) {
+    string texengine=settings::getSetting<string>("tex");
+    if(!settings::pdf(texengine))
+      reportError("functionshade is not implemented for the '"+texengine+
+                  "' tex engine");
+  }
+
+  virtual ~drawFunctionShade() {}
+
+  bool draw(psfile *out) {return false;}
+  
+  bool write(texfile *, const bbox&);
+  
+  bool islabel() {return true;}
+  
+  drawElement *transformed(const transform& t);
+};
+  
 }
 
 #endif

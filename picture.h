@@ -68,8 +68,6 @@ public:
               double (*y)(const triple&, double*),
               double *t=NULL);
   
-  void texinit();
-
   bool Transparency() {
     return transparency;
   }
@@ -92,8 +90,9 @@ public:
               const triple &Min, const triple& Max, double perspective,
               bool transparent) const;
   bool shipout3(const string& prefix, const string& format,
-                double width, double height, double angle, const triple& m,
-                const triple& M, size_t nlights, triple *lights,
+                double width, double height, double angle, double zoom,
+                const triple& m, const triple& M, const pair& shift, double *t,
+                double *background, size_t nlights, triple *lights,
                 double *diffuse, double *ambient, double *specular,
                 bool viewportlighting, bool view);
   
@@ -119,6 +118,8 @@ inline picture *transformed(const vm::array& t, picture *p)
 {
   return p->transformed(t);
 }
+
+void texinit();
 
 const char *texpathmessage();
   

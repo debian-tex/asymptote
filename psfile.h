@@ -93,8 +93,6 @@ public:
   }
 };
 
-void dealias(unsigned char *a, size_t width, size_t height, size_t n);
-
 class psfile {
   string filename;
   bool pdfformat;    // Is final output format PDF?
@@ -104,18 +102,14 @@ class psfile {
   size_t count;
   mem::stack<pen> pens;
   
-  void write(transform t) {
-    if(!pdf) *out << "[";
-    *out << " " << t.getxx() << " " << t.getyx()
-         << " " << t.getxy() << " " << t.getyy()
-         << " " << t.getx() << " " << t.gety();
-    if(!pdf) *out << "]";
-  }
-
   void writeHex(pen *p, size_t ncomponents);
   void write(pen *p, size_t ncomponents);
+  void writefromRGB(unsigned char r, unsigned char g, unsigned char b, 
+                    ColorSpace colorspace, size_t ncomponents);
   
   void writeCompressed(const unsigned char *a, size_t size);
+  void dealias(unsigned char *a, size_t width, size_t height, size_t n,
+               bool convertrgb=false, ColorSpace colorspace=DEFCOLOR);
   
   void beginHex() {
     out->setf(std::ios::hex,std::ios::basefield);
@@ -133,16 +127,12 @@ class psfile {
     count=0;
   }
   
-  void endImage(bool antialias, size_t width, size_t height, 
+  void outImage(bool antialias, size_t width, size_t height,
+                size_t ncomponents);
+  
+  void endImage(bool antialias, size_t width, size_t height,
                 size_t ncomponents) {
-    if(antialias) dealias(buffer,width,height,ncomponents);
-    if(settings::getSetting<Int>("level") >= 3)
-      writeCompressed(buffer,count);
-    else {
-      encode85 e(out);
-      for(size_t i=0; i < count; ++i)
-        e.put(buffer[i]);
-    }
+    outImage(antialias,width,height,ncomponents);
     delete[] buffer;
   }
   
@@ -152,10 +142,6 @@ class psfile {
   
   void write2(unsigned n) {
     *out << std::setw(2) << n;
-  }
-  
-  void writenewl() {
-    *out << newl;
   }
   
 protected:
@@ -183,12 +169,24 @@ public:
     *out << " " << x;
   }
 
+  void writenewl() {
+    *out << newl;
+  }
+  
   bool Transparency() {
     return transparency;
   }
   
   void write(pair z) {
     *out << " " << z.getx() << " " << z.gety();
+  }
+
+  void write(transform t) {
+    if(!pdf) *out << "[";
+    *out << " " << t.getxx() << " " << t.getyx()
+         << " " << t.getxy() << " " << t.getyy()
+         << " " << t.getx() << " " << t.gety();
+    if(!pdf) *out << "]";
   }
 
   void resetpen() {

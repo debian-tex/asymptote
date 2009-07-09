@@ -69,7 +69,7 @@ triple ticklabelshift(triple align, pen p=currentpen)
 
 // Signature of routines that draw labelled paths with ticks and tick labels.
 typedef void ticks3(picture, transform3, Label, path3, path3, pen,
-                    arrowbar3, ticklocate, int[], bool opposite=false,
+                    arrowbar3, margin3, ticklocate, int[], bool opposite=false,
                     bool primary=true);
 
 // Label a tick on a frame.
@@ -118,8 +118,9 @@ void labelaxis(picture pic, transform3 T, Label L, path3 g,
       real t=relative(L,g);
       triple v=point(g,t);
       picture F;
-      if(L.align.dir3 == O) align=unit(invert(L.align.dir,v,P))*abs(align);
-
+      if(L.align.dir3 == O)
+        align=unit(invert(L.align.dir,v,P))*abs(L.align.dir);
+      
       if(ticklabels && locate != null && piecewisestraight(g)) {
         locateT locate1;
         locate1.dir(T,g,locate,t);
@@ -161,8 +162,8 @@ ticks3 Ticks3(int sign, Label F="", ticklabel ticklabel=null,
               real Size=0, real size=0, bool extend=false,
               pen pTick=nullpen, pen ptick=nullpen)
 {
-  return new void(picture pic, transform3 t, Label L,
-                  path3 g, path3 g2, pen p, arrowbar3 arrow, ticklocate locate,
+  return new void(picture pic, transform3 t, Label L, path3 g, path3 g2, pen p,
+                  arrowbar3 arrow, margin3 margin, ticklocate locate,
                   int[] divisor, bool opposite, bool primary) {
     // Use local copy of context variables:
     int Sign=opposite ? -1 : 1;
@@ -204,8 +205,7 @@ ticks3 Ticks3(int sign, Label F="", ticklabel ticklabel=null,
 
     real norm=max(abs(a),abs(b));
     
-    string format=F.s == "" ? autoformat(norm...Ticks) :
-      (F.s == trailingzero ? autoformat(true,norm...Ticks) : F.s);
+    string format=autoformat(F.s,norm...Ticks);
     if(F.s == "%") F.s="";
     if(ticklabel == null) {
       if(locate.S.scale.logarithmic) {
@@ -215,7 +215,7 @@ ticks3 Ticks3(int sign, Label F="", ticklabel ticklabel=null,
     }
 
     begingroup3(pic);
-    if(primary) draw(pic,G,p,arrow);
+    if(primary) draw(pic,margin(G,p).g,p,arrow);
     else draw(pic,G,p);
 
     for(int i=(begin ? 0 : 1); i < (end ? Ticks.length : Ticks.length-1); ++i) {
@@ -255,7 +255,8 @@ ticks3 Ticks3(int sign, Label F="", ticklabel ticklabel=null,
               pen pTick=nullpen, pen ptick=nullpen)
 {
   return new void(picture pic, transform3 T, Label L,
-                  path3 g, path3 g2, pen p, arrowbar3 arrow, ticklocate locate,
+                  path3 g, path3 g2, pen p,
+                  arrowbar3 arrow, margin3 margin=NoMargin3, ticklocate locate,
                   int[] divisor, bool opposite, bool primary) {
     path3 G=T*g;
     real limit=Step == 0 ? axiscoverage*arclength(G) : 0;
@@ -266,17 +267,17 @@ ticks3 Ticks3(int sign, Label F="", ticklabel ticklabel=null,
                                            opposite));
     Ticks3(sign,F,ticklabel,beginlabel,endlabel,values.major,values.minor,
            values.N,begin,end,Size,size,extend,pTick,ptick)
-      (pic,T,L,g,g2,p,arrow,locate,divisor,opposite,primary);
+      (pic,T,L,g,g2,p,arrow,margin,locate,divisor,opposite,primary);
   };
 }
 
 ticks3 NoTicks3()
 {
   return new void(picture pic, transform3 T, Label L, path3 g,
-                  path3, pen p, arrowbar3 arrow, ticklocate, int[],
-                  bool opposite, bool primary) {
+                  path3, pen p, arrowbar3 arrow, margin3 margin,
+                  ticklocate, int[], bool opposite, bool primary) {
     path3 G=T*g;
-    if(primary) draw(pic,G,p,arrow);
+    if(primary) draw(pic,margin(G,p).g,p,arrow,margin);
     else draw(pic,G,p);
     if(L.s != "" && primary) {
       Label L=L.copy();
@@ -464,8 +465,8 @@ XYZero=XYZero();
 // Draw a general three-dimensional axis.
 void axis(picture pic=currentpicture, Label L="", path3 g, path3 g2=nullpath3,
           pen p=currentpen, ticks3 ticks, ticklocate locate,
-          arrowbar3 arrow=None, int[] divisor=new int[], bool above=false,
-          bool opposite=false) 
+          arrowbar3 arrow=None, margin3 margin=NoMargin3,
+          int[] divisor=new int[], bool above=false, bool opposite=false) 
 {
   Label L=L.copy();
   real t=reltime(g,0.5);
@@ -475,7 +476,7 @@ void axis(picture pic=currentpicture, Label L="", path3 g, path3 g2=nullpath3,
   
   pic.add(new void (picture f, transform3 t, transform3 T, triple, triple) {
       picture d;
-      ticks(d,t,L,g,g2,p,arrow,locate,divisor,opposite,true);
+      ticks(d,t,L,g,g2,p,arrow,margin,locate,divisor,opposite,true);
       add(f,t*T*inverse(t)*d);
     },above=above);
   
@@ -515,7 +516,8 @@ private triple defaultdir(triple X, triple Y, triple Z, bool opposite=false,
 // An internal routine to draw an x axis at a particular y value.
 void xaxis3At(picture pic=currentpicture, Label L="", axis axis,
               real xmin=-infinity, real xmax=infinity, pen p=currentpen,
-              ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=true,
+              ticks3 ticks=NoTicks3,
+              arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=true,
               bool opposite=false, bool opposite2=false, bool primary=true)
 {
   int type=axis.type;
@@ -554,7 +556,7 @@ void xaxis3At(picture pic=currentpicture, Label L="", axis axis,
             b += fuzz;
 
             picture d;
-            ticks(d,t,L,a--b,finite(y2) ? a2--b2 : nullpath3,p,arrow,
+            ticks(d,t,L,a--b,finite(y2) ? a2--b2 : nullpath3,p,arrow,margin,
                   ticklocate(a.x,b.x,pic.scale.x,Dir(dir)),divisor,
                   opposite,primary);
             add(f,t*T*tinv*d);
@@ -602,7 +604,7 @@ void xaxis3At(picture pic=currentpicture, Label L="", axis axis,
     if(finite(a) && finite(b)) {
       picture d;
       ticks(d,pic.scaling3(warn=false),L,
-            (a.x,0,0)--(b.x,0,0),(a2.x,0,0)--(b2.x,0,0),p,arrow,
+            (a.x,0,0)--(b.x,0,0),(a2.x,0,0)--(b2.x,0,0),p,arrow,margin,
             ticklocate(a.x,b.x,pic.scale.x,Dir(dir)),divisor,
             opposite,primary);
       frame f;
@@ -636,7 +638,8 @@ void xaxis3At(picture pic=currentpicture, Label L="", axis axis,
 // An internal routine to draw an x axis at a particular y value.
 void yaxis3At(picture pic=currentpicture, Label L="", axis axis,
               real ymin=-infinity, real ymax=infinity, pen p=currentpen,
-              ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=true,
+              ticks3 ticks=NoTicks3,
+              arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=true,
               bool opposite=false, bool opposite2=false, bool primary=true)
 {
   int type=axis.type;
@@ -675,7 +678,7 @@ void yaxis3At(picture pic=currentpicture, Label L="", axis axis,
             b += fuzz;
 
             picture d;
-            ticks(d,t,L,a--b,finite(x2) ? a2--b2 : nullpath3,p,arrow,
+            ticks(d,t,L,a--b,finite(x2) ? a2--b2 : nullpath3,p,arrow,margin,
                   ticklocate(a.y,b.y,pic.scale.y,Dir(dir)),divisor,
                   opposite,primary);
             add(f,t*T*tinv*d);
@@ -723,7 +726,7 @@ void yaxis3At(picture pic=currentpicture, Label L="", axis axis,
     if(finite(a) && finite(b)) {
       picture d;
       ticks(d,pic.scaling3(warn=false),L,
-            (0,a.y,0)--(0,b.y,0),(0,a2.y,0)--(0,a2.y,0),p,arrow,
+            (0,a.y,0)--(0,b.y,0),(0,a2.y,0)--(0,a2.y,0),p,arrow,margin,
             ticklocate(a.y,b.y,pic.scale.y,Dir(dir)),divisor,
             opposite,primary);
       frame f;
@@ -757,7 +760,8 @@ void yaxis3At(picture pic=currentpicture, Label L="", axis axis,
 // An internal routine to draw an x axis at a particular y value.
 void zaxis3At(picture pic=currentpicture, Label L="", axis axis,
               real zmin=-infinity, real zmax=infinity, pen p=currentpen,
-              ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=true,
+              ticks3 ticks=NoTicks3,
+              arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=true,
               bool opposite=false, bool opposite2=false, bool primary=true)
 {
   int type=axis.type;
@@ -796,7 +800,7 @@ void zaxis3At(picture pic=currentpicture, Label L="", axis axis,
             b += fuzz;
 
             picture d;
-            ticks(d,t,L,a--b,finite(x2) ? a2--b2 : nullpath3,p,arrow,
+            ticks(d,t,L,a--b,finite(x2) ? a2--b2 : nullpath3,p,arrow,margin,
                   ticklocate(a.z,b.z,pic.scale.z,Dir(dir)),divisor,
                   opposite,primary);
             add(f,t*T*tinv*d);
@@ -844,7 +848,7 @@ void zaxis3At(picture pic=currentpicture, Label L="", axis axis,
     if(finite(a) && finite(b)) {
       picture d;
       ticks(d,pic.scaling3(warn=false),L,
-            (0,0,a.z)--(0,0,b.z),(0,0,a2.z)--(0,0,a2.z),p,arrow,
+            (0,0,a.z)--(0,0,b.z),(0,0,a2.z)--(0,0,a2.z),p,arrow,margin,
             ticklocate(a.z,b.z,pic.scale.z,Dir(dir)),divisor,
             opposite,primary);
       frame f;
@@ -903,7 +907,8 @@ void autoscale3(picture pic=currentpicture, axis axis)
 // Draw an x axis in three dimensions.
 void xaxis3(picture pic=currentpicture, Label L="", axis axis=YZZero,
             real xmin=-infinity, real xmax=infinity, pen p=currentpen,
-            ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=false)
+            ticks3 ticks=NoTicks3,
+            arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=false)
 {
   if(xmin > xmax) return;
   
@@ -963,20 +968,21 @@ void xaxis3(picture pic=currentpicture, Label L="", axis axis=YZZero,
     back=dot((0,pic.userMax.y-pic.userMin.y,0),v)*sgn(v.z) > 0;
   }
 
-  xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,above,false,false,!back);
+  xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,margin,above,false,false,!back);
   if(axis.type == Both)
-    xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,above,true,false,back);
+    xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,margin,above,true,false,back);
   if(axis.type2 == Both) {
-    xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,above,false,true,false);
+    xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,margin,above,false,true,false);
     if(axis.type == Both)
-      xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,above,true,true,false);
+      xaxis3At(pic,L,axis,xmin,xmax,p,ticks,arrow,margin,above,true,true,false);
   }
 }
 
 // Draw a y axis in three dimensions.
 void yaxis3(picture pic=currentpicture, Label L="", axis axis=XZZero,
             real ymin=-infinity, real ymax=infinity, pen p=currentpen,
-            ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=false)
+            ticks3 ticks=NoTicks3,
+            arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=false)
 {
   if(ymin > ymax) return;
 
@@ -1037,20 +1043,21 @@ void yaxis3(picture pic=currentpicture, Label L="", axis axis=XZZero,
     back=dot((pic.userMax.x-pic.userMin.x,0,0),v)*sgn(v.z) > 0;
   }
 
-  yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,above,false,false,!back);
+  yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,margin,above,false,false,!back);
 
   if(axis.type == Both)
-    yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,above,true,false,back);
+    yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,margin,above,true,false,back);
   if(axis.type2 == Both) {
-    yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,above,false,true,false);
+    yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,margin,above,false,true,false);
     if(axis.type == Both)
-      yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,above,true,true,false);
+      yaxis3At(pic,L,axis,ymin,ymax,p,ticks,arrow,margin,above,true,true,false);
   }
 }
 // Draw a z axis in three dimensions.
 void zaxis3(picture pic=currentpicture, Label L="", axis axis=XYZero,
             real zmin=-infinity, real zmax=infinity, pen p=currentpen,
-            ticks3 ticks=NoTicks3, arrowbar3 arrow=None, bool above=false)
+            ticks3 ticks=NoTicks3,
+            arrowbar3 arrow=None, margin3 margin=NoMargin3, bool above=false)
 {
   if(zmin > zmax) return;
 
@@ -1110,13 +1117,13 @@ void zaxis3(picture pic=currentpicture, Label L="", axis axis=XYZero,
     back=dot((pic.userMax.x-pic.userMin.x,0,0),v)*sgn(v.y) > 0;
   }
 
-  zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,above,false,false,!back);
+  zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,margin,above,false,false,!back);
   if(axis.type == Both)
-    zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,above,true,false,back);
+    zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,margin,above,true,false,back);
   if(axis.type2 == Both) {
-    zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,above,false,true,false);
+    zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,margin,above,false,true,false);
     if(axis.type == Both)
-      zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,above,true,true,false);
+      zaxis3At(pic,L,axis,zmin,zmax,p,ticks,arrow,margin,above,true,true,false);
   }
 }
 
@@ -1155,11 +1162,11 @@ void axes3(picture pic=currentpicture,
            Label xlabel="", Label ylabel="", Label zlabel="", 
            triple min=(-infinity,-infinity,-infinity),
            triple max=(infinity,infinity,infinity),
-           pen p=currentpen, arrowbar3 arrow=None)
+           pen p=currentpen, arrowbar3 arrow=None, margin3 margin=NoMargin3)
 {
-  xaxis3(pic,xlabel,min.x,max.x,p,arrow);
-  yaxis3(pic,ylabel,min.y,max.y,p,arrow);
-  zaxis3(pic,zlabel,min.z,max.z,p,arrow);
+  xaxis3(pic,xlabel,min.x,max.x,p,arrow,margin);
+  yaxis3(pic,ylabel,min.y,max.y,p,arrow,margin);
+  zaxis3(pic,zlabel,min.z,max.z,p,arrow,margin);
 }
 
 triple Scale(picture pic=currentpicture, triple v)
@@ -1519,19 +1526,24 @@ surface surface(triple[][] f, bool[][] cond={})
     count=0;
     for(int i=0; i < nx; ++i) {
       bool[] condi=cond[i];
+      bool[] condp=cond[i+1];
       for(int j=0; j < ny; ++j)
-        if(condi[j]) ++count;
+        if(condi[j] && condi[j+1] && condp[j] && condp[j+1]) ++count;
     }
   }
 
   surface s=surface(count);
   int k=-1;
   for(int i=0; i < nx; ++i) {
-    bool[] condi=all ? null : cond[i];
+    bool[] condi,condp;
+    if(!all) {
+      condi=cond[i];
+      condp=cond[i+1];
+    }
     triple[] fi=f[i];
     triple[] fp=f[i+1];
     for(int j=0; j < ny; ++j) {
-      if(all || condi[j])
+      if(all || (condi[j] && condi[j+1] && condp[j] && condp[j+1]))
         s.s[++k]=patch(new triple[] {fi[j],fp[j],fp[j+1],fi[j+1]});
     }
   }
@@ -1579,15 +1591,11 @@ private surface bispline(real[][] z, real[][] p, real[][] q, real[][] r,
       real yj=y[j];
       real yp=y[j+1];
       if(all || condi[j]) {
-        triple[][] P={
-          {O,O,O,O},
-          {O,O,O,O},
-          {O,O,O,O},
-          {O,O,O,O}};
+        triple[][] P=array(4,array(4,O));
         real hy=(yp-yj)/3;
         real hxy=hx*hy;
         // first x and y  directions
-        for(int k=0 ; k < 4 ; ++k) {
+        for(int k=0; k < 4; ++k) {
           P[k][0] += xi*X;
           P[0][k] += yj*Y;
           P[k][1] += (xp+2*xi)/3*X;
@@ -1624,34 +1632,38 @@ private surface bispline(real[][] z, real[][] p, real[][] q, real[][] r,
 }
 
 // return the surface described by a real matrix f, interpolated with
-// splinetype.
+// xsplinetype and ysplinetype.
 surface surface(real[][] f, real[] x, real[] y,
-                splinetype splinetype=null, bool[][] cond={})
+                splinetype xsplinetype=null, splinetype ysplinetype=xsplinetype,
+                bool[][] cond={})
 {
-  if(splinetype == null)
-    splinetype=(x[0] == x[x.length-1] && y[0] == y[y.length-1]) ? 
-      periodic : notaknot;
+  real epsilon=sqrtEpsilon*max(abs(y));
+  if(xsplinetype == null)
+    xsplinetype=(abs(x[0]-x[x.length-1]) <= epsilon) ? periodic : notaknot;
+  if(ysplinetype == null)
+    ysplinetype=(abs(y[0]-y[y.length-1]) <= epsilon) ? periodic : notaknot;
   int n=x.length; int m=y.length;
   real[][] ft=transpose(f);
   real[][] tp=new real[m][];
-  for(int j=0; j < m ; ++j)
-    tp[j]=splinetype(x,ft[j]);
+  for(int j=0; j < m; ++j)
+    tp[j]=xsplinetype(x,ft[j]);
   real[][] q=new real[n][];
-  for(int i=0; i < n ; ++i)
-    q[i]=splinetype(y,f[i]);
+  for(int i=0; i < n; ++i)
+    q[i]=ysplinetype(y,f[i]);
   real[][] qt=transpose(q);
-  real[] d1=splinetype(x,qt[0]);
-  real[] d2=splinetype(x,qt[m-1]);
+  real[] d1=xsplinetype(x,qt[0]);
+  real[] d2=xsplinetype(x,qt[m-1]);
   real[][] r=new real[n][];
-  for(int i=0; i < n ; ++i)
-    r[i]=clamped(d1[i],d2[i])(y,f[i]);
-  return bispline(f,transpose(tp),q,r,x,y,cond);
+  real[][] p=transpose(tp);
+  for(int i=0; i < n; ++i)
+    r[i]=clamped(d1[i],d2[i])(y,p[i]);
+  return bispline(f,p,q,r,x,y,cond);
 }
 
 // return the surface described by a real matrix f, interpolated with
-// splinetype.
-surface surface(real[][] f, pair a, pair b, splinetype splinetype,
-                bool[][] cond={})
+// xsplinetype and ysplinetype.
+surface surface(real[][] f, pair a, pair b, splinetype xsplinetype,
+                splinetype ysplinetype=xsplinetype, bool[][] cond={})
 {
   if(!rectangular(f)) abort("matrix is not rectangular");
 
@@ -1662,7 +1674,7 @@ surface surface(real[][] f, pair a, pair b, splinetype splinetype,
 
   real[] x=uniform(a.x,b.x,nx);
   real[] y=uniform(a.y,b.y,ny);
-  return surface(f,x,y,splinetype,cond);
+  return surface(f,x,y,xsplinetype,ysplinetype,cond);
 }
 
 // return the surface described by a real matrix f, interpolated linearly.
@@ -1675,12 +1687,17 @@ surface surface(real[][] f, pair a, pair b, bool[][] cond={})
 
   if(nx == 0 || ny == 0) return nullsurface;
 
+  bool all=cond.length == 0;
+
   triple[][] v=new triple[nx+1][ny+1];
   for(int i=0; i <= nx; ++i) {
     real x=interp(a.x,b.x,i/nx);
-    for(int j=0; j <= ny; ++j) {
-      v[i][j]=(x,interp(a.y,b.y,j/ny),f[i][j]);
-    }
+    bool[] condi=all ? null : cond[i];
+    triple[] vi=v[i];
+    real[] fi=f[i];
+    for(int j=0; j <= ny; ++j)
+      if(all || condi[j])
+        vi[j]=(x,interp(a.y,b.y,j/ny),fi[j]);
   }
   return surface(v,cond);
 }
@@ -1704,18 +1721,93 @@ surface surface(triple f(pair z), pair a, pair b, int nu=nmesh, int nv=nu,
   triple[][] v=new triple[nu+1][nv+1];
 
   for(int i=0; i <= nu; ++i) {
-    bool[] activei=all ? null : active[i];
     real x=interp(a.x,b.x,i*du);
+    bool[] activei=all ? null : active[i];
+    triple[] vi=v[i];
     for(int j=0; j <= nv; ++j) {
       pair z=(x,interp(a.y,b.y,j*dv));
-      v[i][j]=f(z);
-      if(!all)
-        activei[j]=cond(z) || cond(z+du) || cond(z+Idv) || cond(z+dz);
+      if(all || (activei[j]=cond(z))) vi[j]=f(z);
     }
   }
   return surface(v,active);
 }
   
+// return the surface described by a parametric function f over box(a,b),
+// interpolated with usplinetype and vsplinetype.
+surface surface(triple f(pair z), pair a, pair b, int nu=nmesh, int nv=nu,
+                splinetype[] usplinetype, splinetype[] vsplinetype=Spline,
+                bool cond(pair z)=null)
+{
+  real[] upt=uniform(a.x,b.x,nu);
+  real[] vpt=uniform(a.y,b.y,nv);
+  real[] ipt=sequence(nu+1);
+  real[] jpt=sequence(nv+1);
+  real[][] fx=new real[nu+1][nv+1];
+  real[][] fy=new real[nu+1][nv+1];
+  real[][] fz=new real[nu+1][nv+1];
+
+  bool[][] active;
+  bool all=cond == null;
+  if(!all) active=new bool[nu+1][nv+1];
+
+  real norm;
+  for(int i=0; i <= nu; ++i) {
+    real upti=upt[i];
+    real[] fxi=fx[i];
+    real[] fyi=fy[i];
+    real[] fzi=fz[i];
+    bool[] activei=all ? null : active[i];
+    for(int j=0; j <= nv; ++j) {
+      pair z=(upti,vpt[j]);
+      triple f=(all || (activei[j]=cond(z))) ? f(z) : O;
+      norm=max(norm,abs(f));
+      fxi[j]=f.x;
+      fyi[j]=f.y;
+      fzi[j]=f.z;
+    }
+  }
+
+  real epsilon=sqrtEpsilon*norm;
+
+  if(usplinetype.length == 0) {
+    bool uperiodic(real[][] a) {
+      for(int j=0; j < nv; ++j)
+        if(abs(a[0][j]-a[nu][j]) > epsilon) return false;
+      return true;
+    }
+    usplinetype=new splinetype[] {uperiodic(fx) ? periodic : notaknot,
+                                  uperiodic(fy) ? periodic : notaknot,
+                                  uperiodic(fz) ? periodic : notaknot};
+  } else if(usplinetype.length != 3) abort("usplinetype must have length 3");
+
+  if(vsplinetype.length == 0) {
+    bool vperiodic(real[][] a) {
+      for(int i=0; i < nu; ++i)
+        if(abs(a[i][0]-a[i][nv]) > epsilon) return false;
+      return true;
+    }
+    vsplinetype=new splinetype[] {vperiodic(fx) ? periodic : notaknot,
+                                  vperiodic(fy) ? periodic : notaknot,
+                                  vperiodic(fz) ? periodic : notaknot};
+  } else if(vsplinetype.length != 3) abort("vsplinetype must have length 3");
+  
+  surface sx=surface(fx,ipt,jpt,usplinetype[0],vsplinetype[0],active);
+  surface sy=surface(fy,ipt,jpt,usplinetype[1],vsplinetype[1],active);
+  surface sz=surface(fz,ipt,jpt,usplinetype[2],vsplinetype[2],active);
+
+  surface s=surface(sx.s.length);
+  for(int k=0; k < sx.s.length; ++k) {
+    triple[][] Q=new triple[4][4];
+    for(int i=0; i < 4 ; ++i) {
+      for(int j=0; j < 4 ; ++j) {
+        Q[i][j]=(sx.s[k].P[i][j].z,sy.s[k].P[i][j].z,sz.s[k].P[i][j].z);
+      }
+      s.s[k]=patch(Q);
+    }
+  }
+  return s;
+}
+
 // return the surface described by a real function f over box(a,b),
 // interpolated linearly.
 surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
@@ -1725,9 +1817,10 @@ surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
 }
 
 // return the surface described by a real function f over box(a,b),
-// interpolated with splinetype.
+// interpolated with xsplinetype and ysplinetype.
 surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
-                splinetype splinetype, bool cond(pair z)=null)
+                splinetype xsplinetype, splinetype ysplinetype=xsplinetype,
+                bool cond(pair z)=null)
 {
   bool[][] active;
   bool all=cond == null;
@@ -1743,15 +1836,15 @@ surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
   real[] y=uniform(a.y,b.y,ny);
   for(int i=0; i <= nx; ++i) {
     bool[] activei=all ? null : active[i];
+    real[] Fi=F[i];
     real x=x[i];
     for(int j=0; j <= ny; ++j) {
       pair z=(x,y[j]);
-      F[i][j]=f(z);
-      if(!all)
-        activei[j]=cond(z) || cond(z+dx) || cond(z+Idy) || cond(z+dz);
+      Fi[j]=f(z);
+      if(!all) activei[j]=cond(z);
     }
   }
-  return surface(F,x,y,splinetype,active);
+  return surface(F,x,y,xsplinetype,ysplinetype,active);
 }
 
 guide3[][] lift(real f(real x, real y), guide[][] g,
@@ -1807,35 +1900,51 @@ void draw(picture pic=currentpicture, Label[] L=new Label[],
   draw(pic,L,g,sequence(new pen(int) {return p;},g.length));
 }
 
-picture vectorfield(path3 vector(pair z), triple f(pair z),
-                    pair a, pair b, int nx=nmesh, int ny=nx,
-                    bool autoscale=true,
-                    pen p=currentpen, arrowbar3 arrow=Arrow3)
+real maxlength(triple f(pair z), pair a, pair b, int nu, int nv) 
+{
+  return min(abs(f((b.x,a.y))-f(a))/nu,abs(f((a.x,b.y))-f(a))/nv);
+}
+
+// return a vector field on a parametric surface f over box(a,b).
+picture vectorfield(path3 vector(pair v), triple f(pair z), pair a, pair b,
+                    int nu=nmesh, int nv=nu, bool truesize=false,
+                    real maxlength=truesize ? 0 : maxlength(f,a,b,nu,nv),
+                    bool cond(pair z)=null, pen p=currentpen,
+                    arrowbar3 arrow=Arrow3, margin3 margin=PenMargin3)
 {
   picture pic;
-  real dx=1/nx;
-  real dy=1/ny;
+  real du=1/nu;
+  real dv=1/nv;
+  bool all=cond == null;
   real scale;
-  if(autoscale) {
+
+  if(maxlength > 0) {
     real size(pair z) {
       path3 g=vector(z);
       return abs(point(g,size(g)-1)-point(g,0));
     }
     real max=size((0,0));
-    for(int i=0; i <= nx; ++i) {
-      real x=interp(a.x,b.x,i*dx);
-      for(int j=0; j <= ny; ++j)
-        max=max(max,size((x,interp(a.y,b.y,j*dy))));
+    for(int i=0; i <= nu; ++i) {
+      real x=interp(a.x,b.x,i*du);
+      for(int j=0; j <= nv; ++j)
+        max=max(max,size((x,interp(a.y,b.y,j*dv))));
     }
-    pair lambda=(abs(f((b.x,a.y))-f(a)),abs(f((a.x,b.y))-f(a)));
-    scale=min(lambda.x/nx,lambda.y/ny)/max;
+    scale=max > 0 ? maxlength/max : 1;
   } else scale=1;
-  for(int i=0; i <= nx; ++i) {
-    real x=interp(a.x,b.x,i*dx);
-    for(int j=0; j <= ny; ++j) {
-      real y=interp(a.y,b.y,j*dy);
-      pair z=(x,y);
-      draw(pic,shift(f(z))*scale3(scale)*vector(z),p,arrow);
+
+  for(int i=0; i <= nu; ++i) {
+    real x=interp(a.x,b.x,i*du);
+    for(int j=0; j <= nv; ++j) {
+      pair z=(x,interp(a.y,b.y,j*dv));
+      if(all || cond(z)) {
+        path3 g=scale3(scale)*vector(z);
+        if(truesize) {
+          picture opic;
+          draw(opic,g,p,arrow,margin);
+          add(pic,opic,f(z));
+        } else
+          draw(pic,shift(f(z))*g,p,arrow,margin);
+      }
     }
   }
   return pic;

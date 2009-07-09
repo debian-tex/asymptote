@@ -155,7 +155,13 @@ public:
 
   // Indicate potential problems in the code, but the code is still usable.
   void warning(position pos);
+  
+  // Indicate how a warning may be disabled.
+  void disable(string s);
 
+  // Single a fatal error and execute the main process.
+  void fatal(position pos);
+  
   // Print out position in code to aid debugging.
   void trace(position pos);
   

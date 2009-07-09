@@ -70,12 +70,9 @@ ShowUnInstDetails show
 
 Section "Asymptote" SEC01
   SetOutPath "$INSTDIR"
+  Delete "$INSTDIR\_imagingtk.pyd"
   SetOverwrite try
   File /r build-${PRODUCT_VERSION}\*
-
-  CreateDirectory "$INSTDIR\..\etc"
-  FileOpen $0 $INSTDIR\..\etc\fstab w
-  FileClose $0
 
   FileOpen $0 $INSTDIR\asy.bat w
 
@@ -87,11 +84,11 @@ Section "Asymptote" SEC01
   FileWriteByte $0 "13" 
   FileWriteByte $0 "10" 
 
-  FileWrite $0 '"$INSTDIR\asy.exe" %1'
+  FileWrite $0 '"$INSTDIR\asy.exe" %*'
   FileWriteByte $0 "13" 
   FileWriteByte $0 "10" 
 
-  FileWrite $0 "if %errorlevel% == 0 exit"
+  FileWrite $0 "if %errorlevel% == 0 exit /b"
   FileWriteByte $0 "13" 
   FileWriteByte $0 "10" 
 

@@ -9,20 +9,20 @@ This file documents @code{Asymptote}, version @value{VERSION}.
 
 @url{http://asymptote.sourceforge.net}
      
-Copyright @copyright{} 2004-8 Andy Hammerlindl, John Bowman, and Tom Prince.
+Copyright @copyright{} 2004-9 Andy Hammerlindl, John Bowman, and Tom Prince.
      
 @quotation
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the @acronym{GNU} General Public License.  On
-Debian systems, the @acronym{GPL} can be found at
-/usr/share/common-licenses/GPL.
+under the terms of the @acronym{GNU} Lesser General Public License.  On
+Debian systems, the @acronym{LGPL} can be found at
+/usr/share/common-licenses/LGPL.
 
 @end quotation
 @end copying
      
 @dircategory Languages
 @direntry
-* asymptote: (asymptote).               Vector graphics language.
+* asymptote: (asymptote/asymptote). Vector graphics language.
 @end direntry
 
 @titlepage
@@ -76,7 +76,7 @@ Installation
 * Search paths::                Where @code{Asymptote} looks for your files
 * Compiling from UNIX source::  Building @code{Asymptote} from scratch
 * Editing modes::               Convenient @code{emacs} and @code{vim} modes
-* Subversion::                  
+* Subversion::                  Getting the latest development source
 * Uninstall::                   Goodbye, @code{Asymptote}!
 
 Drawing commands
@@ -129,6 +129,7 @@ Base modules
 * math::                        Extend @code{Asymptote}'s math capabilities
 * interpolate::                 Interpolation routines
 * geometry::                    Geometry routines
+* trembling::                   Wavy lines
 * stats::                       Statistics routines and histograms
 * patterns::                    Custom fill and draw patterns
 * markers::                     Custom path marker routines
@@ -161,7 +162,7 @@ Base modules
 * contour::                     Contour lines
 * contour3::                    Contour surfaces
 * slopefield::                  Slope fields
-
+* ode::                         Ordinary differential equations
 
 Graphical User Interface
 
@@ -209,6 +210,8 @@ The @code{Asymptote} vector graphics language provides:
 as @TeX{}/@code{LaTeX} is the de-facto standard for typesetting equations.
 
 @item @code{LaTeX} typesetting of labels, for overall document consistency;
+
+@item the ability to generate and embed 3D vector @acronym{PRC} graphics into @acronym{PDF} files;
 
 @item a natural coordinate-based framework for technical drawings,
 inspired by @code{MetaPost}, with a much cleaner, powerful C++-like programming
@@ -265,7 +268,7 @@ Links to many external resources, including an excellent user-written
 * Search paths::                Where @code{Asymptote} looks for your files
 * Compiling from UNIX source::  Building @code{Asymptote} from scratch
 * Editing modes::               Convenient @code{emacs} and @code{vim} modes
-* Subversion::                  
+* Subversion::                  Getting the latest development source
 * Uninstall::                   Goodbye, @code{Asymptote}!
 @end menu
 
@@ -351,13 +354,28 @@ Users of the @code{Microsoft Windows} operating system can install the
 self-extracting @code{Asymptote} executable @code{asymptote-x.xx-setup.exe},
 where @code{x.xx} denotes the latest version.
 
-A working @code{TeX} implementation (such as the one available at
+A working @TeX{} implementation (such as the one available at
 @url{http://www.miktex.org}) will be required to typeset labels.
 You will also need to install @code{GPL Ghostscript} from
 @url{http://sourceforge.net/projects/ghostscript/}.
+
 To view the default @code{PostScript} output, you can install the
 program @code{gsview} available from 
 @url{http://www.cs.wisc.edu/~ghost/gsview/}.
+@anchor{psview}
+A better (and free) @code{PostScript} viewer available at
+@url{http://psview.sourceforge.net/} (which in particular works properly
+in interactive mode) unfortunately currently requires some manual
+configuration. Specifically, if version @code{x.xx} of psview is
+extracted to the directory @code{c:\Program Files\psview-x.xx} one
+needs to put
+@verbatim
+import settings;
+psviewer="c:\Program Files\psview-x.xx\psv.exe";
+@end verbatim
+@noindent
+in the optional @code{Asymptote} configuration file;
+@pxref{configuration file}).
 
 The @code{ImageMagick} package from
 
@@ -398,14 +416,17 @@ Users of @code{ggv} will need to enable @code{Watch file} under
 Users of @code{gsview} will need to enable @code{Options/Auto Redisplay}
 (however, under @code{MSDOS} it is still necessary to click on the
 @code{gsview} window; under @code{UNIX} one must manually redisplay by
-pressing the @code{r} key).
+pressing the @code{r} key). A better (and free) multiplatform
+alternative to @code{gsview} is psview (@pxref{psview}).
 
 @cindex @code{settings}
 @cindex configuration file
 Configuration variables are most easily set as @code{Asymptote}
-variables in the configuration file (by default, @code{.asy/config.asy} in the 
-user's home directory or @code{%USERPROFILE%\.asy\config.asy} under
-@code{MSDOS}); @pxref{configuration file}. Here are the default values
+variables in an optional configuration file (by default,
+@code{.asy/config.asy} in the user's home directory,
+@code{$TEXMFCONFIG/asymptote} under @code{TeXLive}, and
+@code{%USERPROFILE%\.asy\config.asy} under @code{MSDOS};
+@pxref{configuration file}). Here are the default values
 of several important configuration variables under @code{UNIX}:
 
 @cindex @code{python}
@@ -465,28 +486,30 @@ configuration variables @code{paperwidth} and @code{paperheight}.
 
 @cindex @code{texpath}
 @cindex @code{texcommand}
-@cindex @code{texdvicommand}
 @cindex @code{dvips}
 @cindex @code{convert}
 @cindex @code{display}
 @cindex @code{animate}
-@cindex @code{xasy}
 @cindex @code{ImageMagick}
 The following configuration variables normally do not require adjustment:
 @verbatim
 texpath
 texcommand
-texdvicommand
 dvips
 convert
 display
 animate
-xasy
 @end verbatim
 @noindent
-The @code{texdvicommand} is used for @code{3D} label typesetting, which
-requires @code{dvips} output. An empty string indicates the default setting
-of @code{latex}/@code{tex}, depending on the setting of @code{texengine}.
+
+Warnings (such as "writeoverloaded") may be enabled or disabled with
+the functions
+@verbatim
+warn(string s);
+nowarn(string s);
+@end verbatim
+@noindent
+or by directly modifying the string array @code{warnings}.
 
 @cindex command-line options
 Configuration variables may also be set or overwritten with a
@@ -561,20 +584,19 @@ in the @code{Asymptote} source directory.
 @cindex multisampling
 @anchor{multisampling}
 @noindent
-If your graphics card supports multisampling, we recommend using SVN
-revision 761 (or later) of @code{freeglut} to support antialiasing in
+If your graphics card supports multisampling, we recommend using version
+@code{2.6.0-rc1} (or later) of @code{freeglut} to support antialiasing in
 @code{Asymptote}'s adaptive @code{OpenGL} 3D renderer
 (@code{MacOS X} users can skip this step since @code{Asymptote} is configured
 to use the native glut library on that platform). Download
 @quotation
-@url{http://freeglut.svn.sourceforge.net/viewvc/freeglut/trunk/freeglut/freeglut.tar.gz}
+@url{http://prdownloads.sourceforge.net/freeglut/freeglut-2.6.0-rc1.tar.gz}
 @end quotation
 @noindent
 and type (as the root user):
 @verbatim
-tar -zxf freeglut.tar.gz
-cd freeglut
-sh autogen.sh
+tar -zxf freeglut-2.6.0-rc1.tar.gz
+cd freeglut-2.6.0
 ./configure --prefix=/usr
 make install
 cd ..
@@ -687,8 +709,15 @@ just add to @code{~/.vim/ftplugin/asy.vim}:
 @verbatim
 setlocal makeprg=asy\ %
 setlocal errorformat=%f:\ %l.%c:\ %m
-
 @end verbatim
+
+@cindex @code{KDE editor}
+@cindex @code{Kate}
+@cindex @code{asymptote.xml}
+Syntax highlighting support for the @acronym{KDE} editor @code{Kate}
+can be enabled by running @code{asy-kate.sh} in the
+@code{@value{Datadir}/asymptote} directory and putting the generated
+@code{asymptote.xml} file in @code{~/.kde/share/apps/katepart/syntax/}.
 
 @node Subversion
 @section Subversion (SVN)
@@ -696,7 +725,7 @@ setlocal errorformat=%f:\ %l.%c:\ %m
 @cindex SVN
 
 The following commands are needed to install the latest development version of
-@code{Asymptote} using @acronym{Subversion}:
+@code{Asymptote} using @code{Subversion}:
 @verbatim
 svn co http://asymptote.svn.sourceforge.net/svnroot/asymptote/trunk/asymptote
 cd asymptote
@@ -1383,6 +1412,22 @@ void draw(picture pic=currentpicture, path[] g, pen[] p);
 Illustrations of tensor product and Coons shading are provided in the
 example files @code{tensor.asy}, @code{Coons.asy}, @code{BezierSurface.asy},
 and @code{rainbow.asy}.
+    
+@cindex Function shading
+@cindex function shading
+@cindex @code{functionshade}
+More general shading possibilities are available with the @code{pdflatex},
+@code{context}, and @code{pdftex} @TeX{} engines: the routine
+@verbatim
+void functionshade(picture pic=currentpicture, path[] g, bool stroke=false,
+                   pen fillrule=currentpen, string shader);
+@end verbatim
+@noindent
+shades on picture @code{pic} the interior of path @code{g} according
+to fill rule @code{fillrule} using the @code{PostScript} calculator routine
+specified by the string @code{shader}; this routine takes 2 arguments,
+each in [0,1], and returns @code{colors(fillrule).length} color components.
+Function shading is illustrated in the example @code{functionshading.asy}.
 
 @cindex unfill
 The following routine uses @code{evenodd} clipping together with the
@@ -1570,7 +1615,7 @@ Here @code{envelope} is a boundary-drawing routine such as @code{box},
 
 @cindex @code{texpath}
 The function @code{path[] texpath(Label L)} returns the path array that
-@code{TeX} would fill to draw the Label @code{L}.
+@TeX{} would fill to draw the Label @code{L}.
 
 @cindex @code{minipage}
 The @code{string minipage(string s, width=100pt)} function can be used
@@ -1747,15 +1792,16 @@ length(z);
 @end example
 returns the result 5. A synonym for @code{length(pair)} is @code{abs(pair)};
 
-@item real angle(pair z)
+@item real angle(pair z, bool warn=true)
 @cindex @code{angle}
 returns the angle of @code{z} in radians in the interval 
-[-@code{pi},@code{pi}];
+[-@code{pi},@code{pi}] or @code{0} if @code{warn} is @code{false} and
+@code{z=(0,0)} (rather than producing an error);
 
 @item real degrees(pair z, bool warn=true)
 @cindex @code{degrees}
 returns the angle of @code{z} in degrees in the interval [0,360)
-or @code{0} if @code{warn} is @code{false} and @code{z.x=z.y=0} (rather than
+or @code{0} if @code{warn} is @code{false} and @code{z=(0,0)} (rather than
 producing an error);
 
 @item pair unit(pair z)
@@ -1810,25 +1856,33 @@ Here are the built-in functions for triples:
 returns the length @code{|v|} of the vector @code{v}. 
 A synonym for @code{length(triple)} is @code{abs(triple)};
 
-@item real polar(triple v)
+@item real polar(triple v, bool warn=true)
 @cindex @code{polar}
-returns the colatitude of @code{v} measured from the @math{z} axis in radians;
+returns the colatitude of @code{v} measured from the @math{z} axis in radians
+or @code{0} if @code{warn} is @code{false} and @code{v=O} (rather than
+producing an error);
 
-@item real azimuth(triple v)
+@item real azimuth(triple v, bool warn=true)
 @cindex @code{azimuth}
-returns the longitude of @code{v} measured from the @math{x} axis in radians;
+returns the longitude of @code{v} measured from the @math{x} axis in radians
+or @code{0} if @code{warn} is @code{false} and @code{v.x=v.y=0} (rather than
+producing an error);
 
-@item real colatitude(triple v)
+@item real colatitude(triple v, bool warn=true)
 @cindex @code{colatitude}
-returns the colatitude of @code{v} measured from the @math{z} axis in degrees;
+returns the colatitude of @code{v} measured from the @math{z} axis in degrees
+or @code{0} if @code{warn} is @code{false} and @code{v=O} (rather than
+producing an error);
 
-@item real latitude(triple v)
+@item real latitude(triple v, bool warn=true)
 @cindex @code{latitude}
-returns the latitude of @code{v} measured from the @math{xy} plane in degrees;
+returns the latitude of @code{v} measured from the @math{xy} plane in degrees
+or @code{0} if @code{warn} is @code{false} and @code{v=O} (rather than
+producing an error);
 
 @item real longitude(triple v, bool warn=true)
 @cindex @code{longitude}
-returns the longitude of @code{v} measured from the @math{x} axis in degrees;
+returns the longitude of @code{v} measured from the @math{x} axis in degrees
 or @code{0} if @code{warn} is @code{false} and @code{v.x=v.y=0} (rather than
 producing an error);
 
@@ -1976,13 +2030,14 @@ delimited by @code{delimiter};
 returns a string containing @code{n} formatted according to the C-style
 format string @code{s} using the current locale;
 
-@item string format(string s, real x, string locale="")
+@item string format(string s=defaultformat, real x, string locale="")
 returns a string containing @code{x} formatted according to the C-style format
 string @code{s} using locale @code{locale} (or the current locale if an
 empty string is specified), following the behaviour of the C function
 @code{fprintf}), except that only one data field is allowed, trailing
-zeros are removed by default (unless @code{#} is specified), and @TeX{}
-is used to typeset scientific notation;
+zeros are removed by default (unless @code{#} is specified), and
+(if the format string specifies math mode) @TeX{} is used to typeset
+scientific notation;
 
 @cindex @code{hex}
 @cindex @code{hexidecimal}
@@ -2098,6 +2153,7 @@ path circle(pair c, real r)
 @end verbatim
 If high accuracy is needed, a true circle may be produced with the
 routine @code{Circle} defined in the module @code{graph.asy}:
+@cindex @code{Circle}
 @verbatim
 import graph;
 path Circle(pair c, real r, int n=nCircle);
@@ -2107,6 +2163,7 @@ A circular arc consistent with @code{circle} centered on
 @code{c} with radius @code{r} from @code{angle1} to @code{angle2}
 degrees, drawing counterclockwise if @code{angle2 >= angle1}, can be
 constructed with
+@cindex @code{arc}
 @verbatim
 path arc(pair c, real r, real angle1, real angle2);
 @end verbatim
@@ -2125,6 +2182,7 @@ path arc(pair c, explicit pair z1, explicit pair z2,
 If high accuracy is needed, true arcs may be produced with routines
 in the module @code{graph.asy} that produce Bezier curves with @code{n}
 control points:
+@cindex @code{Arc}
 @verbatim
 import graph;
 path Arc(pair c, real r, real angle1, real angle2, bool direction,
@@ -2136,6 +2194,7 @@ path Arc(pair c, explicit pair z1, explicit pair z2,
 
 An ellipse can be drawn with the routine
 @verbatim
+@cindex @code{ellipse}
 path ellipse(pair c, real a, real b)
 {
   return shift(c)*scale(a,b)*unitcircle;
@@ -2286,7 +2345,7 @@ path times along @code{p} and @code{q}, in the sense of
 @code{point(path, real)}, for one such intersection point (as chosen by
 the algorithm described on page 137 of @code{The MetaFontbook}). 
 The computations are performed to the absolute error specified by @code{fuzz}, 
-or, if @code{fuzz < 0}, to machine precision. If the paths do not 
+or if @code{fuzz < 0}, to machine precision. If the paths do not 
 intersect, return a real array of length 0.
 
 @cindex @code{intersections}
@@ -2294,7 +2353,7 @@ intersect, return a real array of length 0.
 Return all (unless there are infinitely many) intersection times of
 paths @code{p} and @code{q} as a sorted array of real arrays of length 2
 (@pxref{sort}). The computations are performed to the absolute error
-specified by @code{fuzz}, or, if @code{fuzz < 0}, to machine precision.
+specified by @code{fuzz}, or if @code{fuzz < 0}, to machine precision.
 
 @cindex @code{intersections}
 @item real[] intersections(path p, explicit pair a, explicit pair b,
@@ -2302,7 +2361,7 @@ specified by @code{fuzz}, or, if @code{fuzz < 0}, to machine precision.
 Return all (unless there are infinitely many) intersection times of path
 @code{p} with the (infinite) line through points @code{a} and @code{b}
 as a sorted array. The intersections returned are guaranteed to be
-correct to within the absolute error specified by @code{fuzz}, or, if
+correct to within the absolute error specified by @code{fuzz}, or if
 @code{fuzz < 0}, to machine precision.
 
 @cindex @code{times}
@@ -2339,7 +2398,7 @@ returns an array containing all intersection points of the paths
 @cindex @code{extension}
 @item pair extension(pair P, pair Q, pair p, pair q);
 returns the intersection point of the extensions of the line segments 
-@code{P--Q} and @code{p--q}, or, if the lines are parallel,
+@code{P--Q} and @code{p--q}, or if the lines are parallel,
 @code{(infinity,infinity)}.
 
 @cindex @code{cut}
@@ -2393,9 +2452,14 @@ returns the winding number of the cyclic path @code{p} relative to the point
 counterclockwise direction. If @code{z} lies on @code{p} the constant
 @code{undefined} (defined to be the largest odd integer) is returned.
 
+@cindex @code{interior}
+@item bool interior(int windingnumber, pen fillrule)
+returns true if @code{windingnumber} corresponds to an interior point
+according to @code{fillrule}.
+
 @cindex @code{inside}
 @item bool inside(path p, pair z, pen fillrule=currentpen);
-returns @code{true} iff the point @code{z} is inside or on the edge of
+returns @code{true} iff the point @code{z} lies inside or on the edge of
 the region bounded by the cyclic path @code{p} according to the fill
 rule @code{fillrule} (@pxref{fillrule}). 
 
@@ -2822,7 +2886,7 @@ skip of a pen can be examined with the routines
 @cindex @code{font command}
 @item A pen using a specific @code{LaTeX} @code{NFSS} font is returned
 by calling the function @code{pen font(string encoding, string family,
-string series="m", string shape="n")}. The default setting,
+string series, string shape)}. The default setting,
 @code{font("OT1","cmr","m","n")}, corresponds to 12pt Computer Modern Roman;
 this may be changed with @code{defaultpen(pen)}. 
 The font setting of a pen is returned by
@@ -2831,7 +2895,7 @@ Support for standardized international characters is provided by the
 @code{unicode} package (@pxref{unicode}).
 
 @cindex @code{TeX fonts}
-Alternatively, one may select a fixed-size @code{TeX} font (on which
+Alternatively, one may select a fixed-size @TeX{} font (on which
 @code{fontsize} has no effect) like @code{"cmr12"} (12pt Computer Modern
 Roman) or @code{"pcrr"} (Courier) using the function @code{pen font(string
 name)}. An optional size argument can also be given to scale the font
@@ -3178,21 +3242,44 @@ coordinates in @code{box(min,max)} to the (already specified) picture size,
 taking account of the width of pen @code{p}. A warning will be issued if
 the final picture exceeds the specified size.
 
-A picture can be fit to a frame and converted into a @code{PostScript} image
-by calling the function @code{shipout}:
+A picture @code{pic} can be fit to a frame and output to a file
+@code{prefix}.@code{format} using image format @code{format}
+by calling the @code{shipout} function:
 @anchor{shipout}
 @cindex @code{shipout}
+@cindex @code{outprefix}
 @verbatim
-void shipout(string prefix=defaultfilename, picture pic,
+void shipout(string prefix=defaultfilename, picture pic=currentpicture,
              orientation orientation=orientation,
-             string format="", bool wait=false, bool view=true);
-void shipout(string prefix=defaultfilename,
-             orientation orientation=orientation,
-             string format="", bool wait=false, bool view=true);
+             string format="", bool wait=false, bool view=true,
+             string options="", string script="",
+             projection P=currentprojection);
 @end verbatim
 @noindent
+The default output format, @code{PostScript}, may be changed
+with the @code{-f} or @code{-tex} command-line options.
+The @code{options}, @code{script}, and @code{projection} parameters
+are only relevant for 3D pictures. If @code{defaultfilename} is an
+empty string, the prefix @code{outprefix()} will be used.
+
 A @code{shipout()} command is added implicitly at file exit if no
 previous @code{shipout} commands have been executed.
+@cindex @code{orientation}
+@cindex @code{Portrait}
+@cindex @code{Landscape}
+@cindex @code{UpsideDown}
+The default page orientation is @code{Portrait}; this may be modified
+by changing the variable @code{orientation}. To output in landscape
+mode, simply set the variable @code{orientation=Landscape} or issue
+the command 
+@verbatim
+shipout(Landscape);
+@end verbatim
+
+@cindex @code{Seascape}
+To rotate the page by @math{-90} degrees, use the orientation @code{Seascape}.
+@cindex @code{UpsideDown}
+The orientation @code{UpsideDown} rotates the page by 180 degrees.
 
 @cindex subpictures
 @cindex @code{fit}
@@ -3218,22 +3305,6 @@ frame pic.scale(real xsize=this.xsize, real ysize=this.ysize,
 (which scales the resulting frame, including labels and fixed-size
 objects) will enforce perfect compliance with the requested size
 specification, but should not normally be required.
-
-@cindex @code{orientation}
-@cindex @code{Portrait}
-@cindex @code{Landscape}
-@cindex @code{UpsideDown}
-The default page orientation is @code{Portrait}; this may be modified
-by changing the variable @code{orientation}. To output in landscape
-mode, simply set @code{orientation=Landscape} or issue the command
-@verbatim
-shipout(Landscape);
-@end verbatim
-
-@cindex @code{Seascape}
-To rotate the page by @math{-90} degrees, use the orientation @code{Seascape}.
-@cindex @code{UpsideDown}
-To rotate the page by 180 degrees, use the orientation @code{UpsideDown}.
 
 @cindex @code{box}
 To draw a bounding box with margins around a picture, fit the
@@ -3440,7 +3511,7 @@ void tex(picture pic=currentpicture, string s);
 void tex(picture pic=currentpicture, string s, pair min, pair max)
 @end verbatim
 Here @code{min} and @code{max} can be used to specify explicit bounds
-associated with the resulting @code{TeX} code.
+associated with the resulting @TeX{} code.
 
 To issue a global @TeX{} command (such as a @TeX{} macro definition) in the
 @TeX{} preamble (valid for the remainder of the top-level module) use:
@@ -3580,23 +3651,35 @@ write(fout,"List: ",1,2,3);     // Writes "List: 1     2     3"
 @cindex @code{binput}
 @cindex @code{boutput}
 @cindex @code{single}
-@cindex @code{double}
+@cindex double precision
+@cindex @code{signed}
 A file may also be opened with @code{xinput} or @code{xoutput}, instead of
 @code{input} or @code{output}, to read or write
-double precision (64-bit) real values and single precision (32-bit)
-integer values in Sun Microsystem's @acronym{XDR} (External
+double precision (64-bit) reals and single precision (32-bit)
+integers in Sun Microsystem's @acronym{XDR} (External
 Data Representation) portable binary format (available on all
 @code{UNIX} platforms).
-A file may also be opened with @code{binput} or @code{boutput} to read
-or write double precision values in the native (nonportable)
-machine binary format. The function @code{file single(file,0.0)} may
-be used to set a file to read single precision real @acronym{XDR} or binary
-values; calling @code{file single(file,0.0,false)} sets it back to read
-doubles again. The functions @code{file single(file,0)} and
-@code{file single(file,0,false)} can be used to change the default
-integer precision (single). The functions @code{file 
-single(file)} and @code{file single(file,false)} may be used to set the
-precision for both real and integer values.
+Alternatively, a file may also be opened with @code{binput} or
+@code{boutput} to read or write double precision reals and single
+precision integers in the native (nonportable) machine binary format.
+The function
+@code{file single(file f, bool real=true, bool int=true)} may
+be used to change the precision of real and integer I/O
+operations, respectively, for an @acronym{XDR} or binary file @code{f}.  
+Similarly, the function @code{file signed(file f, bool b=true)}
+can be used to modify the signedness of integer reads and writes for
+an @acronym{XDR} or binary file @code{f}.
+Note that @code{single}, and @code{signed} modify and return their
+file arguments (to facilitate nested function calls).
+
+@cindex @code{name}
+@cindex @code{mode}
+@cindex @code{singlereal}
+@cindex @code{singleint}
+@cindex @code{signed}
+The virtual members @code{name}, @code{mode}, @code{singlereal},
+@code{singleint}, and @code{signed} may be used to query the
+respective parameters for a given file.
 
 @cindex @code{eof}
 @cindex @code{eol}
@@ -4005,8 +4088,9 @@ Much like in C++, casting (@pxref{Casts}) provides for an elegant
 implementation of structure inheritance, including virtual functions:
 @verbatim
 struct parent {
-  real x=1;
-  void virtual(int) {write (0);}
+  real x;
+  void operator init(int x) {this.x=x;}
+  void virtual(int) {write(0);}
   void f() {virtual(1);}
 }
 
@@ -4014,24 +4098,25 @@ void write(parent p) {write(p.x);}
   
 struct child {
   parent parent;
-  real y=2;
-  void virtual(int x) {write (x);}
+  real y=3;
+  void operator init(int x) {parent.operator init(x);}
+  void virtual(int x) {write(x);}
   parent.virtual=virtual;
   void f()=parent.f;
 }
 
 parent operator cast(child child) {return child.parent;}
   
-parent p;
-child c;
+parent p=parent(1);
+child c=child(2);
 
-write(c);                       // Outputs 1;
+write(c);                       // Outputs 2;
 
 p.f();                          // Outputs 0;
 c.f();                          // Outputs 1;
 
-write(c.parent.x);              // Outputs 1;
-write(c.y);                     // Outputs 2;
+write(c.parent.x);              // Outputs 2;
+write(c.y);                     // Outputs 3;
 @end verbatim
 
 For further examples of structures, see @code{Legend} and @code{picture} in
@@ -4603,6 +4688,7 @@ i(3,4); // ambiguous; the first candidate is better for the first argument,
 @cindex @code{cbrt}
 @cindex @code{fabs}
 @cindex @code{expm1}
+@cindex @code{log1p}
 @cindex @code{identity}
 @cindex @code{J}
 @cindex @code{Y}
@@ -4618,7 +4704,7 @@ real(real) functions @code{sin}, @code{cos}, @code{tan}, @code{asin},
 @code{acos}, @code{atan}, @code{exp}, @code{log}, @code{pow10},
 @code{log10}, @code{sinh}, @code{cosh}, @code{tanh}, @code{asinh},
 @code{acosh}, @code{atanh}, @code{sqrt}, @code{cbrt}, @code{fabs}, @code{expm1},
-as well as the identity function @code{identity}. 
+@code{log1p}, as well as the identity function @code{identity}. 
 @code{Asymptote} also defines the order @code{n} Bessel functions of
 the first kind @code{J(int n, real)} and second kind
 @code{Y(int n, real)}, as well as the gamma function @code{gamma},
@@ -5268,6 +5354,18 @@ One, two, and three-dimensional arrays of the basic data types can be
 output with the functions @code{write(file,T[])},
 @code{write(file,T[][])}, @code{write(file,T[][][])}, respectively.
 
+@cindex @code{dimension}
+@cindex @code{line}
+@cindex @code{csv}
+@cindex @code{word}
+@cindex @code{single}
+@cindex @code{signed}
+Note that @code{dimension}, @code{line}, @code{csv},
+@code{word}, @code{single}, and @code{signed} modify and return their
+file arguments (to facilitate nested function calls).
+The virtual members @code{dimension}, @code{line}, @code{csv}, and
+@code{word} may be used to query the respective parameters for a given file.
+
 @node Slices
 @subsection Slices
 @cindex slices
@@ -5803,7 +5901,7 @@ need to remove the files @code{latexusage-*}, @code{latexusage_.pre}, and
 One can specify @code{width}, @code{height},
 @code{viewportwidth}, @code{viewportheight}, and @code{attach}
 @code{keyval}-style options to the @code{asy} environment.
-The current version (1.06) of @code{asymptote.sty} supports the
+The current version (1.07) of @code{asymptote.sty} supports the
 embedding of 3D @acronym{PRC} files, either inline or, using the
 @code{attach} option with the @code{attachfile2} (or older
 @code{attachfile}) @code{LaTeX} package,
@@ -5814,9 +5912,9 @@ inline 3D figures and @code{0} for attachments.
 
 If the @code{inline} option is given to the
 @code{asymptote.sty} package, inline @code{LaTeX} code is generated instead of
-@acronym{EPS} or @acronym{PDF} files. This makes LaTeX symbols visible to the
+@acronym{EPS} or @acronym{PDF} files. This makes 2D LaTeX symbols visible to the
 @code{\begin@{asy@}...\end@{asy@}} environment.  In this mode,
-Asymptote correctly aligns LaTeX symbols defined outside of
+Asymptote correctly aligns 2D LaTeX symbols defined outside of
 @code{\begin@{asy@}...\end@{asy@}}, but treats their size as zero; an
 optional second string can be given to @code{Label} to provide an
 estimate of the unknown label size. 
@@ -5848,6 +5946,7 @@ Here now is @code{latexusage.tex}:
 * math::                        Extend @code{Asymptote}'s math capabilities
 * interpolate::                 Interpolation routines
 * geometry::                    Geometry routines
+* trembling::                   Wavy lines
 * stats::                       Statistics routines and histograms
 * patterns::                    Custom fill and draw patterns
 * markers::                     Custom path marker routines
@@ -5880,7 +5979,7 @@ Here now is @code{latexusage.tex}:
 * contour::                     Contour lines
 * contour3::                    Contour surfaces
 * slopefield::                  Slope fields
-
+* ode::                         Ordinary differential equations
 @end menu
 
 @node plain
@@ -5951,12 +6050,24 @@ interpolation in @code{Asymptote}, as illustrated in the example
 @cindex @code{geometry}
 @cindex @code{triangle}
 @cindex @code{perpendicular}
-This module provides the beginnings of a geometry package.
-It currently includes a triangle structure and functions to draw
-interior arcs of triangles and perpendicular symbols.
-A link to a much more extensive, and well documented, geometry module by
-Philippe Ivaldi is posted at
-@url{http://asymptote.sourceforge.net/links.html}.
+This module, written by Philippe Ivaldi, provides an extensive set of
+geometry routines, including @code{perpendicular} symbols and a @code{triangle}
+structure. Link to the documentation for the @code{geometry} module
+are posted here:
+@url{http://asymptote.sourceforge.net/links.html},
+including an extensive set of examples,
+@url{http://piprim.tuxfamily.org/asymptote/geometry/index.html}, and an index:
+@quotation
+@url{http://piprim.tuxfamily.org/asymptote/geometry/modules/geometry.asy.index.type.html}
+@end quotation
+
+@node trembling
+@section @code{trembling}
+@cindex @code{trembling}
+This module, written by Philippe Ivaldi and illustrated in the example
+@code{floatingdisk.asy}, allows one to draw wavy lines, as if drawn by
+hand. Further examples are posted at 
+@url{http://piprim.tuxfamily.org/asymptote/trembling/index.html}
 
 @node stats
 @section @code{stats}
@@ -6133,7 +6244,7 @@ This module provides an interface to the @code{LaTeX} package
 @noindent
 for embedding movies, sounds, and 3D objects into a @acronym{PDF} document.
 @noindent
-@cindex @code{XeLaTeX}
+@cindex @code{xelatex}
 However, @code{XeLaTeX} users need to rename the modified version
 @code{movie15_dvipdfmx.sty} from
 @quotation
@@ -6141,7 +6252,7 @@ However, @code{XeLaTeX} users need to rename the modified version
 @end quotation
 to @code{movie15.sty} and place it in their @code{LaTeX} path.
 
-The latest version (2008/10/08) of the @code{movie15} package requires both
+The latest version of the @code{movie15} package requires both
 @code{pdflatex} version 1.20 or later and the file
 @quotation
 @url{http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/ifdraft.dtx}
@@ -6214,7 +6325,7 @@ To use Cyrillic fonts, you will need to change the font encoding:
 @verbatim
 import unicode;
 texpreamble("\usepackage{mathtext}\usepackage[russian]{babel}");
-defaultpen(font("T2A","cmr"));
+defaultpen(font("T2A","cmr","m","n"));
 @end verbatim
 @noindent
 @cindex Chinese
@@ -7058,9 +7169,10 @@ as illustrated in this simple example of a flow field:
 @cindex @code{vectorfield}
 @verbatim
 picture vectorfield(path vector(pair), pair a, pair b,
-                    int nx=nmesh, int ny=nx, 
-                    bool autoscale=true, bool truesize=false,
-                    pen p=currentpen, arrowbar arrow=Arrow);
+                    int nx=nmesh, int ny=nx, bool truesize=false,
+                    real maxlength=truesize ? 0 : maxlength(a,b,nx,ny),
+                    bool cond(pair z)=null, pen p=currentpen,
+                    arrowbar arrow=Arrow, margin margin=PenMargin)
 @end verbatim
 as illustrated in this example:
 @verbatiminclude vectorfield.asy
@@ -7334,9 +7446,9 @@ surface surface(path3 external, triple[] internal=new triple[],
 @noindent
 and then filled:
 @verbatim
-draw(surface(path3(polygon(5))),red);
-draw(surface(unitcircle3),red);
-draw(surface(unitcircle3,new pen[] {red,green,blue,black}));
+draw(surface(path3(polygon(5))),red,nolight);
+draw(surface(unitcircle3),red,nolight);
+draw(surface(unitcircle3,new pen[] {red,green,blue,black}),nolight);
 @end verbatim
 @noindent
 The last example constructs a patch with vertex-specific colors.
@@ -7355,9 +7467,9 @@ draw(surface((0,0)--E+2N--2E--E+N..0.2E..cycle),red);
 @cindex @code{bezulate}
 Planar Bezier surfaces patches are constructed using Orest Shardt's
 @code{bezulate} routine, which decomposes (possibly nonsimply
-connected) regions bounded by cyclic paths (according to the
-@code{zerowinding} fill rule) into subregions bounded by cyclic paths
-of length @code{4} or less.
+connected) regions bounded by nonselfintersecting cyclic paths
+(according to the @code{zerowinding} fill rule) into subregions
+bounded by cyclic paths of length @code{4} or less.
 
 @cindex @code{thin}
 @cindex @code{thick}
@@ -7398,20 +7510,32 @@ version of the @code{freeglut} library
 controlled with the setting @code{multisample}. An initial screen
 position can be specified with the pair setting @code{position}, where
 negative values are interpreted as relative to the corresponding
-maximum screen dimension. The mouse bindings are:
+maximum screen dimension. The default settings
 @cindex mouse bindings
+@verbatim
+import settings;
+leftbutton=new string[] {"rotate","zoom","shift","pan"};
+middlebutton=new string[] {"menu"};
+rightbutton=new string[] {"zoom/menu","rotateX","rotateY","rotateZ"};
+wheelup=new string[] {"zoomin"};
+wheeldown=new string[] {"zoomout"};
+@end verbatim
+bind the mouse buttons as follows:
 @itemize
 @item Left: rotate
-@item shift Left: zoom
-@item ctrl Left: shift
-@item Middle: menu
-@item Wheel: zoom
-@item Right: zoom
+@item Shift Left: zoom
+@item Ctrl Left: shift viewport
+@item Alt Left: pan
+@item Middle: menu (must be unmodified; ignores Shift, Ctrl, and Alt)
+@item Wheel Up: zoom in
+@item Wheel Down: zoom out
+@item Right: zoom/menu (must be unmodified)
 @item Right double click: menu
-@item shift Right: rotate about the X axis
-@item ctrl Right: rotate about the Y axis
-@item alt Right: rotate about the Z axis
+@item Shift Right: rotate about the X axis
+@item Ctrl Right: rotate about the Y axis
+@item Alt Right: rotate about the Z axis
 @end itemize
+
 The keyboard shortcuts are:
 @cindex keyboard bindings:
 @itemize
@@ -7423,10 +7547,13 @@ The keyboard shortcuts are:
 @item s: stop spinning
 @item m: rendering mode (solid/mesh/patch)
 @item e: export
+@item c: show camera parameters
 @item +: expand
 @item =: expand
+@item >: expand
 @item -: shrink
 @item _: shrink
+@item <: shrink
 @item q: exit
 @item Ctrl-q: exit
 @end itemize
@@ -7451,8 +7578,8 @@ limited by the setting @code{maxviewport}, which restricts the maximum
 width and height of the viewport. On @code{UNIX} systems some graphics
 drivers support batch mode (@code{-noV}) rendering in an
 iconified window; this can be enabled with the setting @code{iconify=true}.
-Other @code{UNIX} graphics drivers may require the command line setting
-@code{-glOptions=-indirect}.
+Some (broken) @code{UNIX} graphics drivers may require the command line setting
+@code{-glOptions=-indirect}, which requests (slower) indirect rendering.
 
 @cindex @code{prc}
 @cindex @code{views}
@@ -7475,7 +7602,7 @@ rendered image files can be extracted and processed in a separate
 @code{LaTeX} file. However, see @ref{LaTeX usage} for an easier way
 to embed three-dimensional @code{Asymptote} pictures within @code{LaTeX}.
 The open-source @acronym{PRC} specification is available from
-@url{http://livedocs.adobe.com/acrobat_sdk/9/Acrobat9_HTMLHelp/API_References/PRCReference/PRC_Format_Specification/}
+@url{http://livedocs.adobe.com/acrobat_sdk/9/Acrobat9_HTMLHelp/API_References/PRCReference/PRC_Format_Specification/}.
 
 @item Project the scene to a two-dimensional vector (@acronym{EPS} or
 @acronym{PDF}) format with @code{render=0}. Only limited hidden surface
@@ -7580,7 +7707,7 @@ along with the surfaces @code{unitdisk}, @code{unitplane}, @code{unitcube},
 These projections to two dimensions are predefined:
 @table @code
 @item oblique
-@item oblique(real angle);
+@item oblique(real angle)
 @cindex @code{oblique}
 @cindex @code{obliqueZ}
 The point @code{(x,y,z)} is projected to @code{(x-0.5z,y-0.5z)}.
@@ -7606,25 +7733,24 @@ positive @math{y} axis is drawn at this angle in degrees.
 @cindex @code{up}
 @cindex @code{target}
 @cindex @code{showtarget}
-@cindex @code{autoadjust}
 @cindex @code{center}
-@item orthographic(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
+@item orthographic(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ real zoom=1, pair viewportshift=0, bool showtarget=true, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool center=false)
 This projects from three to two dimensions using the view as seen at a point
 infinitely far away in the direction @code{unit(camera)}, orienting the camera
 so that, if possible, the vector @code{up} points upwards. Parallel
 lines are projected to parallel lines. The bounding volume is expanded
-to include @code{target} if @code{showtarget=true}. If @code{autoadjust=true},
-the camera will automatically be adjusted to lie outside the bounding volume
-for all possible interactive rotations about @code{target}.
+to include @code{target} if @code{showtarget=true}.
 If @code{center=true}, the target will be adjusted to the center of the 
 bounding volume. 
 
-@item orthographic(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
+@item orthographic(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ @ real zoom=1, pair viewportshift=0, bool showtarget=true, @*@ @ @ @ @ @ @ @ @ @ @ @ @ bool center=false)
 This is equivalent to 
-@code{orthographic((x,y,z),up,target,showtarget,autoadjust,
-center)}.
+@verbatim 
+orthographic((x,y,z),up,target,zoom,viewportshift,showtarget,center)
+@end verbatim
 
-@item perspective(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
+@cindex @code{autoadjust}
+@item perspective(triple camera, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ real zoom=1, real angle=0, pair viewportshift=0, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, @*@ @ @ @ @ @ @ @ @ @ @ @ bool center=autoadjust)
 @cindex @code{perspective}
 @cindex @code{NURBS}
 This projects from three to two dimensions, taking account of
@@ -7639,15 +7765,53 @@ for all possible interactive rotations about @code{target}.
 If @code{center=true}, the target will be adjusted to the center of the 
 bounding volume. 
 
-@item perspective(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, bool center=false)
-This is equivalent to @code{perspective((x,y,z),up,target,showtarget,
-autoadjust,center)}.
+@item perspective(real x, real y, real z, triple up=Z, triple target=O, @*@ @ @ @ @ @ @ @ @ @ @ @ real zoom=1, real angle=0, pair viewportshift=0, @*@ @ @ @ @ @ @ @ @ @ @ @ bool showtarget=true, bool autoadjust=true, @*@ @ @ @ @ @ @ @ @ @ @ @ bool center=autoadjust)
+This is equivalent to 
+@verbatim 
+perspective((x,y,z),up,target,zoom,angle,viewportshift,showtarget,
+            autoadjust,center)
+@end verbatim
 @end table
 
 @cindex @code{currentprojection}
 @noindent
 The default projection, @code{currentprojection}, is initially set to
 @code{perspective(5,4,2)}.
+
+@cindex @code{LeftView}
+@cindex @code{RightView}
+@cindex @code{FrontView}
+@cindex @code{BackView}
+@cindex @code{BottomView}
+@cindex @code{TopView}
+We also define standard orthographic views used in technical drawing:
+@verbatim
+projection LeftView=orthographic(-X,showtarget=true);
+projection RightView=orthographic(X,showtarget=true);
+projection FrontView=orthographic(-Y,showtarget=true);
+projection BackView=orthographic(Y,showtarget=true);
+projection BottomView=orthographic(-Z,showtarget=true);
+projection TopView=orthographic(Z,showtarget=true);
+@end verbatim
+@noindent
+The function
+@verbatim
+void addViews(picture dest=currentpicture, picture src, bool group=true,
+              filltype filltype=NoFill);
+@end verbatim
+@noindent
+adds picture @code{pic} as seen with @code{FrontView} aligned above the
+projection @code{TopView} and to the right of the projection @code{RightView}. 
+Alternatively, the function
+@verbatim
+void addAllViews(picture dest=currentpicture, picture src,
+                 real xmargin=0, real ymargin=xmargin,
+                 bool group=true, filltype filltype=NoFill);
+@end verbatim
+@noindent
+may be used to exhibit all six standard views, with FrontView,
+TopView, RightView in the upper row and BackView, BottomView, LeftView
+in the lower row.
 
 A triple or path3 can be projected to a pair or path,
 with @code{project(triple, projection P=currentprojection)} or
@@ -7708,7 +7872,7 @@ reflects about the plane through @code{u}, @code{v}, and @code{w}.
 @end table
 
 @cindex @code{transform}
-Three-dimensional @code{TeX} Labels, which are by default drawn as
+Three-dimensional @TeX{} Labels, which are by default drawn as
 Bezier surfaces directly on the projection plane, can be transformed
 from the @code{XY} plane by any of the above transforms or mapped to a
 specified two-dimensional plane with the transform3 types @code{XY},
@@ -7738,6 +7902,16 @@ planar path @code{p} is returned by
 transform3 planeproject(path3 p, triple dir=normal(p));
 @end verbatim
 
+The functions
+@cindex @code{extrude}
+@verbatim
+surface extrude(path p, triple axis=Z);
+surface extrude(Label L, triple axis=Z);
+@end verbatim
+@noindent
+return the surface obtained by extruding path @code{p} or 
+Label @code{L} along @code{axis}.
+
 @cindex @code{length}
 @cindex @code{size}
 @cindex @code{point}
@@ -7764,7 +7938,24 @@ Three-dimensional versions of the path functions @code{length},
 @code{arclength}, @code{arctime}, @code{reverse}, @code{subpath},
 @code{intersect}, @code{intersections}, @code{intersectionpoint},
 @code{intersectionpoints}, @code{min}, @code{max}, @code{cyclic}, and
-@code{straight} are also defined.
+@code{straight} are also defined. 
+
+The routine
+@cindex @code{intersections}
+@verbatim
+real[][] intersections(path3 p, surface s, real fuzz=-1);
+@end verbatim
+@noindent
+returns the intersection times of a path @code{p} with a surface
+@code{s} as a sorted array of real arrays of length 2, and
+@cindex @code{intersectionpoints}
+@verbatim
+triple[] intersectionpoints(path3 p, surface s, real fuzz=-1);
+@end verbatim
+@noindent
+returns the corresponding intersection points.
+Here, the computations are performed to the absolute error specified by
+@code{fuzz}, or if @code{fuzz < 0}, to machine precision.
 
 Here is an example showing all five guide3 connectors:
 @verbatiminclude join3.asy
@@ -7889,9 +8080,9 @@ as illustrated in the example files @code{galleon.asy} and
 @cindex 3D graphs
 This module implements three-dimensional versions of the
 functions in @code{graph.asy}.
-@cindex @code{xaxis}
-@cindex @code{yaxis}
-@cindex @code{zaxis}
+@cindex @code{xaxis3}
+@cindex @code{yaxis3}
+@cindex @code{zaxis3}
 @noindent
 To draw an @math{x} axis in three dimensions, use the routine
 @verbatim
@@ -7964,26 +8155,35 @@ One can also place ticks along a general three-dimensional axis:
 @sp 1
 @center @image{generalaxis3}
 
+@cindex @code{surface}
+@cindex @code{Spline}
+@cindex parametric surface
 Surface plots of matrices and functions over the region
 @code{box(a,b)} in the @math{XY} plane are also implemented: 
 @verbatim
 surface surface(real[][] f, pair a, pair b, bool[][] cond={});
-surface surface(real[][] f, pair a, pair b, splinetype splinetype,
-                bool[][] cond={});
+surface surface(real[][] f, pair a, pair b, splinetype xsplinetype,
+                splinetype ysplinetype=xsplinetype, bool[][] cond={});
 surface surface(real[][] f, real[] x, real[] y,
-                splinetype splinetype=null, bool[][] cond={})
+                splinetype xsplinetype=null, splinetype ysplinetype=xsplinetype,
+                bool[][] cond={})
 surface surface(triple[][] f, bool[][] cond={});
 surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
                 bool cond(pair z)=null);
 surface surface(real f(pair z), pair a, pair b, int nx=nmesh, int ny=nx,
-                splinetype splinetype, bool cond(pair z)=null);
+                splinetype xsplinetype, splinetype ysplinetype=xsplinetype,
+                bool cond(pair z)=null);
 surface surface(triple f(pair z), pair a, pair b, int nu=nmesh, int nv=nu,
+                bool cond(pair z)=null);
+surface surface(triple f(pair z), pair a, pair b, int nu=nmesh, int nv=nu,
+                splinetype[] usplinetype, splinetype[] vsplinetype=Spline,
                 bool cond(pair z)=null);
 @end verbatim
 @noindent
-The final version draws a parametric surface for a function
+The final two versions draw parametric surfaces for a function
 @math{f(u,v)} over the parameter space @code{box(a,b)},
 as illustrated in the example @code{parametricsurface.asy}.
+An optional splinetype @code{Spline} may be specified.
 The boolean array or function @code{cond} can be used to control which
 surface mesh cells are actually drawn (by default all mesh cells over
 @code{box(a,b)} are drawn).
@@ -7998,6 +8198,19 @@ of a Gaussian surface:
 @noindent
 A mesh can be drawn without surface filling by specifying @code{nullpen}
 for the surfacepen.
+
+A vector field of @code{nu}@math{\times}@code{nv} arrows on a
+parametric surface @code{f} over @code{box(a,b)} can be drawn with the routine
+@cindex @code{vectorfield3}
+@verbatim
+picture vectorfield(path3 vector(pair v), triple f(pair z), pair a, pair b,
+                    int nu=nmesh, int nv=nu, bool truesize=false,
+                    real maxlength=truesize ? 0 : maxlength(f,a,b,nu,nv),
+                    bool cond(pair z)=null, pen p=currentpen,
+                    arrowbar3 arrow=Arrow3, margin3 margin=PenMargin3)
+@end verbatim
+as illustrated in the examples @code{vectorfield3.asy} and
+@code{vectorfieldsphere.asy}.
 
 @node grid3
 @section @code{grid3}
@@ -8156,14 +8369,14 @@ frame for their object argument:
 @item rectangular block with an optional header (and padding @code{dx} around header and body): 
 @cindex @code{rectangle}
 @verbatim
-block rectangle(object header=new object, object body, pair center=(0,0),
+block rectangle(object header, object body, pair center=(0,0),
                 pen headerpen=mediumgray, pen bodypen=invisible,
                 pen drawpen=currentpen,
                 real dx=3, real minheaderwidth=minblockwidth,
                 real minheaderheight=minblockwidth,
                 real minbodywidth=minblockheight,
                 real minbodyheight=minblockheight);
-block rectangle(object body=new object, pair center=(0,0),
+block rectangle(object body, pair center=(0,0),
                 pen fillpen=invisible, pen drawpen=currentpen,
                 real dx=3, real minwidth=minblockwidth,
                 real minheight=minblockheight);
@@ -8172,7 +8385,7 @@ block rectangle(object body=new object, pair center=(0,0),
 @item diamond-shaped flowchart block:
 @cindex @code{diamond}
 @verbatim
-block diamond(object body=new object, pair center=(0,0),
+block diamond(object body, pair center=(0,0),
               pen fillpen=invisible, pen drawpen=currentpen,
               real ds=5, real dw=1,
               real height=20, real minwidth=minblockwidth,
@@ -8182,7 +8395,7 @@ block diamond(object body=new object, pair center=(0,0),
 @item circular flowchart block:
 @cindex @code{circle}
 @verbatim
-block circle(object body=new object, pair center=(0,0), pen fillpen=invisible,
+block circle(object body, pair center=(0,0), pen fillpen=invisible,
              pen drawpen=currentpen, real dr=3,
              real mindiameter=mincirclediameter);
 @end verbatim
@@ -8190,7 +8403,7 @@ block circle(object body=new object, pair center=(0,0), pen fillpen=invisible,
 @item rectangular flowchart block with rounded corners:
 @cindex @code{roundrectangle}
 @verbatim
-block roundrectangle(object body=new object, pair center=(0,0),
+block roundrectangle(object body, pair center=(0,0),
                      pen fillpen=invisible, pen drawpen=currentpen,
                      real ds=5, real dw=0, real minwidth=minblockwidth,
                      real minheight=minblockheight);
@@ -8199,7 +8412,7 @@ block roundrectangle(object body=new object, pair center=(0,0),
 @item rectangular flowchart block with beveled edges:
 @cindex @code{bevel}
 @verbatim
-block bevel(object body=new object, pair center=(0,0), pen fillpen=invisible,
+block bevel(object body, pair center=(0,0), pen fillpen=invisible,
             pen drawpen=currentpen, real dh=5, real dw=5,
             real minwidth=minblockwidth, real minheight=minblockheight);
 @end verbatim 
@@ -8367,6 +8580,13 @@ Both @code{slopefield} and @code{curve} alternatively accept a function
 @sp 1
 @center @image{slopefield1}
 
+@node ode
+@section @code{ode}
+@cindex @code{ode}
+The @code{ode} module, illustrated in the example @code{odetest.asy},
+implements a number of explicit numerical integration schemes for
+ordinary differential equations.
+
 @node Options
 @chapter Options
 @cindex options
@@ -8442,10 +8662,15 @@ at the beginning of the configuration file, it can contain arbitrary
 @cindex @code{render}
 @cindex @code{antialias}
 @cindex @code{size}
+@cindex @code{latex}
+@cindex @code{tex}
+@cindex @code{pdflatex}
+@cindex @code{xelatex}
+@cindex @code{context}
 @anchor{convert}
 The default output format is @acronym{EPS} for the (default)
-@code{latex} tex engine and @acronym{PDF} for the @code{pdflatex} and
-@code{xelatex} tex engines.
+@code{latex} and @code{tex} tex engine and @acronym{PDF} for the
+@code{pdflatex}, @code{xelatex}, and @code{context} tex engines.
 Alternative output formats may be produced using the @code{-f} option 
 (or @code{outformat} setting). The optional setting @code{-render n} requests
 an output resolution of @code{n} pixels per @code{bp}. Antialiasing is
@@ -8635,9 +8860,9 @@ The modified figure can then be saved as a normal @code{Asymptote} file.
 
 As @code{xasy} is written in the interactive scripting language
 @code{Python/TK}, it requires @code{Python}
-(@url{http://www.python.org}), the Python Imaging Library
+(@url{http://www.python.org}), the @code{Python Imaging Library}
 (@url{http://www.pythonware.com/products/pil/}), and the @code{tkinter}
-package (included with s@code{Python} under @code{Microsoft Windows}) be
+package (included with @code{Python} under @code{Microsoft Windows}) be
 installed. @code{Fedora Linux} users can either install
 @code{tkinter} with the commands
 @verbatim
@@ -8649,23 +8874,21 @@ or manually install the @code{tkinter}, @code{tix}, @code{tk},
 and @code{tk-devel} packages.
 
 Pictures are deconstructed into the @acronym{PNG} image format, which
-supports full alpha channel transparency. Under @code{Microsoft
-Windows}, this requires @code{Python 2.5 (or 2.5.1)} and the
-@code{Python Imaging Library}:
+supports full alpha channel transparency. Under @code{Microsoft Windows},
+this requires @code{Python 2.6.2} and the @code{Python Imaging Library}:
 @quotation
-@url{http://www.python.org/ftp/python/2.5.1/python-2.5.1.msi}
+@url{http://www.python.org/ftp/python/2.6.2/python-2.6.2.msi}
 @end quotation
 @quotation
-@url{http://effbot.org/downloads/PIL-1.1.6.win32-py2.5.exe}.
+@url{http://effbot.org/downloads/PIL-1.1.7b1.win32-py2.6.exe}.
 @end quotation
 @noindent
 On @code{UNIX} systems, place
-@url{http://effbot.org/downloads/Imaging-1.1.6.tar.gz} in the
+@url{http://effbot.org/downloads/Imaging-1.1.7b1.tar.gz} in the
 @code{Asymptote} source directory, and type (as the root user):
 @verbatim
-tar -zxf Imaging-1.1.6.tar.gz
-cd Imaging-1.1.6
-patch -p1 < ../patches/TkAlpha-Imaging-1.1.6.patch
+tar -zxf Imaging-1.1.7b1.tar.gz
+cd Imaging-1.1.7b1
 python setup.py install
 @end verbatim
 
@@ -8782,7 +9005,7 @@ To receive announcements of upcoming releases, please subscribe to
 @cindex bug reports
 @noindent
 If you find a bug in @code{Asymptote}, please check (if possible)
-whether the bug is still present in the latest @acronym{Subversion}
+whether the bug is still present in the latest @code{Subversion}
 developmental code (@pxref{Subversion}) before submitting a bug
 report. New bugs can be submitted using the Bug Tracking System at
 @quotation
@@ -9051,24 +9274,31 @@ Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  usleep currentpatterns trailingzero Orest Shardt DefaultHead
 @c  LocalWords:  SimpleHead HookHead TeXHead multipage NURBS inlinemovie dxmax
 @c  LocalWords:  simpson NoBox truesize autoscale shadestroke recurses mintimes
-@c  LocalWords:  nonoverlapping texdvicommand texengine maxtimes maxheight pdb
+@c  LocalWords:  nonoverlapping texengine maxtimes maxheight pdb TEXMFCONFIG
 @c  LocalWords:  piecewisestraight unitrand graphmarkers antialias nolight newl
 @c  LocalWords:  Delaunay Shewchuk convertOptions APPDATA pdfreload tempFile
 @c  LocalWords:  pdfreloadOptions deferred OpenGL Phong Blinn renderer unitbox
 @c  LocalWords:  bezulate Shardt's rasterized viewport unitdisk unitplane devel
 @c  LocalWords:  unitcylinder unitcone solidcone unitfrustum unitsphere nslices
-@c  LocalWords:  DPostScript YZZero freeglut externalprc nonrendered nosafe
-@c  LocalWords:  unithemisphere versa XYplane xypart unitsolidcone YZEquals
+@c  LocalWords:  DPostScript YZZero freeglut externalprc nonrendered nosafe KDE
+@c  LocalWords:  unithemisphere versa XYplane xypart unitsolidcone YZEquals xml
 @c  LocalWords:  XZEquals XYEquals XZZero XYZero InTicks OutTicks InOutTicks
 @c  LocalWords:  fitscreen planeproject strokepath meshlight nullpens arrowdir
 @c  LocalWords:  diffusepen ambientpen emissivepen specularpen arrowbarb keyval
 @c  LocalWords:  hstretch vstretch roundbox nonconvex miterlimit basealigin
 @c  LocalWords:  maxviewport maxtile antialiased sphericalharmonic attachfile
-@c  LocalWords:  vertexshading smoothelevation glOptions iconified iconify
+@c  LocalWords:  vertexshading smoothelevation glOptions iconified iconify kate
 @c  LocalWords:  psviewerOptions pdfviewerOptions viewportmargin asyattach
 @c  LocalWords:  multisampling autogen multisample coloredpath relstep flowdir
 @c  LocalWords:  colortype coloredSegments coloredNodes trefoilknot scaledgraph
 @c  LocalWords:  minblockwidth minblockheight mincirclediameter nonassociative
 @c  LocalWords:  nonintegral gettriple enablerepo hexidecimal XeLaTeX xelatex
 @c  LocalWords:  dvipdfmx autoadjust viewportsize viewportwidth viewportheight
-@c  LocalWords:  subregions nonsimply
+@c  LocalWords:  subregions nonsimply functionshade shader floatingdisk TopView
+@c  LocalWords:  functionshading nonselfintersecting maxlength LeftView odetest
+@c  LocalWords:  vectorfieldsphere RightView FrontView BackView BottomView
+@c  LocalWords:  addViews outprefix addAllViews xsplinetype ysplinetype rotateX
+@c  LocalWords:  usplinetype vsplinetype leftbutton middlebutton rightbutton
+@c  LocalWords:  rotateY rotateZ wheelup zoomin wheeldown zoomout TeXLive
+@c  LocalWords:  viewportshift signedint signedness psview multiplatform
+@c  LocalWords:  singlereal singleint

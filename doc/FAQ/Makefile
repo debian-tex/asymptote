@@ -15,19 +15,21 @@ clean: FORCE
 	-rm -f *~ core a.out *.lout *.ps *.info *.ascii *.xrefdb *.post
 	-rm -rf *.html
 
-install-all: install install-info
+install-all: install
 
-install: faq
+install: faq install-prebuilt
 	${INSTALL} -d -m 755 $(docdir) $(docdir)/asy-faq.html
 	${INSTALL} -p -m 644 asy-faq.ascii $(docdir)
 	${INSTALL} -p -m 644 asy-faq.html/* $(docdir)/asy-faq.html
 
-install-info: faq
+install-prebuilt:
 	${INSTALL} -d -m 755 $(infodir)
 	${INSTALL} -p -m 644 asy-faq.info $(infodir)
 	-if test -z "$(DESTDIR)"; then \
 		install-info --infodir=$(infodir) asy-faq.info; \
 	fi
+
+install-info: faq install-prebuilt
 
 uninstall: uninstall-all
 

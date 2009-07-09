@@ -23,10 +23,7 @@ void reportError(const string& desc)
   em.runtime(vm::getPos());
   em << desc;
   em.sync();
-  try {
-    throw handled_error(); 
-  } catch(handled_error) {
-  }
+  throw handled_error(); 
 }
 
 // Used internally to report a warning in an operation.
@@ -37,6 +34,18 @@ void reportWarning(const string& desc)
   em.sync();
 }
 
+void reportFatal(const string& desc)
+{
+  em.fatal(vm::getPos());
+  em << desc;
+  em.sync();
+  em.statusError();
+  try {
+    throw quit(); 
+  } catch(handled_error) {
+  }
+}
+
 void reportError(const ostringstream& desc)
 {
   reportError(desc.str());
@@ -45,6 +54,11 @@ void reportError(const ostringstream& desc)
 void reportWarning(const ostringstream& desc)
 {
   reportWarning(desc.str());
+}
+  
+void reportFatal(const ostringstream& desc)
+{
+  reportFatal(desc.str());
 }
   
 } // namespace camp

@@ -1,3 +1,121 @@
+Release Notes for Version 1.80
+
+The interface for changing the precision for XDR/binary files was
+simplified; file parameters can now be queried as virtual members.
+The zoom/menu action was improved to emulate a double-click and assigned again
+to the right mouse button; a left-button binding bug was fixed.
+New settings zoomfactor, zoomstep, spinstep, arcballradius, resizestep, and
+doubleclick were added. The OpenGL thread is now exited gracefully; idle
+state and other parameters are properly reset on quitting. Lighting is now
+initialized only in home(). Animations with global=false were fixed.
+An improved (and free) psview PostScript viewer is now suggested for MSDOS
+users. A mechanism for disabling annoying warnings like "writeoverloaded"
+was implemented. The documentation directory under TeXLive was fixed.  
+
+Release Notes for Version 1.79
+
+The perp vector calculation in the solids module was fixed. A bug in the
+mouse motion functions was fixed.  A pan action (which differs from shift
+due to perspective distortion) was added to the OpenGl renderer;
+the Camera (c) menu item now outputs all camera settings. The default right
+mouse button mouse binding was changed from "zoom/menu" to "zoom".
+User-initiated exports no longer cause the renderer to quit.
+Dynamic time stepping was fixed in the ode module; the "integrate"
+routines now return the array of computed values. Operators == and != were
+added for all built-in arithmetic 2D arrays; a segmentation fault was
+fixed. The etc/fstab kludge for Cygwin 1.7 was removed. The configuration
+directory under TeXLive is now $TEXMFCONFIG/asymptote.
+
+Release Notes for Version 1.78
+
+Thread locking issues were fixed. The linegranularity is now respected when
+drawing thick curved lines. A bug in FSAL ODE integrators when using a
+fixed time step was fixed. Missing miterlimit defaults were added.
+Xasy was updated to use Python 2.6.2 and Imaging-1.1.7b1 (which requires no
+alpha support patches). Obsolete patches were removed.  More TeXLive build
+issues were addressed: the install-prebuilt target omits texhash and does
+not attempt to install PNG files for asymptote.info. A configuration
+problem with --disable-gc was fixed. The 3D mouse bindings are now
+customizable. Support was added for generating syntax highlighting for the KDE
+editor Kate.
+
+Release Notes for Version 1.77
+
+Splined parametric surfaces were implemented; a bug in the Cartesian
+splined surface routines was fixed. An ode module for solving ordinary
+differential equations was added. A bug in maxtimes and mintimes was fixed.
+A Levenberg-Marquardt nonlinear fitting routine was added. The format
+command now returns TeX compatible output only in math mode. A path3 label
+alignment problem was fixed. The MSWindows support for TeXLive 2009 was fixed.
+
+Release Notes for Version 1.76
+
+A bezulate bug was fixed. The resolution and caching of texpath were
+improved; for PDF tex engines, the basealign pen attribute is now
+respected. Support for OCG layers was added. Lights Headlamp and White were
+implemented; the predefined adobe light was removed. Holes are now handled
+in superpath-to-surface constructor when planar=true. A degenerate
+transform3 issue was fixed. The alignment of rendered and PRC images was
+improved; the angle for rendering absolute projections was fixed. Inaccurate
+TeX and ConTeXt font scalings were fixed. A texsize(string, pen=currentpen)
+function returns the raw TeX dimensions {width,height,depth}. A new version
+of asymptote.sty (1.07) fixes attach=true mode.
+
+Release Notes for Version 1.75
+
+Issues with 3D labels and texpath, both in inlinetex mode and with the
+ConTeXt TeX engine, were resolved. A bug in bezulate was fixed. A partial
+workaround was added for the unimplememented -output-directory ConTeXt
+option (the current directory must still be writeable). The aspect ratio
+and viewportmargin calculation in module three was improved, with tighter
+3D bounds. A bug in the intersections(path3, surface) routine was fixed.
+
+Release Notes for Version 1.74
+
+An error in the surface bounding box routines was fixed. Path/surface
+intersection routines were added. PDF tex engines are now supported for
+3D labels and texpath. The new ConTeXT tex engine can be used for both 2D
+and non-PRC 3D drawings. Projections LeftView, RightView, FrontView,
+BackView, BottomView, and TopView, along with an addViews function, were
+implemented. Portability fixes and various updates to support TeXLive
+builds were made. The dependence on currentprojection in label(Label,
+path3) was removed. The font command for LaTeX tex engines now requires all
+four NFSS (encoding, family, series, shape) arguments.
+
+Release Notes for Version 1.73
+
+An alternative OpenGL background color can now be specified with the pen 
+currentlight.background. A new textpath command allows 3D labels to be
+drawn with settings.texengine="none". Minor bugs in the geometry package were
+fixed. The interface to the vectorfield routines was improved.
+The autoadjust parameter was removed from orthographic projections;
+autoadjust=false is now always respected for perspective projections.
+Optional warn=true arguments were added to the polar, azimuth, colatitude,
+and latitude functions. A call to reportError interrupts execution again.
+A segmentation fault that can occur after file mode errors was fixed. 
+
+Release Notes for Version 1.72
+
+PostScript calculator function shading was implemented. Interactive camera
+parameters of the native OpenGL renderer can now be queried.
+The effective camera positions for oblique projections was fixed.
+Philippe Ivaldi's geometry_dev module was merged into geometry.asy;
+trembling_pi was added as trembling.asy. The GSL module was expanded.
+An extrude routine for labels was implemented. Rotated path
+label alignments were fixed. The alignment of 3D axis labels was fixed.
+The basealign pen now always typesets "ace" and "acg" at the same location.
+Arrow endpoint detection was fixed. A sysdir setting was added, along
+with an --enable-tetex-build configure option. The store argument of
+saveline is respected again. Left-justified trailingzero alignment was
+fixed; a signedtrailingzero specifier was added. Boolean conditions on
+linearly interpolated surfaces now suppress function evaluation.
+The adaptive algorithm used for rendering thick lines and tubes was
+improved. An ambiguity in the flowchart module was fixed.
+A patch is included to work around an MSWindows XP problem with 3Dgetview
+in the 2009/03/23 version of movie15.sty. A problem with spurious menu
+interaction zooming was fixed. The asy.bat MSWindows batch file now
+respects all command-line arguments.
+
 Release Notes for Version 1.70
 
 A labelpath3 module for typesetting curved labels in 3D, contributed by Jens

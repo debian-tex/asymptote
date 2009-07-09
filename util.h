@@ -27,6 +27,9 @@ string stripDir(string name);
 // Strip the file from a filename, returning the directory.
 string stripFile(string name);
 
+// Like stripTeXFile except return "" for context TeX engine.
+string stripTeXFile(string name);
+
 // Strip the extension from a filename.
 string stripExt(string name, const string& suffix="");
   
@@ -119,6 +122,8 @@ inline Int Abs(Int x) {
 }
 
 unsigned unsignedcast(Int n);
+unsignedInt unsignedIntcast(Int n);
 int intcast(Int n);
-  
+Int Intcast(unsignedInt n);
+
 #endif

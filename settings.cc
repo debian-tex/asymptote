@@ -14,6 +14,7 @@
 #include <locale.h>
 #include <unistd.h>
 #include <algorithm>
+#include <cstdarg>
 
 #include "common.h"
 
@@ -32,6 +33,8 @@
 #include "env.h"
 #include "item.h"
 #include "refaccess.h"
+#include "pipestream.h"
+#include "array.h"
 
 #ifdef HAVE_LIBCURSES
 extern "C" {
@@ -59,6 +62,7 @@ using vm::item;
 using trans::itemRefAccess;
 using trans::refAccess;
 using trans::varEntry;
+using vm::array;
 
 void doConfig(string filename);
 
@@ -66,10 +70,7 @@ namespace settings {
   
 using camp::pair;
   
-string asyInstallDir;
-string defaultXasy="xasy";
-
-#ifdef HAVE_LIBGLUT
+#ifdef HAVE_LIBGL
 const bool haveglut=true;  
 #else
 const bool haveglut=false;
@@ -78,7 +79,7 @@ const bool haveglut=false;
 #ifndef __CYGWIN__
   
 bool msdos=false;
-const char *HOME="HOME";
+string HOME="HOME";
 const char pathSeparator=':';
 string defaultPSViewer="gv";
 #ifdef __APPLE__
@@ -90,22 +91,22 @@ string defaultGhostscript="gs";
 string defaultPython;
 string defaultDisplay="display";
 string systemDir=ASYMPTOTE_SYSDIR;
-const string docdir=ASYMPTOTE_DOCDIR;
+string docdir=ASYMPTOTE_DOCDIR;
 void queryRegistry() {}
 const string dirsep="/";
   
 #else  
   
 bool msdos=true;
-const char *HOME="USERPROFILE";
+string HOME="USERPROFILE";
 const char pathSeparator=';';
 string defaultPSViewer="gsview32.exe";
 string defaultPDFViewer="AcroRd32.exe";
 string defaultGhostscript="gswin32c.exe";
 string defaultPython="python.exe";
 string defaultDisplay="imdisplay";
-string systemDir;
-const string docdir=".";
+string systemDir=ASYMPTOTE_SYSDIR;
+string docdir;
 const string dirsep="\\";
   
 #include <dirent.h>
@@ -168,8 +169,9 @@ void queryRegistry()
     defaultPDFViewer;
   defaultPSViewer=getEntry("Ghostgum/GSview/*")+"\\gsview\\"+defaultPSViewer;
   defaultPython=getEntry("Python/PythonCore/*/InstallPath/@")+defaultPython;
-  systemDir=getEntry("Microsoft/Windows/CurrentVersion/App Paths/Asymptote/Path");
-  defaultXasy=asyInstallDir+"\\"+defaultXasy;
+  docdir=getEntry("Microsoft/Windows/CurrentVersion/App Paths/Asymptote/Path");
+  if(!systemDir.empty()) // An empty systemDir indicates a TeXLive build
+    systemDir=docdir;
 }
   
 #endif  
@@ -213,6 +215,35 @@ types::dummyRecord *settingsModule;
 
 types::record *getSettingsModule() {
   return settingsModule;
+}
+
+void Warn(const string& s)
+{
+  array *Warn=getSetting<array *>("warnings");
+  size_t size=checkArray(Warn);
+  if(s.empty()) return;
+  for(size_t i=0; i < size; i++)
+    if(vm::read<string>(Warn,i) == s) return;
+  Warn->push(s);
+}
+
+void noWarn(const string& s)
+{
+  array *Warn=getSetting<array *>("warnings");
+  size_t size=checkArray(Warn);
+  for(size_t i=0; i < size; i++)
+    if(vm::read<string>(Warn,i) == s) 
+      (*Warn).erase((*Warn).begin()+i,(*Warn).begin()+i+1);
+}
+
+string warn(const string& s)
+{
+  if(getSetting<bool>("debug")) return s;
+  array *Warn=getSetting<array *>("warnings");
+  size_t size=checkArray(Warn);
+  for(size_t i=0; i < size; i++)
+    if(vm::read<string>(Warn,i) == s) return s;
+  return "";
 }
 
 // The dictionaries of long options and short options.
@@ -483,7 +514,7 @@ struct argumentSetting : public itemSetting {
 struct stringSetting : public argumentSetting {
   stringSetting(string name, char code,
                 string argname, string desc,
-                string defaultValue)
+                string defaultValue="")
     : argumentSetting(name, code, argname, desc.empty() ? "" :
                       desc+(defaultValue.empty() ? "" : " ["+defaultValue+"]"),
                       types::primString(), (item)defaultValue) {}
@@ -497,7 +528,7 @@ struct stringSetting : public argumentSetting {
 struct userSetting : public argumentSetting {
   userSetting(string name, char code,
               string argname, string desc,
-              string defaultValue)
+              string defaultValue="")
     : argumentSetting(name, code, argname, desc,
                       types::primString(), (item)defaultValue) {}
 
@@ -509,10 +540,45 @@ struct userSetting : public argumentSetting {
   }
 };
 
+struct warnSetting : public option {
+  warnSetting(string name, char code,
+              string argname, string desc)
+    : option(name, code, argname, desc, true) {}
+
+  bool getOption() {
+    Warn(string(optarg));
+    return true;
+  }
+  
+  option *negation(string name) {
+    struct negOption : public option {
+      warnSetting &base;
+
+      negOption(warnSetting &base, string name, string argname)
+        : option(name, 0, argname, ""), base(base) {}
+
+      bool getOption() {
+        noWarn(string(optarg));
+        return true;
+      }
+    };
+    return new negOption(*this, name, argname);
+  }
+  
+  void add() {
+    option::add();
+    negation("no"+name)->add();
+    if (code) {
+      string nocode="no"; nocode.push_back(code);
+      negation(nocode)->add();
+    }
+  }
+};
+
 string GetEnv(string s, string Default) {
   transform(s.begin(), s.end(), s.begin(), toupper);        
   string t=Getenv(("ASYMPTOTE_"+s).c_str(),msdos);
-  return t != "" ? string(t) : Default;
+  return t.empty() ? Default : t;
 }
   
 struct envSetting : public stringSetting {
@@ -582,25 +648,46 @@ struct pairSetting : public dataSetting<pair> {
 struct alignSetting : public argumentSetting {
   alignSetting(string name, char code,
                string argname, string desc,
-               Int defaultValue=(Int) CENTER)
-    : argumentSetting(name, code, argname, desc,
-                      types::primInt(), (item)defaultValue) {}
+               string defaultValue)
+    : argumentSetting(name, code, argname, description(desc,defaultValue),
+                      types::primString(), (item)defaultValue) {}
 
   bool getOption() {
     string str=optarg;
-    if (str == "C")
-      value=(Int) CENTER;
-    else if (str == "T")
-      value=(Int) TOP;
-    else if (str == "B")
-      value=(Int) BOTTOM;
-    else if (str == "Z") {
-      value=(Int) ZERO;
-    } else {
-      error("invalid argument for option");
-      return false;
+    if(str == "C" || str == "T" || str == "B" || str == "Z") {
+      value=str;
+      return true;
     }
-    return true;
+    error("invalid argument for option");
+    return false;
+  }
+};
+
+struct stringArraySetting : public itemSetting {
+  stringArraySetting(string name, array *defaultValue)
+    : itemSetting(name, 0, "", "",
+                  types::stringArray(), (item) defaultValue) {}
+
+  bool getOption() {return true;}
+};
+
+struct engineSetting : public argumentSetting {
+  engineSetting(string name, char code,
+               string argname, string desc,
+               string defaultValue)
+    : argumentSetting(name, code, argname, description(desc,defaultValue),
+                      types::primString(), (item)defaultValue) {}
+
+  bool getOption() {
+    string str=optarg;
+    
+    if(str == "latex" || str == "pdflatex" || str == "xelatex" ||
+       str == "tex" || str == "pdftex" || str == "context" || str == "none") {
+      value=str;
+      return true;
+    }
+    error("invalid argument for option");
+    return false;
   }
 };
 
@@ -861,7 +948,7 @@ void resetOptions()
 {
   for(optionsMap_t::iterator opt=optionsMap.begin(); opt != optionsMap.end();
       ++opt)
-    if(opt->first != "config" && opt->first != "dir")
+    if(opt->first != "config" && opt->first != "dir" && opt->first != "sysdir")
       opt->second->reset();
 }
   
@@ -910,6 +997,31 @@ void no_GCwarn(char *, GC_word)
 }
 #endif
 
+array* Array(const char *s ...) 
+{
+  va_list v;
+  size_t count=0;
+  const char *s0=s;
+  
+  va_start(v,s);
+  while(*s) {
+    ++count;
+    s=va_arg(v,char *);
+  }
+  va_end(v);
+  
+  array *a=new array(count);
+  s=s0;
+  va_start(v,s);
+  for(size_t i=0; i < count; ++i) {
+    (*a)[i]=string(s);
+    s=va_arg(v,char *);
+  }
+  va_end(v);
+  
+  return a;
+}
+
 void initSettings() {
   static bool initialize=true;
   if(initialize) {
@@ -918,6 +1030,40 @@ void initSettings() {
   }
 
   settingsModule=new types::dummyRecord(symbol::trans("settings"));
+  
+// Default mouse bindings
+  
+// LEFT: rotate
+// SHIFT LEFT: zoom
+// CTRL LEFT: shift
+// ALT LEFT: pan
+  array *leftbutton=Array("rotate","zoom","shift","pan","");
+  
+// MIDDLE: menu (must be unmodified; ignores Shift, Ctrl, and Alt)
+  array *middlebutton=Array("menu","");
+  
+// RIGHT: zoom/menu (must be unmodified)
+// SHIFT RIGHT: rotateX
+// CTRL RIGHT: rotateY
+// ALT RIGHT: rotateZ
+  array *rightbutton=Array("zoom/menu","rotateX","rotateY","rotateZ","");
+  
+// WHEEL_UP: zoomin
+  array *wheelup=Array("zoomin","");
+  
+// WHEEL_DOWN: zoomout
+  array *wheeldown=Array("zoomout","");
+  
+  array *Warn=Array("writeoverloaded","");
+  
+  addOption(new stringArraySetting("leftbutton", leftbutton));
+  addOption(new stringArraySetting("middlebutton", middlebutton));
+  addOption(new stringArraySetting("rightbutton", rightbutton));
+  addOption(new stringArraySetting("wheelup", wheelup));
+  addOption(new stringArraySetting("wheeldown", wheeldown));
+  
+  addOption(new stringArraySetting("warnings", Warn));
+  addOption(new warnSetting("warn", 0, "string", "Enable warning"));
   
   multiOption *view=new multiOption("View", 'V', "View output");
   view->add(new boolSetting("batchView", 0, "View output in batch mode",
@@ -971,11 +1117,12 @@ void initSettings() {
 
   addOption(new pairSetting("offset", 'O', "pair", "PostScript offset"));
   addOption(new alignSetting("align", 'a', "C|B|T|Z",
-                             "Center, Bottom, Top, or Zero page alignment [Center]"));
+                             "Center, Bottom, Top, or Zero page alignment",
+                             "C"));
   
   addOption(new boolSetting("debug", 'd', "Enable debugging messages"));
   addOption(new incrementSetting("verbose", 'v',
-                                 "Increase verbosity level", &verbose));
+                                 "Increase verbosity level (can specify multiple times)", &verbose));
   // Resolve ambiguity with --version
   addOption(new incrementOption("vv", 0,"", &verbose,2));
   addOption(new incrementOption("novv", 0,"", &verbose,-2));
@@ -983,15 +1130,17 @@ void initSettings() {
   addOption(new boolSetting("keep", 'k', "Keep intermediate files"));
   addOption(new boolSetting("keepaux", 0,
                             "Keep intermediate LaTeX .aux files"));
-  addOption(new stringSetting("tex", 0,"engine",
-                              "latex|pdflatex|xelatex|tex|pdftex|none",
+  addOption(new engineSetting("tex", 0, "engine",
+                              "latex|pdflatex|xelatex|tex|pdftex|context|none",
                               "latex"));
+
   addOption(new boolSetting("twice", 0,
                             "Run LaTeX twice (to resolve references)"));
   addOption(new boolSetting("inlinetex", 0, "Generate inline TeX code"));
   addOption(new boolSetting("embed", 0, "Embed rendered preview image", true));
   addOption(new boolSetting("auto3D", 0, "Automatically activate 3D scene",
                             true));
+
   addOption(new boolSetting("inlineimage", 0,
                             "Generate inline embedded image"));
   addOption(new boolSetting("parseonly", 'p', "Parse file"));
@@ -1025,8 +1174,7 @@ void initSettings() {
                                       "Allow write to other directory",
                                       &globaloption, false));
   addSecureSetting(new stringSetting("outname", 'o', "name",
-                                     "Alternative output directory/filename",
-                                     ""));
+                                     "Alternative output directory/filename"));
   addOption(new stringOption("cd", 0, "directory", "Set current directory",
                              &startpath));
   
@@ -1074,22 +1222,34 @@ void initSettings() {
                            "Delay before attempting initial pdf reload"
                            ,750000));
   addOption(new stringSetting("autoimport", 0, "string",
-                              "Module to automatically import", ""));
+                              "Module to automatically import"));
   addOption(new userSetting("command", 'c', "string",
-                            "Command to autoexecute", ""));
+                            "Command to autoexecute"));
   addOption(new userSetting("user", 'u', "string",
-                            "General purpose user string", ""));
+                            "General purpose user string"));
+  
+  addOption(new realSetting("zoomfactor", 0, "factor", "Zoom step factor",
+                            1.05));
+  addOption(new realSetting("zoomstep", 0, "step", "Mouse motion zoom step",
+                            0.1));
+  addOption(new realSetting("spinstep", 0, "deg/sec", "Spin speed",
+                            60.0));
+  addOption(new realSetting("arcballradius", 0, "pixels",
+                            "Arcball radius", 750.0));
+  addOption(new realSetting("resizestep", 0, "step", "Resize step", 1.2));
+  addOption(new realSetting("doubleclick", 0, "ms",
+                            "Emulated double-click timeout", 200.0));
   
   addOption(new realSetting("paperwidth", 0, "bp", ""));
   addOption(new realSetting("paperheight", 0, "bp", ""));
   
-  addOption(new stringSetting("dvipsOptions", 0, "string", "", ""));
-  addOption(new stringSetting("convertOptions", 0, "string", "", ""));
-  addOption(new stringSetting("gsOptions", 0, "string", "", ""));
-  addOption(new stringSetting("psviewerOptions", 0, "string", "", ""));
-  addOption(new stringSetting("pdfviewerOptions", 0, "string", "", ""));
-  addOption(new stringSetting("pdfreloadOptions", 0, "string", "", ""));
-  addOption(new stringSetting("glOptions", 0, "string", "", ""));
+  addOption(new stringSetting("dvipsOptions", 0, "string", ""));
+  addOption(new stringSetting("convertOptions", 0, "string", ""));
+  addOption(new stringSetting("gsOptions", 0, "string", ""));
+  addOption(new stringSetting("psviewerOptions", 0, "string", ""));
+  addOption(new stringSetting("pdfviewerOptions", 0, "string", ""));
+  addOption(new stringSetting("pdfreloadOptions", 0, "string", ""));
+  addOption(new stringSetting("glOptions", 0, "string", ""));
   
   addOption(new envSetting("config","config."+suffix));
   addOption(new envSetting("pdfviewer", defaultPDFViewer));
@@ -1097,15 +1257,20 @@ void initSettings() {
   addOption(new envSetting("gs", defaultGhostscript));
   addOption(new envSetting("texpath", ""));
   addOption(new envSetting("texcommand", ""));
-  addOption(new envSetting("texdvicommand", ""));
   addOption(new envSetting("dvips", "dvips"));
   addOption(new envSetting("convert", "convert"));
   addOption(new envSetting("display", defaultDisplay));
   addOption(new envSetting("animate", "animate"));
   addOption(new envSetting("python", defaultPython));
-  addOption(new envSetting("xasy", defaultXasy));
   addOption(new envSetting("papertype", "letter"));
   addOption(new envSetting("dir", ""));
+  addOption(new envSetting("sysdir", systemDir));
+  addOption(new envSetting("textcommand","groff -e -P-b16"));
+  addOption(new envSetting("textextension", "roff"));
+  addOption(new envSetting("textoutformat", "ps"));
+  addOption(new envSetting("textprologue", ".EQ\ndelim $$\n.EN"));
+  addOption(new envSetting("textinitialfont", ".fam T\n.ps 12"));
+  addOption(new envSetting("textepilogue", ""));
 }
 
 // Access the arguments once options have been parsed.
@@ -1142,8 +1307,42 @@ string outname() {
   return name.empty() ? "out" : name;
 }
 
+string lookup(const string& symbol) 
+{
+  string s;
+  iopipestream pipe(("kpsewhich --var-value="+symbol).c_str());
+  pipe >> s;
+// Workaround broken header file on i386-solaris with g++ 3.4.3.
+#ifdef erase
+#undef erase
+#endif
+  size_t n=s.find('\r');
+  if(n != string::npos)
+    s.erase(n,1);
+  n=s.find('\n');
+  if(n != string::npos)
+    s.erase(n,1);
+  return s;
+}
+
 void initDir() {
-  initdir=Getenv(HOME,msdos)+"/."+suffix;
+  if(getSetting<string>("sysdir").empty()) {
+    string s=lookup("SELFAUTOPARENT");
+    if(s.size() > 1) {
+      string texmf=s+dirsep+"texmf"+dirsep;
+      docdir=texmf+"doc"+dirsep+"asymptote";
+      Setting("sysdir")=texmf+"asymptote";
+      s=lookup("TEXMFCONFIG");
+      if(s.size() > 1)
+        initdir=s+dirsep+"asymptote";
+    }
+  } 
+  
+  if(initdir.empty())
+    initdir=Getenv(HOME.c_str(),msdos)+dirsep+"."+suffix;
+  
+  if(verbose > 1)
+    cerr << "Using configuration directory " << initdir << endl;
   mkdir(initdir.c_str(),0777);
 }
   
@@ -1160,13 +1359,15 @@ void setPath() {
     if(i < asydir.length()) searchPath.push_back(asydir.substr(i));
   }
   searchPath.push_back(initdir);
-  searchPath.push_back(systemDir);
+  string sysdir=getSetting<string>("sysdir");
+  if(sysdir != "")
+    searchPath.push_back(sysdir);
 }
 
 void SetPageDimensions() {
   string paperType=getSetting<string>("papertype");
 
-  if(paperType == "" &&
+  if(paperType.empty() &&
      getSetting<double>("paperwidth") != 0.0 &&
      getSetting<double>("paperheight") != 0.0) return;
   
@@ -1185,16 +1386,22 @@ void SetPageDimensions() {
   }
 }
 
-bool xelatex(const string& texengine) {
+bool xe(const string& texengine) {
   return texengine == "xelatex";
 }
 
+bool context(const string& texengine) {
+  return texengine == "context";
+}
+
 bool pdf(const string& texengine) {
-  return texengine == "pdflatex" || texengine == "pdftex" || xelatex(texengine);
+  return texengine == "pdflatex" || texengine == "pdftex" || xe(texengine)
+    || context(texengine);
 }
 
 bool latex(const string& texengine) {
-  return texengine == "latex" || texengine == "pdflatex" || xelatex(texengine);
+  return texengine == "latex" || texengine == "pdflatex" || 
+    texengine == "xelatex";
 }
 
 string nativeformat() {
@@ -1203,13 +1410,29 @@ string nativeformat() {
 
 string defaultformat() {
   string format=getSetting<string>("outformat");
-  return (format == "") ? nativeformat() : format;
+  return (format.empty()) ? nativeformat() : format;
+}
+
+// Begin TeX put command.
+const char *beginput(const string& texengine) {
+  if(context(texengine))
+    return "\\put";
+  else
+    return "\\put(#1,#2)";
+}
+
+// End TeX put command.
+const char *endput(const string& texengine) {
+  if(context(texengine)) 
+    return " at #1 #2"; 
+  else
+    return "";
 }
 
 // TeX special command to set up currentmatrix for typesetting labels.
 const char *beginlabel(const string& texengine) {
   if(pdf(texengine))
-    return xelatex(texengine) ? "\\special{pdf:literal q #5 0 0 cm}" :
+    return xe(texengine) ? "\\special{pdf:literal q #5 0 0 cm}" :
       "\\special{pdf:q #5 0 0 cm}";
   else 
     return "\\special{ps:gsave currentpoint currentpoint translate [#5 0 0] "
@@ -1219,7 +1442,7 @@ const char *beginlabel(const string& texengine) {
 // TeX special command to restore currentmatrix after typesetting labels.
 const char *endlabel(const string& texengine) {
   if(pdf(texengine))
-    return xelatex(texengine) ? "\\special{pdf:literal Q}" : "\\special{pdf:Q}";
+    return xe(texengine) ? "\\special{pdf:literal Q}" : "\\special{pdf:Q}";
   else
     return "\\special{ps:currentpoint grestore moveto}";
 }
@@ -1240,6 +1463,8 @@ const char *rawpostscript(const string& texengine) {
 const char *beginpicture(const string& texengine) {
   if(latex(texengine))
     return "\\begin{picture}";
+  if(context(texengine))
+    return "%";
   else
     return "\\picture";
 }
@@ -1248,6 +1473,8 @@ const char *beginpicture(const string& texengine) {
 const char *endpicture(const string& texengine) {
   if(latex(texengine))
     return "\\end{picture}%";
+  else if(context(texengine))
+    return "%";
   else
     return "\\endpicture%";
 }
@@ -1255,21 +1482,15 @@ const char *endpicture(const string& texengine) {
 // Begin TeX special command.
 const char *beginspecial(const string& texengine) {
   if(pdf(texengine))
-    return xelatex(texengine) ? "\\special{pdf:literal " : "\\special{pdf:";
-  return "\\special{ps:";
+    return xe(texengine) ? "\\special{pdf:literal " : "\\special{pdf:";
+  else
+    return "\\special{ps:";
 }
 
 // End TeX special command.
 const char *endspecial() {
   return "}%";
 }
-
-// Default TeX units.
-const char *texunits(const string& texengine) 
-{
-  return xelatex(texengine) ? "bp" : "pt";
-}
-
 
 bool fataltex[]={false,true};
 const char *pdftexerrors[]={"! "," ==> Fatal error",NULL};
@@ -1281,25 +1502,19 @@ const char **texabort(const string& texengine)
   return settings::pdf(texengine) ? pdftexerrors : texerrors;
 }
 
-string texcommand(bool ps)
+string texcommand()
 {
-  string command;
-  if(ps) {
-    command=getSetting<string>("texdvicommand");
-    if(command == "")
-      command=latex(getSetting<string>("tex")) ? "latex" : "tex";
-  } else
-    command=getSetting<string>("texcommand");
+  string command=getSetting<string>("texcommand");
   return command.empty() ? getSetting<string>("tex") : command;
 }
   
-string texprogram(bool ps)
+string texprogram()
 {
   string path=getSetting<string>("texpath");
-  string engine=texcommand(ps);
+  string engine=texcommand();
   if(!path.empty()) engine=(string) (path+"/"+engine);
   string program="'"+engine+"'";
-  string dir=stripFile(outname());
+  string dir=stripTeXFile(outname());
   return dir.empty() ? program : (program+" -output-directory="+dir);
 }
 
@@ -1324,16 +1539,18 @@ void setOptions(int argc, char *argv[])
 
   cout.precision(DBL_DIG);
   
-  // Make configuration and history directory
-  initDir();
-  
   // Build settings module.
   initSettings();
   
-  // Read command-line options initially to obtain CONFIG and DIR.
+  // Read command-line options initially to obtain config, dir, sysdir, verbose.
   getOptions(argc,argv);
   
+  // Make configuration and history directory
+  initDir();
+  
   Int Verbose=verbose;
+  string sysdir=getSetting<string>("sysdir");
+  
   resetOptions();
   
   // Read user configuration file.
@@ -1350,6 +1567,8 @@ void setOptions(int argc, char *argv[])
   
   // Read command-line options again to override configuration file defaults.
   getOptions(argc,argv);
+  
+  Setting("sysdir")=sysdir;
   
 #ifdef USEGC
   if(verbose == 0 && !getSetting<bool>("debug")) GC_set_warn_proc(no_GCwarn);

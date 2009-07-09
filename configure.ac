@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[1.70],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[1.80],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 
@@ -20,7 +20,8 @@ test "$Datadir" = '${prefix}/share' && Datadir=$prefix/share
 AC_SUBST(Datadir)
 
 AC_ARG_WITH(latex,
-	[  --with-latex=PATH       specify path to LaTeX installation ],
+	[AS_HELP_STRING(--with-latex=PATH,
+                        specify path to LaTeX installation)],
                      [if test "x$withval" != "x" ; then
 			latexdir=$withval
 		      fi
@@ -36,26 +37,55 @@ else
 fi
 ])
 
+AC_ARG_WITH(context,
+	[AS_HELP_STRING(--with-context=PATH,
+                        specify path to ConTeXt installation)],
+                     [if test "x$withval" != "x" ; then
+			contextdir=$withval
+		      fi
+		     ],[
+AC_CHECK_PROG(kpsewhich,kpsewhich,true)
+if test "x$kpsewhich" = "xtrue"; then
+  contextdir=`kpsewhich -expand-var='$TEXMFLOCAL'/tex/context/third`
+else
+  contextdir=$prefix/share/texmf/tex/context/third
+fi
+])
+
 AC_CHECK_PROGS(TEXI2DVI,[texi2dvi texi2dvi4a2ps])
 AC_SUBST(TEXI2DVI)
 
 latexdir=$latexdir/asymptote
+contextdir=$contextdir/asymptote
 
 AC_MSG_NOTICE([Using $latexdir for LaTeX style file])
+AC_MSG_NOTICE([Using $contextdir for ConTeXT style file])
 
 AC_SUBST(latexdir)
+AC_SUBST(contextdir)
 
 docdir=$Datadir/doc/asymptote
 
 AC_ARG_WITH(docdir,
-	[  --with-docdir=PATH      alternate documentation installation directory],
+	[AS_HELP_STRING(--with-docdir=PATH,
+alternate documentation installation directory)],
                      [if test "x$withval" != "x" ; then
 			docdir=$withval
 		      fi
 		     ])
 AC_SUBST(docdir)
 
-AC_DEFINE_UNQUOTED(ASYMPTOTE_SYSDIR,"$Datadir/asymptote",
+sysdir=$Datadir/asymptote
+
+AC_ARG_ENABLE(texlive-build,
+[AS_HELP_STRING(--enable-texlive-build,
+automatically determine sysdir from kpsewhich)],
+[ if test "x$enableval" = "xyes" ; then
+    sysdir=""
+  fi
+])
+
+AC_DEFINE_UNQUOTED(ASYMPTOTE_SYSDIR,"$sysdir",
 	[System directory for global .asy files])
 AC_DEFINE_UNQUOTED(ASYMPTOTE_DOCDIR,"$docdir",
 	[Directory for documentation])
@@ -79,10 +109,8 @@ if test "$GXX" = yes ; then
    fi
 fi
 
-AC_CHECK_HEADER(fftw3.h,
-   AC_CHECK_LIB([fftw3], fftw_execute,,
-           AC_MSG_NOTICE([*** Could not find libfftw3: will compile without optional fast Fourier transforms. ***])),
-     AC_MSG_NOTICE([*** Header file fftw3.h not found: will compile without optional fast Fourier transforms. ***]))
+AC_CHECK_HEADER(tr1/unordered_map,,
+		[AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])
 
 GCVERSION=gc-7.1
 
@@ -91,7 +119,8 @@ ac_cv_use_gc=$GCVERSION,
 [GC_SYSTEM="$GCVERSION.tar.gz not found: using system Boehm garbage collector"
 ac_cv_use_gc="system"])
 AC_ARG_ENABLE(gc,
-	[  --enable-gc[[=system]]    enable system Boehm garbage collector]
+	[AS_HELP_STRING(--enable-gc[[[=system]]],
+enable system Boehm garbage collector)]
 	[     [[=VERSION]]   enable local VERSION of Boehm garbage collector]
 	[     [[=PREFIX]]    use Boehm garbage collector installed in PREFIX],
 			[
@@ -144,7 +173,7 @@ else
 fi
 
 AC_ARG_ENABLE(gc-debug,
-[  --enable-gc-debug       enable (slow) garbage collector debugging],
+[AS_HELP_STRING(--enable-gc-debug,enable (slow) garbage collector debugging)],
 [ if test "x$ac_cv_use_gc" != "xno" ; then
     if test "x$enableval" = "xyes" ; then
        OPTIONS=$OPTIONS"-DGC_DEBUG "
@@ -155,7 +184,7 @@ AC_ARG_ENABLE(gc-debug,
 ])
 
 AC_ARG_ENABLE(gc-full-debug,
-[  --enable-gc-full-debug  enable (very slow) garbage collector backtrace],
+[AS_HELP_STRING(--enable-gc-full-debug,enable (very slow) garbage collector backtrace)],
 [ if test "x$ac_cv_use_gc" != "xno" ; then
     if test "x$enableval" = "xyes" ; then
        OPTIONS=$OPTIONS"-DGC_DEBUG -DGC_BACKTRACE "
@@ -168,8 +197,6 @@ AC_ARG_ENABLE(gc-full-debug,
 AC_CHECK_FUNC(getopt_long_only, AC_DEFINE(HAVE_GNU_GETOPT_H, 1,
 			   [Define if getopt.h is the GNU version]),
 			   getopt="getopt getopt1",)
-AC_CHECK_HEADER(tr1/unordered_map,,
-		[AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])
 
 AC_SUBST(getopt)
 AC_SUBST(GCDIR)
@@ -187,9 +214,15 @@ AC_CHECK_LIB([m], [sqrt])
 AC_CHECK_LIB([z], [deflate])
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
+AC_CHECK_LIB([rt], [sched_yield])
 
+AC_ARG_ENABLE(readline,
+[AS_HELP_STRING(--enable-readline[[[=yes]]],enable GNU Readline Library)])
+
+if test "x$enable_readline" != "xno"; then
 AC_CHECK_LIB([readline], [rl_completion_matches],,
 AC_MSG_NOTICE(*** Could not find GNU readline 4.2 or later: will compile without readline support ***))
+fi
 
 # Checks for header files.
 AC_HEADER_SYS_WAIT
@@ -203,21 +236,46 @@ AC_COMPILE_IFELSE(AC_LANG_PROGRAM([#include "xstream.h"]),
 		   [Define if you have a working <rpc/rpc.h> header file])],
    AC_MSG_WARN([*** Broken rpc headers; XDR support disabled ***]))
 
-AC_CHECK_HEADER(gsl/gsl_sf.h,
-   AC_CHECK_LIB([gsl], gsl_sf_Si, [AC_DEFINE(HAVE_LIBGSL, 1,
+AC_ARG_ENABLE(gsl,
+[AS_HELP_STRING(--enable-gsl[[[=yes]]],enable GNU Scientific Library)])
+
+if test "x$enable_gsl" != "xno"; then
+  AC_CHECK_HEADER(gsl/gsl_sf.h,
+   AC_CHECK_LIB([gsl], gsl_sf_debye_6, [AC_DEFINE(HAVE_LIBGSL, 1,
    [Define to 1 if you have the 'gsl' library (-lgsl). ]) LIBS=$LIBS"-lgsl -lgslcblas "],
            AC_MSG_NOTICE([*** Could not find libgsl: will compile without optional special functions. ***]),[-lgslcblas]),
      AC_MSG_NOTICE([*** Header file gsl_sf.h not found: will compile without optional special functions. ***]))
+fi
 
+AC_ARG_ENABLE(fftw,
+[AS_HELP_STRING(--enable-fftw[[[=yes]]],enable FFTW Library)])
+
+if test "x$enable_fftw" != "xno"; then
+  AC_CHECK_HEADER(fftw3.h,
+    AC_CHECK_LIB([fftw3], fftw_execute,,
+           AC_MSG_NOTICE([*** Could not find libfftw3: will compile without optional fast Fourier transforms. ***])),
+     AC_MSG_NOTICE([*** Header file fftw3.h not found: will compile without optional fast Fourier transforms. ***]))
+fi
+
+AC_ARG_ENABLE(gl,
+[AS_HELP_STRING(--enable-gl[[[=yes]]],enable OpenGL Library)])
+
+if test "x$enable_gl" != "xno"; then
 case "$OSTYPE" in
      cygwin) AC_CHECK_HEADER(GL/glut.h,
                                 [AC_DEFINE(HAVE_LIBGLUT, 1,
 		   [Define if you have the `freeglut' library (-lfreeglut).])
-			   LIBS=$LIBS"-lfreeglut -lglu32 -lopengl32 "],
-				 AC_MSG_NOTICE([*** Could not find freeglut: will compile without OpenGL support ***]));;
+			   LIBS=$LIBS"-lfreeglut -lopengl32 "],
+				 AC_MSG_NOTICE([*** Could not find freeglut: will compile without OpenGL support ***]))
+             AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],[AC_DEFINE(HAVE_LIBGLU, 1,
+                   [Define to 1 if you have the 'glu32' library (-lglu32). ]) LIBS=$LIBS"-lglu32 "],
+             AC_MSG_NOTICE([*** Could not find libglu32: will compile without OpenGL support ***]))
+        ;;                                 
      darwin*) AC_CHECK_HEADER(GLUT/glut.h,
                                 [AC_DEFINE(HAVE_LIBGLUT, 1,
 		   [Define if you have the `glut' library (-lglut).])
+              AC_DEFINE(HAVE_LIBGLU, 1,
+                   [Define to 1 if you have the 'GLU' library. ])
 AC_COMPILE_IFELSE(AC_LANG_PROGRAM([
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -229,11 +287,14 @@ void f(void) {
 #endif
 ]),[AC_DEFINE(GLU_TESS_CALLBACK_TRIPLEDOT, 1, [Define if gluNurbsCallback expects a variadic function.])])
 			   LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa"],
-				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]));;
+				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]))
+        ;;                                 
      *) AC_CHECK_LIB([glut], [glutMainLoop],,
-				 AC_MSG_NOTICE([*** Could not find glut: will compile without OpenGL support ***]));;
+				 AC_MSG_NOTICE([*** Could not find libglut: will compile without OpenGL support ***]))
+        AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],,
+ 				 AC_MSG_NOTICE([*** Could not find libGLU: will compile without OpenGL support ***]))
 esac
-
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
@@ -245,7 +306,7 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIGNAL
 
-AC_DEFUN(AC_FUNC_STRPTIME, [
+AC_DEFUN([ac_FUNC_STRPTIME], [
     AC_CHECK_FUNCS(strptime)
     AC_MSG_CHECKING(for strptime declaration in time.h)
     AC_EGREP_HEADER(strptime, time.h, [
@@ -258,7 +319,7 @@ AC_DEFUN(AC_FUNC_STRPTIME, [
 AC_FUNC_FORK
 AC_CHECK_FUNCS([dup2 floor memset pow sqrt strchr tgamma])
 AC_FUNC_STRFTIME
-AC_FUNC_STRPTIME
+ac_FUNC_STRPTIME
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FSEEKO
 

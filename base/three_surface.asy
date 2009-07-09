@@ -35,14 +35,6 @@ struct patch {
     return new real[] {f(P[0][0]),f(P[0][3]),f(P[3][3]),f(P[3][0])};
   }
 
-  triple[] controlpoints() {
-    return new triple[] {
-      P[0][0],P[0][1],P[0][2],P[0][3],
-        P[1][0],P[1][1],P[1][2],P[1][3],
-        P[2][0],P[2][1],P[2][2],P[2][3],
-        P[3][0],P[3][1],P[3][2],P[3][3]};
-  }
-
   triple Bu(int j, real u) {return bezier(P[0][j],P[1][j],P[2][j],P[3][j],u);}
   triple BuP(int j, real u) {return bezierP(P[0][j],P[1][j],P[2][j],P[3][j],u);}
   triple BuPP(int j, real u) {
@@ -145,22 +137,6 @@ struct patch {
         light.color(normal10(),nocolors ? m : colors[3])};
   }
   
-  triple bound(real m(real[], real), triple b) {
-    real x=m(new real[] {P[0][0].x,P[0][1].x,P[0][2].x,P[0][3].x,
-                         P[1][0].x,P[1][1].x,P[1][2].x,P[1][3].x,
-                         P[2][0].x,P[2][1].x,P[2][2].x,P[2][3].x,
-                         P[3][0].x,P[3][1].x,P[3][2].x,P[3][3].x},b.x);
-    real y=m(new real[] {P[0][0].y,P[0][1].y,P[0][2].y,P[0][3].y,
-                         P[1][0].y,P[1][1].y,P[1][2].y,P[1][3].y,
-                         P[2][0].y,P[2][1].y,P[2][2].y,P[2][3].y,
-                         P[3][0].y,P[3][1].y,P[3][2].y,P[3][3].y},b.y);
-    real z=m(new real[] {P[0][0].z,P[0][1].z,P[0][2].z,P[0][3].z,
-                         P[1][0].z,P[1][1].z,P[1][2].z,P[1][3].z,
-                         P[2][0].z,P[2][1].z,P[2][2].z,P[2][3].z,
-                         P[3][0].z,P[3][1].z,P[3][2].z,P[3][3].z},b.z);
-    return (x,y,z);
-  }
-
   triple min3,max3;
   bool havemin3,havemax3;
 
@@ -172,13 +148,13 @@ struct patch {
   triple min(triple bound=P[0][0]) {
     if(havemin3) return minbound(min3,bound);
     havemin3=true;
-    return min3=bound(minbound,bound);
+    return min3=minbound(P,bound);
   }
 
   triple max(triple bound=P[0][0]) {
     if(havemax3) return maxbound(max3,bound);
     havemax3=true;
-    return max3=bound(maxbound,bound);
+    return max3=maxbound(P,bound);
   }
 
   triple center() {
@@ -186,11 +162,11 @@ struct patch {
   }
 
   pair min(projection P, pair bound=project(this.P[0][0],P.t)) {
-    return minbound(controlpoints(),P.t,bound);
+    return minbound(this.P,P.t,bound);
   }
 
   pair max(projection P, pair bound=project(this.P[0][0],P.t)) {
-    return maxbound(controlpoints(),P.t,bound);
+    return maxbound(this.P,P.t,bound);
   }
 
   void operator init(triple[][] P, triple[] normals=new triple[],
@@ -705,6 +681,22 @@ struct surface {
                      triple[][] normals=new triple[][],
                      pen[][] colors=new pen[][], bool3 planar=default) {
     s=new patch[];
+    if(planar == true) {// Assume all path3 elements share a common normal.
+      if(external.length != 0) {
+        triple n=normal(external[0]);
+        if(n != O) {
+          transform3 T=align(n);
+          external=transpose(T)*external;
+          T *= shift(0,0,point(external[0],0).z);
+          path[] g=sequence(new path(int i) {return path(external[i]);},
+                            external.length);
+          for(patch p : surface(g).s)
+            s.push(T*p);
+          return;
+        }
+      }
+    }
+
     for(int i=0; i < external.length; ++i)
       construct(external[i],
                 internal.length == 0 ? new triple[] : internal[i],
@@ -739,18 +731,22 @@ struct surface {
     for(int i=0; i < L; ++i) {
       path3 h=subpath(g,i,i+1);
       path3 r=reverse(h);
-      triple max=max(h);
-      triple min=min(h);
-      triple perp(triple m) {
-        triple perp=m-c;
-        return perp-dot(perp,axis)*axis;
+      path3 H=shift(-c)*h;
+      real M=0;
+      triple perp;
+      void test(real[] t) {
+        for(int i=0; i < 3; ++i) {
+          triple v=point(H,t[i]);
+          triple V=v-dot(v,axis)*axis;
+          real a=abs(V);
+          if(a > M) {M=a; perp=V;}
+        }
       }
-      triple perp=perp(max);
-      real fuzz=epsilon*max(abs(max),abs(min));
-      if(abs(perp) < fuzz)
-        perp=perp(min);
+      test(maxtimes(H));
+      test(mintimes(H));
+      
       perp=unit(perp);
-      triple normal=cross(axis,perp);
+      triple normal=unit(cross(axis,perp));
       triple dir(real j) {return Cos(j)*normal-Sin(j)*perp;}
       real j=angle1;
       transform3 Tk=T[0];
@@ -905,6 +901,51 @@ patch subpatch(patch s, real ua, real va, real ub, real vb)
                s.straight,s.planar);
 }
 
+// return an array containing all intersection times of path p and patch s.
+real[][] intersections(path3 p, patch s, real fuzz=-1)
+{
+  return sort(intersections(p,s.P,fuzz));
+}
+
+// return an array containing all intersection times of path p and surface s.
+real[][] intersections(path3 p, surface s, real fuzz=-1)
+{
+  real[][] T;
+  if(length(p) < 0) return T;
+  for(int i=0; i < s.s.length; ++i)
+    for(real[] s: intersections(p,s.s[i].P,fuzz))
+      T.push(s);
+
+  static real fuzzFactor=10.0;
+  static real Fuzz=1000.0*realEpsilon;
+  real fuzz=max(fuzzFactor*fuzz,Fuzz)*abs(max(s)-min(s));
+  
+  // Remove intrapatch duplicate points.
+  for(int i=0; i < T.length; ++i) {
+    triple v=point(p,T[i][0]);
+    for(int j=i+1; j < T.length;) {
+      if(abs(v-point(p,T[j][0])) < fuzz)
+        T.delete(j);
+      else ++j;
+    }
+  }
+  return sort(T);
+}
+
+// return an array containing all intersection points of path p and surface s.
+triple[] intersectionpoints(path3 p, patch s, real fuzz=-1)
+{
+  real[][] t=intersections(p,s,fuzz);
+  return sequence(new triple(int i) {return point(p,t[i][0]);},t.length);
+}
+
+// return an array containing all intersection points of path p and surface s.
+triple[] intersectionpoints(path3 p, surface s, real fuzz=-1)
+{
+  real[][] t=intersections(p,s,fuzz);
+  return sequence(new triple(int i) {return point(p,t[i][0]);},t.length);
+}
+
 triple point(patch s, real u, real v)
 {
   return s.point(u,v);
@@ -941,7 +982,7 @@ void draw(transform t=identity(), frame f, surface s, int nu=1, int nv=1,
   if(is3D()) {
     for(int i=0; i < s.s.length; ++i)
       draw3D(f,s.s[i],surfacepen[i],light);
-    pen modifiers=thin()+linecap(0);
+    pen modifiers=thin()+squarecap;
     for(int k=0; k < s.s.length; ++k) {
       pen meshpen=meshpen[k];
       if(!invisible(meshpen)) {
@@ -1020,7 +1061,7 @@ void draw(picture pic=currentpicture, surface s, int nu=1, int nv=1,
   pic.addPoint(max(s));
 
   pen modifiers;
-  if(is3D()) modifiers=thin()+linecap(0);
+  if(is3D()) modifiers=thin()+squarecap;
   for(int k=0; k < s.s.length; ++k) {
     pen meshpen=meshpen[k];
     if(!invisible(meshpen)) {
@@ -1055,14 +1096,22 @@ void draw(picture pic=currentpicture, surface s, int nu=1, int nv=1,
   draw(pic,s,nu,nv,surfacepen,meshpen,light,meshlight);
 }
 
-surface extrude(path p, triple elongation=Z)
+surface extrude(path p, triple axis=Z)
 {
   static patch[] allocate;
   path3 G=path3(p);
-  path3 G2=shift(elongation)*G;
+  path3 G2=shift(axis)*G;
   return surface(...sequence(new patch(int i) {
         return patch(subpath(G,i,i+1)--subpath(G2,i+1,i)--cycle);
       },length(G)));
+}
+
+surface extrude(explicit path[] p, triple axis=Z)
+{
+  surface s;
+  for(path g:p)
+    s.append(extrude(g,axis));
+  return s;
 }
 
 triple rectify(triple dir) 
@@ -1146,9 +1195,15 @@ void label(picture pic=currentpicture, Label L, triple position,
   L.p(p);
   L.position(0);
   path[] g=texpath(L);
-  if(g.length == 0) return;
+  if(g.length == 0 || (g.length == 1 && size(g[0]) == 0)) return;
   pic.add(new void(frame f, transform3 t, picture pic, projection P) {
+      // Handle relative projected 3D alignments.
+      Label L=L.copy();
       triple v=t*position;
+      if(!align.is3D && L.align.relative && L.align.dir3 != O &&
+         determinant(P.t) != 0)
+          L.align(L.align.dir*unit(project(v+L.align.dir3,P.t)-project(v,P.t)));
+      
       if(L.defaulttransform3)
         L.T3=transform3(P);
       if(is3D())
@@ -1177,20 +1232,32 @@ void label(picture pic=currentpicture, Label L, triple position,
 void label(picture pic=currentpicture, Label L, path3 g, align align=NoAlign,
            pen p=currentpen)
 {
-  Label L=Label(L,align,p);
+  Label L=L.copy();
+  L.align(align);
+  L.p(p);
   bool relative=L.position.relative;
   real position=L.position.position.x;
-  pair Align=L.align.dir;
-  bool alignrelative=L.align.relative;
   if(L.defaultposition) {relative=true; position=0.5;}
   if(relative) position=reltime(g,position);
   if(L.align.default) {
-    alignrelative=true;
-    Align=position <= 0 ? S : position >= length(g) ? N : E;
+    align a;
+    a.init(-I*(position <= sqrtEpsilon ? S :
+              position >= length(g)-sqrtEpsilon ? N : E),relative=true);
+    a.dir3=dir(g,position); // Pass 3D direction via unused field.
+    L.align(a);             
   }
-  label(pic,L,point(g,position),
-        alignrelative && determinant(currentprojection.t) != 0 ?
-        -Align*project(dir(g,position),currentprojection.t)*I : L.align);
+  label(pic,L,point(g,position));
+}
+
+surface extrude(Label L, triple axis=Z)
+{
+  Label L=L.copy();
+  path[] g=texpath(L);
+  surface S=extrude(g,axis);
+  surface s=surface(g);
+  S.append(s);
+  S.append(shift(axis)*s);
+  return S;
 }
 
 restricted surface nullsurface;

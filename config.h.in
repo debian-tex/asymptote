@@ -45,6 +45,9 @@
 /* Define to 1 if you have the `fftw3' library (-lfftw3). */
 #undef HAVE_LIBFFTW3
 
+/* Define to 1 if you have the `GLU' library (-lGLU). */
+#undef HAVE_LIBGLU
+
 /* Define to 1 if you have the `glut' library (-lglut). */
 #undef HAVE_LIBGLUT
 
@@ -62,6 +65,9 @@
 
 /* Define to 1 if you have the `readline' library (-lreadline). */
 #undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `rt' library (-lrt). */
+#undef HAVE_LIBRT
 
 /* Define to 1 if you have the `sigsegv' library (-lsigsegv). */
 #undef HAVE_LIBSIGSEGV

@@ -79,49 +79,57 @@ struct light {
   real[][] diffuse;
   real[][] ambient;
   real[][] specular;
+  pen background; // Background color of the 3D canvas.
   real specularfactor;
   bool viewport; // Are the lights specified (and fixed) in the viewport frame?
-  triple[] position; // Only directional lights are implemented.
+  triple[] position; // Only directional lights are currently implemented.
 
   transform3 T=identity(4); // Transform to apply to normal vectors.
 
   bool on() {return position.length > 0;}
   
-  void operator init(pen[] diffuse=array(position.length,white),
-		     pen[] ambient=array(position.length,black),
-		     pen[] specular=diffuse, real specularfactor=1,
-		     bool viewport=true, triple[] position) {
-    this.position=new triple[position.length];
-    this.diffuse=new real[position.length][];
-    this.ambient=new real[position.length][];
-    this.specular=new real[position.length][];
+  void operator init(pen[] diffuse,
+                     pen[] ambient=array(diffuse.length,black),
+                     pen[] specular=diffuse, pen background=nullpen,
+                     real specularfactor=1,
+                     bool viewport=true, triple[] position) {
+    int n=diffuse.length;
+    assert(ambient.length == n && specular.length == n && position.length == n);
+    
+    this.diffuse=new real[n][];
+    this.ambient=new real[n][];
+    this.specular=new real[n][];
+    this.background=background;
+    this.position=new triple[n];
     for(int i=0; i < position.length; ++i) {
-      this.position[i]=unit(position[i]);
       this.diffuse[i]=rgba(diffuse[i]);
       this.ambient[i]=rgba(ambient[i]);
       this.specular[i]=rgba(specular[i]);
+      this.position[i]=unit(position[i]);
     }
     this.specularfactor=specularfactor;
     this.viewport=viewport;
   }
 
   void operator init(pen diffuse=white, pen ambient=black, pen specular=diffuse,
-		     real specularfactor=1,
-		     bool viewport=true...triple[] position) {
+                     pen background=nullpen, real specularfactor=1,
+                     bool viewport=true...triple[] position) {
     int n=position.length;
     operator init(array(n,diffuse),array(n,ambient),array(n,specular),
-		  specularfactor,viewport,position);
+                  background,specularfactor,viewport,position);
   }
 
   void operator init(pen diffuse=white, pen ambient=black, pen specular=diffuse,
-		     bool viewport=true, real x, real y, real z) {
-    operator init(diffuse,ambient,specular,viewport,(x,y,z));
+                     pen background=nullpen, bool viewport=true,
+                     real x, real y, real z) {
+    operator init(diffuse,ambient,specular,background,viewport,(x,y,z));
   }
 
   void operator init(explicit light light) {
     diffuse=copy(light.diffuse);
     ambient=copy(light.ambient);
     specular=copy(light.specular);
+    background=light.background;
     specularfactor=light.specularfactor;
     viewport=light.viewport;
     position=copy(light.position);
@@ -141,12 +149,14 @@ struct light {
       triple L=viewport ? position[i] : T*position[i];
       real Ldotn=max(dot(normal,L),0);
       p += ambient[i]*Ambient+Ldotn*diffuse[i]*Diffuse;
-// Apply specularfactor to partially compensate non-pixel-based rendering.
+      // Apply specularfactor to partially compensate non-pixel-based rendering.
       if(Ldotn > 0) // Phong-Blinn model of specular reflection
-	p += dot(normal,unit(L+Z))^s*specularfactor*specular[i]*Specular;
+        p += dot(normal,unit(L+Z))^s*specularfactor*specular[i]*Specular;
     }
     return rgb(p[0],p[1],p[2])+opacity(opacity(m.diffuse()));
   }
+
+  real[] background() {return rgba(background == nullpen ? white : background);}
 }
 
 light operator * (transform3 t, light light)
@@ -158,10 +168,14 @@ light operator * (transform3 t, light light)
 
 light operator cast(triple v) {return light(v);}
 
-light currentlight=light(ambient=rgb(0.1,0.1,0.1),specularfactor=3,
+light currentlight=light(ambient=gray(0.1),specularfactor=3,
                          (0.25,-0.25,1));
 
-light adobe=light(gray(0.4),specularfactor=3,viewport=false,
-		  (0.5,-0.5,-0.25),(0.5,0.5,0.25),
-		  (0.5,-0.5,0.2),(-0.5,0.5,-0.2));
+light White=light(new pen[] {rgb(0.38,0.38,0.45),rgb(0.6,0.6,0.67),
+                             rgb(0.5,0.5,0.57)},specularfactor=3,viewport=false,
+  new triple[] {(-2,-1.5,-0.5),(2,1.1,-2.5),(-0.5,0,2)});
+
+light Headlamp=light(gray(0.9),ambient=gray(0.1),specularfactor=3,
+                     (0.5,0.5,1/sqrt(2)),specular=gray(0.7));
+
 light nolight;

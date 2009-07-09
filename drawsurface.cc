@@ -97,7 +97,7 @@ bool drawSurface::write(prcfile *out)
 // through u with unit normal n.
 inline triple displacement2(const Triple& z, const Triple& u, const triple& n)
 {
-  triple Z=triple(z[0]-u[0],z[1]-u[1],z[2]-u[2]);
+  triple Z=triple(z)-triple(u);
   return n != triple(0,0,0) ? dot(Z,n)*n : Z;
 }
 
@@ -111,15 +111,15 @@ inline triple maxabs(triple u, triple v)
 inline triple displacement(const Triple& z0, const Triple& c0,
                            const Triple& c1, const Triple& z1)
 {
-  triple Z0(z0[0],z0[1],z0[2]);
-  triple Z1(z1[0],z1[1],z1[2]);
+  triple Z0(z0);
+  triple Z1(z1);
   return maxabs(displacement(triple(c0[0],c0[1],c0[2]),Z0,Z1),
                 displacement(triple(c1[0],c1[1],c1[2]),Z0,Z1));
 }
 
 void drawSurface::displacement()
 {
-#ifdef HAVE_LIBGLUT
+#ifdef HAVE_LIBGL
   initMatrix(v1,Min.getx(),Min.gety(),Min.getz(),Max.gety(),Max.getz());
   initMatrix(v2,Max.getx(),Min.gety(),Min.getz(),Max.gety(),Max.getz());
   
@@ -168,7 +168,7 @@ void drawSurface::render(GLUnurbs *nurb, double size2,
                          const triple& Min, const triple& Max,
                          double perspective, bool transparent)
 {
-#ifdef HAVE_LIBGLUT
+#ifdef HAVE_LIBGL
   if(invisible || (havetransparency ^ transparent)) return;
   
   static GLfloat v[16];

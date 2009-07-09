@@ -25,7 +25,9 @@ restricted pen beveljoin=linejoin(2);
 
 restricted pen zerowinding=fillrule(0);
 restricted pen evenodd=fillrule(1);
-bool inside(int windingnumber, pen fillrule) {
+
+bool interior(int windingnumber, pen fillrule)
+{
   return windingnumber != undefined &&
     (fillrule(fillrule) == 1 ? windingnumber % 2 == 1 : windingnumber != 0);
 }
@@ -174,17 +176,31 @@ void write(file file=stdout, string s="", pen[] p)
     write(file,s,p[i],endl);
 }
 
-pen font(string name) 
+void usetypescript(string s, string encoding="")
 {
-  return fontcommand("\font\ASYfont="+name+"\ASYfont");
+  string s="\usetypescript["+s+"]";
+  if(encoding != "") s +="["+encoding+"]";
+  texpreamble(s);
 }
 
-pen font(string name, real size) 
+pen font(string name, string options="") 
 {
+  // Work around misalignment in ConTeXt switchtobodyfont if font is not found.
+  return fontcommand(settings.tex == "context" ?
+                     "\switchtobodyfont["+name+
+                     (options == "" ? "" : ","+options)+
+                     "]\removeunwantedspaces" :
+                     "\font\ASYfont="+name+"\ASYfont");
+}
+
+pen font(string name, real size, string options="") 
+{
+  if(settings.tex == "context")
+    return fontsize(size)+font(name+","+(string) size+"pt",options);
   return fontsize(size)+font(name+" at "+(string) size+"pt");
 }
 
-pen font(string encoding, string family, string series="m", string shape="n") 
+pen font(string encoding, string family, string series, string shape) 
 {
   return fontcommand("\usefont{"+encoding+"}{"+family+"}{"+series+"}{"+shape+
                      "}");
@@ -305,6 +321,16 @@ pen rgb(string s)
   return rgb(value(s,0),value(s,1),value(s,2));
 }
 
+pen[] operator +(pen[] a, pen b)
+{
+  return sequence(new pen(int i) {return a[i]+b;},a.length);
+}
+
+pen[] operator +(pen a, pen[] b)
+{
+  return sequence(new pen(int i) {return a+b[i];},b.length);
+}
+
 // Interpolate an array of pens in rgb space using by default their minimum
 // opacity.
 pen mean(pen[] p, real opacity(real[])=min)
@@ -327,5 +353,3 @@ pen[] mean(pen[][] palette, real opacity(real[])=min)
   return sequence(new pen(int i) {return mean(palette[i],opacity);},
 		  palette.length);
 }
-
-
