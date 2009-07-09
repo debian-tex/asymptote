@@ -26,6 +26,7 @@ common-build-arch::
 
 common-install-arch::
 	make install-asy DESTDIR=$(CURDIR)/debian/asymptote
+	dh_installtex
 
 binary-install/asymptote::
 	@ # asy-init is already covered by asymptote.emacsen-startup, so
