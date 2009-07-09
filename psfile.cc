@@ -47,20 +47,53 @@ psfile::psfile(const string& filename, bool pdfformat)
     reportError("Cannot write to "+filename);
 }
 
-void dealias(unsigned char *a, size_t width, size_t height, size_t n) 
+static const char *inconsistent="inconsistent colorspaces";
+  
+void psfile::writefromRGB(unsigned char r, unsigned char g, unsigned char b, 
+                          ColorSpace colorspace, size_t ncomponents) 
 {
-  size_t nwidth=n*width;
+  static const double factor=1.0/255.0;
+  pen p(r*factor,g*factor,b*factor);
+  p.convert();
+  if(!p.promote(colorspace))
+    reportError(inconsistent);
+  write(&p,ncomponents);
+}
+
+inline unsigned char average(unsigned char *a, size_t dx, size_t dy)
+{
+  return ((unsigned) a[0]+(unsigned) a[dx]+(unsigned) a[dy]+
+          (unsigned) a[dx+dy])/4;
+}
+
+void psfile::dealias(unsigned char *a, size_t width, size_t height, size_t n,
+                     bool convertrgb, ColorSpace colorspace)
+{
   // Dealias all but the last row and column of pixels.
-  for(size_t j=0; j < height-1; ++j) {
-    size_t widthj=width*j;
-    for(size_t i=0; i < width-1; ++i) {
-      size_t index=n*(widthj+i);
-      for(size_t k=0; k < n; ++k) {
-        size_t indexk=index+k;
-        a[indexk]=(unsigned char) (((unsigned) a[indexk]+
-                                    (unsigned) a[indexk+n]+
-                                    (unsigned) a[indexk+nwidth]+
-                                    (unsigned) a[indexk+nwidth+n])/4);
+  size_t istop=width-1;
+  size_t jstop=height-1;
+  if(convertrgb) {
+    size_t nwidth=3*width;
+    for(size_t j=0; j < height; ++j) {
+      unsigned char *aj=a+nwidth*j;
+      for(size_t i=0; i < width; ++i) {
+        unsigned char *ai=aj+3*i;
+        if(i < istop && j < jstop)
+          writefromRGB(average(ai,3,nwidth),
+                       average(ai+1,3,nwidth),
+                       average(ai+2,3,nwidth),colorspace,n);
+        else
+          writefromRGB(ai[0],ai[1],ai[2],colorspace,n);
+      }
+    }
+  } else {
+    size_t nwidth=n*width;
+    for(size_t j=0; j < jstop; ++j) {
+      unsigned char *aj=a+nwidth*j;
+      for(size_t i=0; i < istop; ++i) {
+        unsigned char *ai=aj+n*i;
+        for(size_t k=0; k < n; ++k)
+          ai[k]=average(ai+k,n,nwidth);
       }
     }
   }
@@ -85,7 +118,8 @@ void psfile::close()
     out->flush();
     if(!filename.empty()) {
       if(!out->good())
-        reportError("Cannot write to "+filename);
+        // Don't call reportError since this may be called on handled_error.
+        reportFatal("Cannot write to "+filename);
       delete out;
       out=NULL;
     }
@@ -249,8 +283,6 @@ void psfile::write(path p, bool newPath)
   }
 }
 
-static const char *inconsistent="inconsistent colorspaces";
-  
 void psfile::latticeshade(const vm::array& a, const bbox& b)
 {
   checkLevel();
@@ -276,7 +308,7 @@ void psfile::latticeshade(const vm::array& a, const bbox& b)
        << "<< /FunctionType 0" << newl
        << "/Order 1" << newl
        << "/Domain [0 1 0 1]" << newl
-       << "/Range [" << newl;
+       << "/Range [";
   for(size_t i=0; i < ncomponents; ++i)
     *out << "0 1 ";
   *out << "]" << newl
@@ -607,6 +639,19 @@ void psfile::image(const array& a, bool antialias)
   endImage(antialias,a0size,asize,ncomponents);
 }
   
+void psfile::outImage(bool antialias, size_t width, size_t height,
+                      size_t ncomponents)
+{
+  if(antialias) dealias(buffer,width,height,ncomponents);
+  if(settings::getSetting<Int>("level") >= 3)
+    writeCompressed(buffer,count);
+  else {
+    encode85 e(out);
+    for(size_t i=0; i < count; ++i)
+      e.put(buffer[i]);
+  }
+}
+  
 void psfile::rawimage(unsigned char *a, size_t width, size_t height,
                       bool antialias)
 {
@@ -619,26 +664,25 @@ void psfile::rawimage(unsigned char *a, size_t width, size_t height,
   
   imageheader(width,height,colorspace);
   
-  size_t size=ncomponents*width*height;
-
-  if(colorspace == RGB && settings::getSetting<Int>("level") >= 3) {
-    if(antialias) dealias(a,width,height,3);
-    writeCompressed(a,size);
+  count=ncomponents*width*height;
+  if(colorspace == RGB) {
+    buffer=a;
+    outImage(antialias,width,height,ncomponents);
   } else {
-    beginImage(size);
-    for(size_t i=0; i < width; ++i) {
-      int heighti=height*i;
-      for(size_t j=0; j < height; ++j) {
-        size_t index=3*(heighti+j);
-        static const double factor=1.0/255.0;
-        pen p(a[index]*factor,a[index+1]*factor,a[index+2]*factor);
-        p.convert();
-        if(!p.promote(colorspace))
-          reportError(inconsistent);
-        write(&p,ncomponents);
-      } 
+    beginImage(count);
+    if(antialias)
+      dealias(a,width,height,ncomponents,true,colorspace);
+    else {
+      size_t height3=3*height;
+      for(size_t i=0; i < width; ++i) {
+        unsigned char *ai=a+height3*i;
+        for(size_t j=0; j < height; ++j) {
+          unsigned char *aij=ai+3*j;
+          writefromRGB(aij[0],aij[1],aij[2],colorspace,ncomponents);
+        }
+      }
     }
-    endImage(antialias,width,height,ncomponents);
+    endImage(false,width,height,ncomponents);
   }
 }
 

@@ -154,6 +154,12 @@ void *asymain(void *A)
     int status;
     while(wait(&status) > 0);
   }
+#ifdef HAVE_LIBGL
+#ifdef HAVE_LIBPTHREAD
+  if(gl::glthread)
+    pthread_join(gl::mainthread,NULL);
+#endif
+#endif
   exit(em.processStatus() || interact::interactive ? 0 : 1);  
 }
 
@@ -168,23 +174,18 @@ int main(int argc, char *argv[])
   }
   
   Args args(argc,argv);
-#ifdef HAVE_LIBGLUT
+#ifdef HAVE_LIBGL
   gl::glthread=getSetting<bool>("threads");
 #ifdef HAVE_LIBPTHREAD
   
   if(gl::glthread) {
-    pthread_t thread;
     try {
-      if(pthread_create(&thread,NULL,asymain,&args) == 0) {
-        gl::mainthread=pthread_self();
+      if(pthread_create(&gl::mainthread,NULL,asymain,&args) == 0) {
         while(true) {
-          gl::endwait(gl::readySignal,gl::readyLock);
-          gl::endwait(gl::quitSignal,gl::quitLock);
-          gl::wait(gl::initSignal,gl::initLock);
           camp::glrenderWrapper();
           gl::initialize=true;
         }
-      }
+      } else gl::glthread=false;
     } catch(std::bad_alloc&) {
       outOfMemory();
     }

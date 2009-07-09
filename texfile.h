@@ -26,9 +26,6 @@
 
 namespace camp {
 
-const double tex2ps=72.0/72.27;
-const double ps2tex=1.0/tex2ps;
-  
 template<class T>
 void texdocumentclass(T& out, bool pipe=false)
 {
@@ -77,8 +74,9 @@ void texpreamble(T& out, mem::list<string>& preamble=processData().TeXpreamble,
         << "\\setbox\\ASYbox\\hbox{\\ASYdimen=\\ht\\ASYbox%" << newl
         << "\\advance\\ASYdimen by\\dp\\ASYbox\\kern#3\\wd\\ASYbox"
         << "\\raise#4\\ASYdimen\\box\\ASYbox}%" << newl
-        << "\\put(#1,#2){#5\\wd\\ASYbox 0pt\\dp\\ASYbox 0pt\\ht\\ASYbox 0pt"
-        << "\\box\\ASYbox#6}}" << newl
+        << settings::beginput(texengine) 
+        << "{#5\\wd\\ASYbox 0pt\\dp\\ASYbox 0pt\\ht\\ASYbox 0pt\\box\\ASYbox#6}"
+        << settings::endput(texengine) << "}%" << newl
         << "\\long\\def\\ASYalignT(#1,#2)(#3,#4)#5#6{%" << newl
         << "\\ASYaligned(#1,#2)(#3,#4){%" << newl
         << settings::beginlabel(texengine) << "%" << newl
@@ -109,13 +107,17 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
     }
   }
   texfontencoding(out);
-  if(settings::latex(settings::getSetting<string>("tex"))) {
+  string texengine=settings::getSetting<string>("tex");
+  if(settings::latex(texengine)) {
     if(pipe || !settings::getSetting<bool>("inlinetex")) {
       out << "\\usepackage{graphicx}" << newl;
       if(!pipe) out << "\\usepackage{color}" << newl;
     }
     if(pipe)
       out << "\\begin{document}" << newl;
+  } else if(settings::context(texengine)) {
+    if(!pipe && !settings::getSetting<bool>("inlinetex"))
+      out << "\\usemodule[pictex]" << newl;
   } else {
     out << "\\input graphicx" << newl;
     if(!pipe)
@@ -184,6 +186,7 @@ public:
   void miniprologue();
   
   void writeshifted(path p, bool newPath=true);
+  double hoffset() {return Hoffset;}
   
   // Draws label transformed by T at position z.
   void put(const string& label, const transform& T, const pair& z,
@@ -191,7 +194,6 @@ public:
 
   void beginlayer(const string& psname, bool postscript);
   void endlayer();
-  
 };
 
 } //namespace camp

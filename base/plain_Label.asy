@@ -172,7 +172,7 @@ side operator * (real x, side s)
 align operator cast(pair dir) {align A; A.init(dir,false); return A;}
 align operator cast(triple dir) {align A; A.init(dir,false); return A;}
 align operator cast(side side) {align A; A.init(side.align,true); return A;}
-align NoAlign;
+restricted align NoAlign;
 
 void write(file file=stdout, align align, suffix suffix=endl)
 {
@@ -222,7 +222,7 @@ struct Label {
   transform3 T3=identity(4);
   bool defaulttransform=true;
   bool defaulttransform3=true;
-  embed embed=Rotate; // Fixed, Rotate, Rotate, or Scale with embedded picture
+  embed embed=Rotate; // Shift, Rotate, Slant, or Scale with embedded picture
   filltype filltype=NoFill;
   
   void init(string s="", string size="", position position=0, 
@@ -293,11 +293,13 @@ struct Label {
           t*position+align*labelmargin(p0)+shift(T)*0,align,p0);
   }
 
-  void out(frame f, transform t=identity()) {
-    if(filltype == NoFill) label(f,t,position.position,align.dir);
+  void out(frame f, transform t=identity(), pair position=position.position,
+           pair align=align.dir) {
+    if(filltype == NoFill)
+      label(f,t,position,align);
     else {
       frame d;
-      label(d,t,position.position,align.dir);
+      label(d,t,position,align);
       add(f,d,filltype);
     }
   }
@@ -305,13 +307,7 @@ struct Label {
   void label(picture pic=currentpicture, pair position, pair align) {
     if(s == "") return;
     pic.add(new void (frame f, transform t) {
-        if(filltype == NoFill)
-          label(f,t,position,align);
-        else {
-          frame d;
-          label(d,t,position,align);
-          add(f,d,filltype);
-        }
+        out(f,t,position,align);
       },true);
     frame f;
     // Create a picture with label at the origin to extract its bbox truesize.
@@ -332,10 +328,14 @@ struct Label {
     if(relative) position=reltime(g,position);
     if(align.default) {
       alignrelative=true;
-      Align=position <= 0 ? S : position >= length(g) ? N : E;
+      Align=position <= sqrtEpsilon ? S :
+        position >= length(g)-sqrtEpsilon ? N : E;
     }
-    label(pic,point(g,position),
-          alignrelative ? -Align*dir(g,position)*I : Align);
+
+    pic.add(new void (frame f, transform t) {
+        out(f,t,point(g,position),
+            alignrelative ? -Align*dir(t*g,position)*I : Align);
+      },true);
   }
   
   void write(file file=stdout, suffix suffix=endl) {
@@ -563,7 +563,7 @@ frame pack(pair align=2S ... object inset[])
   return F;
 }
 
-path[] texpath(Label L)
+path[] texpath(Label L, bool tex=settings.tex != "none")
 {
   static string[] stringcache;
   static pen[] pencache;
@@ -571,7 +571,12 @@ path[] texpath(Label L)
   path[] g;
 
   string s=L.s;
-  pen p=L.p;
+  pen p=fontcommand(font(L.p))+fontsize(fontsize(L.p));
+
+  // PDF tex engines lose track of the baseline.
+  bool adjust=tex && basealign(L.p) == 1 && pdf();
+  if(adjust) p=p+basealign;
+  
   int k=0;
   int i;
   while((i=find(stringcache == s,++k)) >= 0) {
@@ -582,7 +587,16 @@ path[] texpath(Label L)
   }
 
   if(i == -1) {
-    g=_texpath(s,p);
+    if(tex) {
+      if(adjust) {
+        g=_texpath("."+s,p);
+        if(g.length == 0) return g;
+        real y=min(g[0]).y;
+        g.delete(0);
+        g=shift(0,-y)*g;
+      } else g=_texpath(s,p);
+    } else g=textpath(s,p);
+
     stringcache.push(s);
     pencache.push(p);
     pathcache.push(g);
@@ -593,8 +607,8 @@ path[] texpath(Label L)
   pair m=min(g);
   pair M=max(g);
   pair dir=rectify(inverse(L.T)*-L.align.dir);
-  if(basealign(p) == 1)
-    dir -= (0,m.y/(M.y-m.y));
+  if(tex && basealign(L.p) == 1)
+    dir -= (0,(1-dir.y)*m.y/(M.y-m.y));
   a=m+realmult(dir,M-m);
 
   return shift(L.position+L.align.dir*labelmargin(p))*L.T*shift(-a)*g;

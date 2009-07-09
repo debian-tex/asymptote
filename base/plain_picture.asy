@@ -408,16 +408,18 @@ struct projection {
   bool infinity;
   bool oblique;
   bool absolute=false;
-  triple camera;
-  triple up;
-  triple target;
+  triple camera;        // Position of camera.
+  triple up;            // A vector that should be projected to direction (0,1).
+  triple target;        // Point where camera is looking at.
+  pair viewportshift;   // Fractional viewport shift.
+  real zoom=1;          // Zoom factor.
+  real angle;           // Lens angle (for perspective projection).
   bool showtarget=true; // Expand bounding volume to include target?
   typedef transformation projector(triple camera, triple up, triple target);
   projector projector;
   bool autoadjust=true; // Adjust camera to lie outside bounding volume?
-  bool center=false; // Center target within bounding volume?
-  real angle; // Lens angle (currently only used by PRC viewpoint).
-  int ninterpolate; // Used for projecting nurbs to 2D Bezier curves.
+  bool center=false;    // Center target within bounding volume?
+  int ninterpolate;     // Used for projecting nurbs to 2D Bezier curves.
 
   void calculate() {
     transformation T=projector(camera,up,target);
@@ -438,11 +440,15 @@ struct projection {
   }
 
   void operator init(triple camera, triple up=(0,0,1), triple target=(0,0,0),
+                     real zoom=1, real angle=0, pair viewportshift=0,
                      bool showtarget=true, bool autoadjust=true,
                      bool center=false, projector projector) {
     this.camera=camera;
     this.up=up;
     this.target=target;
+    this.zoom=zoom;
+    this.angle=angle;
+    this.viewportshift=viewportshift;
     this.showtarget=showtarget;
     this.autoadjust=autoadjust;
     this.center=center;
@@ -459,11 +465,13 @@ struct projection {
     P.camera=camera;
     P.up=up;
     P.target=target;
+    P.zoom=zoom;
+    P.angle=angle;
+    P.viewportshift=viewportshift;
     P.showtarget=showtarget;
     P.autoadjust=autoadjust;
     P.center=center;
     P.projector=projector;
-    P.angle=angle;
     P.ninterpolate=ninterpolate;
     return P;
   }
@@ -1678,6 +1686,17 @@ void draw(picture pic=currentpicture, path[] g, pen[] p)
   tensorshade(pic,G,P);
 }
 
+void functionshade(picture pic=currentpicture, path[] g, bool stroke=false,
+                   pen fillrule=currentpen, string shader, bool copy=true)
+{
+  if(copy)
+    g=copy(g);
+  pic.add(new void(frame f, transform t) {
+      functionshade(f,t*g,stroke,fillrule,shader);
+    },true);
+  pic.addPath(g);
+}
+
 void filldraw(picture pic=currentpicture, path[] g, pen fillpen=currentpen,
               pen drawpen=currentpen)
 {
@@ -1685,11 +1704,6 @@ void filldraw(picture pic=currentpicture, path[] g, pen fillpen=currentpen,
   fill(pic,g,fillpen);
   Draw(pic,g,drawpen);
   endgroup(pic);
-}
-
-void clip(frame f, path[] g, bool stroke=false)
-{
-  clip(f,g,stroke,currentpen);
 }
 
 void clip(picture pic=currentpicture, path[] g, bool stroke=false,

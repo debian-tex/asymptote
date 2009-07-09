@@ -15,8 +15,12 @@
 
 namespace camp {
 
+static const double tex2ps=72.0/72.27;
+static const double ps2tex=1.0/tex2ps;
+  
 static const string DEFPAT="<default>";
 static const string DEFLATEXFONT="\\usefont{\\ASYencoding}{\\ASYfamily}{\\ASYseries}{\\ASYshape}";
+static const string DEFCONTEXTFONT="modern";
 static const string DEFTEXFONT="cmr12";
 static const double DEFWIDTH=-1;
 static const Int DEFCAP=-1;
@@ -196,7 +200,7 @@ public:
     r(0), g(0), b(0), grey(0),
     pattern(DEFPAT), fillrule(DEFFILL), baseline(DEFBASE),
     transparency(DEFTRANSP),
-    linecap(DEFCAP), linejoin(DEFJOIN),
+    linecap(DEFCAP), linejoin(DEFJOIN), miterlimit(DEFMITER),
     overwrite(DEFWRITE), t(nullTransform) {}
   
   pen(setlinewidth_t, double linewidth) : 
@@ -295,8 +299,8 @@ public:
     r(0), g(0), b(0), grey(0),
     pattern(DEFPAT), fillrule(DEFFILL), baseline(DEFBASE),
     transparency(DEFTRANSP),
-    linecap(DEFCAP), linejoin(linejoin), overwrite(DEFWRITE),
-    t(nullTransform) {}
+    linecap(DEFCAP), linejoin(linejoin), miterlimit(DEFMITER),
+    overwrite(DEFWRITE), t(nullTransform) {}
   
   pen(setmiterlimit_t, double miterlimit) :
     line(DEFLINE), linewidth(DEFWIDTH), P(nullpath),
@@ -387,15 +391,25 @@ public:
   
   string Font() const {
     if(font.empty()) {
-      if(defaultpen().font.empty())
-        if(settings::latex(settings::getSetting<string>("tex")))
+      if(defaultpen().font.empty()) {
+        string texengine=settings::getSetting<string>("tex");
+        if(settings::latex(texengine))
           return DEFLATEXFONT;
+        else if(texengine == "none")
+          return settings::getSetting<string>("textinitialfont");
         else {
           ostringstream buf;
-          buf << "\\font\\ASYfont=" << DEFTEXFONT << " at " << size() 
-              << "pt\\ASYfont";
+  // Work around misalignment in ConTeXt switchtobodyfont if font is not found.
+          if(texengine == "context")
+            buf << "\\switchtobodyfont[" 
+                << DEFCONTEXTFONT << "," << size()*ps2tex 
+                << "pt]\\removeunwantedspaces%" << newl;
+          else
+            buf << "\\font\\ASYfont=" << DEFTEXFONT
+              << " at " << size()*ps2tex << "pt\\ASYfont";
           return buf.str();
         }
+      }
       else return defaultpen().font;
     }
     return font;
@@ -540,9 +554,19 @@ public:
     rgbtogrey();
   }
   
+  void togrey() {
+    if(rgb()) rgbtogrey();
+    else if(cmyk()) cmyktogrey();
+  }
+  
   void torgb() {
     if(cmyk()) cmyktorgb();
-    else if(gray()) greytorgb();
+    else if(grayscale()) greytorgb();
+  }
+  
+  void tocmyk() {
+    if(rgb()) rgbtocmyk();
+    else if(grayscale()) greytocmyk();
   }
   
   void settransparency(const pen& p) {
@@ -777,7 +801,7 @@ public:
       out << ", linecap=" << Cap[p.linecap];
     if(p.linejoin != DEFJOIN)
       out << ", linejoin=" << Join[p.linejoin];
-    if(p.miterlimit != DEFJOIN)
+    if(p.miterlimit != DEFMITER)
       out << ", miterlimit=" << p.miterlimit;
     if(!p.font.empty())
       out << ", font=\"" << p.font << "\"";

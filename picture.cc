@@ -20,12 +20,19 @@ using namespace settings;
 using namespace gl;
 
 texstream::~texstream() {
-  string name=stripFile(outname())+"texput.";
+  string name=stripTeXFile(outname())+"texput.";
   unlink((name+"aux").c_str());
   unlink((name+"log").c_str());
   unlink((name+"out").c_str());
-  if(settings::pdf(getSetting<string>("tex")))
+  string texengine=getSetting<string>("tex");
+  if(settings::pdf(texengine))
     unlink((name+"pdf").c_str());
+  if(settings::context(texengine)) {
+    unlink((name+"tex").c_str());
+    unlink((name+"top").c_str());
+    unlink((name+"tua").c_str());
+    unlink((name+"tui").c_str());
+  }
 }
 
 namespace camp {
@@ -194,7 +201,7 @@ pair picture::bounds(double (*m)(double, double),
   return b;
 }
   
-void picture::texinit()
+void texinit()
 {
   drawElement::lastpen=pen(initialpen);
   processDataStruct &pd=processData();
@@ -206,7 +213,7 @@ void picture::texinit()
     return;
   }
   
-  string name=stripFile(outname())+"texput.aux";
+  string name=stripTeXFile(outname())+"texput.log";
   const char *cname=name.c_str();
   ofstream writeable(cname);
   if(!writeable)
@@ -216,7 +223,16 @@ void picture::texinit()
   unlink(cname);
   
   ostringstream cmd;
-  cmd << texprogram() << " \\scrollmode";
+  bool context=settings::context(getSetting<string>("tex"));
+  if(context) {
+    // Create a null texput.tex file as a portable way of tricking context
+    // to enter interactive mode (pending the implementation of --pipe).
+    string texput=stripTeXFile(outname())+"texput.tex";
+    ofstream(texput.c_str());
+    cmd << texprogram() << " --scrollmode " << texput;
+  } else
+    cmd << texprogram() << " \\scrollmode";
+  
   pd.tex.open(cmd.str().c_str(),"texpath",texpathmessage());
   pd.tex.wait("\n*");
   pd.tex << "\n";
@@ -239,15 +255,18 @@ bool picture::texprocess(const string& texname, const string& outname,
     unlink(aux.c_str());
     string program=texprogram();
     ostringstream cmd;
-    cmd << program << " \\nonstopmode\\input '" << texname << "'";
+    bool context=settings::context(getSetting<string>("tex"));
+    cmd << program << (context ? " --nonstopmode '" : 
+                       " \\nonstopmode\\input '") << texname << "'";
     bool quiet=verbose <= 1;
-    status=System(cmd,quiet ? 1 : 0,"texpath",texpathmessage());
+    status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
     if(!status && getSetting<bool>("twice"))
-      status=System(cmd,quiet ? 1 : 0,"texpath",texpathmessage());
+      status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
     if(status) {
       if(quiet) {
         ostringstream cmd;
-        cmd << program << " \\scrollmode\\input '" << texname << "'";
+        cmd << program << (context ? " --scrollmode '" : 
+                           " \\scrollmode\\input '") << texname << "'";
         System(cmd,0);
       }
       return false;
@@ -326,6 +345,13 @@ bool picture::texprocess(const string& texname, const string& outname,
         unlink(aux.c_str());
       unlink(auxname(prefix,"log").c_str());
       unlink(auxname(prefix,"out").c_str());
+      if(context) {
+        unlink(auxname(prefix,"top").c_str());
+        unlink(auxname(prefix,"tua").c_str());
+        unlink(auxname(prefix,"tuc").c_str());
+        unlink(auxname(prefix,"tui").c_str());
+        unlink(auxname(prefix,"tuo").c_str());
+      }
     }
     if(status == 0) return true;
   }
@@ -505,7 +531,8 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     getSetting<string>("tex") != "none";
   Labels=labels || TeXmode;
   
-  pdf=settings::pdf(getSetting<string>("tex"));
+  string texengine=getSetting<string>("tex");
+  pdf=settings::pdf(texengine);
   
   bool standardout=Prefix == "-";
   string prefix=standardout ? "out" : Prefix;
@@ -546,15 +573,15 @@ bool picture::shipout(picture *preamble, const string& Prefix,
   
   paperWidth=getSetting<double>("paperwidth");
   paperHeight=getSetting<double>("paperheight");
-  Int origin=getSetting<Int>("align");
+  string origin=getSetting<string>("align");
     
-  pair bboxshift=(origin == ZERO && !pdfformat) ?
+  pair bboxshift=(origin == "Z" && !pdfformat) ?
     pair(0.0,0.0) : pair(-b.left,-b.bottom);
   if(!pdfformat) {
     bboxshift += getSetting<pair>("offset");
-    if(origin != ZERO && origin != BOTTOM) {
+    if(origin != "Z" && origin != "B") {
       double yexcess=max(paperHeight-(b.top-b.bottom+1.0),0.0);
-      if(origin == TOP) bboxshift += pair(0.0,yexcess);
+      if(origin == "T") bboxshift += pair(0.0,yexcess);
       else {
         double xexcess=max(paperWidth-(b.right-b.left+1.0),0.0);
         bboxshift += pair(0.5*xexcess,0.5*yexcess);
@@ -656,6 +683,7 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     }
   }
   
+  bool context=settings::context(texengine);
   if(status) {
     if(TeXmode) {
       if(Labels && verbose > 0) cout << "Wrote " << texname << endl;
@@ -663,6 +691,7 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     } else {
       if(Labels) {
         tex->epilogue();
+        if(context) prefix=stripDir(prefix);
         status=texprocess(texname,prename,prefix,bboxshift);
         delete tex;
         if(!getSetting<bool>("keep")) {
@@ -675,9 +704,11 @@ bool picture::shipout(picture *preamble, const string& Prefix,
         if(xobject) {
           if(transparency && pngxformat)
             status=(epstopdf(prename,Outname(prefix,"pdf",standardout)) == 0);
-        } else
+        } else {
+          if(context) prename=stripDir(prename);
           status=postprocess(prename,outname,outputformat,magnification,wait,
                              view);
+        }
       }
     }
   }
@@ -705,8 +736,12 @@ struct Communicate : public gc {
   double width;
   double height;
   double angle;
+  double zoom;
   triple m;
   triple M;
+  pair shift;
+  double *t;
+  double *background;
   size_t nlights;
   triple *lights;
   double *diffuse;
@@ -720,23 +755,26 @@ Communicate com;
 
 void glrenderWrapper()
 {
-#ifdef HAVE_LIBGLUT  
+#ifdef HAVE_LIBGL  
+#ifdef HAVE_LIBPTHREAD
+  wait(initSignal,initLock);
+  endwait(initSignal,initLock);
+#endif  
   glrender(com.prefix,com.pic,com.format,com.width,com.height,com.angle,
-           com.m,com.M,com.nlights,com.lights,com.diffuse,com.ambient,
-           com.specular,com.viewportlighting,com.view);
+           com.zoom,com.m,com.M,com.shift,com.t,com.background,com.nlights,
+           com.lights,com.diffuse,com.ambient,com.specular,com.viewportlighting,
+           com.view);
 #endif  
 }
 
-extern bool glinitialize;
-
 bool picture::shipout3(const string& prefix, const string& format,
-                       double width, double height,
-                       double angle, const triple& m, const triple& M,
-                       size_t nlights, triple *lights, double *diffuse,
-                       double *ambient, double *specular, bool viewportlighting,
-                       bool view)
+                       double width, double height, double angle, double zoom,
+                       const triple& m, const triple& M, const pair& shift,
+                       double *t, double *background, size_t nlights,
+                       triple *lights, double *diffuse, double *ambient,
+                       double *specular, bool viewportlighting, bool view)
 {
-#ifdef HAVE_LIBGLUT
+#ifdef HAVE_LIBGL
   bounds3();
   
   for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
@@ -748,6 +786,7 @@ bool picture::shipout3(const string& prefix, const string& format,
     getSetting<string>("outformat") : format;
   bool View=settings::view() && view;
   static int oldpid=0;
+  bool Wait=!interact::interactive || !View;
   
   if(glthread) {
 #ifdef HAVE_LIBPTHREAD
@@ -759,8 +798,12 @@ bool picture::shipout3(const string& prefix, const string& format,
       com.width=width;
       com.height=height;
       com.angle=angle;
+      com.zoom=zoom;
       com.m=m;
       com.M=M;
+      com.shift=shift;
+      com.t=t;
+      com.background=background;
       com.nlights=nlights;
       com.lights=lights;
       com.diffuse=diffuse;
@@ -768,18 +811,28 @@ bool picture::shipout3(const string& prefix, const string& format,
       com.specular=specular;
       com.viewportlighting=viewportlighting;
       com.view=View;
-      wait(initSignal,initLock);
-#ifdef HAVE_LIBGLUT  
 #ifdef HAVE_LIBPTHREAD
-    if(!View)
-      wait(readySignal,readyLock);
-  
-    if(!interact::interactive || !View)
-      wait(quitSignal,quitLock);
-#endif  
+      if(Wait)
+        pthread_mutex_lock(&readyLock);
+      wait(initSignal,initLock);
+      endwait(initSignal,initLock);
+      static bool initialize=true;
+      if(initialize) {
+        wait(initSignal,initLock);
+        endwait(initSignal,initLock);
+        initialize=false;
+      }
+      if(Wait) {
+        pthread_cond_wait(&readySignal,&readyLock);
+        pthread_mutex_unlock(&readyLock);
+      }
 #endif  
       return true;
     }
+#ifdef HAVE_LIBPTHREAD
+  if(Wait)
+    pthread_mutex_lock(&readyLock);
+#endif  
 #endif
   } else {
     int pid=fork();
@@ -792,22 +845,13 @@ bool picture::shipout3(const string& prefix, const string& format,
     }
   }
   
+  glrender(prefix,this,outputformat,width,height,angle,zoom,m,M,shift,t,
+           background,nlights,lights,diffuse,ambient,specular,viewportlighting,
+           View,oldpid);
 #ifdef HAVE_LIBPTHREAD
-  if(glthread && !interact::interactive)
-    pthread_mutex_lock(&quitLock);
-#endif  
-  glrender(prefix,this,outputformat,width,height,angle,m,M,
-           nlights,lights,diffuse,ambient,specular,viewportlighting,View,
-           oldpid);
-#ifdef HAVE_LIBPTHREAD
-  if(glthread) {
-    if(!View)
-      wait(readySignal,readyLock);
-    
-    if(!interact::interactive) {
-      pthread_cond_wait(&quitSignal,&quitLock);
-      pthread_mutex_unlock(&quitLock);
-    }
+    if(glthread && Wait) {
+    pthread_cond_wait(&readySignal,&readyLock);
+    pthread_mutex_unlock(&readyLock);
   }
   return true;
 #endif  

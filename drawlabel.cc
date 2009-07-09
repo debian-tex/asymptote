@@ -25,8 +25,8 @@ void drawLabel::labelwarning(const char *action)
        << "\" " << action << " to avoid overwriting" << endl;
 }
  
-int drawLabel::wait(iopipestream &tex, const char *s, const char **abort,
-                    bool ignore)
+int wait(iopipestream &tex, const char *s, const char **abort,
+         bool ignore=false)
 {
   int rc=tex.wait(s,abort);
   if(rc > 0) {
@@ -49,12 +49,13 @@ int drawLabel::wait(iopipestream &tex, const char *s, const char **abort,
   return rc;
 }
  
-bool drawLabel::texbounds(iopipestream& tex, string& s, const char **abort,
-                          bool warn)
+bool texbounds(double& width, double& height, double& depth,
+               iopipestream& tex, string& s, const char **abort, bool warn,
+               bool Inline)
 {
   string texbuf;
   tex << "\\setbox\\ASYbox=\\hbox{" << stripblanklines(s) << "}\n\n";
-  int rc=wait(tex,texready.c_str(),abort,getSetting<bool>("inlinetex"));
+  int rc=wait(tex,texready.c_str(),abort,Inline);
   if(rc) {
     tex << "\\show 0\n";
     tex.wait("\n*");
@@ -116,36 +117,45 @@ inline double urand()
   return rand()*factor-1.0;
 }
 
+void setpen(iopipestream& tex, const string& texengine, const pen& pentype) 
+{
+  const char **abort=texabort(texengine);
+  bool Latex=latex(texengine);
+  
+  if(Latex) {
+    if(setlatexfont(tex,pentype,drawElement::lastpen))
+      wait(tex,"\n*",abort);
+  }
+  if(settexfont(tex,pentype,drawElement::lastpen,Latex))
+    wait(tex,"\n*",abort);
+  
+  drawElement::lastpen=pentype;
+}
+
 void drawLabel::getbounds(iopipestream& tex, const string& texengine)
 {
   if(havebounds) return;
   havebounds=true;
   
   const char **abort=texabort(texengine);
-  bool Latex=latex(texengine);
+  setpen(tex,texengine,pentype);
   
-  if(Latex) {
-    if(setlatexfont(tex,pentype,lastpen))
-      wait(tex,"\n*",abort);
-  }
-  if(settexfont(tex,pentype,lastpen,Latex))
-    wait(tex,"\n*",abort);
-  
-  lastpen=pentype;
-    
   bool nullsize=size.empty();
-  if(!texbounds(tex,label,abort,nullsize) && !nullsize)
-    texbounds(tex,size,abort,false);
+  if(!texbounds(width,height,depth,tex,label,abort,nullsize,
+                getSetting<bool>("inlinetex")) && !nullsize)
+    texbounds(width,height,depth,tex,size,abort,false);
   enabled=true;
     
   Align=inverse(T)*align;
   double scale0=max(fabs(Align.getx()),fabs(Align.gety()));
   if(scale0) Align *= 0.5/scale0;
   Align -= pair(0.5,0.5);
-  double Depth=(pentype.Baseline() == NOBASEALIGN) ? depth : 0.0;
+  double Depth=(pentype.Baseline() == NOBASEALIGN) ? depth : 
+    -depth*Align.gety();
   texAlign=Align;
-  if(Depth > 0) texAlign += pair(0.0,Depth/(height+Depth));
-  Align.scale(width,height+depth);
+  const double vertical=height+depth;
+  if(Depth > 0) texAlign += pair(0.0,Depth/vertical);
+  Align.scale(width,vertical);
   Align += pair(0.0,Depth-depth);
   Align=T*Align;
 }
