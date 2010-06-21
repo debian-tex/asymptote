@@ -4,7 +4,8 @@ Wed, 1 Dec 2004 16:37:32 -0500.
 It was downloaded from http://asymptote.sourceforge.net
 
 Files: debian/*
-Copyright: Copyright 2004-2008, Hubert Chathi <hubert@uhoreg.ca>
+Copyright: Copyright (C) 2004-2010 Hubert Chathi
+	   Copyright (C) 2009-2010 Ruben Molina
 License: GPL-2+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,8 +21,170 @@ License: GPL-2+
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
+Files: doc/FAQ/*.pl
+Copyright: Copyright (C) 1993-1995 Ian Jackson
+License: GPL-2+
+
+Files: camp.tab.h
+Copyright: Copyright 1984,1989-1990,2000-2006 Free Software Foundation, Inc.
+License: GPL-2+
+
+On Debian systems, the complete text of the GNU Lesser General Public
+License version 2 can be found in `/usr/share/common-licenses/LGPL-2'.
+
+
+Files: getopt*.*
+Copyright: Copyright (C) 1987-2001 Free Software Foundation, Inc.
+License: LGPL-2+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+  .
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  .
+  You should have received a copy of the GNU Lesser General Public
+  License along with this package; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+Files: algebra3.*, arcball.*, quaternion.*
+Copyright: Copyright (C) 1998 Paul Rademacher
+License: LGPL-2+
+
+Files: rounding.*
+Copyright: Copyright (C) 1999 Stéphane Popinet
+License: LGPL-2+
+
+Files: tr.*
+Copyright: Copyright (C) 1997-1998 Brian Paul
+License: LGPL-2+
+
+Files: examples/cpkcolors.asy
+Copyright: Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
+License: LGPL-2+
+
+On Debian systems, the complete text of the GNU Lesser General Public
+License version 2 can be found in `/usr/share/common-licenses/LGPL-2'.
+
+
+Files: prc/*
+Copyright: Copyright (C) 2008 Orest Shardt
+License: LGPL-3+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3 of the License, or (at your option) any later version.
+  .
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  .
+  You should have received a copy of the GNU Lesser General Public
+  License along with this package; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+Files: fftw++.*
+Copyright: Copyright (C) 2004 John C. Bowman, University of Alberta
+License: LGPL-3+
+
+Files: xstream.*
+Copyright: Copyright (C) 1999-2007 John C. Bowman
+License: LGPL-3+
+
+Files: pipestream.*
+Copyright: Copyright (C) 2005-2009 John C. Bowman
+License: LGPL-3+
+
+Files: base/binarytree.asy
+Copyright: Copyright (C) 2006 Tobias Langner
+License: LGPL-3+
+
+Files: base/geometry.asy
+Copyright: Copyright (C) 2007 Philippe Ivaldi
+License: LGPL-3+
+
+Files: base/trembling.asy
+Copyright: Copyright (C) 2008 Philippe Ivaldi
+License: LGPL-3+
+
+Files: examples/tvgen.asy
+Copyright: Copyright (C) 2007, 2009, Servaas Vandenberghe
+License: LGPL-3+
+
+Files: base/asy-mode.el
+Copyright: Copyright (C) 2006-2008 Philippe Ivaldi
+License: LGPL-3+
+
+On Debian systems, the complete text of the GNU Lesser General Public
+License version 3 can be found in `/usr/share/common-licenses/LGPL-3'.
+
+
+Files: patches/movie15_dvipdfmx.sty
+Copyright: Copyright (C) 2004-2008 Alexander Grahn
+License: LPPL
+  This material is subject to the LaTeX Project Public License. See
+  http://www.ctan.org/tex-archive/help/Catalogue/licenses.lppl.html
+  for the details of that license.
+
+
+Files: base/lmfit.asy
+Copyright: Copyright (C) 2009 Philipp Stephani
+License: other
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+  .
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+  .
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+
+Files: install-sh, doc/install-sh, doc/FAQ/install-sh
+Copyright: Copyright (C) 1994 X Consortium
+License: other
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  .
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  .
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+  X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+  AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNEC-
+  TION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  .
+  Except as contained in this notice, the name of the X Consortium shall not
+  be used in advertising or otherwise to promote the sale, use or other deal- 
+  ings in this Software without prior written authorization from the X Consor-
+  tium.
+  .
+  FSF changes to this file are in the public domain.
+
+
 Files: *
-Copyright: Copyright 2004-6 Andy Hammerlindl, John Bowman, and Tom Prince
+Copyright: Copyright (C) 2004-2009 Andy Hammerlindl, John Bowman, Tom Prince
 License: GPL-3+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,7 +200,6 @@ License: GPL-3+
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-On Debian systems, the latest version of the GPL can be found at
-/usr/share/common-licenses/GPL, version 3 of the GPL can be found at
-/usr/share/common-licenses/GPL-3, and version 2 of the GPL can be found at
-/usr/share/common-licenses/GPL-2.
+On Debian systems, the complete text of the GNU General Public License
+version 3 can be found in `/usr/share/common-licenses/GPL-3'.
+

@@ -13,6 +13,7 @@
                            
 \endcopy
 \copyto INFO
+INFO-DIR-SECTION TeX
 START-INFO-DIR-ENTRY
 * asymptote FAQ: (asy-faq).    Asymptote Frequently Asked Questions.
 END-INFO-DIR-ENTRY

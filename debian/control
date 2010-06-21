@@ -2,14 +2,15 @@ Source: asymptote
 Section: tex
 Priority: optional
 Maintainer: Hubert Chathi <uhoreg@debian.org>
-Build-Depends: cdbs, debhelper (>= 4.1.0), flex, bison, libfftw3-dev, libreadline5-dev, libncurses5-dev, libgc-dev (>= 1:6.4), libgsl0-dev, libsigsegv-dev, zlib1g-dev, freeglut3-dev, tex-common
+Uploaders: Ruben Molina <rmolina@udea.edu.co>
+Build-Depends: cdbs, debhelper (>= 5), flex, bison, libfftw3-dev, libreadline-dev, libncurses5-dev, libgc-dev (>= 1:6.4), libgsl0-dev, libsigsegv-dev, zlib1g-dev, freeglut3-dev, tex-common, autotools-dev
 Build-Depends-Indep: imagemagick, ghostscript, texlive-latex-base, texlive-base-bin, texlive-pstricks, texinfo
-Standards-Version: 3.7.3
+Standards-Version: 3.8.4
 Homepage: http://asymptote.sourceforge.net/
 
 Package: asymptote
 Architecture: any
-Depends: python, python-tk, python-imaging-tk, imagemagick, ghostscript, texlive-latex-base, texlive-base-bin, texlive-pstricks, ${shlibs:Depends}, ${misc:Depends}
+Depends: python, python-tk, python-imaging-tk, imagemagick, ghostscript, texlive-latex-base, texlive-base-bin, texlive-pstricks, ${shlibs:Depends}, ${misc:Depends}, dpkg (>= 1.15.4) | install-info
 Recommends: asymptote-doc
 Suggests: gv, xpdf
 Description: script-based vector graphics language inspired by MetaPost
@@ -23,10 +24,8 @@ Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Recommends: asymptote, info-browser | pdf-viewer | www-browser
-Conflicts: asymptote (<< 1.18)
-Replaces: asymptote (<< 1.18)
-Description: script-based vector graphics language inspired by MetaPost
- Asymptote is a powerful script-based vector graphics language for technical
- drawings, inspired by MetaPost but with an improved C++-like syntax.
- Asymptote provides for figures the same high-quality level of typesetting that
- LaTeX does for scientific text.
+Replaces: asymptote (<< ${source:Version})
+Description: documentation and examples for asymptote
+ Asymptote is a powerful descriptive vector graphics language that
+ provides a natural coordinate-based framework for technical drawing. 
+ This package provides documentation and examples.

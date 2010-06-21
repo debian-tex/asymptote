@@ -1,3 +1,72 @@
+asymptote (1.99-1) unstable; urgency=low
+
+  * New upstream version
+  * Reworking debian/rules
+  * Adding autotools-dev to Build-Depends so config.* can be updated.
+  * Adding dpkg (>= 1.15.4) | install-info to Depends, as recommended by 
+    Policy 12.2 (It's needed for the transition to triggerized install-info)
+  * Patching prc/PRCdouble.h to solve a FTBFS in hppa (Closes: ##561423) 
+  * Updating Copyright on debian/*
+
+ -- Ruben Molina <rmolina@udea.edu.co>  Sun, 20 Jun 2010 21:30:54 -0500
+
+asymptote (1.90-1) unstable; urgency=low
+
+  * New upstream version
+  * Fix @direntry at doc/asymptote.texi (Closes: #559943)
+
+ -- Ruben Molina <rmolina@udea.edu.co>  Tue, 08 Dec 2009 11:31:30 -0500
+
+asymptote (1.88-2) unstable; urgency=low
+
+  * Restoring direct patches accidentally reverted
+  * Symlinking asymptote.pdf to texmf directory (Closes: #551482)
+  * Adding texlive-plain-extra to Recommends (Closes: #538168)
+
+ -- Ruben Molina <rmolina@udea.edu.co>  Mon, 26 Oct 2009 21:14:36 -0500
+
+asymptote (1.88-1) unstable; urgency=low
+
+  * New upstream version
+  * Updating debian/watch (was missing current versions)
+  * Updating doc/makefile.in patch (previous one was over-enthusiastic)
+  * Improving relationships for asymptote-doc (Conflict is unneeded and
+    probably in violation of policy 2.5)
+  * Improving debian/rules
+    + Fix installing of examples (Closes: #550306, #552103), thanks to
+      Julian Gilbey!
+    + Remove Makefile and info files installed in html/ (Julian Gilbey)
+    + Cleaning unnecesary/commented lines
+    + Remove .cvsignore files
+  * Moved symlinks to docs from asymptote to asymptote-doc, adding a new 
+    symlink to the recently moved examples/ (Closes: #551483)
+  * Updating Build-Depends: libreadline5-dev -> libreadline-dev
+
+ -- Ruben Molina <rmolina@udea.edu.co>  Sat, 24 Oct 2009 01:11:11 -0500
+
+asymptote (1.86-1) unstable; urgency=low
+
+  * Add myself to uploaders.
+  * New upstream version.
+  * Bump Standards-Version to 3.8.3 (no changes)
+  * Bump versioned Build-Depends on debhelper to >= 5, and set 
+    debian/compat to 5 (package-uses-deprecated-debhelper-compat-version 4)
+  * Add a clean rule to solve a FTBFS building twice in a row
+    (qa-doublebuild).
+  * Patch doc/Makefile.in fixing issues in asy.1 generation
+    (hyphen-used-as-minus-sign)
+  * Patch doc/FAQ/asy-faq.bfnn adding INFO-DIR-SECTION to info document
+    (info-document-missing-dir-section)
+  * Update symptote-doc descriptions (duplicate-short-description and
+    duplicate-long-description)
+  * Set doc-base Section to Science/Mathematics (doc-base-unknown-section)
+  * Set executable bit on asy-kate.sh in binary-predeb rule
+    (script-not-executable)
+  * Move examples from asymptote to asymptote-doc in binary-install rule
+    (arch-dep-package-has-big-usr-share)
+
+ -- Ruben Molina <rmolina@udea.edu.co>  Thu, 24 Sep 2009 17:26:41 -0500
+
 asymptote (1.80-1) unstable; urgency=low
 
   * New upstream version.

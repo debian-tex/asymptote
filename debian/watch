@@ -1,2 +1,2 @@
 version=3
-opts="uversionmangle=s/^.*\.i386//" http://sf.net/asymptote/ asymptote-(.*)\.tar\.gz
+http://sf.net/asymptote/asymptote-(.*)\.src\.tgz

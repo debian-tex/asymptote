@@ -22,7 +22,7 @@ Debian systems, the @acronym{LGPL} can be found at
      
 @dircategory Languages
 @direntry
-* asymptote: (asymptote/asymptote). Vector graphics language.
+* asymptote: (asymptote). Vector graphics language.
 @end direntry
 
 @titlepage
