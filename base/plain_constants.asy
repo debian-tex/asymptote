@@ -1,4 +1,4 @@
-restricted int undefined=intMax+((intMax % 2)-1);
+restricted int undefined=(intMax % 2 == 1) ? intMax : intMax-1;
 
 restricted real inches=72;
 restricted real inch=inches;
@@ -8,10 +8,10 @@ restricted real bp=1;      // A PostScript point.
 restricted real pt=72.0/72.27; // A TeX pt; smaller than a PostScript bp.
 restricted pair I=(0,1);
 
-restricted pair up=(0,1);
-restricted pair down=(0,-1);
 restricted pair right=(1,0);
 restricted pair left=(-1,0);
+restricted pair up=(0,1);
+restricted pair down=(0,-1);
 
 restricted pair E=(1,0);
 restricted pair N=(0,1);
@@ -66,6 +66,13 @@ void newl(file file) {write(file,'\n');}
 void tab(file file) {write(file,'\t');}
 void comma(file file) {write(file,',');}
 typedef void suffix(file);
+
+// Used by interactive write to warn that the outputted type is the resolution
+// of an overloaded name.
+void overloadedMessage(file file) {
+  write(file,'    <overloaded>');
+  endl(file);
+}
 
 void write(suffix suffix=endl) {suffix(stdout);}
 void write(file file, suffix suffix=none) {suffix(file);}

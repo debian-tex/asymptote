@@ -1,7 +1,7 @@
 import three;
 import graph3;
 
-pen defaultbackpen=linetype("4 4",4,scale=false);
+pen defaultbackpen=linetype(new real[] {4,4},4,scale=false);
 
 // A solid geometry package.
 
@@ -212,7 +212,8 @@ struct revolution {
   // must be recomputed if camera is adjusted
   path3[] silhouette(int m=64, projection P=currentprojection) {
     if(is3D())
-      write("warning: silhouette routine is intended only for 2d projections");
+      warning("2Dsilhouette",
+              "silhouette routine is intended only for 2d projections");
     path3 G,H;
     int N=size(g);
     int M=(m == 0) ? N : m;
@@ -346,11 +347,12 @@ surface surface(revolution r, int n=nslice, pen color(int i, real j)=null)
 void draw(picture pic=currentpicture, revolution r, int m=0, int n=nslice,
 	  pen frontpen=currentpen, pen backpen=frontpen,
 	  pen longitudinalpen=frontpen, pen longitudinalbackpen=backpen,
-	  light light=currentlight, projection P=currentprojection)
+	  light light=currentlight, string name="",
+          render render=defaultrender, projection P=currentprojection)
 {
   pen thin=is3D() ? thin() : defaultpen;
   skeleton s=r.skeleton(m,n,P);
-  begingroup3(pic);
+  begingroup3(pic,name == "" ? "skeleton" : name,render);
   if(frontpen != nullpen) {
     draw(pic,s.transverse.back,thin+defaultbackpen+backpen,light);
     draw(pic,s.transverse.front,thin+frontpen,light);

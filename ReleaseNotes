@@ -1,3 +1,212 @@
+Release Notes for Version 1.99
+
+A segmentation fault was fixed. Perspective animations were fixed. A bug in
+the bezulate topological sorting algorithm was fixed. A settings.framedelay
+parameter was added for working around OpenGL animation rendering buffer
+overruns. Further optimizations were made. A portability issue was addressed.
+
+Release Notes for Version 1.98
+
+Memory usage and garbage collection were greatly improved, and many
+optimizations were made. Labels are now aligned using the rotational instead of
+the shiftless part of the transform. A portable CYGWIN memory limit fix was
+implemented. Noncyclic stokepaths are discarded to work around a bug in gs 8.71.
+
+Release Notes for Version 1.97
+
+A new render.labelfill option (enabled by default) fills subdivision cracks in
+unlighted labels. The dependence on gcc-4.3 was removed. Offscreen detection and
+zoom bugs in the OpenGL renderer were fixed. Three-dimensional grouping was
+improved. The symbol table was replaced with a custom hash table. Portability
+updates were made. The Cygwin memory limit fix for MSWindows now works even on
+systems that lack a complete Cygwin installation.  The examples were updated to
+exploit the new PRC rendering options
+
+Release Notes for Version 1.96
+
+The viewpoint function and some examples were updated.
+
+Release Notes for Version 1.95
+
+The PRC driver has been overhauled to support model tree groups, lossy
+compression, efficient representations of elementary geometrical objects,
+and specialized rendering options. More efficient OpenGL thick tubes were
+implemented; the capping of 3D curves was improved. The SIGQUIT signal was
+replaced by SIGTERM. Under MSWindows, the 384MB Cygwin memory limit is now
+automatically disabled by the Asymptote installer. Inferred variable types
+were added and operator symbols are now pretranslated.
+
+Release Notes for Version 1.94
+
+Workarounds for MSWindows registry problems and obsolete runtime libraries
+were implemented. The SimpleHead arrowhead was fixed. Additional matrix
+routines and casts were implemented. The pair dir(path, path) routine now
+returns a unit vector. Variable conflicts coming from the contour module
+were addressed. A RadialShadeDraw filltype was implemented. A guide bug was
+fixed. Redundant mismatched version warnings are avoided. Support for
+fitting one 3D picture within another was added. The documentation was updated.
+
+Release Notes for Version 1.93
+
+Portability issues were addressed. Latticeshading bounds and behaviour
+under svgemulation were fixed. The initial SVG pen was fixed.
+A parallelogram block was added to the flowchart module.
+Temporary files are cleaned up even after TeX errors. The GUI export
+function was fixed; an SVG export option was added. The XeLaTex bounding
+box was fixed. Spaces in output directory names are now allowed for
+supporting drivers. One can cd to other directories, preserving the output
+directory. All output files are written to the directory part of
+settings.outname; if this is empty, the current directory is used.
+
+Release Notes for Version 1.92
+
+Labels work correctly with oblique projections. Transformed Label
+alignment and pt scalings were fixed. Latticeshading is now properly clipped.
+The normal and true Circle calculations were fixed. The interface to the
+simpson integrator and an array index in contour.asy were fixed. In the
+flowchart module, the implicit cast from a pair to a virtual node was
+removed in favour of a block constructor. The ode integration routines now
+return a structure that includes the sampled time values; dynamic
+timestepping was implemented for solveBVP. New predefined tick modifiers
+were added. The CLZ and CTZ bit functions were implemented. PRC part names
+were fixed. The GL library is now explicitly linked. Memory usage was
+improved by configuring the garbage collector with --enable-large-config.
+Null 3D paths are ignored. Non-pdf output is supported for PDF tex engines.
+Portability changes for CYGWIN 1.7 were made.
+
+Release Notes for Version 1.91
+
+The precision of the 3D perspective sizing routines were improved.  The
+offset in transformed 3D labels with render=0 was fixed. 3D planar
+arrowhead gaps were fixed; a duplicate 3D arrow angle factor was removed.
+Pen width contributions to the box and ellipse envelopes were fixed. A more
+robust contour algorithm based on paraboloid approximation was implemented.
+A polargraph routine for arrays was implemented. Default font problems were
+fixed. The pdfborder={0 0 0} option was added to settings.hyperrefOptions;
+the hypersetup command is now used to avoid hyperref option clashes.  The
+size of pngalpha images was fixed; the pngalpha driver is used only if
+antialias=2. The -alpha Off default convert option was removed in favour of
+convertOptions="-alpha Off". Inlinetex support for xelatex was updated.
+Picture transformations are now respected by latticeshade. The Bessel
+functions J and Y were renamed to Jn and Yn. An operator --(block, block)
+was implemented to simplify the flowchart syntax. The expression % expands
+to the last result returned at the interactive prompt. The GLU-1.3 library
+included in the MSWindows distribution was fixed.
+
+Release Notes for Version 1.90
+
+SVG axial, radial, and emulated tensor-patch shading were fixed; the
+dependency on dvisvgm-0.8.7 was documented.
+
+Release Notes for Version 1.89
+
+The draw, fill, and clip commands now pass raw SVG code directly to dvisvgm
+(version 0.8.6 required); zero-length paths are output as circles.
+Unsupported SVG elements are converted to PNG images; unimplemented SVG
+features such as Gouraud and tensor-patch shading can be (partially)
+emulated as vector elements using the -svgemulation option.
+The control point normalization of rational NURBS surfaces was fixed;
+3D NURBS curves are now implemented. A problem with inlinemovie3 was fixed.
+The linetype pattern is now a real array: for backwards compatibility, a
+string is still accepted, but the return type of linetype(pen) is now
+real[] instead of string (backwards incompatible). The split routine was
+changed so that an empty delimiter splits on spaces, discarding duplicates.
+The palette routines are now guaranteed to generate at least the
+specified number of colours. PNG output produces a transparent background.
+Surface and path3 garbage collection was fixed.
+
+Release Notes for Version 1.88
+
+Compilation without OpenGL was fixed. PRC billboard labels were
+implemented; settings.billboard was renamed to settings.autobillboard
+and by default enabled for all 3D labels. The surface constructor for
+embedding labels on surfaces now draws both the top and bottom faces by
+default. The meshpen, knot, weight, and color arrays are now properly cached.
+The example fequlogo.asy illustrates how to draw an arbitrary 3D background
+plane. The intermediate dvi file is now removed when producing SVG output.
+Improvements were made to the tutorial.
+
+Release Notes for Version 1.87
+
+Support for SVG output was added (requires dvisvgm-0.8.4). Billboard
+labels were implemented for the OpenGL renderer. OpenGL animations were
+improved: reverse and step menu items were added, along with a framerate
+setting. An addStereoViews function and example stereoscopic.asy were added.
+The addViews function was generalized to handle any layout; the default
+layout was changed from ThreeViewsFR to SixViewsUS. PRC node names are
+now implemented for curves, surface, labels, and dots. OmitTick was
+generalized to omit both major and minor ticks. A graphicx.tex workaround
+was implemented to parse paths properly. A viewportsize bug was fixed.
+A memory deallocation bug was fixed. The ENDIAN test was fixed. The ucyclic
+and vcyclic parameters are no longer set for conditional surfaces. The
+erase() function clears the PostScript canvas again. A projection()
+function that returns the interactive camera parameters was implemented.
+A hyperrefOptions setting was implemented. The tutorial was improved.
+
+Release Notes for Version 1.86
+
+PRC polygons were optimized. Surface memory usage was reduced.
+The automatic sizing of NURBS surfaces was fixed. A bug in the radius of
+curvature computation at nodes was fixed. The configuration test for the
+GNU readline library was improved. The naming of PRC parts was implemented.
+
+Release Notes for Version 1.85
+
+Compilation is now supported again on platforms lacking OpenGL.
+Missing pen dimensions were added to a 3D picture sizing routine.
+The labelsurface routine was renamed to surface and extended to surfaces
+containing a single patch.
+
+Release Notes for Version 1.84
+
+The perspective PRC viewportmargin was fixed. Unwanted spaces were removed
+from (version 1.10 of) asymptote.sty. Support for drawing PRC and OpenGL
+NURBS surfaces was added. Obsolete code, including an unwanted inline
+qualifier, was removed. A split structure that can be adapted for splitting
+intersecting patches was added, along with the example splitpatch.asy.
+
+Release Notes for Version 1.83
+
+OpenGL animations, illustrated in glmovie.asy, were implemented. 
+Viewportshift flicker was fixed. An empirical translation between
+OpenGL and PRC shininess was implemented. Splined parametric surfaces are
+now used to implement smooth thick lines and tubes. The projected bounding box
+calculation and angle calculations were fixed. A labelsurface function was
+added. The Headlamp light is now the default light; a light argument was
+added to shipout. Patches are now constructed with the usual orientation
+for a counterclockwise external path; the convention for tensor product
+shading was updated. Picture environments for TeX clipping are no longer
+nested. A texpath initialization bug was fixed. An ASYMPTOTE_HOME
+environment variable was added. Viewing was fixed for file names
+containing spaces. A picture sizing bug was fixed. An example of an inset
+graph was added. Type information for variables is now returned at the
+interactive prompt. Warning message suppression was improved; warnings in
+Asymptote code can now be disabled. The cyclic member of an array is now
+writeable; the obsolete cyclicflag and void cyclic(bool) functions were
+removed. File mode functions are now virtual members; this backwards
+incompatibility requires that line(file f) be changed to f.line(), etc.
+
+Release Notes for Version 1.82
+
+Threaded exports were fixed. The texpath fontsize was fixed for PDF tex engines.
+A default currentprojection argument was added to transform3(projection).
+The -gray and -bw settings are now respected in PRC output.
+A consistent approximation is now used for drawing tube centers.
+Missing pt units were added to all fontsize examples.
+
+Release Notes for Version 1.81
+
+A boolean targetsize option can now be used to draw 3D labels with the apparent
+size they would have on the target plane.  The camera adjustment algorithms
+were fixed; the autoadjust flag is respected. Missing path3 functions
+such as endpoint(path3) were added. The doubleclick timeout under MSWindows
+was fixed. A workaround for a ConTeXT small font bug is illustrated in
+contextfonts.asy. File associations are now used under MSWindows for
+psviewer, pdfviewer, display, and animate. Single quotation marks are now
+allowed in filenames. Deconstruction is now only supported in PNG format;
+the xformat setting was removed. The example lmfit illustrates
+Levenberg-Marquardt nonlinear least-squares fitting.
+
 Release Notes for Version 1.80
 
 The interface for changing the precision for XDR/binary files was

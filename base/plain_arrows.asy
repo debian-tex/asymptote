@@ -93,7 +93,7 @@ SimpleHead.head=new path(path g, position position=EndPoint, pen p=currentpen,
   path left=rotate(-angle,x)*r;
   path right=rotate(angle*factor,x)*r;
   real[] T=arrowbasepoints(base,left,right);
-  return subpath(left,T[0],0)--subpath(right,T[1],0);
+  return subpath(left,T[0],0)--subpath(right,0,T[1]);
 };
 
 arrowhead HookHead(real dir=arrowdir, real barb=arrowbarb)
@@ -543,27 +543,36 @@ void arrow(picture pic=currentpicture, Label L="", pair b, pair dir,
   draw(b,pic,L,a--(0,0),align,p,arrow,margin);
 }
 
-// Force an array of 2D pictures to be as least as large as picture all.
-void rescale2(picture[] pictures, picture all)
+// Fit an array of pictures simultaneously using the sizing of picture all.
+frame[] fit2(picture[] pictures, picture all)
 {
+  frame[] out;
   if(!all.empty2()) {
-    transform t=inverse(all.calculateTransform()*pictures[0].T);
-    pair m=t*min(all);
-    pair M=t*max(all);
-    for(int i=0; i < pictures.length; ++i) {
-      draw(pictures[i],m,nullpen);
-      draw(pictures[i],M,nullpen);
+    transform t=all.calculateTransform();
+    pair m=all.min(t);
+    pair M=all.max(t);
+    for(picture pic : pictures) {
+      frame f=pic.fit(t);
+      draw(f,m,nullpen);
+      draw(f,M,nullpen);
+      out.push(f);
     }
   }
+  return out;
 }
 
-// Force an array of pictures to have a uniform scaling.
-void rescale(picture[] pictures)
+// Fit an array of pictures simultaneously using the size of the first picture.
+frame[] fit(string prefix="", picture[] pictures, string format="",
+            bool view=true, string options="", string script="",
+            projection P=currentprojection)
 {
-  if(pictures.length == 0) return;
+  if(pictures.length == 0)
+    return new frame[];
+ 
   picture all;
   size(all,pictures[0]);
   for(picture pic : pictures)
     add(all,pic);
-  rescale2(pictures,all);
+
+  return fit2(pictures,all);
 }

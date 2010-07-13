@@ -92,6 +92,14 @@ public:
       box(p.box)
   {}
 
+  path3 unstraighten() const
+  {
+    path3 P=path3(*this);
+    for(int i=0; i < n; ++i)
+      P.nodes[i].straight=false;
+    return P;
+  }
+  
   virtual ~path3()
   {
   }
@@ -208,7 +216,7 @@ public:
     }
     Int i=Floor(t);
     t -= i;
-    if(t == 0) return dir(i,0);
+    if(t == 0) return dir(i,0,normalize);
     triple z0=point(i);
     triple c0=postcontrol(i);
     triple c1=precontrol(i+1);
@@ -308,10 +316,7 @@ public:
     return bounds().Min();
   }
   
-  pair bounds(double (*m)(double, double), 
-              double (*x)(const triple&, double*),
-              double (*y)(const triple&, double*), double *t) const;
-  
+  pair ratio(double (*m)(double, double)) const;
   
 // Increment count if the path3 has a vertical component at t.
   bool Count(Int& count, double t) const;
@@ -357,21 +362,26 @@ inline triple displacement(const triple& z, const triple& p, const triple& q)
   return Z-dot(Z,Q)*Q;
 }
   
-double xproject(const triple& v, double *t);
-double yproject(const triple& v, double *t);
-
-double xratio(const triple& v, double *t);
-double yratio(const triple& v, double *t);
+double xratio(const triple& v);
+double yratio(const triple& v);
 
 double bound(triple z0, triple c0, triple c1, triple z1,
              double (*m)(double, double),
-             double (*f)(const triple&, double*), double *t,
-             double b, double fuzz=sqrtFuzz, int depth=maxdepth);
+             double (*f)(const triple&),
+             double b, double fuzz, int depth=maxdepth);
 double bound(double *p, double (*m)(double, double),
-             double b, double fuzz=sqrtFuzz, int depth=maxdepth);
-double bound(triple *p, double (*m)(double, double),
-             double (*f)(const triple&, double*), double* t,
-             double b, double fuzz=sqrtFuzz, int depth=maxdepth);
+             double b, double fuzz, int depth=maxdepth);
+double bound(triple *P, double (*m)(double, double),
+             double (*f)(const triple&), double b, double fuzz,
+             int depth=maxdepth);
+
+inline void store(Triple& control, const triple& v)
+{
+  control[0]=v.getx();
+  control[1]=v.gety();
+  control[2]=v.getz();
+}
+
 }
 
 #ifndef BROKEN_COMPILER

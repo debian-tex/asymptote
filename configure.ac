@@ -3,15 +3,13 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[1.80],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[1.99],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 
 test "$CFLAGS" || CFLAGS="-g -O3"
 
-AC_C_BIGENDIAN(AC_DEFINE(WORDS_BIG_ENDIAN, 1,
-			   [Define if words are stored with the most significant byte first.]),AC_DEFINE(WORDS_LITTLE_ENDIAN, 1 ,
-			   [Define if words are stored with the least significant byte first.]))
+AC_C_BIGENDIAN
 
 test "$prefix" = NONE && prefix=/usr/local
 Datadir=$datadir
@@ -52,7 +50,9 @@ else
 fi
 ])
 
-AC_CHECK_PROGS(TEXI2DVI,[texi2dvi texi2dvi4a2ps])
+AC_CHECK_PROGS(TEXI2DVI,[texi2dvi texi2dvi4a2ps],
+[echo texi2dvi is missing! Please put http://asymptote.sourceforge.net/asymptote.pdf in the doc directory and touch doc/asymptote.pdf; exit 1;])
+
 AC_SUBST(TEXI2DVI)
 
 latexdir=$latexdir/asymptote
@@ -106,6 +106,8 @@ if test "$GXX" = yes ; then
    ac_gcc_version=`echo __GNUC__ | $CC -E - | grep -v ^\#`
    if test "$ac_gcc_version" -lt 4; then
        CFLAGS=$CFLAGS" -finline-limit=400"
+   else
+       CFLAGS=$CFLAGS" --no-var-tracking"
    fi
 fi
 
@@ -134,7 +136,7 @@ OPTIONS="-D_FILE_OFFSET_BITS=64 "
 GCLIB=
 GCPPLIB=
 GCNAME="Boehm Garbage Collector"
-GCOPTIONS=""
+GCOPTIONS="--disable-shared --enable-large-config"
 if test "x$ac_cv_use_gc" != "xno" ; then
    OPTIONS=$OPTIONS"-DUSEGC "
    case $ac_cv_use_gc in
@@ -153,16 +155,17 @@ if test "x$ac_cv_use_gc" != "xno" ; then
 	  LIBS=$LIBS"-lgc "
 	  AC_MSG_NOTICE([enabling system $GCNAME])],[
         GCDIR=$GCVERSION
+        INCL="-I\$(GC)/include"
 	GCLIB="\$(GC)/.libs/libgc.a"
 	AC_MSG_NOTICE($GCNAME library not found)]),
       GCDIR=$GCVERSION
+      GCLIB="\$(GC)/.libs/libgc.a"
       INCL="-I\$(GC)/include"
       AC_MSG_NOTICE($GCNAME header file not found))
       CPPFLAGS=$CPPFLAGS_SAVE
       ;;
    *)
       GCDIR=$ac_cv_use_gc
-      GCOPTIONS="--disable-shared "
       AC_MSG_NOTICE([enabling local $GCNAME $GCDIR])
       GCLIB="\$(GC)/.libs/libgc.a"
       INCL="-I\$(GC)/include"
@@ -210,8 +213,10 @@ AC_SUBST(OPTIONS)
 AC_CHECK_LIB([ncurses], [setupterm], [AC_DEFINE(HAVE_LIBCURSES)
 			 LIBS=$LIBS"-lncurses "],
 			 AC_CHECK_LIB([curses], [setupterm]))
-AC_CHECK_LIB([m], [sqrt])
-AC_CHECK_LIB([z], [deflate])
+AC_CHECK_LIB([m], [sqrt],,
+AC_MSG_ERROR([*** Please install libm on your system ***]))
+AC_CHECK_LIB([z], [deflate],,
+AC_MSG_ERROR([*** Please install libz on your system ***]))
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
 AC_CHECK_LIB([rt], [sched_yield])
@@ -220,8 +225,16 @@ AC_ARG_ENABLE(readline,
 [AS_HELP_STRING(--enable-readline[[[=yes]]],enable GNU Readline Library)])
 
 if test "x$enable_readline" != "xno"; then
-AC_CHECK_LIB([readline], [rl_completion_matches],,
-AC_MSG_NOTICE(*** Could not find GNU readline 4.2 or later: will compile without readline support ***))
+AC_COMPILE_IFELSE(AC_LANG_PROGRAM([
+#include <stdio.h>
+#include <unistd.h>
+#include <readline/readline.h>
+],[
+#ifndef RL_READLINE_VERSION
+abort
+#endif
+]),AC_CHECK_LIB([readline], [rl_completion_matches],,
+AC_MSG_NOTICE(*** Could not find GNU readline 4.3 or later: will compile without readline support ***)))
 fi
 
 # Checks for header files.
@@ -242,7 +255,7 @@ AC_ARG_ENABLE(gsl,
 if test "x$enable_gsl" != "xno"; then
   AC_CHECK_HEADER(gsl/gsl_sf.h,
    AC_CHECK_LIB([gsl], gsl_sf_debye_6, [AC_DEFINE(HAVE_LIBGSL, 1,
-   [Define to 1 if you have the 'gsl' library (-lgsl). ]) LIBS=$LIBS"-lgsl -lgslcblas "],
+   [Define to 1 if you have the `gsl' library (-lgsl).]) LIBS=$LIBS"-lgsl -lgslcblas "],
            AC_MSG_NOTICE([*** Could not find libgsl: will compile without optional special functions. ***]),[-lgslcblas]),
      AC_MSG_NOTICE([*** Header file gsl_sf.h not found: will compile without optional special functions. ***]))
 fi
@@ -265,17 +278,26 @@ case "$OSTYPE" in
      cygwin) AC_CHECK_HEADER(GL/glut.h,
                                 [AC_DEFINE(HAVE_LIBGLUT, 1,
 		   [Define if you have the `freeglut' library (-lfreeglut).])
-			   LIBS=$LIBS"-lfreeglut -lopengl32 "],
-				 AC_MSG_NOTICE([*** Could not find freeglut: will compile without OpenGL support ***]))
+			   LIBS=$LIBS"-lfreeglut "],
+				 AC_MSG_NOTICE([*** Could not find libfreeglut: will compile without OpenGL support ***]))
+             AC_CHECK_HEADER(GL/gl.h,
+                                [AC_DEFINE(HAVE_LIBGL, 1,
+		   [Define if you have the `opengl32' library (-lopengl32).])
+			   LIBS=$LIBS"-lopengl32 "],
+				 AC_MSG_NOTICE([*** Could not find libopengl32: will compile without OpenGL support ***]))
              AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],[AC_DEFINE(HAVE_LIBGLU, 1,
-                   [Define to 1 if you have the 'glu32' library (-lglu32). ]) LIBS=$LIBS"-lglu32 "],
+                   [Define to 1 if you have the `glu32' library (-lglu32).]) LIBS=$LIBS"-lglu32 "],
              AC_MSG_NOTICE([*** Could not find libglu32: will compile without OpenGL support ***]))
         ;;                                 
-     darwin*) AC_CHECK_HEADER(GLUT/glut.h,
+     darwin*) AC_CHECK_HEADER(OpenGL/gl.h,
+                                [AC_DEFINE(HAVE_LIBGL, 1,
+		   [Define if you have the `OpenGL' library.])])
+              AC_CHECK_HEADER(OpenGL/glu.h,
+                                [AC_DEFINE(HAVE_LIBGLU, 1,
+		   [Define if you have the `GLU' library.])])
+              AC_CHECK_HEADER(GLUT/glut.h,
                                 [AC_DEFINE(HAVE_LIBGLUT, 1,
-		   [Define if you have the `glut' library (-lglut).])
-              AC_DEFINE(HAVE_LIBGLU, 1,
-                   [Define to 1 if you have the 'GLU' library. ])
+		   [Define if you have the `GLUT' library.])
 AC_COMPILE_IFELSE(AC_LANG_PROGRAM([
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -293,6 +315,7 @@ void f(void) {
 				 AC_MSG_NOTICE([*** Could not find libglut: will compile without OpenGL support ***]))
         AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],,
  				 AC_MSG_NOTICE([*** Could not find libGLU: will compile without OpenGL support ***]))
+        AC_CHECK_LIB([GL], [glDepthMask])
 esac
 fi
 
@@ -308,11 +331,6 @@ AC_TYPE_SIGNAL
 
 AC_DEFUN([ac_FUNC_STRPTIME], [
     AC_CHECK_FUNCS(strptime)
-    AC_MSG_CHECKING(for strptime declaration in time.h)
-    AC_EGREP_HEADER(strptime, time.h, [
-        AC_DEFINE([HAVE_STRPTIME_DECL],,[Define if the function strptime is declared in <time.h>])
-    AC_MSG_RESULT(yes)], [AC_MSG_RESULT(no)
-    ])
 ])
 
 # Checks for library functions.

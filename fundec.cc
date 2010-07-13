@@ -116,6 +116,10 @@ public:
   basicAssignExp(position pos, exp *dest, varinit *value) 
     : exp(pos), dest(dest), value(value) {}
 
+  void prettyprint(ostream &out, Int indent) {
+    prettyname(out, "basicAssignExp", indent);
+  }
+
   types::ty *getType(coenv &e) {
     return dest->getType(e);
   }
@@ -149,7 +153,7 @@ void transDefault(coenv &e, position pos, varEntry *v, varinit *init) {
 }
 
 void formal::transAsVar(coenv &e, Int index) {
-  symbol *name = getName();
+  symbol name = getName();
   if (name) {
     trans::access *a = e.c.accessFormal(index);
     assert(a);
@@ -230,8 +234,10 @@ varinit *fundef::makeVarInit(function *ft) {
 
 void fundef::baseTrans(coenv &e, types::function *ft)
 {
+  string name = id ? string(id) : string("<anonymous function>");
+
   // Create a new function environment.
-  coder fc = e.c.newFunction(ft);
+  coder fc = e.c.newFunction(name, ft);
   coenv fe(fc,e.e);
 
   // Translate the function.
@@ -284,7 +290,7 @@ types::ty *fundef::trans(coenv &e) {
 void fundec::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "fundec '" << *id << "'\n";
+  out << "fundec '" << id << "'\n";
 
   fun.prettyprint(out, indent);
 }

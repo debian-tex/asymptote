@@ -9,6 +9,7 @@
 #include "newexp.h"
 #include "stm.h"
 #include "runtime.h"
+#include "runarray.h"
 #include "coenv.h"
 #include "inst.h"
 
@@ -27,6 +28,10 @@ void printFrame(frame *f) {
     cerr << f << " of ";
     printFrame(f->getParent());
   }
+}
+
+void newRecordExp::prettyprint(ostream &out, Int indent) {
+  prettyname(out, "newRecordExp", indent);
 }
 
 bool newRecordExp::encodeLevel(position pos, coenv &e, trans::tyEntry *ent)

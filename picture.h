@@ -27,10 +27,8 @@ private:
   boxvector labelbounds;
   bboxlist bboxstack;
   bool transparency;
-  
-  static bool epsformat,pdfformat,xobject,pdf,Labels;
-  static double paperWidth,paperHeight;
-
+  groupsmap groups;
+  unsigned billboard;
 public:
   bbox3 b3; // 3D bounding box
   
@@ -62,11 +60,8 @@ public:
   bbox bounds();
   bbox3 bounds3();
 
-  // Projected bounds of 3d picture given transform3 t (not cached).
-  pair bounds(double (*m)(double, double),
-              double (*x)(const triple&, double*),
-              double (*y)(const triple&, double*),
-              double *t=NULL);
+  // Compute bounds on ratio (x,y)/z for 3d picture (not cached).
+  pair ratio(double (*m)(double, double));
   
   bool Transparency() {
     return transparency;
@@ -75,11 +70,11 @@ public:
   int epstopdf(const string& epsname, const string& pdfname);
   
   bool texprocess(const string& texname, const string& tempname,
-                  const string& prefix, const pair& bboxshift); 
+                  const string& prefix, const pair& bboxshift, bool svgformat); 
     
   bool postprocess(const string& prename, const string& outname, 
                    const string& outputformat, double magnification,
-                   bool wait, bool view);
+                   bool wait, bool view, bool pdftex, bool svgformat);
     
   // Ship the picture out to PostScript & TeX files.
   bool shipout(picture* preamble, const string& prefix,
@@ -96,7 +91,8 @@ public:
                 double *diffuse, double *ambient, double *specular,
                 bool viewportlighting, bool view);
   
-  bool shipout3(const string& prefix); // Embedded PRC
+  // PRC output
+  bool shipout3(const string& prefix, vm::array *index, vm::array *center);
   
   bool reloadPDF(const string& Viewer, const string& outname) const;
   
@@ -120,6 +116,7 @@ inline picture *transformed(const vm::array& t, picture *p)
 }
 
 void texinit();
+int opentex(const string& texname, const string& prefix);
 
 const char *texpathmessage();
   

@@ -1,4 +1,5 @@
 // Copyright (c) 2008, Philippe Ivaldi.
+// http://www.piprime.fr/
 // trembling.asy: handwriting package for the software Asymptote.
 
 // This program is free software ; you can redistribute it and/or modify
@@ -84,7 +85,7 @@ real atime(pair m, path g, real fuzz=trembleFuzz())
   //   if(t.length <= 0) { // degenerated case
   //     r=initr;
   //     T *= shift(shx,0);
-  //     write("warning: atime needs numerical adjustment.");
+  //     warning("atime","atime needs numerical adjustment.",position=true);
   //   }
   // } while(t.length <= 0);
   if(t.length > 0) ot=t[1];

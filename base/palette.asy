@@ -45,15 +45,19 @@ pen[] adjust(picture pic, real min, real max, real rmin, real rmax,
 {
   real dmin=pic.scale.z.T(min);
   real dmax=pic.scale.z.T(max);
-  int minindex=floor((dmin-rmin)/(rmax-rmin)*palette.length);
-  if(minindex < 0) minindex=0;
-  int maxindex=floor((dmax-rmin)/(rmax-rmin)*palette.length);
-  if(maxindex > palette.length) maxindex=palette.length;
-  if(minindex > 0 || maxindex < palette.length) {
-    pen[] newpalette;
-    for(int i=minindex; i < maxindex; ++i)
-      newpalette.push(palette[i]);
-    return newpalette;
+  real delta=rmax-rmin;
+  if(delta > 0) {
+    real factor=palette.length/delta;
+    int minindex=floor(factor*(dmin-rmin));
+    if(minindex < 0) minindex=0;
+    int maxindex=floor(factor*(dmax-rmin));
+    if(maxindex > palette.length) maxindex=palette.length;
+    if(minindex > 0 || maxindex < palette.length) {
+      pen[] newpalette;
+      for(int i=minindex; i < maxindex; ++i)
+        newpalette.push(palette[i]);
+      return newpalette;
+    }
   }
   return palette;
 }
@@ -301,7 +305,7 @@ pen[] Wheel(int NColors=32766)
   if(settings.gray) return Grayscale(NColors);
   
   int nintervals=6;
-  int n=quotient(NColors,nintervals);
+  int n=-quotient(NColors,-nintervals);
                 
   pen[] Palette;
   if(n == 0) return Palette;
@@ -329,7 +333,7 @@ pen[] Rainbow(int NColors=32766)
   
   int offset=1;
   int nintervals=5;
-  int n=quotient(NColors-1,nintervals);
+  int n=-quotient(NColors-1,-nintervals);
                 
   pen[] Palette;
   if(n == 0) return Palette;
@@ -362,7 +366,7 @@ private pen[] BWRainbow(int NColors, bool two)
   if(two) nintervals += 6;
   
   int num=NColors-offset;
-  int n=quotient(num,nintervals*divisor)*divisor;
+  int n=-quotient(num,-nintervals*divisor)*divisor;
   NColors=n*nintervals+offset;
                 
   pen[] Palette;
@@ -391,7 +395,7 @@ private pen[] BWRainbow(int NColors, bool two)
     for(int i=0; i < n; ++i) 
       Palette[k+i]=rgb(1.0-i*ninv,0.0,1.0);
   else {
-    int n3=quotient(n,3);
+    int n3=-quotient(n,-3);
     int n23=2*n3;
     real third=n3*ninv;
     real twothirds=n23*ninv;

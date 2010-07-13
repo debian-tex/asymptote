@@ -68,8 +68,8 @@ struct solvedKnot : public gc {
   }
 };
 
-extern const double BigFuzz;
 extern const double Fuzz;
+extern const double BigFuzz;
 extern const double Fuzz2;
 extern const double sqrtFuzz;
 extern const double fuzzFactor;
@@ -250,7 +250,7 @@ public:
     }
     Int i=Floor(t);
     t -= i;
-    if(t == 0) return dir(i,0);
+    if(t == 0) return dir(i,0,normalize);
     pair z0=point(i);
     pair c0=postcontrol(i);
     pair c1=precontrol(i+1);

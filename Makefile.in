@@ -11,14 +11,24 @@ GCLIBS = $(GCPPLIB) $(GCLIB)
 LFLAGS = @LDFLAGS@
 LIBS = $(LFLAGS) @LIBS@ $(GCLIBS)
 
+vpath %.cc prc
+
 CAMP = camperror path drawpath drawlabel picture psfile texfile util settings \
        guide flatguide knot drawfill path3 drawpath3 drawsurface
 
-PRC =  prc/PRCbitStream prc/oPRCFile prc/PRCdouble prc/writePRC
+RUNTIME_FILES = runtime runbacktrace runpicture runlabel runhistory runarray \
+	runfile runsystem runpair runtriple runpath runpath3d runstring \
+	runmath
 
-FILES = $(CAMP) runtime env genv main stm dec errormsg \
+# Files to be scanned for pre-translated symbols defined by SYM(name).
+SYMBOL_FILES = types builtin $(RUNTIME_FILES)
+
+PRC =  PRCbitStream oPRCFile PRCdouble writePRC
+
+FILES = $(CAMP) $(RUNTIME_FILES) env genv main stm dec errormsg \
         callable name symbol types entry exp newexp stack camp.tab lex.yy \
-	access absyn record interact fileio builtin fftw++ simpson coder coenv \
+	access virtualfieldaccess absyn record interact fileio builtin fftw++ \
+	simpson coder coenv \
 	@getopt@ locate parser program application varinit fundec refaccess \
 	envcompleter process constructor array Delaunay predicates \
 	$(PRC) glrender tr arcball algebra3 quaternion svnrevision
@@ -36,8 +46,10 @@ LATEXFILES = asymptote.sty asycolors.sty ocg.sty
 CONTEXTFILES = colo-asy.tex
 ASY = ./asy -dir base -config "" -render=0
 
-DEFS = @DEFS@ @OPTIONS@
-CFLAGS = @CPPFLAGS@ @CFLAGS@ 
+DEFS = @DEFS@ @OPTIONS@ \
+       -DPRESYM -DFASTCAST -DCALLEE_SEARCH -DEXACT_MATCH -DTEST_ADDED_OPS \
+	   -DNO_FUNC_OPS
+CFLAGS = @CPPFLAGS@ @CFLAGS@
 OPTS = $(DEFS) $(CFLAGS)
 INCL = -I . @INCL@
 
@@ -63,12 +75,12 @@ latexdir = $(DESTDIR)@latexdir@
 contextdir = $(DESTDIR)@contextdir@
 INSTALL = @INSTALL@
 REVISION = "const char *SVN_REVISION="
-revision = `svn info 2>/dev/null | grep "Revision" | sed -e "s/Revision: \(.*\)/-r\1/"`
+revision = `svn info 2>/dev/null | grep 'Revision' | sed -e 's/Revision: \(.*\)/-r\1/'`
 last = `cat svnrevision.cc | sed -e 's/.*\"\(.*\)\";/\\1/'`
 
 export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
 
-asy: $(GCLIB) $(FILES:=.o) prc
+asy: $(GCLIB) $(FILES:=.o)
 	if test "$(revision)" != "$(last)"; then \
 	  echo $(REVISION)\"$(revision)\"\; > svnrevision.cc; \
 	  $(CXX) $(OPTS) $(INCL) -o svnrevision.o -c svnrevision.cc; \
@@ -84,7 +96,7 @@ asy: $(GCLIB) $(FILES:=.o) prc
 svnrevision.cc:
 	echo $(REVISION)\"\"\; > svnrevision.cc;
 
-msdos: $(GCLIB) $(FILES:=.o) prc asy.o
+msdos: $(GCLIB) $(FILES:=.o) asy.o
 	echo string VERSION=\"@VERSION@\"\; > base/version.asy
 	echo @set VERSION @VERSION@ > doc/version.texi
 	echo @set Datadir @datadir@ >> doc/version.texi
@@ -103,10 +115,10 @@ $(GCLIB): $(GC).tar.gz
 	tar -xf $(GC).tar
 	rm -f $(GC).tar
 	if test "$(GC)" = "gc6.8"; then \
-	  cd $(GC)/include; patch < ../../patches/gc6.8_AIX.patch; \
+	  cd $(GC)/include && patch < ../../patches/gc6.8_AIX.patch; \
 	fi
 	if test "$(GC)" = "gc-7.0"; then \
-	  cd $(GC)/include/private; patch < ../../../patches/gc-7.0nomem.patch;\
+	  cd $(GC)/include/private && patch < ../../../patches/gc-7.0nomem.patch;\
 	fi
 	cd $(GC); \
 	./configure $(GCOPTIONS); \
@@ -115,19 +127,29 @@ $(GCLIB): $(GC).tar.gz
 $(GCPPLIB): $(GCLIB)
 
 dvi:	asy
-	cd doc; $(MAKE) dvi
+	cd doc && $(MAKE) dvi
 
 html:	asy
-	cd doc; $(MAKE) doc
+	cd doc && $(MAKE) doc
 
 man:	asy
-	cd doc; $(MAKE) man
+	cd doc && $(MAKE) man
 
 faq:	asy
-	cd doc; $(MAKE) faq
+	cd doc && $(MAKE) faq
 
-runtime.cc: runtime.pl runtime.in
-	./runtime.pl
+$(RUNTIME_FILES:=.cc): %.cc: runtime.pl opsymbols.h runtimebase.in %.in
+	./runtime.pl $(@:.cc=)
+
+$(SYMBOL_FILES:=.symbols.h): %.symbols.h: findsym.pl %.cc
+	./findsym.pl $@ $(@:.symbols.h=.cc)
+
+$(SYMBOL_FILES:=.o): %.o: %.symbols.h
+
+allsymbols.h: findsym.pl $(SYMBOL_FILES:=.cc)
+	./findsym.pl $@ $(SYMBOL_FILES:=.cc)
+
+symbol.o: opsymbols.h allsymbols.h
 
 camp.tab.cc: camp.y
 	$(BISON) -dvt -b camp camp.y && mv camp.tab.c camp.tab.cc
@@ -139,8 +161,11 @@ lex.yy.cc: camp.l
 
 lex.yy.d: $(GCLIB) lex.yy.cc camp.tab.h
 
-keywords.cc: keywords.pl camp.l
+keywords.cc: keywords.pl camp.l process.cc
 	./keywords.pl
+
+opsymbols.h: opsymbols.pl camp.l
+	./opsymbols.pl
 
 envcompleter.d: keywords.cc
 
@@ -178,41 +203,38 @@ install-asy: asy
 	-${INSTALL} -p -m 644 $(addprefix doc/,$(CONTEXTFILES)) $(contextdir)
 
 install-html: html
-	cd doc; $(MAKE) install-all
+	cd doc && $(MAKE) install-all
 
 install-man: man
-	cd doc; $(MAKE) install
+	cd doc && $(MAKE) install
 
 install-prebuilt: install-asy
-	cd doc; $(MAKE) install-prebuilt
+	cd doc && $(MAKE) install-prebuilt
 
 uninstall: uninstall-all
 
 uninstall-all: uninstall-man uninstall-asy
 
 uninstall-asy:
-	-cd $(animationsdir); rm -f *.asy *.tex
+	-cd $(animationsdir) && rm -f *.asy *.tex
 	-rmdir $(animationsdir)
-	-cd $(exampledir); rm -f $(EXEXTRA) $(DOCEXTRA)
+	-cd $(exampledir) && rm -f $(EXEXTRA) $(DOCEXTRA)
 	-rmdir $(exampledir)
 	-rmdir $(docdir)
-	-cd $(GUIdir); rm -f *.py
+	-cd $(GUIdir) && rm -f *.py
 	-rmdir $(GUIdir)
-	-cd $(asydir); rm -f asy-keywords.el *.asy $(EXTRA)
+	-cd $(asydir) && rm -f asy-keywords.el *.asy $(EXTRA)
 	-rmdir $(asydir)
-	-cd $(latexdir); rm -f $(LATEXFILES)
+	-cd $(latexdir) && rm -f $(LATEXFILES)
 	-rmdir $(latexdir)
-	-cd $(contextdir); rm -f $(CONTEXTFILES)
+	-cd $(contextdir) && rm -f $(CONTEXTFILES)
 	-rmdir $(contextdir)
-	-cd $(bindir); rm -f $(NAME) $(XNAME)
+	-cd $(bindir) && rm -f $(NAME) $(XNAME)
 
 uninstall-man: 
-	cd doc; $(MAKE) uninstall
+	cd doc && $(MAKE) uninstall
 
-prc-clean: FORCE
-	-rm -f prc/*.o prc/*.d 
-
-clean:  FORCE prc-clean
+clean:  FORCE
 	-rm -f asy *.o *.d *mon.out $(CLEAN)
 
 gc-clean: FORCE clean
@@ -220,14 +242,16 @@ gc-clean: FORCE clean
 		$(MAKE) -C $(GC) clean; \
 	fi
 
-cleaner: FORCE distclean
-distclean: FORCE clean
+cleaner: FORCE clean
 	-if test -d $(GC); then \
 		rm -rf $(GC); \
 	fi
 	-rm -f Makefile config.h config.log config.status errors.temp
-	cd doc; $(MAKE) distclean
-	cd tests; $(MAKE) distclean
+	cd doc && $(MAKE) clean
+	cd tests && $(MAKE) distclean
+
+distclean: FORCE cleaner
+	cd doc && $(MAKE) distclean
 
 cleanest: FORCE maintainer-clean
 maintainer-clean: FORCE distclean

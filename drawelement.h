@@ -19,7 +19,15 @@
 #include "prcfile.h"
 #include "glrender.h"
 
+namespace run {
+template<class T>
+extern void copyArrayC(T* &dest, const vm::array *a, size_t dim,
+                       GCPlacement placement);
+}
+
 namespace camp {
+
+enum Interaction {EMBEDDED=0,BILLBOARD};
 
 class box {
   pair p[4];
@@ -92,29 +100,39 @@ typedef mem::vector<box> boxvector;
   
 typedef mem::list<bbox> bboxlist;
   
+typedef mem::map<CONST string,unsigned> groupmap;
+typedef mem::vector<groupmap> groupsmap;
+
 class drawElement : public gc
 {
 public:
   virtual ~drawElement() {}
   
   static pen lastpen;  
+  static const triple zero;
   
   // Adjust the bbox of the picture based on the addition of this
   // element. The iopipestream is needed for determining label sizes.
   virtual void bounds(bbox&, iopipestream&, boxvector&, bboxlist&) {}
   virtual void bounds(bbox3&) {}
 
-  virtual void bounds(pair &b, double (*m)(double, double),
-                      double (*x)(const triple&, double*),
-                      double (*y)(const triple&, double*),
-                      double *t, bool &first){}
+  // Compute bounds on ratio (x,y)/z for 3d picture (not cached).
+  virtual void ratio(pair &b, double (*m)(double, double), double fuzz,
+                     bool &first){}
 
   virtual bool islabel() {return false;}
-  
+
   virtual bool islayer() {return false;}
 
   virtual bool is3D() {return false;}
+
+// Implement element as raw SVG code?
+  virtual bool svg() {return false;}
   
+// Implement SVG element as png image?
+  virtual bool svgpng() {return false;}
+  
+  virtual bool beginclip() {return false;}
   virtual bool endclip() {return false;}
   
   virtual bool begingroup() {return false;}
@@ -134,7 +152,10 @@ public:
   }
 
   // Output to a PRC file
-  virtual bool write(prcfile *) {
+  // The array origin contains the points about which to rotate billboard labels
+  virtual bool write(prcfile *out, unsigned int *count, vm::array *index,
+                     vm::array *origin, double compressionlimit,
+                     groupsmap& groups) {
     return false;
   }
 
@@ -179,6 +200,10 @@ public:
     out->write(p);
   }
   
+  virtual void writeclippath(psfile *out, bool newpath=true) {
+    out->writeclip(p,newpath);
+  }
+  
   virtual void writeshiftedpath(texfile *out) {
     out->writeshifted(p);
   }
@@ -219,16 +244,12 @@ public:
   
   virtual void penTranslate(psfile *out)
   {
-    transform t=pentype.getTransform();
-    if (!t.isIdentity())
-      out->translate(shiftpair(t));
+    out->translate(shiftpair(pentype.getTransform()));
   }
 
   virtual void penConcat(psfile *out)
   {
-    transform t=pentype.getTransform();
-    if (!t.isIdentity())
-      out->concat(shiftless(t));
+    out->concat(shiftless(pentype.getTransform()));
   }
 
   virtual void penRestore(psfile *out)
@@ -290,9 +311,16 @@ public:
     b += bpath;
   }
   
-  void writepath(psfile *out) {
-    for(size_t i=0; i < size; i++) 
-      out->write(vm::read<path>(P,i),i == 0);
+  void writepath(psfile *out, bool newpath=true) {
+    if(size > 0) out->write(vm::read<path>(P,0),newpath);
+    for(size_t i=1; i < size; i++)
+      out->write(vm::read<path>(P,i),false);
+  }
+  
+  void writeclippath(psfile *out, bool newpath=true) {
+    if(size > 0) out->writeclip(vm::read<path>(P,0),newpath);
+    for(size_t i=1; i < size; i++)
+      out->writeclip(vm::read<path>(P,i),false);
   }
   
   void writeshiftedpath(texfile *out) {

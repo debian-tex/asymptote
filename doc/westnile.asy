@@ -3,11 +3,11 @@ import graph;
 size(9cm,8cm,IgnoreAspect);
 string data="westnile.csv";
 
-file in=line(csv(input(data)));
+file in=input(data).line().csv();
 
 string[] columnlabel=in;
 
-real[][] A=dimension(in,0,0);
+real[][] A=in.dimension(0,0);
 A=transpose(A);
 real[] number=A[0], survival=A[1];
 
@@ -39,7 +39,7 @@ labelx("$M_2$",M2);
 draw((a,S2)--(M2,S2)--(M2,0),Dotted);
 draw((a,S1)--(M1,S1)--(M1,0),dashed);
 
-pen p=fontsize(10);
+pen p=fontsize(10pt);
 
 real y3=0.043;
 path reduction=(M1,y3)--(M2,y3);

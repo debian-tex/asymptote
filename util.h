@@ -11,10 +11,14 @@
 #include <sys/types.h>
 #include <iostream>
 #include <cstdlib>
+#include <csignal>
 
 #include "common.h"
 
 #include <strings.h>
+
+// Demangle a typeid name (if the proper library is installed.
+string demangle(const char *s);
 
 // Duplicate a string.
 char *Strdup(string s);
@@ -27,16 +31,16 @@ string stripDir(string name);
 // Strip the file from a filename, returning the directory.
 string stripFile(string name);
 
-// Like stripTeXFile except return "" for context TeX engine.
-string stripTeXFile(string name);
-
 // Strip the extension from a filename.
 string stripExt(string name, const string& suffix="");
-  
+
 void writeDisabled();
   
-// Check if global writes are disabled and name contains a directory.
-void checkLocal(string name);
+// Replace spaces in file part of name with underscores.
+string cleanpath(string name);
+
+// Construct the full output path.
+string outpath(string name);
   
 // Construct a filename from the original, adding aux at the end, and
 // changing the suffix.
@@ -46,19 +50,36 @@ string buildname(string filename, string suffix="", string aux="");
 // directory.
 string auxname(string filename, string suffix="");
 
+// Cast argument to a string.
+template<class T>
+string String(T x)
+{
+  ostringstream buf;
+  buf << x;
+  return buf.str();
+}
+
+typedef void (*sighandler_t)(int);
+
+// Portable signal (sigaction wrapper).
+sighandler_t Signal(int signum, sighandler_t handler);
+
+// Split string S and push the pieces onto vector a.
+void push_split(mem::vector<string>& a, const string& S);
+  
+// Wrapper to append /c start "" to MSDOS cmd.
+void push_command(mem::vector<string>& a, const string& s);
+  
 // Return an argv array corresponding to the fields in command delimited
 // by spaces not within matching single quotes.
-char **args(const char *command, bool quiet=false);
+char **args(const mem::vector<string> &args, bool quiet=false);
   
 // Similar to the standard system call except allows interrupts and does
 // not invoke a shell.
-int System(const char *command, int quiet=0, bool wait=true,
+int System(const mem::vector<string> &command, int quiet=0, bool wait=true,
            const char *hint=NULL, const char *application="",
            int *pid=NULL);
-int System(const ostringstream& command, int quiet=0, bool wait=true,
-           const char *hint=NULL, const char *application="",
-           int *pid=NULL); 
-  
+
 #if defined(__DECCXX_LIBCXX_RH70)
 extern "C" int kill(pid_t pid, Int sig) throw();
 extern "C" char *strsignal(Int sig);
@@ -91,8 +112,6 @@ extern bool False;
 // Strip blank lines (which would break the bidirectional TeX pipe)
 string stripblanklines(const string& s);
 
-extern char *currentpath;
-
 const char *startPath();
 const char* setPath(const char *s, bool quiet=false);
 const char *changeDirectory(const char *s);
@@ -108,6 +127,12 @@ void execError(const char *command, const char *hint, const char *application);
 // This invokes a viewer to display the manual.  Subsequent calls will only
 // pop-up a new viewer if the old one has been closed.
 void popupHelp();
+
+#ifdef __CYGWIN__
+inline long long llabs(long long x) {return x >= 0 ? x : -x;}
+extern "C" char *initstate (unsigned seed, char *state, size_t size);
+extern "C" long random (void);
+#endif  
 
 inline Int Abs(Int x) {
 #ifdef HAVE_LONG_LONG

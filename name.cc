@@ -87,13 +87,19 @@ void simpleName::varTrans(action act, coenv &e, types::ty *target)
   }
   else {
     em.error(getPos());
-    em << "no matching variable of name \'" << *id << "\'";
+    em << "no matching variable of name \'" << id << "\'";
   }
 }
 
 types::ty *simpleName::varGetType(coenv &e)
 {
   return e.e.varGetType(id);
+}
+
+trans::varEntry *simpleName::getCallee(coenv &e, signature *sig)
+{
+  varEntry *ve = e.e.lookupVarBySignature(id, sig);
+  return ve;
 }
 
 types::ty *simpleName::typeTrans(coenv &e, bool tacit)
@@ -105,7 +111,7 @@ types::ty *simpleName::typeTrans(coenv &e, bool tacit)
   else {
     if (!tacit) {
       em.error(getPos());
-      em << "no type of name \'" << *id << "\'";
+      em << "no type of name \'" << id << "\'";
     }
     return primError();
   }
@@ -116,7 +122,7 @@ tyEntry *simpleName::tyEntryTrans(coenv &e)
   tyEntry *ent = e.e.lookupTyEntry(id);
   if (!ent) {
     em.error(getPos());
-    em << "no type of name \'" << *id << "\'";
+    em << "no type of name \'" << id << "\'";
     return new tyEntry(primError(), 0, 0, position());
   }
   return ent;
@@ -136,7 +142,7 @@ frame *simpleName::tyFrameTrans(coenv &e)
 void simpleName::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "simpleName '" << *id << "'\n";
+  out << "simpleName '" << id << "'\n";
 }
 
 
@@ -170,22 +176,7 @@ bool qualifiedName::varTransVirtual(action act, coenv &e,
     // Push qualifier onto stack.
     qualifier->varTrans(READ, e, qt);
 
-    if (act == WRITE) {
-      em.error(getPos());
-      em << "virtual field '" << *id << "' of '" << *qt
-         << "' cannot be modified";
-    }
-    else {
-      // Call instead of reading as it is a virtual field.
-      v->encode(CALL, getPos(), e.c);
-      e.implicitCast(getPos(), target, v->getType());
-
-      if (act == CALL)
-        // In this case, the virtual field will construct a vm::func object
-        // and push it on the stack.
-        // Then, pop and call the function.
-        e.c.encode(inst::popcall);
-    }
+    v->encode(act, getPos(), e.c);
 
     // A virtual field was used.
     return true;
@@ -211,7 +202,7 @@ void qualifiedName::varTransField(action act, coenv &e,
   }
   else {
     em.error(getPos());
-    em << "no matching field of name \'" << *id << "\' in \'" << *r << "\'";
+    em << "no matching field of name \'" << id << "\' in \'" << *r << "\'";
   }
 }
 
@@ -239,6 +230,15 @@ types::ty *qualifiedName::varGetType(coenv &e)
 
   record *r = castToRecord(qt, true);
   return r ? r->e.varGetType(id) : 0;
+}
+
+trans::varEntry *qualifiedName::getCallee(coenv &e, signature *sig)
+{
+  // getTypeAsCallee is an optimization attempt.  We don't try optimizing the
+  // rarer qualifiedName call case.
+  // TODO: See if this is worth implementing.
+  //cout << "FAIL BY QUALIFIED NAME" << endl;
+  return 0;
 }
 
 trans::varEntry *qualifiedName::getVarEntry(coenv &e)
@@ -273,7 +273,7 @@ types::ty *qualifiedName::typeTrans(coenv &e, bool tacit)
   else {
     if (!tacit) {
       em.error(getPos());
-      em << "no matching field or type of name \'" << *id << "\' in \'"
+      em << "no matching field or type of name \'" << id << "\' in \'"
          << *r << "\'";
     }
     return primError();
@@ -291,7 +291,7 @@ tyEntry *qualifiedName::tyEntryTrans(coenv &e)
   tyEntry *ent = r->e.lookupTyEntry(id);
   if (!ent) {
     em.error(getPos());
-    em << "no matching type of name \'" << *id << "\' in \'"
+    em << "no matching type of name \'" << id << "\' in \'"
        << *r << "\'";
     return new tyEntry(primError(), 0, 0, position());
   }
@@ -318,7 +318,7 @@ frame *qualifiedName::tyFrameTrans(coenv &e)
 void qualifiedName::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "qualifiedName '" << *id << "'\n";
+  out << "qualifiedName '" << id << "'\n";
 
   qualifier->prettyprint(out, indent+1);
 }

@@ -12,22 +12,29 @@
 #include "settings.h"
 #include "interact.h"
 #include "drawverbatim.h"
+#include "drawlabel.h"
+#include "drawlayer.h"
 
 using std::ifstream;
 using std::ofstream;
+using vm::array;
 
 using namespace settings;
 using namespace gl;
 
 texstream::~texstream() {
-  string name=stripTeXFile(outname())+"texput.";
+  string texengine=getSetting<string>("tex");
+  bool context=settings::context(texengine);
+  string name;
+  if(!context) 
+    name=stripFile(outname());
+  name += "texput.";
   unlink((name+"aux").c_str());
   unlink((name+"log").c_str());
   unlink((name+"out").c_str());
-  string texengine=getSetting<string>("tex");
   if(settings::pdf(texengine))
     unlink((name+"pdf").c_str());
-  if(settings::context(texengine)) {
+  if(context) {
     unlink((name+"tex").c_str());
     unlink((name+"top").c_str());
     unlink((name+"tua").c_str());
@@ -48,10 +55,6 @@ picture::~picture()
 {
 }
 
-bool picture::epsformat,picture::pdfformat,picture::xobject, picture::pdf;
-bool picture::Labels;
-double picture::paperWidth,picture::paperHeight;
-  
 void picture::enclose(drawElement *begin, drawElement *end)
 {
   assert(begin);
@@ -59,6 +62,7 @@ void picture::enclose(drawElement *begin, drawElement *end)
   nodes.push_front(begin);
   lastnumber=0;
   lastnumber3=0;
+  
   for(nodelist::iterator p=nodes.begin(); p != nodes.end(); ++p) {
     assert(*p);
     if((*p)->islayer()) {
@@ -187,16 +191,15 @@ bbox3 picture::bounds3()
   return b3;
 }
   
-pair picture::bounds(double (*m)(double, double),
-                     double (*x)(const triple&, double*),
-                     double (*y)(const triple&, double*),
-                     double *t)
+pair picture::ratio(double (*m)(double, double))
 {
   bool first=true;
   pair b;
+  bounds3();
+  double fuzz=sqrtFuzz*(b3.Max()-b3.Min()).length();
   for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
     assert(*p);
-    (*p)->bounds(b,m,x,y,t,first);
+    (*p)->ratio(b,m,fuzz,first);
   }
   return b;
 }
@@ -213,27 +216,35 @@ void texinit()
     return;
   }
   
-  string name=stripTeXFile(outname())+"texput.log";
-  const char *cname=name.c_str();
+  bool context=settings::context(getSetting<string>("tex"));
+  string dir=stripFile(outname());
+  string logname;
+  if(!context) logname=dir;
+  logname += "texput.log";
+  const char *cname=logname.c_str();
   ofstream writeable(cname);
   if(!writeable)
-    reportError("Cannot write to "+name);
+    reportError("Cannot write to "+logname);
   else
     writeable.close();
   unlink(cname);
   
-  ostringstream cmd;
-  bool context=settings::context(getSetting<string>("tex"));
+  mem::vector<string> cmd;
+  cmd.push_back(texprogram());
   if(context) {
-    // Create a null texput.tex file as a portable way of tricking context
-    // to enter interactive mode (pending the implementation of --pipe).
-    string texput=stripTeXFile(outname())+"texput.tex";
+    // Create a null texput.tex file as a portable way of tricking ConTeXt
+    // into entering interactive mode (pending the implementation of --pipe).
+    string texput="texput.tex";
     ofstream(texput.c_str());
-    cmd << texprogram() << " --scrollmode " << texput;
-  } else
-    cmd << texprogram() << " \\scrollmode";
+    cmd.push_back("--scrollmode");
+    cmd.push_back(texput);
+  } else {
+    if(!dir.empty()) 
+      cmd.push_back("-output-directory="+dir.substr(0,dir.length()-1));
+    cmd.push_back("\\scrollmode");
+  }
   
-  pd.tex.open(cmd.str().c_str(),"texpath",texpathmessage());
+  pd.tex.open(cmd,"texpath",texpathmessage());
   pd.tex.wait("\n*");
   pd.tex << "\n";
   texdocumentclass(pd.tex,true);
@@ -242,110 +253,157 @@ void texinit()
   pd.TeXpipepreamble.clear();
 }
   
-bool picture::texprocess(const string& texname, const string& outname,
-                         const string& prefix, const pair& bboxshift) 
+int opentex(const string& texname, const string& prefix) 
 {
-  int status=0;
+  string aux=auxname(prefix,"aux");
+  unlink(aux.c_str());
+  bool context=settings::context(getSetting<string>("tex"));
+  mem::vector<string> cmd;
+  cmd.push_back(texprogram());
+  if(context) {
+    cmd.push_back("--nonstopmode");
+    cmd.push_back(texname);
+  } else {
+    string dir=stripFile(texname);
+    if(!dir.empty()) 
+      cmd.push_back("-output-directory="+dir.substr(0,dir.length()-1));
+    cmd.push_back("\\nonstopmode\\input");
+    cmd.push_back(stripDir(texname));
+  }
+    
+  bool quiet=verbose <= 1;
+  int status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
+  if(!status && getSetting<bool>("twice"))
+    status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
+  if(status) {
+    if(quiet) {
+      cmd[1]=context ? "--scrollmode" : "\\scrollmode\\input";
+      System(cmd,0);
+    }
+  }
+  return status;
+}
+
+
+bool picture::texprocess(const string& texname, const string& outname,
+                         const string& prefix, const pair& bboxshift,
+                         bool svgformat)
+{
+  int status=1;
   ifstream outfile;
   
   outfile.open(texname.c_str());
+  bool keep=getSetting<bool>("keep");
+  
   if(outfile) {
     outfile.close();
-    string aux=auxname(prefix,"aux");
-    unlink(aux.c_str());
-    string program=texprogram();
-    ostringstream cmd;
-    bool context=settings::context(getSetting<string>("tex"));
-    cmd << program << (context ? " --nonstopmode '" : 
-                       " \\nonstopmode\\input '") << texname << "'";
-    bool quiet=verbose <= 1;
-    status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
-    if(!status && getSetting<bool>("twice"))
-      status=System(cmd,quiet ? 1 : 0,true,"texpath",texpathmessage());
-    if(status) {
-      if(quiet) {
-        ostringstream cmd;
-        cmd << program << (context ? " --scrollmode '" : 
-                           " \\scrollmode\\input '") << texname << "'";
-        System(cmd,0);
-      }
-      return false;
-    }
     
-    if(!pdf) {
+    status=opentex(texname,prefix);
+    string texengine=getSetting<string>("tex");
+    
+    if(status == 0) {
       string dviname=auxname(prefix,"dvi");
-      string psname=auxname(prefix,"ps");
+      mem::vector<string> cmd;
     
-      double height=b.top-b.bottom+1.0;
+      if(svgformat) {
+        cmd.push_back(getSetting<string>("dvisvgm"));
+        cmd.push_back("-n");
+        cmd.push_back("--verbosity=3");
+        push_split(cmd,getSetting<string>("dvisvgmOptions"));
+        cmd.push_back("-o"+outname);
+        ostringstream buf;
+        bbox B=b;
+        B.shift(bboxshift+pair(1.99*cm,1.9*cm));
+        buf << "--bbox=" 
+            << B.left << "bp " 
+            << B.bottom << "bp "
+            << B.right << "bp "
+            << B.top << "bp";
+        cmd.push_back(buf.str());
+        cmd.push_back(dviname);
+        status=System(cmd,0,true,"dvisvgm");
+        if(!keep)
+          unlink(dviname.c_str());
+      } else {
+        if(!settings::pdf(texengine)) {
+          string psname=auxname(prefix,"ps");
+          double height=b.top-b.bottom+1.0;
     
-      // Magic dvips offsets:
-      double hoffset=-128.4;
-      double vertical=height;
-      if(!latex(getSetting<string>("tex"))) vertical += 2.0;
-      double voffset=(vertical < 13.0) ? -137.8+vertical : -124.8;
-
-      hoffset += b.left+bboxshift.getx();
-      voffset += paperHeight-height-b.bottom-bboxshift.gety();
+          // Magic dvips offsets:
+          double hoffset=-128.4;
+          double vertical=height;
+          if(!latex(texengine)) vertical += 2.0;
+          double voffset=(vertical < 13.0) ? -137.8+vertical : -124.8;
+          double paperHeight=getSetting<double>("paperheight");
+        
+          hoffset += b.left+bboxshift.getx();
+          voffset += paperHeight-height-b.bottom-bboxshift.gety();
     
-      ostringstream dcmd;
-      
-      string dvipsrc=getSetting<string>("dir");
-      if(dvipsrc.empty()) dvipsrc=systemDir;
-      dvipsrc += dirsep+"nopapersize.ps";
-      setenv("DVIPSRC",dvipsrc.c_str(),1);
-      string papertype=getSetting<string>("papertype") == "letter" ?
-        "letterSize" : "a4size";
-      dcmd << "'" << getSetting<string>("dvips") << "' -R -Pdownload35 -D600"
-           << " -O" << hoffset << "bp," << voffset << "bp"
-           << " -T" << paperWidth << "bp," << paperHeight << "bp "
-           << getSetting<string>("dvipsOptions") << " -t" << papertype;
-      if(verbose <= 1) dcmd << " -q";
-      dcmd << " -o '" << psname << "' '" << dviname << "'";
-      status=System(dcmd,0,true,"dvips");
-      if(status != 0) return false;
+          string dvipsrc=getSetting<string>("dir");
+          if(dvipsrc.empty()) dvipsrc=systemDir;
+          dvipsrc += dirsep+"nopapersize.ps";
+          setenv("DVIPSRC",dvipsrc.c_str(),1);
+          string papertype=getSetting<string>("papertype") == "letter" ?
+            "letterSize" : "a4size";
+          cmd.push_back(getSetting<string>("dvips"));
+          cmd.push_back("-R");
+          cmd.push_back("-Pdownload35");
+          cmd.push_back("-D600");
+          cmd.push_back("-O"+String(hoffset)+"bp,"+String(voffset)+"bp");
+          cmd.push_back("-T"+String(getSetting<double>("paperwidth"))+"bp,"+
+                        String(paperHeight)+"bp");
+          push_split(cmd,getSetting<string>("dvipsOptions"));
+          cmd.push_back("-t"+papertype);
+          if(verbose <= 1) cmd.push_back("-q");
+          cmd.push_back("-o"+psname);
+          cmd.push_back(dviname);
+          status=System(cmd,0,true,"dvips");
+          if(status == 0) {
+            ifstream fin(psname.c_str());
+            psfile fout(outname,false);
     
-      ifstream fin(psname.c_str());
-      psfile fout(outname,false);
-    
-      string s;
-      bool first=true;
-      transform t=shift(bboxshift)*T;
-      bool shift=!t.isIdentity();
-      string beginspecial="TeXDict begin @defspecial";
-      string endspecial="@fedspecial end";
-      while(getline(fin,s)) {
-        if(s.find("%%DocumentPaperSizes:") == 0) continue;
-        if(s.find("%!PS-Adobe-") == 0) {
-          fout.header();
-        } else if(first && s.find("%%BoundingBox:") == 0) {
-          bbox box=b;
-          box.shift(bboxshift);
-          if(verbose > 2) BoundingBox(cout,box);
-          fout.BoundingBox(box);
-          first=false;
-        } else if(shift && s.find(beginspecial) == 0) {
-          fout.verbatimline(s);
-          fout.gsave();
-          fout.concat(t);
-        } else if(shift && s.find(endspecial) == 0) {
-          fout.grestore();
-          fout.verbatimline(s);
-        } else
-          fout.verbatimline(s);
-      }
-      if(!getSetting<bool>("keep")) { // Delete temporary files.
-        unlink(dviname.c_str());
-        unlink(psname.c_str());
+            string s;
+            bool first=true;
+            transform t=shift(bboxshift)*T;
+            bool shift=!t.isIdentity();
+            string beginspecial="TeXDict begin @defspecial";
+            string endspecial="@fedspecial end";
+            while(getline(fin,s)) {
+              if(s.find("%%DocumentPaperSizes:") == 0) continue;
+              if(s.find("%!PS-Adobe-") == 0) {
+                fout.header();
+              } else if(first && s.find("%%BoundingBox:") == 0) {
+                bbox box=b;
+                box.shift(bboxshift);
+                if(verbose > 2) BoundingBox(cout,box);
+                fout.BoundingBox(box);
+                first=false;
+              } else if(shift && s.find(beginspecial) == 0) {
+                fout.verbatimline(s);
+                fout.gsave();
+                fout.concat(t);
+              } else if(shift && s.find(endspecial) == 0) {
+                fout.grestore();
+                fout.verbatimline(s);
+              } else
+                fout.verbatimline(s);
+            }
+          }
+          if(!keep) {
+            unlink(dviname.c_str());
+            unlink(psname.c_str());
+          }
+        }
       }
     }
-      
-    if(!getSetting<bool>("keep")) { // Delete temporary files.
+    
+    if(!keep) {
       unlink(texname.c_str());
       if(!getSetting<bool>("keepaux"))
-        unlink(aux.c_str());
+        unlink(auxname(prefix,"aux").c_str());
       unlink(auxname(prefix,"log").c_str());
       unlink(auxname(prefix,"out").c_str());
-      if(context) {
+      if(settings::context(texengine)) {
         unlink(auxname(prefix,"top").c_str());
         unlink(auxname(prefix,"tua").c_str());
         unlink(auxname(prefix,"tuc").c_str());
@@ -360,25 +418,32 @@ bool picture::texprocess(const string& texname, const string& outname,
 
 int picture::epstopdf(const string& epsname, const string& pdfname)
 {
-  ostringstream cmd;
-  
-  cmd << "'" << getSetting<string>("gs")
-      << "' -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEPSCrop"
-      << " -dSubsetFonts=true -dEmbedAllFonts=true -dMaxSubsetPct=100"
-      << " -dPDFSETTINGS=/prepress -dCompatibilityLevel=1.4";
+  mem::vector<string> cmd;
+  cmd.push_back(getSetting<string>("gs"));
+  cmd.push_back("-q");
+  cmd.push_back("-dNOPAUSE");
+  cmd.push_back("-dBATCH");
+  cmd.push_back("-sDEVICE=pdfwrite");
+  cmd.push_back("-dEPSCrop");
+  cmd.push_back("-dSubsetFonts=true");
+  cmd.push_back("-dEmbedAllFonts=true");
+  cmd.push_back("-dMaxSubsetPct=100");
+  cmd.push_back("-dPDFSETTINGS=/prepress");
+  cmd.push_back("-dCompatibilityLevel=1.4");
   if(safe)
-    cmd << " -dSAFER";
+    cmd.push_back("-dSAFER");
   if(!getSetting<bool>("autorotate"))
-    cmd << " -dAutoRotatePages=/None";
-  cmd << " -g" << max(ceil(paperWidth),1.0) << "x" << max(ceil(paperHeight),1.0)
-      << " -dDEVICEWIDTHPOINTS=" << max(b.right-b.left,3.0)
-      << " -dDEVICEHEIGHTPOINTS=" << max(b.top-b.bottom,3.0)
-      << " " << getSetting<string>("gsOptions")
-      << " -sOutputFile='" << stripDir(pdfname) << "' '"
-      << stripDir(epsname) << "'";
+    cmd.push_back("-dAutoRotatePages=/None");
+  cmd.push_back("-g"+String(max(ceil(getSetting<double>("paperwidth")),1.0))
+                +"x"+String(max(ceil(getSetting<double>("paperheight")),1.0)));
+  cmd.push_back("-dDEVICEWIDTHPOINTS="+String(max(b.right-b.left,3.0)));
+  cmd.push_back("-dDEVICEHEIGHTPOINTS="+String(max(b.top-b.bottom,3.0)));
+  push_split(cmd,getSetting<string>("gsOptions"));
+  cmd.push_back("-sOutputFile="+stripDir(pdfname));
+  cmd.push_back(stripDir(epsname));
 
-  string dir=stripFile(pdfname);
   char *oldPath=NULL;
+  string dir=stripFile(pdfname);
   if(!dir.empty()) {
     oldPath=getPath();
     setPath(dir.c_str());
@@ -408,12 +473,12 @@ bool picture::reloadPDF(const string& Viewer, const string& outname) const
     Setting("tex")=texengine;
   }
   if(haveReload) {
-    ostringstream cmd;
-    cmd << "'" << Viewer << "' ";
+    mem::vector<string> cmd;
+    push_command(cmd,Viewer);
     string pdfreloadOptions=getSetting<string>("pdfreloadOptions");
     if(!pdfreloadOptions.empty())
-      cmd << pdfreloadOptions << " ";
-    cmd << "'" << reloadprefix << ".pdf'";
+      cmd.push_back(pdfreloadOptions);
+    cmd.push_back(reloadprefix+".pdf");
     System(cmd,0,false);
   }
   return true;
@@ -422,34 +487,57 @@ bool picture::reloadPDF(const string& Viewer, const string& outname) const
   
 bool picture::postprocess(const string& prename, const string& outname,
                           const string& outputformat, double magnification,
-                          bool wait, bool view)
+                          bool wait, bool view, bool pdftex, bool svgformat)
 {
   static mem::map<CONST string,int> pids;
   int status=0;
+  bool epsformat=outputformat == "eps";
+  bool pdfformat=(settings::pdf(getSetting<string>("tex")) 
+    && outputformat == "") || outputformat == "pdf";
   
-  if((pdf && Labels) || !epsformat) {
+  if(pdftex || !epsformat) {
     if(pdfformat) {
-      if(pdf && Labels) {
+      if(pdftex) {
         status=rename(prename.c_str(),outname.c_str());
         if(status != 0)
           reportError("Cannot rename "+prename+" to "+outname);
       } else status=epstopdf(prename,outname);
     } else {
-      ostringstream cmd;
+      mem::vector<string> cmd;
       double render=fabs(getSetting<double>("render"));
       if(render == 0) render=1.0;
-      double expand=getSetting<Int>("antialias");
-      if(expand < 2.0) expand=1.0;
-      double res=expand*render*72.0;
-      cmd << "'" << getSetting<string>("convert") 
-          << "' -alpha Off -density " << res << "x" << res;
-      if(expand == 1.0)
-        cmd << " +antialias";
-      cmd << " -geometry " << 100.0/expand << "%x"
-          << " " << getSetting<string>("convertOptions")
-          << " '" << nativeformat()+":" << prename << "'"
-          << " '" << outputformat << ":" << outname << "'";
-      status=System(cmd,0,true,"convert");
+      double res=render*72.0;
+      Int antialias=getSetting<Int>("antialias");
+      if(outputformat == "png" && antialias == 2) {
+        cmd.push_back(getSetting<string>("gs"));
+        cmd.push_back("-q");
+        cmd.push_back("-dNOPAUSE");
+        cmd.push_back("-dBATCH");
+        cmd.push_back("-sDEVICE=pngalpha");
+        cmd.push_back("-dEPSCrop");
+        if(safe)
+          cmd.push_back("-dSAFER");
+        cmd.push_back("-r"+String(res)+"x"+String(res));
+        push_split(cmd,getSetting<string>("gsOptions"));
+        cmd.push_back("-sOutputFile="+outname);
+        cmd.push_back(prename);
+        status=System(cmd,0,true,"gs","Ghostscript");
+      } else if(!svgformat) {
+        double expand=antialias;
+        if(expand < 2.0) expand=1.0;
+        res *= expand;
+        cmd.push_back(getSetting<string>("convert")); 
+        cmd.push_back("-density");
+        cmd.push_back(String(res)+"x"+String(res));
+        if(expand == 1.0)
+          cmd.push_back("+antialias");
+        push_split(cmd,getSetting<string>("convertOptions"));
+        cmd.push_back("-geometry");
+        cmd.push_back(String(100.0/expand)+"%x");
+        cmd.push_back(nativeformat()+":"+prename);
+        cmd.push_back(outputformat+":"+outname);
+        status=System(cmd,0,true,"convert");
+      }
     }
     if(!getSetting<bool>("keep")) unlink(prename.c_str());
   }
@@ -478,14 +566,14 @@ bool picture::postprocess(const string& prename, const string& outname,
         if(Viewer == "gv") kill(pid,SIGHUP);
         else if(pdfreload) reloadPDF(Viewer,outname);
       } else {
-        ostringstream cmd;
-        cmd << "'" << Viewer << "' ";
+        mem::vector<string> cmd;
+        push_command(cmd,Viewer);
         string viewerOptions=getSetting<string>(pdfformat ? 
                                                 "pdfviewerOptions" : 
                                                 "psviewerOptions");
         if(!viewerOptions.empty())
-          cmd << viewerOptions << " ";
-        cmd << "'" << outname << "'";
+          push_split(cmd,viewerOptions);
+        cmd.push_back(outname);
         status=System(cmd,0,wait,
                       pdfformat ? "pdfviewer" : "psviewer",
                       pdfformat ? "your PDF viewer" : "your PostScript viewer",
@@ -503,9 +591,9 @@ bool picture::postprocess(const string& prename, const string& outname,
         }
       }
     } else {
-      ostringstream cmd;
-      cmd << "'" << getSetting<string>("display") << "' '"
-          << outname << "'";
+      mem::vector<string> cmd;
+      push_command(cmd,getSetting<string>("display"));
+      cmd.push_back(outname);
       string application="your "+outputformat+" viewer";
       status=System(cmd,0,wait,"display",application.c_str());
       if(status != 0) return false;
@@ -527,29 +615,28 @@ bool picture::shipout(picture *preamble, const string& Prefix,
 {
   b=bounds();
   
-  bool TeXmode=getSetting<bool>("inlinetex") && 
-    getSetting<string>("tex") != "none";
-  Labels=labels || TeXmode;
-  
   string texengine=getSetting<string>("tex");
-  pdf=settings::pdf(texengine);
+  bool usetex=texengine != "none";
+  bool TeXmode=getSetting<bool>("inlinetex") && usetex;
+  bool pdf=settings::pdf(texengine);
   
   bool standardout=Prefix == "-";
-  string prefix=standardout ? "out" : Prefix;
+  string prefix=standardout ? standardprefix : Prefix;
   string preformat=nativeformat();
   string outputformat=format.empty() ? defaultformat() : format;
-  epsformat=outputformat == "eps";
-  pdfformat=outputformat == "pdf";
-  xobject=magnification > 0;
+  bool epsformat=outputformat == "eps";
+  bool pdfformat=pdf || outputformat == "pdf";
+  bool svgformat=outputformat == "svg" && !pdf && usetex &&
+    (!have3D() || getSetting<double>("render") == 0.0);
+  
+  bool xobject=magnification > 0;
   string outname=Outname(prefix,outputformat,standardout);
   string epsname=epsformat ? (standardout ? "" : outname) :
     auxname(prefix,"eps");
-  if(Labels)
-    spaceToUnderscore(prefix);
-  string prename=((epsformat && !pdf) || !Labels) ? epsname : 
-    auxname(prefix,preformat);
   
-  if((b.empty && !Labels)) { // Output a null file
+  bool Labels=labels || TeXmode;
+  
+  if(b.empty && !Labels) { // Output a null file
     bbox b;
     b.left=b.bottom=0;
     b.right=b.top=xobject ? 18 : 1;
@@ -557,12 +644,18 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     out.prologue(b);
     out.epilogue();
     out.close();
-    return postprocess(epsname,outname,outputformat,1.0,wait,view);
+    return postprocess(epsname,outname,outputformat,1.0,wait,view,false,false);
   }
   
-  bool pngxformat=xobject && getSetting<string>("xformat") == "png";
-  if(pngxformat) {
-    // Work around half-pixel bounding box bug in Ghostscript pngalpha driver
+  Labels |= svgformat;
+    
+  if(Labels)
+    prefix=cleanpath(prefix);
+  
+  string prename=((epsformat && !pdf) || !Labels) ? epsname : 
+    auxname(prefix,preformat);
+  
+  if(xobject) {
     double fuzz=0.5/magnification;
     b.top += fuzz;
     b.right += fuzz;
@@ -571,19 +664,19 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     
   SetPageDimensions();
   
-  paperWidth=getSetting<double>("paperwidth");
-  paperHeight=getSetting<double>("paperheight");
   string origin=getSetting<string>("align");
-    
-  pair bboxshift=(origin == "Z" && !pdfformat) ?
+  
+  pair bboxshift=(origin == "Z" && epsformat) ?
     pair(0.0,0.0) : pair(-b.left,-b.bottom);
-  if(!pdfformat) {
+  if(epsformat) {
     bboxshift += getSetting<pair>("offset");
     if(origin != "Z" && origin != "B") {
-      double yexcess=max(paperHeight-(b.top-b.bottom+1.0),0.0);
+      double yexcess=max(getSetting<double>("paperheight")-
+                         (b.top-b.bottom+1.0),0.0);
       if(origin == "T") bboxshift += pair(0.0,yexcess);
       else {
-        double xexcess=max(paperWidth-(b.right-b.left+1.0),0.0);
+        double xexcess=max(getSetting<double>("paperwidth")-
+                           (b.right-b.left+1.0),0.0);
         bboxshift += pair(0.5*xexcess,0.5*yexcess);
       }
     }
@@ -596,18 +689,22 @@ bool picture::shipout(picture *preamble, const string& Prefix,
   
   if(Labels) {
     texname=auxname(prefix,"tex");
-    tex=new texfile(texname,b);
+    tex=svgformat ? new svgtexfile(texname,b) : new texfile(texname,b);
     tex->prologue();
   }
   
   nodelist::iterator layerp=nodes.begin();
   nodelist::iterator p=layerp;
   unsigned layer=0;
-  mem::list<string> psnameStack;
+  mem::list<string> files;
   
   bbox bshift=b;
   
   transparency=false;
+  int svgcount=0;
+  
+  typedef mem::list<drawElement *> clipstack;
+  clipstack begin;
   
   while(p != nodes.end()) {
     string psname,pdfname;
@@ -620,8 +717,8 @@ bool picture::shipout(picture *preamble, const string& Prefix,
       psname=epsname;
       bshift.shift(bboxshift);
     }
-    psnameStack.push_back(psname);
-    if(pdf) psnameStack.push_back(pdfname);
+    files.push_back(psname);
+    if(pdf) files.push_back(pdfname);
     psfile out(psname,pdfformat);
     out.prologue(bshift);
   
@@ -645,10 +742,80 @@ bool picture::shipout(picture *preamble, const string& Prefix,
     out.resetpen();
     
     bool postscript=false;
+    drawLabel *L=NULL;
+    
+    if(svgformat)
+      for(nodelist::const_iterator r=begin.begin(); r != begin.end(); ++r)
+        (*r)->draw(&out);
+    
     for(; p != nodes.end(); ++p) {
       assert(*p);
       if(Labels && (*p)->islayer()) break;
-      postscript |= (*p)->draw(&out);
+      
+      if(svgformat && (*p)->svg()) {
+        picture *f=(*p)->svgpng() ? new picture : NULL;
+        nodelist::const_iterator q=layerp;
+        for(;;) {
+          if((*q)->beginclip())
+            begin.push_back(*q);
+          else if((*q)->endclip()) {
+            if(begin.size() < 1)
+              reportError("endclip without matching beginclip");
+            begin.pop_back();
+          }
+          if(q == p) break;
+          ++q;
+        }
+        
+        if(f) {
+          for(nodelist::const_iterator r=begin.begin(); r != begin.end(); ++r)
+            f->append(*r);
+
+          f->append(*(q++));
+        }
+        
+        while(q != nodes.end() && !(*q)->islayer()) ++q;
+
+        clipstack end;
+        
+        for(nodelist::const_iterator r=--q;; --r) {
+          if((*r)->beginclip() && end.size() >= 1)
+            end.pop_back();
+          else if((*r)->endclip())
+            end.push_back(*r);
+          if(r == p) break;
+        }
+        
+        for(nodelist::reverse_iterator r=end.rbegin(); r != end.rend();
+            ++r) {
+          (*r)->draw(&out);
+          if(f)
+            f->append(*r);
+        }
+        
+        if(f) {
+          ostringstream buf;
+          buf << prefix << "_" << svgcount;
+          ++svgcount;
+          string pngname=buildname(buf.str(),"png");
+          f->shipout(preamble,buf.str(),"png",0.0,false,false);
+          pair m=f->bounds().Min();
+          pair M=f->bounds().Max();
+          delete f;
+
+          pair size=M-m;
+          ostringstream cmd;
+          cmd << "\\special{dvisvgm:img " << size.getx()*ps2tex << " " 
+              << size.gety()*ps2tex << " " << pngname << "}";
+          static pen P;
+          static pair zero;
+          L=new drawLabel(cmd.str(),"",identity,pair(m.getx(),M.gety()),zero,P);
+          texinit();
+          L->bounds(b_cached,processData().tex,labelbounds,bboxstack);
+          postscript=true;
+        }
+        break;
+      } else postscript |= (*p)->draw(&out);
     }
     
     if(Labels) {
@@ -671,8 +838,16 @@ bool picture::shipout(picture *preamble, const string& Prefix,
       if(status) {
         for (p=layerp; p != nodes.end(); ++p) {
           assert(*p);
-          (*p)->write(tex,b);
-          if((*p)->islayer()) {
+          bool islayer=(*p)->islayer();
+          if(svgformat && (*p)->svg()) {
+            islayer=true;
+            if((*p)->svgpng())
+              L->write(tex,b);
+            else
+              (*p)->draw(tex);
+          } else
+            (*p)->write(tex,b);
+          if(islayer) {
             tex->endlayer();
             layerp=++p;
             layer++;
@@ -692,22 +867,23 @@ bool picture::shipout(picture *preamble, const string& Prefix,
       if(Labels) {
         tex->epilogue();
         if(context) prefix=stripDir(prefix);
-        status=texprocess(texname,prename,prefix,bboxshift);
+        status=texprocess(texname,svgformat ? outname : prename,prefix,
+                          bboxshift,svgformat);
         delete tex;
         if(!getSetting<bool>("keep")) {
-          for(mem::list<string>::iterator p=psnameStack.begin();
-              p != psnameStack.end(); ++p)
+          for(mem::list<string>::iterator p=files.begin(); p != files.end();
+              ++p)
             unlink(p->c_str());
         }
       }
       if(status) {
         if(xobject) {
-          if(transparency && pngxformat)
+          if(transparency)
             status=(epstopdf(prename,Outname(prefix,"pdf",standardout)) == 0);
         } else {
           if(context) prename=stripDir(prename);
           status=postprocess(prename,outname,outputformat,magnification,wait,
-                             view);
+                             view,pdf && Labels,svgformat);
         }
       }
     }
@@ -755,7 +931,7 @@ Communicate com;
 
 void glrenderWrapper()
 {
-#ifdef HAVE_LIBGL  
+#ifdef HAVE_GL  
 #ifdef HAVE_LIBPTHREAD
   wait(initSignal,initLock);
   endwait(initSignal,initLock);
@@ -774,7 +950,9 @@ bool picture::shipout3(const string& prefix, const string& format,
                        triple *lights, double *diffuse, double *ambient,
                        double *specular, bool viewportlighting, bool view)
 {
-#ifdef HAVE_LIBGL
+  if(getSetting<bool>("interrupt"))
+    return true;
+#ifdef HAVE_GL
   bounds3();
   
   for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
@@ -786,7 +964,8 @@ bool picture::shipout3(const string& prefix, const string& format,
     getSetting<string>("outformat") : format;
   bool View=settings::view() && view;
   static int oldpid=0;
-  bool Wait=!interact::interactive || !View;
+  bool animating=getSetting<bool>("animating");
+  bool Wait=!interact::interactive || !View || animating;
   
   if(glthread) {
 #ifdef HAVE_LIBPTHREAD
@@ -830,8 +1009,8 @@ bool picture::shipout3(const string& prefix, const string& format,
       return true;
     }
 #ifdef HAVE_LIBPTHREAD
-  if(Wait)
-    pthread_mutex_lock(&readyLock);
+    if(Wait)
+      pthread_mutex_lock(&readyLock);
 #endif  
 #endif
   } else {
@@ -849,29 +1028,35 @@ bool picture::shipout3(const string& prefix, const string& format,
            background,nlights,lights,diffuse,ambient,specular,viewportlighting,
            View,oldpid);
 #ifdef HAVE_LIBPTHREAD
-    if(glthread && Wait) {
+  if(glthread && Wait) {
     pthread_cond_wait(&readySignal,&readyLock);
     pthread_mutex_unlock(&readyLock);
   }
   return true;
 #endif  
 #else
-  reportError("Cannot render image; please install glut, run ./configure, and recompile"); 
+  reportError("Cannot render image; please install glut, run ./configure, and recompile");
 #endif
   return false;
 }
 
-bool picture::shipout3(const string& prefix)
+bool picture::shipout3(const string& prefix, array *index, array *center)
 {
   bounds3();
   bool status = true;
   
   string prcname=buildname(prefix,"prc");
   prcfile prc(prcname);
+  
+  static const double limit=2.5*10.0/INT_MAX;
+  double compressionlimit=max(length(b3.Max()),length(b3.Min()))*limit;
+  
+  groups.push_back(groupmap());
   for(nodelist::iterator p=nodes.begin(); p != nodes.end(); ++p) {
     assert(*p);
-    (*p)->write(&prc);
+    (*p)->write(&prc,&billboard,index,center,compressionlimit,groups);
   }
+  groups.pop_back();
   if(status)
     status=prc.finish();
     
@@ -896,7 +1081,7 @@ picture *picture::transformed(const transform& t)
   return pic;
 }
 
-picture *picture::transformed(const vm::array& t)
+picture *picture::transformed(const array& t)
 {
   picture *pic = new picture;
 

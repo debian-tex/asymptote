@@ -132,14 +132,14 @@ public:
   
   friend double dot(const triple& u, const triple& v)
   {
-    return u.getx()*v.getx()+u.gety()*v.gety()+u.getz()*v.getz();
+    return u.x*v.x+u.y*v.y+u.z*v.z;
   }
 
   friend triple cross(const triple& u, const triple& v) 
   {
-    return triple(u.gety()*v.getz()-u.getz()*v.gety(),
-                  u.getz()*v.getx()-u.getx()*v.getz(),
-                  u.getx()*v.gety()-v.getx()*u.gety());
+    return triple(u.y*v.z-u.z*v.y,
+                  u.z*v.x-u.x*v.z,
+                  u.x*v.y-v.x*u.y);
   }
 
   // Returns a unit triple in the direction (theta,phi), in radians.
@@ -178,6 +178,12 @@ public:
 
 triple expi(double theta, double phi);
   
+// Return the component of vector v perpendicular to a unit vector u.
+inline triple perp(triple v, triple u)
+{
+  return v-dot(v,u)*u;
+}
+
 } //namespace camp
 
 GC_DECLARE_PTRFREE(camp::triple);

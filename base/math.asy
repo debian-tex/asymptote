@@ -38,6 +38,15 @@ bool polygon(path p)
   return cyclic(p) && piecewisestraight(p);
 }
 
+// Return the intersection time of the point on the line through p and q
+// that is closest to z.
+real intersect(pair p, pair q, pair z)
+{
+  pair u=q-p;
+  real denom=dot(u,u);
+  return denom == 0 ? infinity : dot(z-p,u)/denom;
+}
+
 // Return the intersection time of the extension of the line segment PQ
 // with the plane perpendicular to n and passing through Z.
 real intersect(triple P, triple Q, triple n, triple Z)
@@ -80,39 +89,39 @@ triple intersectionpoint(triple n0, triple P0, triple n1, triple P1)
   }
 }
 
-// Given a real array A, return its partial sums.
-real[] partialsum(real[] A)
+// Given a real array a, return its partial sums.
+real[] partialsum(real[] a)
 {
-  real[] B=new real[A.length];
+  real[] b=new real[a.length];
   real sum=0;
-  for(int i=0; i < A.length; ++i) {
-    sum += A[i];
-    B[i]=sum;
+  for(int i=0; i < a.length; ++i) {
+    sum += a[i];
+    b[i]=sum;
   }
-  return B;
+  return b;
 }
 
-// Given a real array A, return its partial dx-weighted sums.
-real[] partialsum(real[] A, real[] dx)
+// Given a real array a, return its partial dx-weighted sums.
+real[] partialsum(real[] a, real[] dx)
 {
-  real[] B=new real[A.length];
+  real[] b=new real[a.length];
   real sum=0;
-  for(int i=0; i < A.length; ++i) {
-    sum += A[i]*dx[i];
-    B[i]=sum;
+  for(int i=0; i < a.length; ++i) {
+    sum += a[i]*dx[i];
+    b[i]=sum;
   }
-  return B;
+  return b;
 }
 
-// If strict=false, return whether i > j implies x[i] >= x[j]
-// If strict=true, return whether  i > j implies x[i] > x[j]
-bool increasing(real[] x, bool strict=false)
+// If strict=false, return whether i > j implies a[i] >= a[j]
+// If strict=true, return whether  i > j implies a[i] > a[j]
+bool increasing(real[] a, bool strict=false)
 {
-  real[] xp=copy(x);
-  xp.delete(0);
-  xp.push(0);
-  bool[] b=strict ? (xp > x) : (xp >= x);
-  b[x.length-1]=true;
+  real[] ap=copy(a);
+  ap.delete(0);
+  ap.push(0);
+  bool[] b=strict ? (ap > a) : (ap >= a);
+  b[a.length-1]=true;
   return all(b);
 }
 
@@ -135,6 +144,36 @@ int[][] segment(bool[] b)
   return segment;
 }
 
+// If the sorted array a does not contain x, insert it sequentially,
+// returning the index of x in the resulting array.
+int unique(real[] a, real x) {
+  int i=search(a,x);
+  if(i == -1 || x != a[i]) {
+    ++i;
+    a.insert(i,x);
+    return i;
+  }
+  return i;
+}
+
+int unique(string[] a, string x) {
+  int i=search(a,x);
+  if(i == -1 || x != a[i]) {
+    ++i;
+    a.insert(i,x);
+    return i;
+  }
+  return i;
+}
+
+bool lexorder(pair a, pair b) {
+  return a.x < b.x || (a.x == b.x && a.y <= b.y);
+}
+
+bool lexorder(triple a, triple b) {
+  return a.x < b.x || (a.x == b.x && (a.y < b.y || (a.y == b.y && a.z <= b.z)));
+}
+
 real[] zero(int n)
 {
   return sequence(new real(int) {return 0;},n);
@@ -146,43 +185,6 @@ real[][] zero(int n, int m)
   for(int i=0; i < n; ++i)
     M[i]=sequence(new real(int) {return 0;},m);
   return M;
-}
-
-real[][] operator +(real[][] a, real[][] b)
-{
-  int n=a.length;
-  real[][] m=new real[n][];
-  for(int i=0; i < n; ++i)
-    m[i]=a[i]+b[i];
-  return m;
-}
-
-real[][] operator -(real[][] a, real[][] b)
-{
-  int n=a.length;
-  real[][] m=new real[n][];
-  for(int i=0; i < n; ++i)
-    m[i]=a[i]-b[i];
-  return m;
-}
-
-real[][] operator *(real[][] a, real b)
-{
-  int n=a.length;
-  real[][] m=new real[n][];
-  for(int i=0; i < n; ++i)
-    m[i]=a[i]*b;
-  return m;
-}
-
-real[][] operator *(real b, real[][] a)
-{
-  return a*b;
-}
-
-real[][] operator /(real[][] a, real b)
-{
-  return a*(1/b);
 }
 
 bool square(real[][] m)
@@ -370,4 +372,21 @@ pair[] quarticroots(real a, real b, real c, real d, real e)
     roots.append(quadraticroots((1,0),-sum[i],product[i]));
 
   return roots;
+}
+
+pair[][] fft(pair[][] a, int sign=1)
+{
+  pair[][] A=new pair[a.length][];
+  int k=0;
+  for(pair[] v : a) {
+    A[k]=fft(v,sign);
+    ++k;
+  }
+  a=transpose(A);
+  k=0;
+  for(pair[] v : a) {
+    A[k]=fft(v,sign);
+    ++k;
+  }
+  return transpose(A);
 }

@@ -44,16 +44,14 @@ void texuserpreamble(T& out,
 }
   
 template<class T>
-void texfontencoding(T& out) 
+void latexfontencoding(T& out) 
 {
-  if(settings::latex(settings::getSetting<string>("tex"))) {
-    out << "\\makeatletter%" << newl
-        << "\\let\\ASYencoding\\f@encoding%" << newl
-        << "\\let\\ASYfamily\\f@family%" << newl
-        << "\\let\\ASYseries\\f@series%" << newl
-        << "\\let\\ASYshape\\f@shape%" << newl
-        << "\\makeatother%" << newl;
-  }
+  out << "\\makeatletter%" << newl
+      << "\\let\\ASYencoding\\f@encoding%" << newl
+      << "\\let\\ASYfamily\\f@family%" << newl
+      << "\\let\\ASYseries\\f@series%" << newl
+      << "\\let\\ASYshape\\f@shape%" << newl
+      << "\\makeatother%" << newl;
 }
 
 template<class T>
@@ -88,6 +86,34 @@ void texpreamble(T& out, mem::list<string>& preamble=processData().TeXpreamble,
         << settings::rawpostscript(texengine) << newl;
 }
 
+// Work around bug in dvips.def: allow spaces in file names.
+template<class T>
+void dvipsfix(T &out)
+{
+  if(!settings::pdf(settings::getSetting<string>("tex"))) {
+    out << "\\makeatletter" << newl 
+        << "\\def\\Ginclude@eps#1{%" << newl
+        << " \\message{<#1>}%" << newl
+        << "  \\bgroup" << newl
+        << "  \\def\\@tempa{!}%" << newl
+        << "  \\dimen@\\Gin@req@width" << newl
+        << "  \\dimen@ii.1bp%" << newl
+        << "  \\divide\\dimen@\\dimen@ii" << newl
+        << "  \\@tempdima\\Gin@req@height" << newl
+        << "  \\divide\\@tempdima\\dimen@ii" << newl
+        << "    \\special{PSfile=#1\\space" << newl
+        << "      llx=\\Gin@llx\\space" << newl
+        << "      lly=\\Gin@lly\\space" << newl
+        << "      urx=\\Gin@urx\\space" << newl
+        << "      ury=\\Gin@ury\\space" << newl
+        << "      \\ifx\\Gin@scalex\\@tempa\\else rwi=\\number\\dimen@\\space\\fi" << newl
+        << "      \\ifx\\Gin@scaley\\@tempa\\else rhi=\\number\\@tempdima\\space\\fi" << newl
+        << "      \\ifGin@clip clip\\fi}%" << newl
+        << "  \\egroup}" << newl
+        << "\\makeatother" << newl;
+  }
+}
+
 template<class T>
 void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
                 bool pipe=false)
@@ -106,20 +132,39 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
         fout << s << endl;
     }
   }
-  texfontencoding(out);
   string texengine=settings::getSetting<string>("tex");
   if(settings::latex(texengine)) {
     if(pipe || !settings::getSetting<bool>("inlinetex")) {
       out << "\\usepackage{graphicx}" << newl;
-      if(!pipe) out << "\\usepackage{color}" << newl;
+      if(!pipe) {
+        dvipsfix(out);
+        out << "\\usepackage{color}" << newl;
+      }
     }
-    if(pipe)
+    if(pipe) {
       out << "\\begin{document}" << newl;
+      latexfontencoding(out);
+    }
   } else if(settings::context(texengine)) {
     if(!pipe && !settings::getSetting<bool>("inlinetex"))
       out << "\\usemodule[pictex]" << newl;
   } else {
-    out << "\\input graphicx" << newl;
+    out << "\\input graphicx" << newl // Fix miniltx path parsing bug:
+        << "\\makeatletter" << newl 
+        << "\\def\\filename@parse#1{%" << newl
+        << "  \\let\\filename@area\\@empty" << newl
+        << "  \\expandafter\\filename@path#1/\\\\}" << newl
+        << "\\def\\filename@path#1/#2\\\\{%" << newl
+        << "  \\ifx\\\\#2\\\\%" << newl
+        << "     \\def\\reserved@a{\\filename@simple#1.\\\\}%" << newl
+        << "  \\else" << newl
+        << "     \\edef\\filename@area{\\filename@area#1/}%" << newl
+        << "     \\def\\reserved@a{\\filename@path#2\\\\}%" << newl
+        << "  \\fi" << newl
+        << "  \\reserved@a}" << newl
+        << "\\makeatother" << newl;
+    dvipsfix(out);
+
     if(!pipe)
       out << "\\input picture" << newl;
   }
@@ -129,7 +174,7 @@ template<class T>
 bool setlatexfont(T& out, const pen& p, const pen& lastpen)
 {
   if(p.size() != lastpen.size() || p.Lineskip() != lastpen.Lineskip()) {
-    out <<  "\\fontsize{" << p.size() << "}{" << p.Lineskip()
+    out <<  "\\fontsize{" << p.size()*ps2tex << "}{" << p.Lineskip()*ps2tex
         << "}\\selectfont\n";
     return true;
   }
@@ -148,19 +193,23 @@ bool settexfont(T& out, const pen& p, const pen& lastpen, bool latex)
 }
 
 class texfile : public psfile {
+protected:  
   bbox box;
   bool inlinetex;
   double Hoffset;
-
+  int level;
+  
 public:
   string texengine;
   
   texfile(const string& texname, const bbox& box, bool pipe=false);
-  ~texfile();
+  virtual ~texfile();
 
   void prologue();
+  virtual void beginpage() {}
 
   void epilogue(bool pipe=false);
+  virtual void endpage() {}
 
   void setlatexcolor(pen p);
   void setpen(pen p);
@@ -179,6 +228,15 @@ public:
   
   void endraw();
   
+  void begingroup() {++level;}
+  
+  void endgroup() {--level;}
+  
+  bool toplevel() {return level == 0;}
+  
+  void beginpicture(const bbox& b);
+  void endpicture(const bbox& b);
+  
   void writepair(pair z) {
     *out << z;
   }
@@ -196,6 +254,130 @@ public:
   void endlayer();
 };
 
+class svgtexfile : public texfile {
+  mem::stack<size_t> clipstack;
+  size_t clipcount;
+  size_t gradientcount;
+  size_t gouraudcount;
+  size_t tensorcount;
+  bool inspecial;
+  static string nl;
+public:  
+  svgtexfile(const string& texname, const bbox& box, bool pipe=false) :
+    texfile(texname,box,pipe) {
+    clipcount=0;
+    gradientcount=0;
+    gouraudcount=0;
+    tensorcount=0;
+    inspecial=false;
+  }
+  
+  void writeclip(path p, bool newPath=true) {
+    write(p,false);
+  }
+  
+  void dot(path p, pen, bool newPath=true);
+  
+  void writeshifted(pair z) {
+    write(conj(z)*ps2tex);
+  }
+  
+  void translate(pair z) {}
+  void concat(transform t) {}
+  
+  void beginspecial();
+  void endspecial();
+  
+  // Prevent unwanted page breaks.
+  void beginpage() {
+    beginpicture(box);
+  }
+  
+  void endpage() {
+    endpicture(box);
+  }
+  
+  void begintransform();
+  void endtransform();
+  
+  void clippath();
+  
+  void beginpath();
+  void endpath();
+  
+  void newpath() {
+    beginspecial();
+    begintransform();
+    beginpath();
+  }
+  
+  void moveto(pair z) {
+    *out << "M";
+    writeshifted(z);
+  }
+  
+  void lineto(pair z) {
+    *out << "L";
+    writeshifted(z);
+  }
+
+  void curveto(pair zp, pair zm, pair z1) {
+    *out << "C";
+    writeshifted(zp); writeshifted(zm); writeshifted(z1);
+  }
+
+  void closepath() {
+    *out << "Z";
+  }
+
+  string rgbhex(pen p) {
+    p.torgb();
+    return p.hex();
+  }
+  
+  void properties(const pen& p);
+  void color(const pen &p, const string& type);
+    
+  void stroke(const pen &p, bool dot=false);
+  void strokepath();
+  
+  void fillrule(const pen& p, const string& type="fill");
+  void fill(const pen &p);
+  
+  void begingradientshade(bool axial, ColorSpace colorspace,
+                          const pen& pena, const pair& a, double ra,
+                          const pen& penb, const pair& b, double rb);
+  void gradientshade(bool axial, ColorSpace colorspace,
+                     const pen& pena, const pair& a, double ra,
+                     const pen& penb, const pair& b, double rb);
+  
+  void gouraudshade(const pen& p0, const pair& z0,
+                    const pen& p1, const pair& z1, 
+                    const pen& p2, const pair& z2);
+  void begingouraudshade(const vm::array& pens, const vm::array& vertices,
+                         const vm::array& edges);
+  void gouraudshade(const pen& pentype, const vm::array& pens,
+                    const vm::array& vertices, const vm::array& edges);
+  
+  void begintensorshade(const vm::array& pens,
+                        const vm::array& boundaries,
+                        const vm::array& z);
+  void tensorshade(const pen& pentype, const vm::array& pens,
+                   const vm::array& boundaries, const vm::array& z);
+
+  void beginclip();
+  
+  void endclip0(const pen &p);
+  void endclip(const pen &p);
+  void endpsclip(const pen &p) {}
+  
+  void setpen(pen p) {if(!inspecial) texfile::setpen(p);}
+  
+  void gsave(bool tex=false);
+  
+  void grestore(bool tex=false);
+};
+  
 } //namespace camp
 
 #endif

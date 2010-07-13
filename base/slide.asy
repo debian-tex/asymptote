@@ -18,11 +18,8 @@ bool landscape=orientation == Landscape || orientation == Seascape;
 
 if(landscape) {
   orientation=Portrait;
-  real temp=settings.paperwidth;
-  settings.paperwidth=settings.paperheight;
-  settings.paperheight=temp;
-  pagewidth += settings.paperwidth;
-  pageheight += settings.paperheight;
+  pagewidth += settings.paperheight;
+  pageheight += settings.paperwidth;
 } else {
   pagewidth += settings.paperwidth;
   pageheight += settings.paperheight;
@@ -217,11 +214,10 @@ bool checkposition()
   return true;
 }
 
-void step()
-{
+void erasestep(int erasenode) {
   if(!stepping || !allowstepping) return;
   if(!checkposition()) return;
-  lastnode.push(currentpicture.nodes.length-1);
+  lastnode.push(erasenode);
   nextpage(steppagenumberpen);
   for(int i=0; i < firstnode.length; ++i) {
     for(int j=firstnode[i]; j <= lastnode[i]; ++j) {
@@ -231,6 +227,12 @@ void step()
   }
   firstnode.push(currentpicture.nodes.length-1);
   tex(bulletcolor(newbulletcolor));
+}
+
+void step()
+{
+  // Step without erasing anything.
+  erasestep(currentpicture.nodes.length-1);
 }
 
 void incrementposition(pair z)
@@ -279,11 +281,13 @@ void remark(bool center=false, string s, pair align=0, pen p=itempen,
   pair M=tinv*min(f);
   
   if(abs(offset.x+M.x) > 1)
-    write("warning: slide too wide on page "+(string) page+':\n'+(string) s);
+    warning("slidetoowide","slide too wide on page "+(string) page+':\n'+
+            (string) s);
 
   if(abs(offset.y+M.y) > 1) {
     void toohigh() {
-      write("warning: slide too high on page "+(string) page+':\n'+(string) s);
+      warning("slidetoohigh","slide too high on page "+(string) page+':\n'+
+              (string) s);
     }
     if(M.y-m.y < 2) {
       newslide(); offset=(offset.x,currentposition.y);
@@ -326,7 +330,7 @@ void skip(real n=1)
 }
 
 void display(frame[] f, real margin=0, pair align=S, pen p=itempen,
-             pen figuremattpen=figuremattpen)
+             pen figuremattpen=figuremattpen, bool final=true)
 {
   if(f.length == 0) return;
   real[] width=new real[f.length];
@@ -336,7 +340,7 @@ void display(frame[] f, real margin=0, pair align=S, pen p=itempen,
     sum += width[i];
   }
   if(sum > pagewidth)
-    write("warning: slide too wide on page "+(string) page);
+    warning("toowide","slide too wide on page "+(string) page);
   else margin=(pagewidth-sum)/(f.length+1);
   real pos;
   frame F;
@@ -347,19 +351,22 @@ void display(frame[] f, real margin=0, pair align=S, pen p=itempen,
     pos += w;
   }
   add(F,(0,currentposition.y),align);
-  real a=0.5(unit(align).y-1);
-  incrementposition((0,(tinv*(a*(max(F)-min(F))-itemskip*I*lineskip(p)*pt)).y));
+  if (final) {
+    real a=0.5(unit(align).y-1);
+    incrementposition(
+        (0, (tinv*(a*(max(F)-min(F))-itemskip*I*lineskip(p)*pt)).y));
+  }
 }
 
 void display(frame f, real margin=0, pair align=S, pen p=itempen,
-             pen figuremattpen=figuremattpen)
+             pen figuremattpen=figuremattpen, bool final=true)
 {
-  display(new frame[] {f},margin,align,p,figuremattpen);
+  display(new frame[] {f},margin,align,p,figuremattpen, final);
 }
 
 void display(string[] s, real margin=0, string[] captions=new string[],
              string caption="", pair align=S, pen p=itempen,
-             pen figuremattpen=figuremattpen)
+             pen figuremattpen=figuremattpen, bool final=true)
 {
   frame[] f=new frame[s.length];
   frame F;
@@ -374,32 +381,60 @@ void display(string[] s, real margin=0, string[] captions=new string[],
     if(captions[i] != "")
       label(f[i],captions[i],point(f[i],S).x+I*y,S);
   }
-  display(f,margin,align,p,figuremattpen);
+  display(f,margin,align,p,figuremattpen, final);
   if(caption != "") center(caption,p);
 }
 
 void display(string s, string caption="", pair align=S, pen p=itempen,
-             pen figuremattpen=figuremattpen)
+             pen figuremattpen=figuremattpen, bool final=true)
 {
-  display(new string[] {s},caption,align,p,figuremattpen);
+  display(new string[] {s},caption,align,p,figuremattpen, final);
 }
 
 void figure(string[] s, string options="", real margin=0, 
             string[] captions=new string[], string caption="",
-            pair align=S, pen p=itempen, pen figuremattpen=figuremattpen)
+            pair align=S, pen p=itempen, pen figuremattpen=figuremattpen,
+            bool final=true)
 {
   string[] S;
   for(int i=0; i < s.length; ++i) {
     S[i]=graphic(s[i],options);
   }
 
-  display(S,margin,captions,caption,align,itempen,figuremattpen);
+  display(S,margin,captions,caption,align,itempen,figuremattpen, final);
 }
 
 void figure(string s, string options="", string caption="", pair align=S,
-            pen p=itempen, pen figuremattpen=figuremattpen)
+            pen p=itempen, pen figuremattpen=figuremattpen, bool final=true)
 {
-  figure(new string[] {s},options,caption,align,p,figuremattpen);
+  figure(new string[] {s},options,caption,align,p,figuremattpen, final);
+}
+
+void multifigure(string[] slist, string options="", string caption="",
+                 pair align=S, pen p=itempen, pen figuremattpen=figuremattpen)
+{
+  if (stepping) {
+    int lastnode = currentpicture.nodes.length-1;
+    for (int i=0; i<slist.length-1; ++i) {
+      figure(slist[i], options, caption, align, p, figuremattpen, final=false);
+      erasestep(lastnode);
+    }
+  }
+  figure(slist[slist.length-1], options, caption, align, p, figuremattpen,
+         final=true);
+
+  if(!firststep) step();
+  firststep=false;
+}
+
+void indexedfigure(string prefix, int first, int last, 
+                   string options="", string caption="",
+                   pair align=S, pen p=itempen, pen figuremattpen=figuremattpen)
+{
+  string[] s;
+  for(int i=first; i <= last; ++i)
+    s.push(prefix+string(i));
+  multifigure(s, options, caption, align, p, figuremattpen);
 }
 
 string[] codefile;
@@ -409,7 +444,7 @@ void asyinclude(string s, real xsize=0, real ysize=xsize)
   picture currentpictureSave=currentpicture;
   currentpicture=new picture;
   _eval("include \""+s+"\";",true);
-  s=stripdirectory(settings.outname+"_"+s);
+  s=stripdirectory(outprefix()+"_"+s);
   codefile.push(s);
   frame f=(xsize > 0 || ysize > 0) ?
     currentpicture.fit(xsize,ysize) : currentpicture.fit();
@@ -455,7 +490,7 @@ void asyfigure(string s, string options="", string caption="", pair align=S,
 string asywrite(string s, string preamble="")
 {
   static int count=0;
-  string name=settings.outname+"_slide"+(string) count;
+  string name=outprefix()+"_slide"+(string) count;
   ++count;
   file temp=output(name+".asy");
   write(temp,preamble);
@@ -491,8 +526,8 @@ void item(string s, pen p=itempen, bool step=itemstep)
   frame b;
   label(b,bullet,(0,0),p);
   real bulletwidth=max(b).x-min(b).x;
-  remark(bullet+"\hangindent"+(string) bulletwidth+"pt$\,$"+s,p,
-         -bulletwidth*pt,step=step);
+  remark(bullet+"\hangindent"+(string) (bulletwidth/pt)+"pt$\,$"+s,p,
+         -bulletwidth,step=step);
 }
 
 void subitem(string s, pen p=itempen)

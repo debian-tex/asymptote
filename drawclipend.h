@@ -35,6 +35,8 @@ public:
 
   bool endgroup() {return true;}
   
+  bool svg() {return true;}
+  
   void save(bool b) {
     grestore=b;
     if(partner) partner->save(b);
@@ -46,11 +48,11 @@ public:
   }
 
   bool write(texfile *out, const bbox& bpath) {
-    out->verbatimline(settings::endpicture(out->texengine));
-    out->verbatim("\\kern");
-    double width=bpath.right-bpath.left;
-    out->write(-width*ps2tex);
-    out->verbatimline("pt%");
+    out->endgroup();
+    
+    if(out->toplevel()) 
+      out->endpicture(bpath);
+
     if(grestore) out->grestore();
     return true;
   }

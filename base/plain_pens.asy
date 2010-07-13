@@ -1,12 +1,17 @@
 real labelmargin=0.3;
 real dotfactor=6;
 
-pen solid=linetype("");
-pen dotted=linetype("0 4");
-pen dashed=linetype("8 8");
-pen longdashed=linetype("24 8");
-pen dashdotted=linetype("8 8 0 8");
-pen longdashdotted=linetype("24 8 0 8");
+pen solid=linetype(new real[]);
+pen dotted=linetype(new real[] {0,4});
+pen dashed=linetype(new real[] {8,8});
+pen longdashed=linetype(new real[] {24,8});
+pen dashdotted=linetype(new real[] {8,8,0,8});
+pen longdashdotted=linetype(new real[] {24,8,0,8});
+
+pen linetype(string pattern, real offset=0, bool scale=true, bool adjust=true) 
+{
+  return linetype((real[]) split(pattern),offset,scale,adjust);
+}
 
 void defaultpen(real w) {defaultpen(linewidth(w));}
 pen operator +(pen p, real w) {return p+linewidth(w);}
@@ -139,11 +144,11 @@ pen[] colorPen={red,blue,green,magenta,cyan,orange,purple,brown,
                 deepblue,deepgreen,chartreuse,fuchsia,lightred,
                 lightblue,black,pink,yellow,gray};
 
-colorPen.cyclic(true);
+colorPen.cyclic=true;
 
 pen[] monoPen={solid,dashed,dotted,longdashed,dashdotted,
                longdashdotted};
-monoPen.cyclic(true);
+monoPen.cyclic=true;
 
 pen Pen(int n) 
 {
@@ -195,9 +200,10 @@ pen font(string name, string options="")
 
 pen font(string name, real size, string options="") 
 {
+  string s=(string) (size/pt)+"pt";
   if(settings.tex == "context")
-    return fontsize(size)+font(name+","+(string) size+"pt",options);
-  return fontsize(size)+font(name+" at "+(string) size+"pt");
+    return fontsize(size)+font(name+","+s,options);
+  return fontsize(size)+font(name+" at "+s);
 }
 
 pen font(string encoding, string family, string series, string shape) 

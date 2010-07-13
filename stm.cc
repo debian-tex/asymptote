@@ -15,6 +15,9 @@
 #include "exp.h"
 #include "stm.h"
 
+#include "symbol.h"
+#include "opsymbols.h"
+
 namespace absyntax {
 
 using namespace trans;
@@ -47,7 +50,7 @@ void expStm::prettyprint(ostream &out, Int indent)
   body->prettyprint(out, indent+1);
 }
 
-void expStm::baseTrans(coenv &e, exp *expr)
+void baseExpTrans(coenv &e, exp *expr)
 {
   types::ty_kind kind = expr->trans(e)->kind;
   if (kind != types::ty_void)
@@ -56,54 +59,113 @@ void expStm::baseTrans(coenv &e, exp *expr)
 }
 
 void expStm::trans(coenv &e) {
-  baseTrans(e, body);
+  baseExpTrans(e, body);
 }
 
-exp *tryToWriteExp(coenv &e, exp *body)
+// For an object such as currentpicture, write 'picture currentpicture' to
+// give some information.  Only do this when the object has a name.
+void tryToWriteTypeOfExp(types::ty *t, exp *body)
 {
-  // First check if it is the kind of expression that should be written.
-  if (body->writtenToPrompt() &&
-      settings::getSetting<bool>("interactiveWrite"))
-    {
-      types::ty *t=body->cgetType(e);
-      if (t->kind == ty_error) {
-        return body;
-      }
-      else {
-        exp *callee=new nameExp(body->getPos(), symbol::trans("write"));
-        exp *call=new callExp(body->getPos(), callee, body);
+  symbol name=body->getName();
+  if (!name)
+    return;
 
-        types::ty *ct=call->getType(e);
-        if (ct->kind == ty_error || ct->kind == ty_overloaded) {
-          return body;
-        }
-        else {
-          // Issue a warning if the act of writing turns an ambiguous expression
-          // into an unambiguous one.
-          if (t->kind == ty_overloaded) {
-            string s=settings::warn("writeoverloaded");
-            if(!s.empty()) {
-              em.warning(body->getPos());
-              em << "writing overloaded";
-              if (body->getName())
-                em << " variable '" << *body->getName() << "'";
-              else
-                em << " expression";
-              em.disable(s);
-            }
-          }
-          return call;
-        }
-      }
-    }
+  overloaded *set = dynamic_cast<overloaded *>(t);
+  if (set)
+    for(ty_vector::iterator ot=set->sub.begin(); ot!=set->sub.end(); ++ot)
+      tryToWriteTypeOfExp(*ot, body);
   else {
-    return body;
+    cout << "<";
+    t->printVar(cout, name);
+    cout << ">" << endl;
+  }
+}
+  
+// From dec.cc:
+varEntry *makeVarEntry(position pos, coenv &e, record *r, types::ty *t);
+
+void storeExp(coenv &e, types::ty *t, exp *expr) {
+  assert(t->kind != ty_error);
+  assert(t->kind != ty_void);
+  assert(t->kind != ty_overloaded);
+
+  expr->transAsType(e, t);
+
+  // Store the value in a new variable of the proper type.
+  varEntry *v = makeVarEntry(expr->getPos(), e, 0, t);
+  e.e.addVar(symbol::trans("operator answer"), v);
+  v->getLocation()->encode(WRITE, expr->getPos(), e.c);
+  e.c.encode(inst::pop);
+}
+
+void storeAndWriteExp(coenv &e, types::ty *t, exp *expr) {
+  storeExp(e, t, expr);
+
+  position pos=expr->getPos();
+  baseExpTrans(e, new callExp(pos, new nameExp(pos, "write"),
+                                   new nameExp(pos, "operator answer")));
+}
+
+void tryToWriteExp(coenv &e, exp *expr)
+{
+  position pos=expr->getPos();
+  types::ty *t=expr->cgetType(e);
+
+  // If the original expression is bad, just print the errors.
+  // If it is a function which returns void, just call the function.
+  if (t->kind == ty_error || t->kind == ty_void) {
+    baseExpTrans(e, expr);
+    return;
+  }
+
+  exp *callee=new nameExp(pos, symbol::trans("write"));
+  exp *call=new callExp(pos, callee, expr);
+
+  types::ty *ct=call->getType(e);
+  if (ct->kind == ty_error || ct->kind == ty_overloaded) {
+    if (t->kind == ty_overloaded) {
+      // Translate the expr in order to print the ambiguity error first.
+      expr->trans(e);
+      em.sync();
+      assert(em.errors());
+      
+      // Then, write out all of the types.
+      tryToWriteTypeOfExp(t, expr);
+    }
+    else {
+      // Write the type of the expression and, since it is unique, assign it to
+      // 'operator answer' even though its value isn't printed.
+      tryToWriteTypeOfExp(t, expr);
+      storeExp(e, t, expr);
+    }
+  }
+  else if (t->kind == ty_overloaded) {
+    // If the exp is overloaded, but the act of writing makes it
+    // unambiguous, add a suffix to the output to warn the user of this.
+    exp *suffix=new nameExp(pos,
+                            symbol::trans("overloadedMessage"));
+    exp *callWithSuffix=new callExp(pos,
+                                    callee, expr, suffix);
+
+    if (callWithSuffix->getType(e)->kind != ty_error)
+      baseExpTrans(e, callWithSuffix);
+    else
+      baseExpTrans(e, call);
+  }
+  else {
+    // Interactive writing can proceed normally.
+    storeAndWriteExp(e, t, expr);
   }
 }
 
 void expStm::interactiveTrans(coenv &e)
 {
-  baseTrans(e, tryToWriteExp(e, body));
+  // First check if it is the kind of expression that should be written.
+  if (body->writtenToPrompt() && 
+      settings::getSetting<bool>("interactiveWrite"))
+    tryToWriteExp(e, body);
+  else
+    baseExpTrans(e, body);
 }
 
 
@@ -245,7 +307,7 @@ void forStm::trans(coenv &e)
 void extendedForStm::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "extendedForStm: '" << *var << "'\n";
+  out << "extendedForStm: '" << var << "'\n";
 
   start->prettyprint(out, indent+1);
   set->prettyprint(out, indent+1);
@@ -264,8 +326,8 @@ void extendedForStm::trans(coenv &e) {
   position pos=getPos();
 
   // Use gensyms for the variable names so as not to pollute the namespace.
-  symbol *a=symbol::gensym("a");
-  symbol *i=symbol::gensym("i");
+  symbol a=symbol::gensym("a");
+  symbol i=symbol::gensym("i");
 
   // start[] a=set;
   arrayTy at(pos, start, new dimensions(pos));
@@ -274,7 +336,8 @@ void extendedForStm::trans(coenv &e) {
 
   // { start var=a[i]; body }
   block b(pos);
-  decid dec2(pos, new decidstart(pos, var), 
+  decid dec2(pos,
+             new decidstart(pos, var), 
              new subscriptExp(pos, new nameExp(pos, a),
                               new nameExp(pos, i)));
   b.add(new vardec(pos, start, &dec2));
@@ -284,15 +347,19 @@ void extendedForStm::trans(coenv &e) {
 
   // for (int i=0; i < a.length; ++i)
   //   <block>
-  forStm(pos, new vardec(pos, new tyEntryTy(pos, primInt()),
-                         new decid(pos, new decidstart(pos, i),
+  forStm(pos,
+         new vardec(pos, new tyEntryTy(pos, primInt()),
+                         new decid(pos,
+                                   new decidstart(pos, i),
                                    new intExp(pos, 0))),
-         new binaryExp(pos, new nameExp(pos, i),
-                       symbol::trans("<"),
-                       new nameExp(pos, new qualifiedName(pos, new simpleName(pos, a),
-                                                          symbol::trans("length")))),
-         new expStm(pos, new prefixExp(pos, new nameExp(pos, i),
-                                       symbol::trans("+"))),
+         new binaryExp(pos,
+                       new nameExp(pos, i),
+                       SYM_LT,
+                       new nameExp(pos,
+                                   new qualifiedName(pos,
+                                                     new simpleName(pos, a),
+                                                     symbol::trans("length")))),
+         new expStm(pos, new prefixExp(pos, new nameExp(pos, i), SYM_PLUS)),
          new blockStm(pos, &b)).trans(e);
 }
                               

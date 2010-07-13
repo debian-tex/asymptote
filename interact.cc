@@ -14,8 +14,10 @@
 #include <csignal>
 
 #include "interact.h"
+#include "runhistory.h"
 
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
+#include <cstdio>
 #include <readline/readline.h>
 #include <readline/history.h>
 #endif
@@ -83,7 +85,6 @@ void pre_readline()
 {
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
   if(tty) {
-    run::init_readline(getSetting<bool>("tabcompletion"));
     Readline=readline;
   } else
 #endif
@@ -95,6 +96,7 @@ void init_interactive()
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
   if(tty) {
     init_completion();
+    run::init_readline(getSetting<bool>("tabcompletion"));
     read_history(historyname.c_str());
   }
 #endif

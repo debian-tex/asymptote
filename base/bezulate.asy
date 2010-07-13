@@ -20,34 +20,34 @@ int countIntersections(path[] p, pair start, pair end)
 path[][] containmentTree(path[] paths)
 {
   path[][] result;
-  for(int i=0; i < paths.length; ++i) {
-    bool classified=false;
+  for(path g : paths) {
     // check if current curve contains or is contained in a group of curves
-    for(int j=0; !classified && j < result.length; ++j)
-    {
-      int test = inside(paths[i],result[j][0],zerowinding);
-      if(test == 1) // current curve contains group's toplevel curve
-      {
+    int j;
+    for(j=0; j < result.length; ++j) {
+      path[] resultj=result[j];
+      int test=inside(g,resultj[0],zerowinding);
+      if(test == 1) {
+        // current curve contains group's toplevel curve;
         // replace toplevel curve with current curve
-        result[j].insert(0,paths[i]);
-        classified = true;
-      }
-      else if(test == -1) // current curve contained in group's toplevel curve
-      {
-        result[j].push(paths[i]);
-        classified = true;
+        resultj.insert(0,g);
+        // check to see if any other groups are contained within this curve
+        for(int k=j+1; k < result.length;) {
+          if(inside(g,result[k][0]) == 1) {
+            resultj.append(result[k]);
+            result.delete(k);
+          } else ++k;
+        }
+        break;
+      } else if(test == -1) {
+        // current curve contained within group's toplevel curve
+        resultj.push(g);
+        break;
       }
     }
     // create a new group if this curve does not belong to another group
-    if(!classified)
-      result.push(new path[] {paths[i]});
+    if(j == result.length)
+      result.push(new path[] {g});
   }
-
-  // sort group so that later paths in the array are contained in previous paths
-  bool comparepaths(path i, path j) {return inside(i,j,zerowinding)==1;}
-  for(int i=0; i < result.length; ++i)
-    result[i] = sort(result[i],comparepaths);
-
   return result;
 }
 
@@ -92,11 +92,11 @@ void connect(path[] paths, path[] result, path[] patch)
     path[] remainingCurves;
     path[] inners;
     for(path[] innerGroup:innerTree)
-    {
-      inners.push(innerGroup[0]);
-      if(innerGroup.length>1)
-        remainingCurves.append(innerGroup[1:]);
-    }
+      {
+        inners.push(innerGroup[0]);
+        if(innerGroup.length>1)
+          remainingCurves.append(innerGroup[1:]);
+      }
     connect(remainingCurves,result,patch);
     real d=2*abs(max(outer)-min(outer));
     while(inners.length > 0) {
@@ -134,36 +134,36 @@ void connect(path[] paths, path[] result, path[] patch)
       while(!found && timeoffset > fuzz) {
         timeoffset /= 2;
         if(countIntersections(allCurves,start,
-            point(outer,endtime+timeoffset)) == 2)
-        {
-          portion = subpath(outer,endtime,endtime+timeoffset)--start--cycle;
-          found=true;
-          // check if an inner curve is inside the portion
-          for(int k = 0; found && k < inners.length; ++k)
+                              point(outer,endtime+timeoffset)) == 2)
           {
-            if(k!=curveIndex &&
-               inside(portion,point(inners[k],0),zerowinding))
-              found = false;
+            portion = subpath(outer,endtime,endtime+timeoffset)--start--cycle;
+            found=true;
+            // check if an inner curve is inside the portion
+            for(int k = 0; found && k < inners.length; ++k)
+              {
+                if(k!=curveIndex &&
+                   inside(portion,point(inners[k],0),zerowinding))
+                  found = false;
+              }
           }
-        }
       }
 
       if(!found) timeoffset=-2;
       while(!found && timeoffset < -fuzz) {
         timeoffset /= 2;
         if(countIntersections(allCurves,start,
-            point(outer,endtime+timeoffset))==2)
-        {
-          portion = subpath(outer,endtime+timeoffset,endtime)--start--cycle;
-          found = true;
-          // check if an inner curve is inside the portion
-          for(int k = 0; found && k < inners.length; ++k)
+                              point(outer,endtime+timeoffset))==2)
           {
-            if(k!=curveIndex &&
-               inside(portion,point(inners[k],0),zerowinding))
-              found = false;
+            portion = subpath(outer,endtime+timeoffset,endtime)--start--cycle;
+            found = true;
+            // check if an inner curve is inside the portion
+            for(int k = 0; found && k < inners.length; ++k)
+              {
+                if(k!=curveIndex &&
+                   inside(portion,point(inners[k],0),zerowinding))
+                  found = false;
+              }
           }
-        }
       }
       assert(found);
       endtime=min(endtime,endtime+timeoffset);
@@ -171,8 +171,8 @@ void connect(path[] paths, path[] result, path[] patch)
 
       // depends on the curves having opposite orientations
       path remainder=section(outer,endtime+timeoffset,endtime)
-                              --uncycle(inners[curveIndex],
-                              starttime)--cycle;
+        --uncycle(inners[curveIndex],
+                  starttime)--cycle;
       inners.delete(curveIndex);
       outer = remainder;
       patch.append(portion);
@@ -238,7 +238,7 @@ path[] bezulate(path[] p)
             // avoid infinite recursion
             ++refinements;
             if(refinements > mantissaBits) {
-              write("warning: too many subdivisions");
+              warning("subdivisions","too many subdivisions",position=true);
             } else {
               p=subdivide(p);
               i=-1;
