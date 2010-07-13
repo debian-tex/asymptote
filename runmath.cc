@@ -51,52 +51,6 @@ array *copyArray(array *a);
 array *copyArray2(array *a);
 array *copyArray3(array *a);
 
-inline size_t checkdimension(const array *a, size_t dim)
-{
-  size_t size=checkArray(a);
-  if(dim && size != dim) {
-    ostringstream buf;
-    buf << "array of length " << dim << " expected";
-    error(buf);
-  }
-  return size;
-}
-
-template<class T>
-void copyArrayC(T* &dest, const array *a, size_t dim=0,
-                GCPlacement placement=NoGC)
-{
-  size_t size=checkdimension(a,dim);
-  dest=(placement == NoGC) ? new T[size] : new(placement) T[size];
-  for(size_t i=0; i < size; i++) 
-    dest[i]=read<T>(a,i);
-}
-
-template<class T>
-void copyArray2C(T* &dest, const array *a, bool square=true, size_t dim2=0,
-                 GCPlacement placement=NoGC)
-{
-  size_t n=checkArray(a);
-  size_t m=(square || n == 0) ? n : checkArray(read<array*>(a,0));
-  if(n > 0 && dim2 && m != dim2) {
-    ostringstream buf;
-    buf << "second matrix dimension must be " << dim2;
-    error(buf);
-  }
-  
-  dest=(placement == NoGC) ? new T[n*m] : new(placement) T[n*m];
-  for(size_t i=0; i < n; i++) {
-    array *ai=read<array*>(a,i);
-    size_t aisize=checkArray(ai);
-    if(aisize == m) {
-      T *desti=dest+i*m;
-      for(size_t j=0; j < m; j++) 
-        desti[j]=read<T>(ai,j);
-    } else
-      error(square ? "matrix must be square" : "matrix must be rectangular");
-  }
-}
-
 double *copyTripleArray2Components(array *a, bool square=true, size_t dim2=0,
                                    GCPlacement placement=NoGC);
 }
@@ -170,8 +124,10 @@ void Srand(Int seed)
 
 
 
+#ifndef NOSYM
 #include "runmath.symbols.h"
 
+#endif
 namespace run {
 #line 75 "runmath.in"
 // real ^(real x, Int y);
@@ -568,7 +524,7 @@ void gen_runmath37(stack *Stack)
 {
   Int a=vm::pop<Int>(Stack);
 #line 299 "runmath.in"
-  if((unsignedInt) a > 0xFFFFFFFF) {Stack->push<Int>(-1); return;}
+  if((uint32_t) a > 0xFFFFFFFF) {Stack->push<Int>(-1); return;}
   {Stack->push<Int>(CLZ((uint32_t) a)); return;}
 }
 
@@ -578,8 +534,8 @@ void gen_runmath38(stack *Stack)
 {
   Int a=vm::pop<Int>(Stack);
 #line 305 "runmath.in"
-  if((unsignedInt) a > 0xFFFFFFFF) {Stack->push<Int>(-1); return;}
-#ifdef __GNUC__
+  if((uint32_t) a > 0xFFFFFFFF) {Stack->push<Int>(-1); return;}
+#if __GNUC_PREREQ(3,4)
   {Stack->push<Int>(__builtin_ctz(a)); return;}
 #else
   // find the number of trailing zeros in a 32-bit number
@@ -587,7 +543,7 @@ void gen_runmath38(stack *Stack)
     0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
     31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
   };
-  {Stack->push<Int>(MultiplyDeBruijnBitPosition[((unsignedInt)((a & -a) * 0x077CB531U))
+  {Stack->push<Int>(MultiplyDeBruijnBitPosition[((uint32_t)((a & -a) * 0x077CB531U))
                                      >> 27]); return;}
 #endif
 }

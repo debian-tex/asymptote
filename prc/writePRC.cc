@@ -31,10 +31,14 @@
 
 using namespace std;
 
+#ifndef __GNUC_PREREQ
+#define __GNUC_PREREQ(maj, min) (0)
+#endif
+
 // Count leading zeros.
 uint32_t CLZ(uint32_t a) 
 {
-#ifdef __GNUC__
+#if __GNUC_PREREQ(3,4)
   return __builtin_clz(a);
 #else
 // find the log base 2 of a 32-bit integer
@@ -49,7 +53,7 @@ uint32_t CLZ(uint32_t a)
   a |= a >> 8;
   a |= a >> 16;
 
-  return 31-MultiplyDeBruijnBitPosition[(unsignedInt)(a * 0x07C4ACDDU) >> 27];
+  return 31-MultiplyDeBruijnBitPosition[(uint32_t)(a * 0x07C4ACDDU) >> 27];
 #endif
 }
 
@@ -970,7 +974,9 @@ uint32_t makePRCID()
 
 void writeUnit(PRCbitStream &out,bool fromCAD,double unit)
 {
-  out << fromCAD << unit;
+  static const double inches=72;
+  static const double cm=inches/2.54;
+  out << fromCAD << 10.0/cm; // Use bp.
 }
 
 void writeEmptyMarkups(PRCbitStream &out)
