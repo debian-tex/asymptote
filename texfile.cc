@@ -55,13 +55,13 @@ void texfile::miniprologue()
     *out << "\\setuppagenumbering[location=]" << newl
          << "\\usetypescript[modern]" << newl
          << "\\starttext\\hbox{%" << newl;
-  }
+  } else *out << "\\nopagenumbers" << newl;
 }
 
 void texfile::prologue()
 {
   if(inlinetex) {
-    string prename=auxname(getSetting<string>("outname"),"pre");
+    string prename=buildname(settings::outname(),"pre");
     std::ifstream exists(prename.c_str());
     std::ofstream *outpreamble=
       new std::ofstream(prename.c_str(),std::ios::app);
