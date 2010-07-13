@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Hubert Chathi <uhoreg@debian.org>
 Uploaders: Ruben Molina <rmolina@udea.edu.co>
 Build-Depends: cdbs, debhelper (>= 5), flex, bison, libfftw3-dev, libreadline-dev, libncurses5-dev, libgc-dev (>= 1:6.4), libgsl0-dev, libsigsegv-dev, zlib1g-dev, freeglut3-dev, tex-common, autotools-dev
-Build-Depends-Indep: imagemagick, ghostscript, texlive-latex-base, texlive-latex-extra, texlive-base-bin, texlive-pstricks, texinfo
+Build-Depends-Indep: imagemagick, ghostscript, texlive-latex-base, texlive-latex-recommended, texlive-latex-extra, texlive-base-bin, texlive-pstricks, texinfo
 Standards-Version: 3.8.4
 Homepage: http://asymptote.sourceforge.net/
 

@@ -1,7 +1,7 @@
 asymptote (2.02-1) unstable; urgency=low
 
   * New Upstream Version
-  * Add texlive-latex-extra to Build-Depends for movie15.sty.
+  * Add texlive-latex-recommended and texlive-latex-extra to Build-Depends.
 
  -- Hubert Chathi <uhoreg@debian.org>  Tue, 13 Jul 2010 11:56:32 -0400
 
