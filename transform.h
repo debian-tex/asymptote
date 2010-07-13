@@ -166,6 +166,11 @@ inline transform scale(double s)
   return transform (0.0, 0.0, s, 0.0, 0.0, s);
 }
 
+inline transform scale(double x, double y)
+{
+  return transform (0.0, 0.0, x, 0.0, 0.0, y);
+}
+
 inline transform scale(pair z)
 {
   // Equivalent to multiplication by z.
@@ -211,6 +216,14 @@ inline transform reflectabout(pair z, pair w)
 
   return basis * flip * inverse(basis);
 }
+
+// Return the rotational part of t.
+inline transform rotation(transform t)
+{
+  pair z(2.0*t.getxx()*t.getyy(),t.getyx()*t.getyy()-t.getxx()*t.getxy());
+  if(t.getxx() < 0) z=-z;
+  return rotate(atan2(z.gety(),z.getx()));
+} 
 
 // Remove the x and y components, so the new transform maps zero to zero.
 inline transform shiftless(transform t)

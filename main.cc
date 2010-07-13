@@ -20,13 +20,16 @@
 *************/
 
 #include <iostream>
-#include <csignal>
 #include <cstdlib>
 #include <cerrno>
 #include <sys/wait.h>
 #include <sys/types.h>
 
 #include "common.h"
+
+#ifdef __CYGWIN__
+#define NOMINMAX
+#endif
 
 #ifdef HAVE_LIBSIGSEGV
 #include <sigsegv.h>
@@ -62,10 +65,12 @@ int sigsegv_handler (void *, int emergency)
 {
   if(!emergency) return 0; // Really a stack overflow
   em.runtime(vm::getPos());
+#ifdef HAVE_GL
   if(gl::glthread)
     cerr << "Stack overflow or segmentation fault: rerun with -nothreads"
          << endl;
   else
+#endif    
     cerr << "Segmentation fault" << endl;
   abort();
 }
@@ -79,8 +84,8 @@ void setsignal(RETSIGTYPE (*handler)(int))
                                 mystack,sizeof (mystack));
   sigsegv_install_handler(&sigsegv_handler);
 #endif
-  signal(SIGBUS,handler);
-  signal(SIGFPE,handler);
+  Signal(SIGBUS,handler);
+  Signal(SIGFPE,handler);
 }
 
 void signalHandler(int)
@@ -88,8 +93,8 @@ void signalHandler(int)
   // Print the position and trust the shell to print an error message.
   em.runtime(vm::getPos());
 
-  signal(SIGBUS,SIG_DFL);
-  signal(SIGFPE,SIG_DFL);
+  Signal(SIGBUS,SIG_DFL);
+  Signal(SIGFPE,SIG_DFL);
 }
 
 void interruptHandler(int)
@@ -126,7 +131,7 @@ void *asymain(void *A)
   fpu_trap(trap());
 
   if(interactive) {
-    signal(SIGINT,interruptHandler);
+    Signal(SIGINT,interruptHandler);
     processPrompt();
   } else if (getSetting<bool>("listvariables") && numArgs()==0) {
     try {
@@ -154,12 +159,6 @@ void *asymain(void *A)
     int status;
     while(wait(&status) > 0);
   }
-#ifdef HAVE_LIBGL
-#ifdef HAVE_LIBPTHREAD
-  if(gl::glthread)
-    pthread_join(gl::mainthread,NULL);
-#endif
-#endif
   exit(em.processStatus() || interact::interactive ? 0 : 1);  
 }
 
@@ -174,13 +173,15 @@ int main(int argc, char *argv[])
   }
   
   Args args(argc,argv);
-#ifdef HAVE_LIBGL
+#ifdef HAVE_GL
   gl::glthread=getSetting<bool>("threads");
 #ifdef HAVE_LIBPTHREAD
   
   if(gl::glthread) {
+    pthread_t thread;
     try {
-      if(pthread_create(&gl::mainthread,NULL,asymain,&args) == 0) {
+      if(pthread_create(&thread,NULL,asymain,&args) == 0) {
+        gl::mainthread=pthread_self();
         while(true) {
           camp::glrenderWrapper();
           gl::initialize=true;

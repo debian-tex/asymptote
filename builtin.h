@@ -14,17 +14,15 @@ namespace trans {
 
 class tenv;
 class venv;
-class menv;
 
 // The base environments for built-in types and functions
 void base_tenv(tenv &);
 void base_venv(venv &);
-void base_menv(menv &);
 
 extern const types::formal noformal;
   
 // Add a function with one or more default arguments.
-void addFunc(venv &ve, vm::bltin f, types::ty *result, const char *name, 
+void addFunc(venv &ve, vm::bltin f, types::ty *result, symbol name, 
              types::formal f1=noformal, types::formal f2=noformal,
              types::formal f3=noformal, types::formal f4=noformal,
              types::formal f5=noformal, types::formal f6=noformal,

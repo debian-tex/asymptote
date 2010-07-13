@@ -14,7 +14,6 @@
 #include <locale.h>
 #include <unistd.h>
 #include <algorithm>
-#include <cstdarg>
 
 #include "common.h"
 
@@ -56,6 +55,10 @@ extern "C" {
 #ifdef clear
 #undef clear
 #endif
+// Workaround broken header file on i386-solaris with g++ 3.4.3.
+#ifdef erase
+#undef erase
+#endif
 
 using vm::item;
 
@@ -70,16 +73,21 @@ namespace settings {
   
 using camp::pair;
   
-#ifdef HAVE_LIBGL
+#ifdef HAVE_GL
 const bool haveglut=true;  
 #else
 const bool haveglut=false;
 #endif
   
+mode_t mask;
+  
+string systemDir=ASYMPTOTE_SYSDIR;
+
 #ifndef __CYGWIN__
   
 bool msdos=false;
 string HOME="HOME";
+string docdir=ASYMPTOTE_DOCDIR;
 const char pathSeparator=':';
 string defaultPSViewer="gv";
 #ifdef __APPLE__
@@ -88,10 +96,8 @@ string defaultPDFViewer="open";
 string defaultPDFViewer="xpdf";
 #endif  
 string defaultGhostscript="gs";
-string defaultPython;
 string defaultDisplay="display";
-string systemDir=ASYMPTOTE_SYSDIR;
-string docdir=ASYMPTOTE_DOCDIR;
+string defaultAnimate="animate";
 void queryRegistry() {}
 const string dirsep="/";
   
@@ -99,22 +105,25 @@ const string dirsep="/";
   
 bool msdos=true;
 string HOME="USERPROFILE";
+string docdir="c:\\Program Files\\Asymptote";
 const char pathSeparator=';';
-string defaultPSViewer="gsview32.exe";
-string defaultPDFViewer="AcroRd32.exe";
+//string defaultPSViewer="gsview32.exe";
+string defaultPSViewer="cmd";
+//string defaultPDFViewer="AcroRd32.exe";
+string defaultPDFViewer="cmd";
 string defaultGhostscript="gswin32c.exe";
-string defaultPython="python.exe";
-string defaultDisplay="imdisplay";
-string systemDir=ASYMPTOTE_SYSDIR;
-string docdir;
+//string defaultDisplay="imdisplay";
+string defaultDisplay="cmd";
+//string defaultAnimate="animate";
+string defaultAnimate="cmd";
 const string dirsep="\\";
   
 #include <dirent.h>
   
 // Use key to look up an entry in the MSWindows registry, respecting wild cards
-string getEntry(const string& key)
+string getEntry(const string& location, const string& key)
 {
-  string path="/proc/registry/HKEY_LOCAL_MACHINE/SOFTWARE/"+key;
+  string path="/proc/registry/"+location+key;
   size_t star;
   string head;
   while((star=path.find("*")) < string::npos) {
@@ -159,18 +168,30 @@ string getEntry(const string& key)
   return "";
 }
   
+// Use key to look up an entry in the MSWindows registry, respecting wild cards
+string getEntry(const string& key)
+{
+  string entry=getEntry("HKEY_CURRENT_USER/Software/",key);
+  if(entry.empty()) entry=getEntry("HKEY_LOCAL_MACHINE/SOFTWARE/",key);
+  return entry;
+}
+
 void queryRegistry()
 {
   string gs=getEntry("GPL Ghostscript/*/GS_DLL");
   if(gs.empty())
     gs=getEntry("AFPL Ghostscript/*/GS_DLL");
   defaultGhostscript=stripFile(gs)+defaultGhostscript;
+  if(defaultPDFViewer != "cmd")
   defaultPDFViewer=getEntry("Adobe/Acrobat Reader/*/InstallPath/@")+"\\"+
     defaultPDFViewer;
-  defaultPSViewer=getEntry("Ghostgum/GSview/*")+"\\gsview\\"+defaultPSViewer;
-  defaultPython=getEntry("Python/PythonCore/*/InstallPath/@")+defaultPython;
-  docdir=getEntry("Microsoft/Windows/CurrentVersion/App Paths/Asymptote/Path");
-  if(!systemDir.empty()) // An empty systemDir indicates a TeXLive build
+  if(defaultPSViewer != "cmd")
+    defaultPSViewer=getEntry("Ghostgum/GSview/*")+"\\gsview\\"+defaultPSViewer;
+  string s;
+  s=getEntry("Microsoft/Windows/CurrentVersion/App Paths/Asymptote/Path");
+  if(!s.empty()) docdir=s;
+  // An empty systemDir indicates a TeXLive build
+  if(!systemDir.empty() && !docdir.empty())
     systemDir=docdir;
 }
   
@@ -201,6 +222,7 @@ bool globalwrite() {return globaloption || !safe;}
   
 const string suffix="asy";
 const string guisuffix="gui";
+const string standardprefix="out";
   
 string initdir;
 string historyname;
@@ -217,9 +239,9 @@ types::record *getSettingsModule() {
   return settingsModule;
 }
 
-void Warn(const string& s)
+void noWarn(const string& s)
 {
-  array *Warn=getSetting<array *>("warnings");
+  array *Warn=getSetting<array *>("suppress");
   size_t size=checkArray(Warn);
   if(s.empty()) return;
   for(size_t i=0; i < size; i++)
@@ -227,23 +249,23 @@ void Warn(const string& s)
   Warn->push(s);
 }
 
-void noWarn(const string& s)
+void Warn(const string& s)
 {
-  array *Warn=getSetting<array *>("warnings");
+  array *Warn=getSetting<array *>("suppress");
   size_t size=checkArray(Warn);
   for(size_t i=0; i < size; i++)
     if(vm::read<string>(Warn,i) == s) 
       (*Warn).erase((*Warn).begin()+i,(*Warn).begin()+i+1);
 }
 
-string warn(const string& s)
+bool warn(const string& s)
 {
-  if(getSetting<bool>("debug")) return s;
-  array *Warn=getSetting<array *>("warnings");
+  if(getSetting<bool>("debug")) return true;
+  array *Warn=getSetting<array *>("suppress");
   size_t size=checkArray(Warn);
   for(size_t i=0; i < size; i++)
-    if(vm::read<string>(Warn,i) == s) return s;
-  return "";
+    if(vm::read<string>(Warn,i) == s) return false;
+  return true;
 }
 
 // The dictionaries of long options and short options.
@@ -606,14 +628,6 @@ struct dataSetting : public argumentSetting {
   }
 };
 
-template<class T>
-string String(T x)
-{
-  ostringstream buf;
-  buf << x; 
-  return buf.str();
-}
-  
 template<class T>
 string description(string desc, T defaultValue) 
 {
@@ -997,28 +1011,14 @@ void no_GCwarn(char *, GC_word)
 }
 #endif
 
-array* Array(const char *s ...) 
+array* stringArray(const char **s) 
 {
-  va_list v;
   size_t count=0;
-  const char *s0=s;
-  
-  va_start(v,s);
-  while(*s) {
+  while(s[count])
     ++count;
-    s=va_arg(v,char *);
-  }
-  va_end(v);
-  
   array *a=new array(count);
-  s=s0;
-  va_start(v,s);
-  for(size_t i=0; i < count; ++i) {
-    (*a)[i]=string(s);
-    s=va_arg(v,char *);
-  }
-  va_end(v);
-  
+  for(size_t i=0; i < count; ++i)
+    (*a)[i]=string(s[i]);
   return a;
 }
 
@@ -1037,32 +1037,30 @@ void initSettings() {
 // SHIFT LEFT: zoom
 // CTRL LEFT: shift
 // ALT LEFT: pan
-  array *leftbutton=Array("rotate","zoom","shift","pan","");
+  const char *leftbutton[]={"rotate","zoom","shift","pan",NULL};
   
 // MIDDLE: menu (must be unmodified; ignores Shift, Ctrl, and Alt)
-  array *middlebutton=Array("menu","");
+  const char *middlebutton[]={"menu",NULL};
   
 // RIGHT: zoom/menu (must be unmodified)
 // SHIFT RIGHT: rotateX
 // CTRL RIGHT: rotateY
 // ALT RIGHT: rotateZ
-  array *rightbutton=Array("zoom/menu","rotateX","rotateY","rotateZ","");
+  const char *rightbutton[]={"zoom/menu","rotateX","rotateY","rotateZ",NULL};
   
 // WHEEL_UP: zoomin
-  array *wheelup=Array("zoomin","");
+  const char *wheelup[]={"zoomin",NULL};
   
 // WHEEL_DOWN: zoomout
-  array *wheeldown=Array("zoomout","");
+  const char *wheeldown[]={"zoomout",NULL};
   
-  array *Warn=Array("writeoverloaded","");
-  
-  addOption(new stringArraySetting("leftbutton", leftbutton));
-  addOption(new stringArraySetting("middlebutton", middlebutton));
-  addOption(new stringArraySetting("rightbutton", rightbutton));
-  addOption(new stringArraySetting("wheelup", wheelup));
-  addOption(new stringArraySetting("wheeldown", wheeldown));
-  
-  addOption(new stringArraySetting("warnings", Warn));
+  addOption(new stringArraySetting("leftbutton", stringArray(leftbutton)));
+  addOption(new stringArraySetting("middlebutton", stringArray(middlebutton)));
+  addOption(new stringArraySetting("rightbutton", stringArray(rightbutton)));
+  addOption(new stringArraySetting("wheelup", stringArray(wheelup)));
+  addOption(new stringArraySetting("wheeldown", stringArray(wheeldown)));
+  addOption(new stringArraySetting("suppress", new array));
+
   addOption(new warnSetting("warn", 0, "string", "Enable warning"));
   
   multiOption *view=new multiOption("View", 'V', "View output");
@@ -1074,11 +1072,11 @@ void initSettings() {
   view->add(new boolSetting("interactiveView", 0,
                             "View output in interactive mode", true));
   addOption(view);
-  addOption(new stringSetting("xformat", 0, "format", 
-                              "GUI deconstruction format","png"));
   addOption(new stringSetting("outformat", 'f', "format",
                               "Convert each output file to specified format",
                               ""));
+  addOption(new boolSetting("svgemulation", 0,
+                            "Emulate unimplemented SVG shading", false));
   addOption(new boolSetting("prc", 0,
                             "Embed 3D PRC graphics in PDF output", true));
   addOption(new boolSetting("toolbar", 0,
@@ -1105,6 +1103,8 @@ void initSettings() {
                             "Render thick 3D lines", true));
   addOption(new boolSetting("thin", 0,
                             "Render thin 3D lines", true));
+  addOption(new boolSetting("autobillboard", 0,
+                            "3D labels always face viewer by default", true));
   addOption(new boolSetting("threads", 0,
                             "Use POSIX threads for 3D rendering", !msdos));
   addOption(new boolSetting("fitscreen", 0,
@@ -1140,6 +1140,11 @@ void initSettings() {
   addOption(new boolSetting("embed", 0, "Embed rendered preview image", true));
   addOption(new boolSetting("auto3D", 0, "Automatically activate 3D scene",
                             true));
+  addOption(new boolSetting("autoplay", 0, "Autoplay 3D animations", false));
+  addOption(new boolSetting("loop", 0, "Loop 3D animations", false));
+  addOption(new boolSetting("interrupt", 0, "", false));
+  addOption(new boolSetting("animating", 0, "", false));
+  addOption(new boolSetting("reverse", 0, "reverse 3D animations", false));
 
   addOption(new boolSetting("inlineimage", 0,
                             "Generate inline embedded image"));
@@ -1232,24 +1237,31 @@ void initSettings() {
                             1.05));
   addOption(new realSetting("zoomstep", 0, "step", "Mouse motion zoom step",
                             0.1));
-  addOption(new realSetting("spinstep", 0, "deg/sec", "Spin speed",
+  addOption(new realSetting("spinstep", 0, "deg/s", "Spin speed",
                             60.0));
+  addOption(new realSetting("framerate", 0, "frames/s", "Animation speed",
+                            30.0));
+  addOption(new realSetting("framedelay", 0, "ms",
+                            "Additional frame delay", 0.0));
   addOption(new realSetting("arcballradius", 0, "pixels",
                             "Arcball radius", 750.0));
   addOption(new realSetting("resizestep", 0, "step", "Resize step", 1.2));
-  addOption(new realSetting("doubleclick", 0, "ms",
-                            "Emulated double-click timeout", 200.0));
+  addOption(new IntSetting("doubleclick", 0, "ms",
+                           "Emulated double-click timeout", 200));
   
   addOption(new realSetting("paperwidth", 0, "bp", ""));
   addOption(new realSetting("paperheight", 0, "bp", ""));
   
   addOption(new stringSetting("dvipsOptions", 0, "string", ""));
+  addOption(new stringSetting("dvisvgmOptions", 0, "string", ""));
   addOption(new stringSetting("convertOptions", 0, "string", ""));
   addOption(new stringSetting("gsOptions", 0, "string", ""));
   addOption(new stringSetting("psviewerOptions", 0, "string", ""));
   addOption(new stringSetting("pdfviewerOptions", 0, "string", ""));
   addOption(new stringSetting("pdfreloadOptions", 0, "string", ""));
   addOption(new stringSetting("glOptions", 0, "string", ""));
+  addOption(new stringSetting("hyperrefOptions", 0, "str",
+                              "","setpagesize=false,unicode,pdfborder=0 0 0"));
   
   addOption(new envSetting("config","config."+suffix));
   addOption(new envSetting("pdfviewer", defaultPDFViewer));
@@ -1258,14 +1270,15 @@ void initSettings() {
   addOption(new envSetting("texpath", ""));
   addOption(new envSetting("texcommand", ""));
   addOption(new envSetting("dvips", "dvips"));
+  addOption(new envSetting("dvisvgm", "dvisvgm"));
   addOption(new envSetting("convert", "convert"));
   addOption(new envSetting("display", defaultDisplay));
-  addOption(new envSetting("animate", "animate"));
-  addOption(new envSetting("python", defaultPython));
+  addOption(new envSetting("animate", defaultAnimate));
   addOption(new envSetting("papertype", "letter"));
   addOption(new envSetting("dir", ""));
   addOption(new envSetting("sysdir", systemDir));
-  addOption(new envSetting("textcommand","groff -e -P-b16"));
+  addOption(new envSetting("textcommand","groff"));
+  addOption(new envSetting("textcommandOptions","-e -P -b16"));
   addOption(new envSetting("textextension", "roff"));
   addOption(new envSetting("textoutformat", "ps"));
   addOption(new envSetting("textprologue", ".EQ\ndelim $$\n.EN"));
@@ -1283,8 +1296,8 @@ void setInteractive() {
      (isatty(STDIN_FILENO) || getSetting<bool>("interactive")))
     interact::interactive=true;
   
-  historyname=getSetting<bool>("localhistory") ? "."+suffix+"_history" 
-    : (initdir+"/history");
+  historyname=getSetting<bool>("localhistory") ? 
+    (string(getPath())+dirsep+"."+suffix+"_history") : (initdir+"/history");
 }
 
 bool view() {
@@ -1302,20 +1315,22 @@ bool trap() {
     return !getSetting<bool>("batchMask");
 }
 
-string outname() {
+string outname() 
+{
   string name=getSetting<string>("outname");
-  return name.empty() ? "out" : name;
+  if(name.empty() && interact::interactive) return standardprefix;
+  if(msdos) backslashToSlash(name);
+  return name;
 }
 
 string lookup(const string& symbol) 
 {
   string s;
-  iopipestream pipe(("kpsewhich --var-value="+symbol).c_str());
+  mem::vector<string> cmd;
+  cmd.push_back("kpsewhich");
+  cmd.push_back("--var-value="+symbol);
+  iopipestream pipe(cmd);
   pipe >> s;
-// Workaround broken header file on i386-solaris with g++ 3.4.3.
-#ifdef erase
-#undef erase
-#endif
   size_t n=s.find('\r');
   if(n != string::npos)
     s.erase(n,1);
@@ -1332,15 +1347,23 @@ void initDir() {
       string texmf=s+dirsep+"texmf"+dirsep;
       docdir=texmf+"doc"+dirsep+"asymptote";
       Setting("sysdir")=texmf+"asymptote";
-      s=lookup("TEXMFCONFIG");
+      s=lookup("ASYMPTOTE_HOME");
       if(s.size() > 1)
-        initdir=s+dirsep+"asymptote";
+        initdir=s;
     }
   } 
   
   if(initdir.empty())
+    initdir=Getenv("ASYMPTOTE_HOME",msdos);
+  
+  if(initdir.empty())
     initdir=Getenv(HOME.c_str(),msdos)+dirsep+"."+suffix;
   
+#ifdef __CYGWIN__  
+  mask=umask(0);
+  if(mask == 0) mask=0027;
+  umask(mask);
+#endif  
   if(verbose > 1)
     cerr << "Using configuration directory " << initdir << endl;
   mkdir(initdir.c_str(),0777);
@@ -1395,8 +1418,8 @@ bool context(const string& texengine) {
 }
 
 bool pdf(const string& texengine) {
-  return texengine == "pdflatex" || texengine == "pdftex" || xe(texengine)
-    || context(texengine);
+  return texengine == "pdflatex" || texengine == "pdftex" || xe(texengine) ||
+    context(texengine);
 }
 
 bool latex(const string& texengine) {
@@ -1464,7 +1487,7 @@ const char *beginpicture(const string& texengine) {
   if(latex(texengine))
     return "\\begin{picture}";
   if(context(texengine))
-    return "%";
+    return "";
   else
     return "\\picture";
 }
@@ -1512,10 +1535,7 @@ string texprogram()
 {
   string path=getSetting<string>("texpath");
   string engine=texcommand();
-  if(!path.empty()) engine=(string) (path+"/"+engine);
-  string program="'"+engine+"'";
-  string dir=stripTeXFile(outname());
-  return dir.empty() ? program : (program+" -output-directory="+dir);
+  return path.empty() ? engine : (string) (path+"/"+engine);
 }
 
 Int getScroll() 
@@ -1523,11 +1543,19 @@ Int getScroll()
   Int scroll=settings::getSetting<Int>("scroll");
 #ifdef HAVE_LIBCURSES  
   if(scroll < 0) {
-    char *terminal=getenv("TERM");
+    static char *terminal=NULL;
+    if(!terminal)
+      terminal=getenv("TERM");
     if(terminal) {
-      setupterm(terminal,1,NULL);
-      scroll=lines > 2 ? lines-1 : 1;
-    }
+      int error;
+      error=setupterm(terminal,1,&error);
+#ifndef __CYGWIN__      
+      if(error == 0) scroll=lines > 2 ? lines-1 : 1;
+      else
+#endif
+	scroll=0;
+    } else scroll=0;
+
   }
 #endif
   return scroll;
@@ -1569,6 +1597,9 @@ void setOptions(int argc, char *argv[])
   getOptions(argc,argv);
   
   Setting("sysdir")=sysdir;
+  
+  if(docdir.empty())
+    docdir=getSetting<string>("dir");
   
 #ifdef USEGC
   if(verbose == 0 && !getSetting<bool>("debug")) GC_set_warn_proc(no_GCwarn);

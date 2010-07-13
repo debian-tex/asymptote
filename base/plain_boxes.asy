@@ -4,7 +4,8 @@ path box(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
 {
   pair z=(xmargin,ymargin);
   int sign=filltype == NoFill ? 1 : -1;
-  path g=box(min(src)+0.5*sign*min(p)-z,max(src)+0.5*sign*max(p)+z);
+  pair h=0.5*sign*(max(p)-min(p));
+  path g=box(min(src)-h-z,max(src)+h+z);
   frame F;
   if(above == false) {
     filltype.fill(F,g,p);
@@ -45,8 +46,8 @@ path ellipse(frame dest, frame src=dest, real xmargin=0, real ymargin=xmargin,
   pair D=M-m;
   static real factor=0.5*sqrt(2);
   int sign=filltype == NoFill ? 1 : -1;
-  path g=ellipse(0.5*(M+m),factor*D.x+0.5*sign*max(p).x+xmargin,
-                 factor*D.y+0.5*sign*max(p).y+ymargin);
+  pair h=0.5*sign*(max(p)-min(p));
+  path g=ellipse(0.5*(M+m),factor*D.x+h.x+xmargin,factor*D.y+h.y+ymargin);
   frame F;
   if(above == false) {
     filltype.fill(F,g,p);
@@ -126,11 +127,11 @@ pair point(object F, pair dir, transform t=identity())
   return z+point(F.g,T[0]);
 }
 
-frame bbox(string prefix="", picture pic=currentpicture,
+frame bbox(picture pic=currentpicture,
            real xmargin=0, real ymargin=xmargin,
            pen p=currentpen, filltype filltype=NoFill)
 {
-  frame f=pic.fit(prefix,max(pic.xsize-2*xmargin,0),max(pic.ysize-2*ymargin,0));
+  frame f=pic.fit(max(pic.xsize-2*xmargin,0),max(pic.ysize-2*ymargin,0));
   box(f,xmargin,ymargin,p,filltype,above=false);
   return f;
 }

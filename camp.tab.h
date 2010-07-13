@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,9 +28,10 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
+
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -40,148 +40,84 @@
       know about them.  */
    enum yytokentype {
      ID = 258,
-     ADD = 259,
-     SUBTRACT = 260,
-     TIMES = 261,
-     DIVIDE = 262,
-     MOD = 263,
-     EXPONENT = 264,
-     DOTS = 265,
-     COLONS = 266,
-     DASHES = 267,
-     INCR = 268,
-     LONGDASH = 269,
-     CONTROLS = 270,
-     TENSION = 271,
-     ATLEAST = 272,
-     CURL = 273,
-     COR = 274,
-     CAND = 275,
-     BAR = 276,
-     AMPERSAND = 277,
-     EQ = 278,
-     NEQ = 279,
-     LT = 280,
-     LE = 281,
-     GT = 282,
-     GE = 283,
-     CARETS = 284,
-     LOGNOT = 285,
-     OPERATOR = 286,
-     STRING = 287,
-     LOOSE = 288,
-     ASSIGN = 289,
-     DIRTAG = 290,
-     JOIN_PREC = 291,
-     AND = 292,
-     ELLIPSIS = 293,
-     ACCESS = 294,
-     UNRAVEL = 295,
-     IMPORT = 296,
-     INCLUDE = 297,
-     FROM = 298,
-     QUOTE = 299,
-     STRUCT = 300,
-     TYPEDEF = 301,
-     NEW = 302,
-     IF = 303,
-     ELSE = 304,
-     WHILE = 305,
-     DO = 306,
-     FOR = 307,
-     BREAK = 308,
-     CONTINUE = 309,
-     RETURN_ = 310,
-     THIS = 311,
-     EXPLICIT = 312,
-     GARBAGE = 313,
-     LIT = 314,
-     PERM = 315,
-     MODIFIER = 316,
-     UNARY = 317,
-     EXP_IN_PARENS_RULE = 318
+     SELFOP = 259,
+     DOTS = 260,
+     COLONS = 261,
+     DASHES = 262,
+     INCR = 263,
+     LONGDASH = 264,
+     CONTROLS = 265,
+     TENSION = 266,
+     ATLEAST = 267,
+     CURL = 268,
+     COR = 269,
+     CAND = 270,
+     BAR = 271,
+     AMPERSAND = 272,
+     EQ = 273,
+     NEQ = 274,
+     LT = 275,
+     LE = 276,
+     GT = 277,
+     GE = 278,
+     CARETS = 279,
+     LOGNOT = 280,
+     OPERATOR = 281,
+     LOOSE = 282,
+     ASSIGN = 283,
+     DIRTAG = 284,
+     JOIN_PREC = 285,
+     AND = 286,
+     ELLIPSIS = 287,
+     ACCESS = 288,
+     UNRAVEL = 289,
+     IMPORT = 290,
+     INCLUDE = 291,
+     FROM = 292,
+     QUOTE = 293,
+     STRUCT = 294,
+     TYPEDEF = 295,
+     NEW = 296,
+     IF = 297,
+     ELSE = 298,
+     WHILE = 299,
+     DO = 300,
+     FOR = 301,
+     BREAK = 302,
+     CONTINUE = 303,
+     RETURN_ = 304,
+     THIS = 305,
+     EXPLICIT = 306,
+     GARBAGE = 307,
+     LIT = 308,
+     STRING = 309,
+     PERM = 310,
+     MODIFIER = 311,
+     UNARY = 312,
+     EXP_IN_PARENS_RULE = 313
    };
 #endif
-/* Tokens.  */
-#define ID 258
-#define ADD 259
-#define SUBTRACT 260
-#define TIMES 261
-#define DIVIDE 262
-#define MOD 263
-#define EXPONENT 264
-#define DOTS 265
-#define COLONS 266
-#define DASHES 267
-#define INCR 268
-#define LONGDASH 269
-#define CONTROLS 270
-#define TENSION 271
-#define ATLEAST 272
-#define CURL 273
-#define COR 274
-#define CAND 275
-#define BAR 276
-#define AMPERSAND 277
-#define EQ 278
-#define NEQ 279
-#define LT 280
-#define LE 281
-#define GT 282
-#define GE 283
-#define CARETS 284
-#define LOGNOT 285
-#define OPERATOR 286
-#define STRING 287
-#define LOOSE 288
-#define ASSIGN 289
-#define DIRTAG 290
-#define JOIN_PREC 291
-#define AND 292
-#define ELLIPSIS 293
-#define ACCESS 294
-#define UNRAVEL 295
-#define IMPORT 296
-#define INCLUDE 297
-#define FROM 298
-#define QUOTE 299
-#define STRUCT 300
-#define TYPEDEF 301
-#define NEW 302
-#define IF 303
-#define ELSE 304
-#define WHILE 305
-#define DO 306
-#define FOR 307
-#define BREAK 308
-#define CONTINUE 309
-#define RETURN_ 310
-#define THIS 311
-#define EXPLICIT 312
-#define GARBAGE 313
-#define LIT 314
-#define PERM 315
-#define MODIFIER 316
-#define UNARY 317
-#define EXP_IN_PARENS_RULE 318
-
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 46 "camp.y"
 {
+
+/* Line 1676 of yacc.c  */
+#line 47 "camp.y"
+
   position pos;
   bool boo;
   struct {
     position pos;
-    sym::symbol *sym;
+    sym::symbol sym;
   } ps;
   absyntax::name *n;
   absyntax::varinit *vi;
   absyntax::arrayinit *ai;
   absyntax::exp *e;
+  absyntax::stringExp *stre;
   absyntax::specExp *se;
   absyntax::joinExp *j;
   absyntax::explist *elist;
@@ -215,14 +151,17 @@ typedef union YYSTYPE
   //absyntax::funheader *fh;
   absyntax::formal *fl;
   absyntax::formals *fls;
-}
-/* Line 1489 of yacc.c.  */
-#line 221 "camp.tab.h"
-	YYSTYPE;
+
+
+
+/* Line 1676 of yacc.c  */
+#line 159 "camp.tab.h"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
+
 

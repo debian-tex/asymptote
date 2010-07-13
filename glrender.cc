@@ -8,16 +8,10 @@
 #include <fstream>
 #include <cstring>
 #include <sys/time.h>
-#include <signal.h>
 
 #include "common.h"
 
-namespace gl {
-bool glthread=false;
-bool initialize=true;
-}
-
-#ifdef HAVE_LIBGL
+#ifdef HAVE_GL
 
 // For CYGWIN
 #ifndef FGAPI
@@ -40,8 +34,15 @@ bool initialize=true;
 #include <GL/freeglut_ext.h>
 #endif
 
+namespace camp {
+billboard BB;
+}
+
 namespace gl {
   
+bool glthread=false;
+bool initialize=true;
+
 using camp::picture;
 using camp::drawImage;
 using camp::transform;
@@ -52,17 +53,8 @@ using vm::read;
 using camp::bbox3;
 using settings::getSetting;
 using settings::Setting;
-
-// For now, don't use POSIX timers by default due to portability issues.
-#ifdef HAVE_POSIX_TIMERS
-static timer_t timerid;
-static struct itimerspec Timeout;
-#else
-static struct itimerval Timeout;
-#endif
-
-static const double milliseconds=1000.0; // In microseconds.
 timeval lasttime;
+timeval lastframetime;
 
 double Aspect;
 bool View;
@@ -81,9 +73,11 @@ int maxHeight;
 int maxTileWidth;
 int maxTileHeight;
 
-double *T;
+double T[16];
 
 bool Xspin,Yspin,Zspin;
+bool Animate;
+bool Step;
 bool Menu;
 bool Motion;
 bool ignorezoom;
@@ -108,10 +102,11 @@ double Xfactor,Yfactor;
 
 int minimumsize=50; // Minimum initial rendering window width and height
 
-const double degrees=180.0/M_PI;
-const double radians=1.0/degrees;
+static const double pi=acos(-1);
+static const double degrees=180.0/pi;
+static const double radians=1.0/degrees;
 
-double *Background;
+double Background[4];
 size_t Nlights;
 triple *Lights; 
 double *Diffuse;
@@ -119,6 +114,7 @@ double *Ambient;
 double *Specular;
 bool ViewportLighting;
 bool queueExport=false;
+bool queueScreen=false;
 bool readyAfterExport=false;
 bool antialias;
 
@@ -135,7 +131,7 @@ double lastzoom;
 GLfloat Rotate[16];
 Arcball arcball;
   
-GLUnurbs *nurb;
+GLUnurbs *nurb=NULL;
 
 int window;
   
@@ -224,20 +220,24 @@ void initlighting()
 void setDimensions(int Width, int Height, double X, double Y)
 {
   double Aspect=((double) Width)/Height;
-  double X0=(X/Width*lastzoom+Shift.getx()*Xfactor)*(xmax-xmin);
-  double Y0=(Y/Height*lastzoom+Shift.gety()*Yfactor)*(ymax-ymin);
-  double Zoominv=1.0/Zoom;
+  double xshift=X/Width*lastzoom+Shift.getx()*Xfactor;
+  double yshift=Y/Height*lastzoom+Shift.gety()*Yfactor;
+  double Zoominv=1.0/lastzoom;
   if(orthographic) {
     double xsize=Xmax-Xmin;
     double ysize=Ymax-Ymin;
     if(xsize < ysize*Aspect) {
       double r=0.5*ysize*Aspect*Zoominv;
+      double X0=2.0*r*xshift;
+      double Y0=(Ymax-Ymin)*Zoominv*yshift;
       xmin=-r-X0;
       xmax=r-X0;
       ymin=Ymin*Zoominv-Y0;
       ymax=Ymax*Zoominv-Y0;
     } else {
       double r=0.5*xsize/(Aspect*Zoom);
+      double X0=(Xmax-Xmin)*Zoominv*xshift;
+      double Y0=2.0*r*yshift;
       xmin=Xmin*Zoominv-X0;
       xmax=Xmax*Zoominv-X0;
       ymin=-r-Y0;
@@ -245,8 +245,11 @@ void setDimensions(int Width, int Height, double X, double Y)
     }
   } else {
     double r=H*Zoominv;
-    xmin=-r*Aspect-X0;
-    xmax=r*Aspect-X0;
+    double rAspect=r*Aspect;
+    double X0=2.0*rAspect*xshift;
+    double Y0=2.0*r*yshift;
+    xmin=-rAspect-X0;
+    xmax=rAspect-X0;
     ymin=-r-Y0;
     ymax=r-Y0;
   }
@@ -325,18 +328,15 @@ void drawscene(double Width, double Height)
   
   double size2=hypot(Width,Height);
   
-  glEnable(GL_BLEND);
   // Render opaque objects
   Picture->render(nurb,size2,m,M,perspective,false);
   
   // Enable transparency
-  glEnable(GL_BLEND);
   glDepthMask(GL_FALSE);
   
   // Render transparent objects
   Picture->render(nurb,size2,m,M,perspective,true);
   glDepthMask(GL_TRUE);
-  glDisable(GL_BLEND);
 }
 
 // Return x divided by y rounded up to the nearest integer.
@@ -399,11 +399,12 @@ void Export()
     outOfMemory();
   }
   setProjection();
+  glutPostRedisplay();
 
 #ifdef HAVE_LIBPTHREAD
   if(glthread && readyAfterExport) {
-    endwait(readySignal,readyLock);
     readyAfterExport=false;        
+    endwait(readySignal,readyLock);
   }
 #endif
 }
@@ -423,7 +424,7 @@ void windowposition(int& x, int& y, int width=Width, int height=Height)
   }
 }
 
-void setsize(int w, int h, int minsize=0)
+void setsize(int w, int h, int minsize=0, bool reposition=true)
 {
   int x,y;
   
@@ -440,14 +441,16 @@ void setsize(int w, int h, int minsize=0)
   }
   
   capsize(w,h);
-  windowposition(x,y,w,h);
-  glutPositionWindow(x,y);
+  if(reposition) {
+    windowposition(x,y,w,h);
+    glutPositionWindow(x,y);
+  }
   glutReshapeWindow(w,h);
   reshape0(w,h);
   glutPostRedisplay();
 }
 
-void fullscreen() 
+void fullscreen(bool reposition=true) 
 {
   Width=screenWidth;
   Height=screenHeight;
@@ -455,19 +458,21 @@ void fullscreen()
 #ifdef __CYGWIN__
   glutFullScreen();
 #else
-  glutPositionWindow(0,0);
+  if(reposition)
+    glutPositionWindow(0,0);
   glutReshapeWindow(Width,Height);
   glutPostRedisplay();
 #endif    
 }
 
-void fitscreen() 
+void fitscreen(bool reposition=true) 
 {
+  if(Animate && Fitscreen == 2) Fitscreen=0;
   switch(Fitscreen) {
     case 0: // Original size
     {
       Xfactor=Yfactor=1.0;
-      setsize(oldWidth,oldHeight,minimumsize);
+      setsize(oldWidth,oldHeight,minimumsize,reposition);
       break;
     }
     case 1: // Fit to screen in one dimension
@@ -478,14 +483,14 @@ void fitscreen()
       int h=screenHeight;
       if(w >= h*Aspect) w=(int) (h*Aspect+0.5);
       else h=(int) (w/Aspect+0.5);
-      setsize(w,h,minimumsize);
+      setsize(w,h,minimumsize,reposition);
       break;
     }
     case 2: // Full screen
     {
       Xfactor=((double) screenHeight)/Height;
       Yfactor=((double) screenWidth)/Width;
-      fullscreen();
+      fullscreen(reposition);
       break;
     }
   }
@@ -500,14 +505,15 @@ void togglefitscreen()
 
 void updateHandler(int)
 {
+  queueScreen=true;
   update();
-  glutShowWindow();
-  glutShowWindow(); // Call twice to work around apparent freeglut bug.
-  if(glthread && !interact::interactive)
-    fitscreen();
+  if(interact::interactive || !Animate) {
+    glutShowWindow();
+    glutShowWindow(); // Call twice to work around apparent freeglut bug.
+  }
 }
 
-void autoExport()
+void exportHandler(int=0)
 {
   if(!Iconify)
     glutShowWindow();
@@ -523,7 +529,7 @@ void reshape(int width, int height)
     static bool initialize=true;
     if(initialize) {
       initialize=false;
-      signal(SIGUSR1,updateHandler);
+      Signal(SIGUSR1,updateHandler);
     }
   }
   
@@ -536,6 +542,7 @@ void reshape(int width, int height)
 void initTimer() 
 {
   gettimeofday(&lasttime,NULL);
+  gettimeofday(&lastframetime,NULL);
 }
 
 void idleFunc(void (*f)())
@@ -547,7 +554,19 @@ void idleFunc(void (*f)())
 void idle() 
 {
   glutIdleFunc(NULL);
-  Xspin=Yspin=Zspin=false;
+  Xspin=Yspin=Zspin=Animate=Step=false;
+}
+
+void animate() 
+{
+  Animate=!Animate;
+  if(Animate) {
+    if(Fitscreen == 2) {
+      togglefitscreen();
+      togglefitscreen();
+    }
+    update();
+  }
 }
 
 void home() 
@@ -565,26 +584,67 @@ void home()
 void quit() 
 {
   if(glthread) {
+    bool animating=getSetting<bool>("animating");
+    if(animating)
+      Setting("interrupt")=true;
     home();
-    glutHideWindow();
- #ifdef HAVE_LIBPTHREAD
-    if(!interact::interactive)
+    Animate=getSetting<bool>("autoplay");
+#ifdef HAVE_LIBPTHREAD
+    if(!interact::interactive || animating)
       endwait(readySignal,readyLock);
 #endif    
+    glutHideWindow();
   } else {
     glutDestroyWindow(window);
     exit(0);
   }
 }
 
+void screen()
+{
+  if(glthread && !interact::interactive)
+    fitscreen(false);
+}
+
+void nextframe(int) 
+{
+  glFinish();
+  endwait(readySignal,readyLock);
+  double framedelay=getSetting<double>("framedelay");
+  if(framedelay > 0)
+    usleep((int) (1000.0*framedelay+0.5));
+  if(Step) Animate=false;
+}
+
 void display()
 {
+  if(queueScreen) {
+    if(!Animate) screen();
+    queueScreen=false;
+  }
   drawscene(Width,Height);
   glutSwapBuffers();
+#ifdef HAVE_LIBPTHREAD
+  if(glthread && Animate) {
+    queueExport=false;
+    double delay=1.0/getSetting<double>("framerate");
+    timeval tv;
+    gettimeofday(&tv,NULL);
+    double seconds=tv.tv_sec-lastframetime.tv_sec+
+      ((double) tv.tv_usec-lastframetime.tv_usec)/1000000.0;
+    lastframetime=tv;
+    double milliseconds=1000.0*(delay-seconds);
+    double framedelay=getSetting<double>("framedelay");
+    if(framedelay > 0) milliseconds -= framedelay;
+    if(milliseconds > 0)
+      glutTimerFunc((int) (milliseconds+0.5),nextframe,0);
+    else nextframe(0);
+  }
+#endif
   if(queueExport) {
     Export();
     queueExport=false;
-  }
+  } 
   if(!glthread) {
     if(Oldpid != 0 && waitpid(Oldpid,NULL,WNOHANG) != Oldpid) {
       kill(Oldpid,SIGHUP);
@@ -649,11 +709,11 @@ void zoom(int x, int y)
     if(zoomFactor > 0.0) {
       double zoomStep=getSetting<double>("zoomstep");
       const double limit=log(0.1*DBL_MAX)/log(zoomFactor);
-      lastzoom=Zoom;
       double s=zoomStep*(y0-y);
       if(fabs(s) < limit) {
         Zoom *= pow(zoomFactor,s);
         capzoom();
+        lastzoom=Zoom;
         y0=y;
         setProjection();
         glutPostRedisplay();
@@ -666,13 +726,12 @@ void mousewheel(int wheel, int direction, int x, int y)
 {
   double zoomFactor=getSetting<double>("zoomfactor");
   if(zoomFactor > 0.0) {
-    lastzoom=Zoom;
     if(direction > 0)
       Zoom *= zoomFactor;
     else
       Zoom /= zoomFactor;
-  
     capzoom();
+    lastzoom=Zoom;
     setProjection();
     glutPostRedisplay();
   }
@@ -831,36 +890,6 @@ void timeout(int)
   if(Menu) disableMenu();
 }
 
-void init_timeout()
-{
-  static struct sigaction action;
-  action.sa_handler=timeout;
-  sigemptyset(&action.sa_mask);
-  action.sa_flags=0;
-  sigaction(SIGALRM,&action,NULL);
-  
-  Timeout.it_value.tv_sec=Timeout.it_interval.tv_sec=0;
-#ifdef HAVE_POSIX_TIMERS
-  timer_create (CLOCK_REALTIME,NULL,&timerid);
-  Timeout.it_interval.tv_nsec=0;
-#else  
-  Timeout.it_interval.tv_usec=0;
-#endif  
-}
-
-void set_timeout(int microseconds)
-{
-  if(microseconds >= 0) {
-#ifdef HAVE_POSIX_TIMERS
-    Timeout.it_value.tv_nsec=1000*microseconds;
-    timer_settime(timerid,0,&Timeout,NULL);
-#else
-    Timeout.it_value.tv_usec=microseconds;
-    setitimer(ITIMER_REAL,&Timeout,NULL);
-#endif    
-  }
-}
-
 void mouse(int button, int state, int x, int y)
 {
   int mod=glutGetModifiers();
@@ -877,19 +906,17 @@ void mouse(int button, int state, int x, int y)
     return;
   }     
   
-  if(Action == "zoom/menu" && mod == 0) {
-    if(state == GLUT_UP && !Motion) {
-      MenuButton=button;
-      glutMotionFunc(NULL);
-      glutAttachMenu(button);
-      Menu=true;
-      set_timeout((int) (getSetting<double>("doubleclick")*milliseconds));
-      return;
-    }
-  }
-  
   if(Menu) disableMenu();
-  else Motion=false;
+  else {
+    if(mod == 0 && state == GLUT_UP && !Motion && Action == "zoom/menu") {
+    MenuButton=button;
+    glutMotionFunc(NULL);
+    glutAttachMenu(button);
+    Menu=true;
+    glutTimerFunc(getSetting<Int>("doubleclick"),timeout,0);
+    return;
+    } else Motion=false;
+  }
   
   if(state == GLUT_DOWN) {
     if(Action == "rotate" || Action == "rotateX" || Action == "rotateY") {
@@ -1018,50 +1045,68 @@ void write(const char *text, const double *v)
   cout << text << "=(" << v[0] << "," << v[1] << "," << v[2] << ")";
 }
 
-void camera()
+static bool glinitialize=true;
+
+projection camera(bool user)
 {
-  camp::Triple vCamera,vTarget,vUp;
+  if(glinitialize) return projection();
+                   
+  camp::Triple vCamera,vUp,vTarget;
   
   double cz=0.5*(zmin+zmax);
-  
-  for(int i=0; i < 3; ++i) {
-    double sumCamera=0.0, sumTarget=0.0, sumUp=0.0;
-    int i4=4*i;
-    for(int j=0; j < 4; ++j) {
-      int j4=4*j;
-      double R0=Rotate[j4];
-      double R1=Rotate[j4+1];
-      double R2=Rotate[j4+2];
-      double R3=Rotate[j4+3];
-      double T4ij=T[i4+j];
-      sumCamera += T4ij*(R3-cx*R0-cy*R1-cz*R2);
-      sumUp += T4ij*R1;
-      sumTarget += T4ij*(R3-cx*R0-cy*R1);
+
+  if(user) {
+    for(int i=0; i < 3; ++i) {
+      double sumCamera=0.0, sumTarget=0.0, sumUp=0.0;
+      int i4=4*i;
+      for(int j=0; j < 4; ++j) {
+        int j4=4*j;
+        double R0=Rotate[j4];
+        double R1=Rotate[j4+1];
+        double R2=Rotate[j4+2];
+        double R3=Rotate[j4+3];
+        double T4ij=T[i4+j];
+        sumCamera += T4ij*(R3-cx*R0-cy*R1-cz*R2);
+        sumUp += T4ij*R1;
+        sumTarget += T4ij*(R3-cx*R0-cy*R1);
+      }
+      vCamera[i]=sumCamera;
+      vUp[i]=sumUp;
+      vTarget[i]=sumTarget;
     }
-    vCamera[i]=sumCamera;
-    vUp[i]=sumUp;
-    vTarget[i]=sumTarget;
+  } else {
+    for(int i=0; i < 3; ++i) {
+      int i4=4*i;
+      double R0=Rotate[i4];
+      double R1=Rotate[i4+1];
+      double R2=Rotate[i4+2];
+      double R3=Rotate[i4+3];
+      vCamera[i]=R3-cx*R0-cy*R1-cz*R2;
+      vUp[i]=R1;
+      vTarget[i]=R3-cx*R0-cy*R1;
+    }
   }
   
-  triple Camera=triple(vCamera);
-  triple Up=triple(vUp);
-  triple Target=triple(vTarget);
-  
-  pair viewportshift(X/Width*lastzoom+Shift.getx(),
-                     Y/Height*lastzoom+Shift.gety());
-  
+  return projection(orthographic,vCamera,vUp,vTarget,Zoom,
+                    2.0*atan(tan(0.5*Angle)/Zoom)/radians,
+                    pair(X/Width*lastzoom+Shift.getx(),
+                         Y/Height*lastzoom+Shift.gety()));
+}
+
+void showCamera()
+{
+  projection P=camera();
   cout << endl
        << "currentprojection=" 
-       << (orthographic ? "orthographic(" : "perspective(")  << endl
-       << "camera=" << Camera << "," << endl
-       << "up=" << Up << "," << endl
-       << "target=" << Target << "," << endl;
-  if(orthographic)
-    cout << "zoom=" << Zoom;
-  else
-    cout << "angle=" << 2.0*atan(tan(0.5*Angle)/Zoom)/radians;
-  if(viewportshift != pair(0.0,0.0))
-    cout << "," << endl << "viewportshift=" << viewportshift;
+       << (P.orthographic ? "orthographic(" : "perspective(")  << endl
+       << "camera=" << P.camera << "," << endl
+       << "up=" << P.up << "," << endl
+       << "target=" << P.target << "," << endl
+       << "zoom=" << P.zoom;
+  if(!orthographic)
+    cout << "," << endl << "angle=" << P.angle;
+  if(P.viewportshift != pair(0.0,0.0))
+    cout << "," << endl << "viewportshift=" << P.viewportshift;
   if(!orthographic)
     cout << "," << endl << "autoadjust=false";
   cout << ");" << endl;
@@ -1096,7 +1141,7 @@ void keyboard(unsigned char key, int x, int y)
       Export();
       break;
     case 'c':
-      camera();
+      showCamera();
       break;
     case '+':
     case '=':
@@ -1108,6 +1153,21 @@ void keyboard(unsigned char key, int x, int y)
     case '<':
       shrink();
       break;
+    case 'p':
+      if(getSetting<bool>("reverse")) Animate=false;
+      Setting("reverse")=Step=false;
+      animate();
+      break;
+    case 'r':
+      if(!getSetting<bool>("reverse")) Animate=false;
+      Setting("reverse")=true;
+      Step=false;
+      animate();
+      break;
+    case ' ':
+      Step=true;
+      animate();
+      break;
     case 17: // Ctrl-q
     case 'q':
       if(!Format.empty()) Export();
@@ -1116,11 +1176,11 @@ void keyboard(unsigned char key, int x, int y)
   }
 }
  
-enum Menu {HOME,FITSCREEN,XSPIN,YSPIN,ZSPIN,STOP,MODE,EXPORT,CAMERA,QUIT};
+enum Menu {HOME,FITSCREEN,XSPIN,YSPIN,ZSPIN,STOP,MODE,EXPORT,CAMERA,
+           PLAY,STEP,REVERSE,QUIT};
 
 void menu(int choice)
 {
-  set_timeout(0);
   if(Menu) disableMenu();
   ignorezoom=true;
   Motion=true;
@@ -1151,7 +1211,22 @@ void menu(int choice)
       queueExport=true;
       break;
     case CAMERA:
-      camera();
+      showCamera();
+      break;
+    case PLAY:
+      if(getSetting<bool>("reverse")) Animate=false;
+      Setting("reverse")=Step=false;
+      animate();
+      break;
+    case REVERSE:
+      if(!getSetting<bool>("reverse")) Animate=false;
+      Setting("reverse")=true;
+      Step=false;
+      animate();
+      break;
+    case STEP:
+      Step=true;
+      animate();
       break;
     case QUIT:
       quit();
@@ -1167,20 +1242,17 @@ void setosize()
 
 void init() 
 {
-  string options=string(settings::argv0)+" ";
+  mem::vector<string> cmd;
+  cmd.push_back(settings::argv0);
   if(Iconify)
-    options += "-iconic ";
-  options += getSetting<string>("glOptions");
-  char **argv=args(options.c_str(),true);
-  int argc=0;
-  while(argv[argc] != NULL)
-    ++argc;
-  
+    cmd.push_back("-iconic");
+  push_split(cmd,getSetting<string>("glOptions"));
+  char **argv=args(cmd,true);
+  int argc=cmd.size();
   glutInit(&argc,argv);
   
   screenWidth=glutGet(GLUT_SCREEN_WIDTH);
   screenHeight=glutGet(GLUT_SCREEN_HEIGHT);
-  init_timeout();
 }
 
 // angle=0 means orthographic.
@@ -1205,8 +1277,11 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   Prefix=prefix;
   Picture=pic;
   Format=format;
-  T=t;
-  Background=background;
+  for(int i=0; i < 16; ++i)
+    T[i]=t[i];
+  for(int i=0; i < 4; ++i)
+  Background[i]=background[i];
+  
   Nlights=min(nlights,(size_t) GL_MAX_LIGHTS);
   Lights=lights;
   Diffuse=diffuse;
@@ -1235,10 +1310,8 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   Mode=0;
   Xfactor=Yfactor=1.0;
   
-  static bool initialize=true;
-
-  if(initialize) {
-    initialize=false;
+  if(glinitialize) {
+    glinitialize=false;
     init();
     Fitscreen=1;
   }
@@ -1261,7 +1334,9 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     if(maxWidth <= 0) maxWidth=max(maxHeight,2);
     if(maxHeight <= 0) maxHeight=max(maxWidth,2);
     if(screenWidth <= 0) screenWidth=maxWidth;
+    else screenWidth=min(screenWidth,maxWidth);
     if(screenHeight <= 0) screenHeight=maxHeight;
+    else screenHeight=min(screenHeight,maxHeight);
   
     oWidth=width;
     oHeight=height;
@@ -1289,8 +1364,8 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     setosize();
   
     if(View && settings::verbose > 1) 
-      cout << "Rendering " << prefix << " as " << Width << "x" << Height
-           << " image" << endl;
+      cout << "Rendering " << stripDir(prefix) << " as "
+           << Width << "x" << Height << " image" << endl;
   }
   
 #ifdef HAVE_LIBPTHREAD
@@ -1388,6 +1463,7 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   glMatrixMode(GL_MODELVIEW);
     
   home();
+  Animate=getSetting<bool>("autoplay");
   
   if(View) {
     if(!getSetting<bool>("fitscreen"))
@@ -1396,28 +1472,34 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     setosize();
   }
   
+  glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MAP1_VERTEX_3);
+  glEnable(GL_MAP1_VERTEX_4);
   glEnable(GL_MAP2_VERTEX_3);
+  glEnable(GL_MAP2_VERTEX_4);
   glEnable(GL_MAP2_COLOR_4);
   
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   
-  nurb=gluNewNurbsRenderer();
-  if(nurb == NULL) 
-    outOfMemory();
-  gluNurbsProperty(nurb,GLU_SAMPLING_METHOD,GLU_PARAMETRIC_ERROR);
-  gluNurbsProperty(nurb,GLU_SAMPLING_TOLERANCE,0.5);
-  gluNurbsProperty(nurb,GLU_PARAMETRIC_TOLERANCE,1.0);
-  gluNurbsProperty(nurb,GLU_CULLING,GLU_TRUE);
+  if(nurb == NULL) {
+    nurb=gluNewNurbsRenderer();
+    if(nurb == NULL) 
+      outOfMemory();
+    gluNurbsProperty(nurb,GLU_SAMPLING_METHOD,GLU_PARAMETRIC_ERROR);
+    gluNurbsProperty(nurb,GLU_SAMPLING_TOLERANCE,0.5);
+    gluNurbsProperty(nurb,GLU_PARAMETRIC_TOLERANCE,1.0);
+    gluNurbsProperty(nurb,GLU_CULLING,GLU_TRUE);
   
-  // The callback tesselation algorithm avoids artifacts at degenerate control
-  // points.
-  gluNurbsProperty(nurb,GLU_NURBS_MODE,GLU_NURBS_TESSELLATOR);
-  gluNurbsCallback(nurb,GLU_NURBS_BEGIN,(_GLUfuncptr) glBegin);
-  gluNurbsCallback(nurb,GLU_NURBS_VERTEX,(_GLUfuncptr) glVertex3fv);
-  gluNurbsCallback(nurb,GLU_NURBS_END,(_GLUfuncptr) glEnd);
-  gluNurbsCallback(nurb,GLU_NURBS_COLOR,(_GLUfuncptr) glColor4fv);
+    // The callback tessellation algorithm avoids artifacts at degenerate
+    // control points.
+    gluNurbsProperty(nurb,GLU_NURBS_MODE,GLU_NURBS_TESSELLATOR);
+    gluNurbsCallback(nurb,GLU_NURBS_BEGIN,(_GLUfuncptr) glBegin);
+    gluNurbsCallback(nurb,GLU_NURBS_VERTEX,(_GLUfuncptr) glVertex3fv);
+    gluNurbsCallback(nurb,GLU_NURBS_END,(_GLUfuncptr) glEnd);
+    gluNurbsCallback(nurb,GLU_NURBS_COLOR,(_GLUfuncptr) glColor4fv);
+  }
+  
   mode();
   
   if(View) {
@@ -1437,6 +1519,9 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     glutAddMenuEntry("(m) Mode",MODE);
     glutAddMenuEntry("(e) Export",EXPORT);
     glutAddMenuEntry("(c) Camera",CAMERA);
+    glutAddMenuEntry("(p) Play",PLAY);
+    glutAddMenuEntry("(r) Reverse",REVERSE);
+    glutAddMenuEntry("( ) Step",STEP);
     glutAddMenuEntry("(q) Quit" ,QUIT);
   
     for(size_t i=0; i < nbuttons; ++i) {
@@ -1447,8 +1532,20 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     
     glutMainLoop();
   } else {
-    autoExport();
-    if(!glthread) quit();
+    if(glthread) {
+      if(havewindow) {
+        readyAfterExport=true;
+        pthread_kill(mainthread,SIGUSR1);
+      } else {
+        initialized=true;
+        readyAfterExport=true;
+        Signal(SIGUSR1,exportHandler);
+        exportHandler();
+      }
+    } else {
+      exportHandler();
+      quit();
+    }
   }
 }
 

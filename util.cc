@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <signal.h>
 #include <cstring>
 #include <algorithm>
 
@@ -34,6 +33,31 @@ bool False=false;
 namespace vm {
 void error(const char* message);
 }
+
+#if __GNUC__
+#include <cxxabi.h>
+string demangle(const char *s)
+{
+  int status;
+  char *demangled = abi::__cxa_demangle(s,NULL,NULL,&status);
+  if (status == 0 && demangled) {
+    string str(demangled);
+    free(demangled);
+    return str;
+  } else if (status == -2) {
+    free(demangled);
+    return s;
+  } else {
+    free(demangled);
+    return string("Unknown(") + s + ")";
+  }
+};
+#else
+string demangle(const char* s)
+{
+  return s;
+}
+#endif 
 
 char *Strdup(string s)
 {
@@ -79,23 +103,20 @@ string stripFile(string name)
   p=name.rfind('\\');
   if(p < string::npos) {
     dir=true;
+    while(p > 0 && name[p-1] == '\\') --p;
     name.erase(p+1);
   }
 #endif  
   p=name.rfind('/');
   if(p < string::npos) {
     dir=true;
+    while(p > 0 && name[p-1] == '/') --p;
     name.erase(p+1);
   }
   
   return dir ? name : "";
 }
   
-string stripTeXFile(string name)
-{
-  return getSetting<string>("tex") == "context" ? "" : stripFile(name);
-}
-
 string stripExt(string name, const string& ext)
 {
   string suffix="."+ext;
@@ -131,33 +152,30 @@ string Getenv(const char *name, bool msdos)
 
 void writeDisabled()
 {
-  camp::reportError("Write/cd to other directories disabled; override with option -globalwrite");
+  camp::reportError("Write to other directories disabled; override with option -globalwrite");
 }
 
-bool globalwrite(string name)
+string cleanpath(string name) 
 {
-  string outname=settings::outname();
-  return (!outname.empty() && name.substr(0,outname.size()) == outname) ||
-    globalwrite(); 
+  string dir=stripFile(name);
+  name=stripDir(name);
+  spaceToUnderscore(name);
+  return dir+name;
 }
 
-void checkLocal(string name)
+string outpath(string name) 
 {
-  if(globalwrite(name)) return;
-#ifdef __CYGWIN__  
-  if(name.rfind('\\') < string::npos) writeDisabled();
-#endif  
-  if(name.rfind('/') < string::npos) writeDisabled();
-  return;
+  bool global=globalwrite();
+  string dir=stripFile(name);
+  if(global && !dir.empty()) return name;
+  string outdir=stripFile(outname());
+  if(!(global || dir.empty() || dir == outdir)) writeDisabled();
+  return outdir+stripDir(name);
 }
 
 string buildname(string name, string suffix, string aux) 
 {
-  if(!globalwrite(name))
-    name=stripDir(name);
-    
-  name=stripExt(name,defaultformat());
-  name += aux;
+  name=stripExt(outpath(name),defaultformat())+aux;
   if(!suffix.empty()) name += "."+suffix;
   return name;
 }
@@ -167,49 +185,49 @@ string auxname(string filename, string suffix)
   return buildname(filename,suffix,"_");
 }
   
-char **args(const char *command, bool quiet)
+sighandler_t Signal(int signum, sighandler_t handler)
 {
-  if(command == NULL) return NULL;
-  
-  size_t n=0;
-  char **argv=NULL;  
-  for(int pass=0; pass < 2; ++pass) {
-    if(pass) argv=new char*[n+1];
-    ostringstream buf;
-    const char *p=command;
-    bool empty=true;
-    bool quote=false;
-    n=0;
-    char c;
-    while((c=*(p++))) {
-      if(!quote && c == ' ') {
-        if(!empty) {
-          if(pass) {
-            argv[n]=StrdupNoGC(buf.str());
-            buf.str("");
-          }
-          empty=true;
-          n++;
-        }
-      } else {
-        empty=false;
-        if(c == '\'') quote=!quote;
-        else if(pass) buf << c;
+  struct sigaction action,oldaction;
+  action.sa_handler=handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags=0;
+  return sigaction(signum,&action,&oldaction) == 0 ? oldaction.sa_handler : 
+    SIG_ERR;
+}
+
+void push_split(mem::vector<string>& a, const string& S) 
+{
+  const char *p=S.c_str();
+  string s;
+  char c;
+  while((c=*(p++))) {
+    if(c == ' ') {
+      if(s.size() > 0) {
+        a.push_back(s);
+        s.clear();
       }
-    }
-    if(!empty) {
-      if(pass) argv[n]=StrdupNoGC(buf.str());
-      n++;
-    }
+    } else s += c;
   }
+  if(s.size() > 0)
+    a.push_back(s);
+}
+
+char **args(const mem::vector<string>& s, bool quiet)
+{
+  size_t count=s.size();
+  
+  char **argv=NULL;
+  argv=new char*[count+1];
+  for(size_t i=0; i < count; ++i)
+    argv[i]=StrdupNoGC(s[i]);
   
   if(!quiet && settings::verbose > 1) {
     cerr << argv[0];
-    for(size_t m=1; m < n; ++m) cerr << " " << argv[m];
+    for(size_t i=1; i < count; ++i) cerr << " " << argv[i];
     cerr << endl;
   }
   
-  argv[n]=NULL;
+  argv[count]=NULL;
   return argv;
 }
 
@@ -235,13 +253,10 @@ void execError(const char *command, const char *hint, const char *application)
 }
                                                     
 // quiet: 0=none; 1=suppress stdout; 2=suppress stdout+stderr.
-
-int System(const char *command, int quiet, bool wait,
+int System(const mem::vector<string> &command, int quiet, bool wait,
            const char *hint, const char *application, int *ppid)
 {
   int status;
-
-  if(!command) return 1;
 
   cout.flush(); // Flush stdout to avoid duplicate output.
     
@@ -276,7 +291,8 @@ int System(const char *command, int quiet, bool wait,
       if(errno != EINTR) {
         if(quiet < 2) {
           ostringstream msg;
-          msg << "Command failed: " << command;
+          msg << "Command failed: ";
+          for(size_t i=0; i < command.size(); ++i) msg << command[i] << " ";
           camp::reportError(msg);
         }
       }
@@ -294,18 +310,13 @@ int System(const char *command, int quiet, bool wait,
       } else {
         if(quiet < 2) {
           ostringstream msg;
-          msg << "Command exited abnormally: " << command;
+          msg << "Command exited abnormally: ";
+          for(size_t i=0; i < command.size(); ++i) msg << command[i] << " ";
           camp::reportError(msg);
         }
       }
     }
   }
-}
-
-int System(const ostringstream& command, int quiet, bool wait,
-           const char *hint, const char *application, int *pid)
-{
-  return System(command.str().c_str(),quiet,wait,hint,application,pid);
 }
 
 string stripblanklines(const string& s)
@@ -361,6 +372,18 @@ const char *setPath(const char *s, bool quiet)
   return p;
 }
 
+void push_command(mem::vector<string>& a, const string& s) 
+{
+  a.push_back(s);
+#ifdef __CYGWIN__
+  if(s == "cmd") {
+    a.push_back("/c");
+    a.push_back("start");
+    a.push_back("\"\"");
+  }
+#endif      
+}
+
 void popupHelp() {
   // If the popped-up help is already running, pid stores the pid of the viewer.
   static int pid=0;
@@ -371,9 +394,12 @@ void popupHelp() {
   // If the help viewer isn't running (or its last run has termined), launch the
   // viewer again.
   if (pid==0 || (waitpid(pid, &status, WNOHANG) == pid)) {
-    ostringstream cmd;
-    cmd << "'" << getSetting<string>("pdfviewer") << "' '" 
-        << docdir << dirsep << "asymptote.pdf'";
+    mem::vector<string> cmd;
+    push_command(cmd,getSetting<string>("pdfviewer"));
+    string viewerOptions=getSetting<string>("pdfviewerOptions"); 
+    if(!viewerOptions.empty())
+      cmd.push_back(viewerOptions);
+    cmd.push_back(docdir+dirsep+"asymptote.pdf");
     status=System(cmd,0,false,"pdfviewer","your PDF viewer",&pid);
   }
 }

@@ -64,28 +64,6 @@ void arrayArrayOp(vm::stack *s)
 }
 
 template<class T>
-inline void arrayNegate(vm::stack *s)
-{
-  array *a=pop<array*>(s);
-  size_t size=checkArray(a);
-  array *c=new array(size);
-  for(size_t i=0; i < size; i++)
-    (*c)[i]=-read<T>(a,i);
-  s->push(c);
-}
-
-template<>
-inline void arrayNegate<Int>(vm::stack *s)
-{
-  array *a=pop<array*>(s);
-  size_t size=checkArray(a);
-  array *c=new array(size);
-  for(size_t i=0; i < size; i++)
-    (*c)[i]=Negate(read<Int>(a,i),i);
-  s->push(c);
-}
-
-template<class T>
 void sumArray(vm::stack *s)
 {
   array *a=pop<array*>(s);
@@ -161,6 +139,61 @@ void binopArray3(vm::stack *s)
   s->push(m);
 }
 
+template<class T, class U, template <class S> class op>
+void array2Op(vm::stack *s)
+{
+  U b=pop<U>(s);
+  array *a=pop<array*>(s);
+  size_t size=checkArray(a);
+  array *c=new array(size);
+  for(size_t i=0; i < size; ++i) {
+    array *ai=read<array*>(a,i);
+    size_t aisize=checkArray(ai);
+    array *ci=new array(aisize);
+    (*c)[i]=ci;
+    for(size_t j=0; j < aisize; j++)
+      (*ci)[j]=op<T>()(read<T>(ai,j),b,0);
+  }
+  s->push(c);
+}
+
+template<class T, class U, template <class S> class op>
+void opArray2(vm::stack *s)
+{
+  array *a=pop<array*>(s);
+  T b=pop<T>(s);
+  size_t size=checkArray(a);
+  array *c=new array(size);
+  for(size_t i=0; i < size; ++i) {
+    array *ai=read<array*>(a,i);
+    size_t aisize=checkArray(ai);
+    array *ci=new array(aisize);
+    (*c)[i]=ci;
+    for(size_t j=0; j < aisize; j++)
+      (*ci)[j]=op<U>()(read<U>(ai,j),b,0);
+  }
+  s->push(c);
+}
+
+template<class T, template <class S> class op>
+void array2Array2Op(vm::stack *s)
+{
+  array *b=pop<array*>(s);
+  array *a=pop<array*>(s);
+  size_t size=checkArrays(a,b);
+  array *c=new array(size);
+  for(size_t i=0; i < size; ++i) {
+    array *ai=read<array*>(a,i);
+    array *bi=read<array*>(b,i);
+    size_t aisize=checkArrays(ai,bi);
+    array *ci=new array(aisize);
+    (*c)[i]=ci;
+    for(size_t j=0; j < aisize; j++)
+      (*ci)[j]=op<T>()(read<T>(ai,j),read<T>(bi,j),0);
+  }
+  s->push(c);
+}
+
 template<class T>
 bool Array2Equals(vm::stack *s)
 {
@@ -193,6 +226,24 @@ template<class T>
 void array2NotEquals(vm::stack *s)
 {
   s->push(!Array2Equals<T>(s));
+}
+
+template<class T>
+void diagonal(vm::stack *s)
+{
+  array *a=pop<array*>(s);
+  size_t n=checkArray(a);
+  array *c=new array(n);
+  for(size_t i=0; i < n; ++i) {
+    array *ci=new array(n);
+    (*c)[i]=ci;
+    for(size_t j=0; j < i; ++j)
+      (*ci)[j]=T();
+    (*ci)[i]=read<T>(a,i);
+    for(size_t j=i+1; j < n; ++j)
+      (*ci)[j]=T();
+  }
+  s->push(c);
 }
 
 template<class T>
@@ -238,18 +289,16 @@ void sortArray2(vm::stack *s)
   s->push(c);
 }
 
-// Search a sorted ordered array of n elements to find an interval containing
-// a given key. Returns n-1 if the key is greater than or equal to the last
-// element, -1 if the key is less than the first element, and otherwise the
-// index corresponding to the left-hand endpoint of the matching interval. 
+// Search a sorted ordered array a of n elements for key, returning the index i
+// if a[i] <= key < a[i+1], -1 if key is less than all elements of a, or
+// n-1 if key is greater than or equal to the last element of a.
 template<class T>
 void searchArray(vm::stack *s)
 {
   T key=pop<T>(s);
   array *a=pop<array*>(s);
   Int size=(Int) a->size();
-  if(size == 0) {s->push(0); return;}
-  if(key < read<T>(a,0)) {s->push(-1); return;}
+  if(size == 0 || key < read<T>(a,0)) {s->push(-1); return;}
   Int u=size-1;
   if(key >= read<T>(a,u)) {s->push(u); return;}
   Int l=0;
@@ -435,9 +484,28 @@ void arrayFunc(vm::stack *s)
   s->push(c);
 }
 
+template <class T, class S, T (*func)(S)>
+void arrayFunc2(vm::stack *s) 
+{
+  array *a=pop<array*>(s);
+  size_t size=checkArray(a);
+  array *c=new array(size);
+  for(size_t i=0; i < size; ++i) {
+    array *ai=read<array*>(a,i);
+    size_t aisize=checkArray(ai);
+    array *ci=new array(aisize);
+    (*c)[i]=ci;
+    for(size_t j=0; j < aisize; j++)
+    (*ci)[j]=func(read<S>(ai,j));
+  }
+  s->push(c);
+}
+
 vm::array *Identity(Int n);
 camp::triple operator *(const vm::array& a, const camp::triple& v);
 camp::triple multshiftless(const vm::array& t, const camp::triple& v);
+double norm(double *a, size_t n);
+double norm(camp::triple *a, size_t n);
 
 } // namespace run
 

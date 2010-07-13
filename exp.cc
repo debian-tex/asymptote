@@ -10,11 +10,18 @@
 #include "exp.h"
 #include "errormsg.h"
 #include "runtime.h"
+#include "runmath.h"
+#include "runpicture.h"
+#include "runarray.h"
+#include "runpair.h"
+#include "runtriple.h"
+#include "runpath.h"
 #include "coenv.h"
 #include "application.h"
 #include "dec.h"
 #include "stm.h"
 #include "inst.h"
+#include "opsymbols.h"
 
 namespace absyntax {
 
@@ -24,10 +31,12 @@ using vm::inst;
 using mem::vector;
 
 
+#if 0
 void exp::prettyprint(ostream &out, Int indent)
 {
   prettyname(out, "exp",indent);
 }
+#endif
 
 void exp::transAsType(coenv &e, types::ty *target) {
   types::ty *t=trans(e);
@@ -36,20 +45,44 @@ void exp::transAsType(coenv &e, types::ty *target) {
 
 void exp::transToType(coenv &e, types::ty *target)
 {
-  types::ty *source=e.e.castSource(target, cgetType(e), symbol::castsym);
+  types::ty *ct=cgetType(e);
+
+  if (equivalent(target, ct)) {
+    transAsType(e, target);
+    return;
+  }
+
+#if FASTCAST
+  if (ct->kind != ty_overloaded &&
+      ct->kind != ty_error &&
+      target->kind != ty_error) {
+    access *a = e.e.fastLookupCast(target, ct);
+    if (a) {
+      transAsType(e, ct);
+      a->encode(CALL, getPos(), e.c);
+      return;
+    }
+  }
+#endif
+
+  types::ty *source = e.e.castSource(target, ct, symbol::castsym);
   if (source==0) {
-    types::ty *sources=cgetType(e);
-    em.error(getPos());
-    em << "cannot cast ";
-    if (sources->kind==ty_overloaded)
-      em << "expression";
-    else
-      em << "'" << *sources << "'";
-    em << " to '" << *target << "'";
+    if (target->kind != ty_error) {
+      types::ty *sources=cgetType(e);
+      em.error(getPos());
+      em << "cannot cast ";
+      if (sources->kind==ty_overloaded)
+        em << "expression";
+      else
+        em << "'" << *sources << "'";
+      em << " to '" << *target << "'";
+    }
   }
   else if (source->kind==ty_overloaded) {
-    em.error(getPos());
-    em << "expression is ambiguous in cast to '" << *target << "'";
+    if (target->kind != ty_error) {
+      em.error(getPos());
+      em << "expression is ambiguous in cast to '" << *target << "'";
+    }
   }
   else {
     transAsType(e, source);
@@ -63,7 +96,8 @@ void exp::testCachedType(coenv &e) {
     if (!equivalent(t, ct)) {
       em.compiler(getPos());
       em << "cached type '" << *ct 
-         << "' doesn't match actual type '" << *t;
+         << "' doesn't match actual type '" << *t << "'";
+      em.sync();
     }
   }
 }
@@ -87,6 +121,10 @@ tempExp::tempExp(coenv &e, varinit *v, types::ty *t)
   e.c.encode(inst::pop);
 }
 
+void tempExp::prettyprint(ostream &out, Int indent) {
+  prettyname(out, "tempExp", indent);
+}
+
 types::ty *tempExp::trans(coenv &e) {
   a->encode(READ, getPos(), e.c);
   return t;
@@ -98,6 +136,10 @@ varEntryExp::varEntryExp(position pos, types::ty *t, access *a)
 varEntryExp::varEntryExp(position pos, types::ty *t, vm::bltin f)
   : exp(pos), v(new trans::varEntry(t, new bltinAccess(f), 0, position())) {}
 
+void varEntryExp::prettyprint(ostream &out, Int indent) {
+  prettyname(out, "varEntryExp", indent);
+}
+
 types::ty *varEntryExp::getType(coenv &) {
   return v->getType();
 }
@@ -105,6 +147,10 @@ types::ty *varEntryExp::getType(coenv &) {
 types::ty *varEntryExp::trans(coenv &e) {
   v->encode(READ, getPos(), e.c);
   return getType(e);
+}
+
+trans::varEntry *varEntryExp::getCallee(coenv &e, types::signature *sig) {
+  return equivalent(sig, v->getType()->getSignature()) ? v : 0;
 }
 
 void varEntryExp::transAct(action act, coenv &e, types::ty *target) {
@@ -142,7 +188,7 @@ void fieldExp::pseudoName::prettyprint(ostream &out, Int indent)
 void fieldExp::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "fieldExp '" << *field << "'\n";
+  out << "fieldExp '" << field << "'\n";
 
   object->prettyprint(out, indent+1);
 }
@@ -346,6 +392,137 @@ types::ty *thisExp::getType(coenv &e)
   return e.c.thisType();
 }
 
+void equalityExp::prettyprint(ostream &out, Int indent)
+{
+  prettyname(out, "equalityExp", indent);
+  callExp::prettyprint(out, indent+1);
+}
+
+#ifdef NO_FUNC_OPS
+types::ty *equalityExp::getType(coenv &e) {
+  // Try to the resolve the expression as a function call first.
+  types::ty *t = callExp::getType(e);
+  assert(t);
+  if (t->kind != ty_error)
+    return t;
+  else
+    // Either an error or handled by the function equality methods.  In the
+    // first case, we may return whatever we like, and the second case always
+    // returns bool.  In either case, it is safe to return bool.
+    return primBoolean();
+}
+#endif
+
+// From a possibly overloaded type, if there is a unique function type, return
+// it, otherwise 0.
+types::ty *uniqueFunction(types::ty *t) {
+  if (t->kind == types::ty_function)
+    return t;
+
+  if (t->isOverloaded()) {
+    types::ty *ft = 0;
+    for (ty_iterator i = t->begin(); i != t->end(); ++i)
+    {
+      if ((*i)->kind != types::ty_function) 
+        continue;
+
+      if (ft) {
+        // Multiple function types.
+        return 0;
+      }
+
+      ft = *i;
+    }
+
+    return ft;
+  }
+
+  // Not a function.
+  return 0;
+}
+
+// From two possibly overloaded types, if there is a unique function type
+// common to both, return it, otherwise 0.
+types::ty *uniqueFunction(types::ty *t1, types::ty *t2) {
+  if (t1->kind == types::ty_function)
+    return equivalent(t1, t2) ? t1 : 0;
+
+  if (t1->isOverloaded()) {
+    types::ty *ft = 0;
+    for (ty_iterator i = t1->begin(); i != t1->end(); ++i)
+    {
+      if ((*i)->kind != types::ty_function) 
+        continue;
+
+      if (!equivalent(*i, t2))
+        continue;
+
+      if (ft) {
+        // Multiple function types.
+        return 0;
+      }
+
+      ft = *i;
+    }
+
+    return ft;
+  }
+
+  // Not a function.
+  return 0;
+}
+
+bltin bltinFromName(symbol name) {
+  if (name == SYM_EQ)
+    return run::boolFuncEq;
+  assert(name == SYM_NEQ);
+  return run::boolFuncNeq;
+}
+
+#ifdef NO_FUNC_OPS
+types::ty *equalityExp::trans(coenv &e) {
+  // First, try to handle by normal function resolution.
+  types::ty *t = callExp::getType(e);
+  assert(t);
+  if (t->kind != ty_error)
+    return callExp::trans(e);
+
+  // Then, check for the function equality case.
+  exp *left = (*this->args)[0].val;
+  exp *right = (*this->args)[1].val;
+
+  types::ty *lt = left->getType(e);
+  types::ty *rt = right->getType(e);
+
+  // TODO: decide what null == null should do.
+
+  // Check for function == null and null == function
+  types::ty *ft = 0;
+  if (rt->kind == types::ty_null)
+    ft = uniqueFunction(lt);
+  else if (lt->kind == types::ty_null)
+    ft = uniqueFunction(rt);
+  else
+    ft = uniqueFunction(lt, rt);
+
+
+  if (ft) {
+    assert(ft->kind == ty_function);
+
+    left->transToType(e, ft);
+    right->transToType(e, ft);
+    e.c.encode(inst::builtin, bltinFromName(callee->getName()));
+
+    return primBoolean();
+  } else {
+    // Let callExp report a "no such function" error.
+    types::ty *t = callExp::trans(e);
+    assert(t->kind == ty_error);
+    return t;
+  }
+}
+#endif
+
 void scaleExp::prettyprint(ostream &out, Int indent)
 {
   exp *left=getLeft(); exp *right=getRight();
@@ -509,7 +686,7 @@ void argument::prettyprint(ostream &out, Int indent)
   prettyindent(out, indent);
   out << "explist";
   if (name)
-    out << " '" << *name << "'";
+    out << " '" << name << "'";
   out << '\n';
 
   val->prettyprint(out, indent+1);
@@ -531,9 +708,13 @@ void callExp::prettyprint(ostream &out, Int indent)
   args->prettyprint(out, indent+1);
 }
 
-signature *callExp::argTypes(coenv &e)
+signature *callExp::argTypes(coenv &e, bool *searchable)
 {
   signature *source=new signature;
+
+  // The signature is searchable unless one of the arguments is overloaded or
+  // named.
+  *searchable = true;
 
   size_t n = args->size();
   for (size_t i = 0; i < n; i++) {
@@ -541,6 +722,8 @@ signature *callExp::argTypes(coenv &e)
     types::ty *t = a.val->cgetType(e);
     if (t->kind == types::ty_error)
       return 0;
+    if (t->kind == types::ty_overloaded || a.name)
+      *searchable = false;
     source->add(types::formal(t,a.name));
   }
 
@@ -549,6 +732,8 @@ signature *callExp::argTypes(coenv &e)
     types::ty *t = a.val->cgetType(e);
     if (t->kind == types::ty_error)
       return 0;
+    if (t->kind == types::ty_overloaded || a.name)
+      *searchable = false;
     source->addRest(types::formal(t,a.name));
   }
 
@@ -564,9 +749,9 @@ application *callExp::resolve(coenv &e, overloaded *o, signature *source,
     if (!tacit) {
       em.error(getPos());
 
-      symbol *s = callee->getName();
+      symbol s = callee->getName();
       if (s)
-        em << "no matching function \'" << *s;
+        em << "no matching function \'" << s;
       else
         em << "no matching function for signature \'";
       em << *source << "\'";
@@ -579,9 +764,9 @@ application *callExp::resolve(coenv &e, overloaded *o, signature *source,
     if (!tacit) {
       em.error(getPos());
 
-      symbol *s = callee->getName();
+      symbol s = callee->getName();
       if(s)
-        em << "call of function \'" << *s;
+        em << "call of function \'" << s;
       else
         em << "call with signature \'";
       em << *source << "\' is ambiguous";
@@ -602,14 +787,15 @@ bool hasNamedParameters(signature *sig) {
   return false;
 }
 
-void callExp::reportMismatch(symbol *s, function *ft, signature *source)
+void callExp::reportMismatch(function *ft, signature *source)
 {
+  symbol s = callee->getName();
   const char *separator=ft->getSignature()->getNumFormals() > 1 ? "\n" : " ";
 
   em.error(getPos());
   em << "cannot call" << separator << "'" << *ft->getResult() << " ";
   if(s)
-    em << *s;
+    em << s;
   em << *ft->getSignature() << "'" << separator;
 
   if (ft->getSignature()->isOpen && hasNamedParameters(source))
@@ -638,64 +824,144 @@ void callExp::reportArgErrors(coenv &e)
     args->rest.val->trans(e);
 }
 
-application *callExp::getApplication(coenv &e)
-{
-  // First figure out the signature of what we want to call.
-  signature *source=argTypes(e);
+void callExp::reportNonFunction() {
+    em.error(getPos());
+    symbol s = callee->getName();
+    if (s)
+      em << "\'" << s << "\' is not a function";
+    else
+      em << "called expression is not a function";
+}
 
-  if (!source)
-    return 0;
+types::ty *callExp::cacheAppOrVarEntry(coenv &e, bool tacit)
+{
+  assert(cachedVarEntry == 0 && cachedApp == 0);
+
+  // First figure out the signature of what we want to call.
+  bool searchable;
+  signature *source=argTypes(e, &searchable);
+
+#ifdef DEBUG_GETAPP /* {{{ */
+  cout << "getApp for ";
+  if (callee->getName())
+    cout << *callee->getName();
+  else 
+    cout << "unnamed";
+  cout << " at " << getPos() << endl;
+  cout << "searchable: " << searchable << endl;
+#endif /* }}} */
+
+  if (!source) {
+    return primError();
+  }
+
+  // An attempt at speeding up compilation:  See if the source arguments match
+  // the (possibly overloaded) function exactly.
+#if CALLEE_SEARCH
+  if (searchable) {
+    varEntry *ve = callee->getCallee(e, source);
+
+#ifdef DEBUG_GETAPP
+    cout << "guessed: " << (ve!=0) << endl;
+#endif
+
+    if (ve) {
+      cachedVarEntry = ve;
+#ifndef DEBUG_CACHE
+      // Normally DEBUG_CACHE is not defined and we return here for efficiency
+      // reasons.  If DEBUG_CACHE is defined, also resolve the function by the
+      // normal techniques and make sure we get the same result.
+      return ((function *)ve->getType())->getResult();
+#endif
+    }
+  }
+#endif
 
   // Figure out what function types we can call.
-  trans::ty *ft = callee->cgetType(e);
+  types::ty *ft = callee->cgetType(e);
+
+#ifdef DEBUG_GETAPP
+  string name = callee->getName() ? string(*callee->getName()) :
+                                    string("unnamed");
+  if (!callee->getName())
+    cout << getPos() << endl;
+#endif
+
   switch (ft->kind) {
     case ty_error:
-      // Report callee errors.
-      //cerr << "reporting callee errors\n";
-      callee->trans(e);
-      return 0;
-    case ty_function: {
-      application *a=application::match(e.e, (function *)ft, source, *args);
-      if (!a) {
-        //cerr << "reporting mismatch\n";
-        reportMismatch(callee->getName(), (function *)ft, source);
-      }
-      //cerr << "returning function\n";
-      return a;
-    } 
-    case ty_overloaded:
-      //cerr << "resolving overloaded\n";
-      return resolve(e, (overloaded *)ft, source, false);
+      if (!tacit)
+        // Report callee errors.
+        callee->trans(e);
+      break;
+
+    case ty_function:
+      //cout << "name " << name << endl;
+      cachedApp = application::match(e.e, (function *)ft, source, *args);
+      if (!cachedApp && !tacit)
+        reportMismatch((function *)ft, source);
+      break;
+
+    case ty_overloaded: {
+#ifdef DEBUG_GETAPP
+      int size = ((overloaded *)ft)->sub.size();
+      for (int i = 0; i < size; ++i) cout << "name " << name << endl;
+#endif
+      cachedApp = resolve(e, (overloaded *)ft, source, tacit);
+      break;
+    }
+
     default:
-      //cerr << "not a function\n";
-      em.error(getPos());
-      symbol *s = callee->getName();
-      if (s)
-        em << "\'" << *s << "\' is not a function";
-      else
-        em << "called expression is not a function";
-      return 0;
+      if (!tacit)
+        reportNonFunction();
+      break;
   }
+
+#ifdef DEBUG_GETAPP
+  cout << name << " " << *source << " --> "
+       << *cachedApp->getType()->getSignature() << endl;
+#endif
+
+#if DEBUG_CACHE
+  // Make sure cachedVarEntry is giving us the right function.
+  if (cachedVarEntry)
+    assert(equivalent(cachedVarEntry->getType(), cachedApp->getType()));
+#endif
+
+  // getType relies on this method for the type.
+  return cachedApp ? cachedApp->getType()->getResult() : primError();
+}
+
+types::ty *callExp::transPerfectMatch(coenv &e) {
+  // The varEntry of the callee.  (No longer needed after translation.)
+  varEntry *ve = cachedVarEntry;
+  cachedVarEntry = 0;
+  assert(ve);
+
+  // Translate the arguments in turn.
+  for (size_t i = 0; i < args->size(); ++i)
+    (*args)[i].val->trans(e);
+  if (args->rest.val)
+    args->rest.val->trans(e);
+
+  // Call the function.
+  ve->encode(CALL, getPos(), e.c);
+
+  // That's it.  Return the return type of the function.
+  return ct ? ct : dynamic_cast<function *>(ve->getType())->getResult();
 }
 
 types::ty *callExp::trans(coenv &e)
 {
-#if 0
-  cerr << "callExp::trans() called for ";
-  if (callee->getName())
-    cerr << *callee->getName();
-  cerr << endl;
-#endif
+  if (cachedVarEntry == 0 && cachedApp == 0)
+    cacheAppOrVarEntry(e, false);
 
-#ifdef DEBUG_CACHE
-  if (ca)
-    assert(equivalent(ca->getType(), getApplication(e)->getType()));
-#endif
-  application *a= ca ? ca : getApplication(e);
-  
-  // The cached application is no longer needed after translation, so
-  // let it be garbage collected.
-  ca=0;
+  if (cachedVarEntry)
+    return transPerfectMatch(e);
+
+  // The cached data is no longer needed after translation, so let it be
+  // garbage collected.
+  application *a = cachedApp;
+  cachedApp=0;
 
   if (!a) {
     reportArgErrors(e);
@@ -715,37 +981,27 @@ types::ty *callExp::trans(coenv &e)
   // Translate the call.
   temp->transCall(e, t);
 
-  assert(ct==0 || equivalent(ct, t->result));
   return t->result;
 }
 
 types::ty *callExp::getType(coenv &e)
 {
-  // First figure out the signature of what we want to call.
-  signature *source=argTypes(e);
-  if (!source)
-    return types::primError();
-
-  // Figure out what function types we can call.
-  trans::ty *ft = callee->cgetType(e);
-
-  switch (ft->kind) {
-    case ty_function:
-      return ((function *)ft)->result;
-    case ty_overloaded: {
-      application *a=resolve(e, (overloaded *)ft, source, true);
-      if (a) {
-        // Cache the application to avoid calling multimatch again later.
-        ca=a;
-        return ca->getType()->result;
-      }
-      else
-        return primError();
-    }
-    default:
-      return primError();
+  if (cachedApp)
+    return cachedApp->getType()->getResult();
+  if (cachedVarEntry) {
+    function *ft = dynamic_cast<function *>(cachedVarEntry->getType());
+    assert(ft);
+    return ft->getResult();
   }
+  return cacheAppOrVarEntry(e, true);
 }
+
+bool callExp::resolved(coenv &e) {
+  if (cachedApp == 0 && cachedVarEntry == 0)
+    cacheAppOrVarEntry(e, true);
+  return cachedApp || cachedVarEntry;
+}
+  
     
 void pairExp::prettyprint(ostream &out, Int indent)
 {
@@ -820,7 +1076,7 @@ void castExp::prettyprint(ostream &out, Int indent)
 }
 
 types::ty *castExp::tryCast(coenv &e, types::ty *t, types::ty *s,
-                            symbol *csym)
+                            symbol csym)
 {
   types::ty *ss=e.e.castSource(t, s, csym);
   if (ss == 0) {
@@ -896,7 +1152,7 @@ void conditionalExp::transToType(coenv &e, types::ty *target)
       em.error(getPos());
       em << "cannot cast vectorized conditional to '" << *target << "'";
     }
-    test->transToType(e, types::boolArray());
+    test->transToType(e, types::booleanArray());
     onTrue->transToType(e, target);
     onFalse->transToType(e, target);
     e.c.encode(inst::builtin, run::arrayConditional);
@@ -1031,7 +1287,7 @@ void joinExp::prettyprint(ostream &out, Int indent)
 void specExp::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out,indent);
-  out << "specExp '" << *op << "' " 
+  out << "specExp '" << op << "' " 
       << (s==camp::OUT ? "out" :
           s==camp::IN  ? "in" :
           "invalid side") << '\n';
@@ -1111,7 +1367,7 @@ types::ty *assignExp::getType(coenv &e)
 void selfExp::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "selfExp '" << *op << "'\n";
+  out << "selfExp '" << op << "'\n";
 
   dest->prettyprint(out, indent+1);
   value->prettyprint(out, indent+1);
@@ -1121,7 +1377,7 @@ void selfExp::prettyprint(ostream &out, Int indent)
 void prefixExp::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "prefixExp '" << *op << "'\n";
+  out << "prefixExp '" << op << "'\n";
   
   dest->prettyprint(out, indent+1);
 }
@@ -1148,8 +1404,7 @@ types::ty *prefixExp::getType(coenv &e)
 void postfixExp::prettyprint(ostream &out, Int indent)
 {
   prettyindent(out, indent);
-  out << "postfixExp <illegal>";
-  out << "postfixExp <illegal> '" << *op << "'\n";
+  out << "postfixExp <illegal> '" << op << "'\n";
 
   dest->prettyprint(out, indent+1);
 }

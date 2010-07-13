@@ -9,6 +9,7 @@
 #define SETTINGS_H
 
 #include <fstream>
+#include <sys/stat.h>
 
 #include "common.h"
 #include "pair.h"
@@ -46,7 +47,7 @@ extern char *argv0;
 
 void Warn(const string& s);
 void noWarn(const string& s);
-string warn(const string& s);
+bool warn(const string& s);
 extern string systemDir;
 extern string docdir;
 extern const string dirsep;
@@ -57,6 +58,7 @@ bool globalwrite();
 
 extern const string suffix;
 extern const string guisuffix;
+extern const string standardprefix;
   
 extern string historyname;
   
@@ -89,6 +91,8 @@ int numArgs();
 char *getArg(int n);
  
 Int getScroll();
+  
+extern mode_t mask;
   
 bool pdf(const string& texengine);
 bool latex(const string& texengine);

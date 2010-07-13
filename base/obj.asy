@@ -21,7 +21,7 @@ struct obj {
   pen[] meshpen;
 
   path3[][] read(string datafile, bool verbose=false) {
-    file in=word(line(input(datafile)));
+    file in=input(datafile).word().line();
     triple[] vert;
     path3[][] g;
     g[0]=new path3[] ;
@@ -92,10 +92,19 @@ struct obj {
                      material surfacepen, pen meshpen=nullpen) {
     material[] surfacepen={surfacepen};
     pen[] meshpen={meshpen};
-    surfacepen.cyclic(true);
-    meshpen.cyclic(true);
+    surfacepen.cyclic=true;
+    meshpen.cyclic=true;
     operator init(read(datafile,verbose),surfacepen,meshpen);
   }
+}
+
+obj operator * (transform3 T, obj o)
+{
+  obj ot;
+  ot.s=T*o.s;
+  ot.surfacepen=copy(o.surfacepen);
+  ot.meshpen=copy(o.meshpen);
+  return ot;
 }
 
 void draw(picture pic=currentpicture, obj o, light light=currentlight)

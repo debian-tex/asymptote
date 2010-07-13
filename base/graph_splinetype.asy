@@ -1,6 +1,7 @@
+private import math;
+
 typedef real[] splinetype(real[], real[]);
 
-restricted real[] defaultspline(real[] x, real[] y);
 restricted real[] Spline(real[] x, real[] y);
 restricted splinetype[] Spline;
 
@@ -12,6 +13,24 @@ void checklengths(int x, int y, string text=differentlengths)
     abort(text+": "+string(x)+" != "+string(y));
 }
 
+void checkincreasing(real[] x) 
+{
+  if(!increasing(x,true))
+    abort("strictly increasing array expected");
+}
+
+// Linear interpolation
+real[] linear(real[] x, real[] y)
+{
+  int n=x.length;
+  checklengths(n,y.length);
+  real[] d=new real[n];
+  for(int i=0; i < n-1; ++i)
+    d[i]=(y[i+1]-y[i])/(x[i+1]-x[i]);
+  d[n-1]=d[n-2];
+  return d;
+}
+
 // Standard cubic spline interpolation with not-a-knot condition:
 // s'''(x_2^-)=s'''(x_2^+) et s'''(x_(n_2)^-)=s'''(x_(n-2)^+)
 // if n=2, linear interpolation is returned
@@ -21,6 +40,7 @@ real[] notaknot(real[] x, real[] y)
 {
   int n=x.length;
   checklengths(n,y.length);
+  checkincreasing(x);
   real[] d;
   if(n > 3) {
     real[] a=new real[n];
@@ -64,7 +84,8 @@ real[] periodic(real[] x, real[] y)
 {
   int n=x.length;
   checklengths(n,y.length);
-  if(abs(y[n-1]-y[0]) > sqrtEpsilon*max(abs(y)))
+  checkincreasing(x);
+  if(abs(y[n-1]-y[0]) > sqrtEpsilon*norm(y))
     abort("function values are not periodic");
   real[] d;
   if(n > 2) {
@@ -99,6 +120,7 @@ real[] natural(real[] x, real[] y)
 {
   int n=x.length;
   checklengths(n,y.length);
+  checkincreasing(x);
   real[] d;
   if(n > 2) {
     real[] a=new real[n];
@@ -133,6 +155,7 @@ splinetype clamped(real slopea, real slopeb)
   return new real[] (real[] x, real[] y) {
     int n=x.length;
     checklengths(n,y.length);
+    checkincreasing(x);
     real[] d;
     if(n > 2) {
       real[] a=new real[n];
@@ -172,6 +195,7 @@ real[] monotonic(real[] x, real[] y)
 {
   int n=x.length; 
   checklengths(n,y.length);
+  checkincreasing(x);
   real[] d=new real[n]; 
   if(n > 2) {
     real[] h=new real[n-1];

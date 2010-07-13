@@ -21,7 +21,7 @@ triple[] firstframe(path3 p, triple optional=O)
 }
 
 // Modification of the bishop frame construction contained in
-// space_tube.asy(from Philippe Ivaldi's modules). 
+// space_tube.asy (from Philippe Ivaldi's modules). 
 // For noncyclic path3s only
 triple[] nextframe(path3 p, real reltimestart, triple[] start, real
                    reltimeend, int subdiv=20)
@@ -41,17 +41,17 @@ triple[] nextframe(path3 p, real reltimestart, triple[] start, real
   return bf[subdiv];
 }
   
-surface labelpath(string txt, path3 p, real angle=90, triple optional=O)
+surface labelpath(string s, path3 p, real angle=90, triple optional=O)
 {
   real Cos=Cos(angle);
   real Sin=Sin(angle);
-  path[] text=texpath(Label(txt,(0,0),Align,basealign));
+  path[] text=texpath(Label(s,(0,0),Align,basealign));
   text=scale(1/(max(text).x-min(text).x))*text;
   path[][] decompose=containmentTree(text);
-	
+        
   real[][] xpos=new real[decompose.length][2];
   surface sf;
-  for(int i=0; i < decompose.length; ++i) {// Identify positions along x-axis	
+  for(int i=0; i < decompose.length; ++i) {// Identify positions along x-axis   
     xpos[i][1]=i;
     real pos0=0.5(max(decompose[i]).x+min(decompose[i]).x);
     xpos[i][0]=pos0;

@@ -29,7 +29,7 @@ using vm::lambda;
 
 namespace trans {
 
-class genv {
+class genv : public gc {
   // The initializer functions for imports, indexed by filename.
   typedef mem::map<CONST string,record *> importMap;
   importMap imap;
@@ -43,13 +43,13 @@ class genv {
   void checkRecursion(string filename);
 
   // Translate a module to build the record type.
-  record *loadModule(symbol *name, string s);
+  record *loadModule(symbol name, string s);
 
 public:
   genv();
 
   // Get an imported module, translating if necessary.
-  record *getModule(symbol *name, string s);
+  record *getModule(symbol name, string s);
 
   // Uses the filename->record map to build a filename->initializer map to be
   // used at runtime.

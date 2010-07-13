@@ -4,11 +4,6 @@ pair viewportsize=0;       // Horizontal and vertical viewport limits.
 restricted bool Aspect=true;
 restricted bool IgnoreAspect=false;
 
-pair size(frame f)
-{
-  return max(f)-min(f);
-}
-                                     
 typedef real[][] transform3;
 restricted transform3 identity4=identity(4);
 
@@ -360,6 +355,7 @@ pair point(frame f, pair dir)
 path[] align(path[] g, transform t=identity(), pair position,
              pair align, pen p=currentpen)
 {
+  if(g.length == 0) return g;
   pair m=min(g);
   pair M=max(g);
   pair dir=rectify(inverse(t)*-align);
@@ -385,32 +381,36 @@ struct transformation {
   transform3 modelview;  // For orientation and positioning
   transform3 projection; // For 3D to 2D projection
   bool infinity;
-  bool oblique;
-  void operator init(transform3 modelview, bool oblique=false) {
+  void operator init(transform3 modelview) {
     this.modelview=modelview;
     this.projection=identity4;
     infinity=true;
-    this.oblique=oblique;
   }
   void operator init(transform3 modelview, transform3 projection) {
     this.modelview=modelview;
     this.projection=projection;
     infinity=false;
-    oblique=false;
   }
   transform3 compute() {
-    return projection*modelview;
+    return infinity ? modelview : projection*modelview;
+  }
+  transformation copy() {
+    transformation T=new transformation;
+    T.modelview=copy(modelview);
+    T.projection=copy(projection);
+    T.infinity=infinity;
+    return T;
   }
 }
 
 struct projection {
-  transform3 t; // projection*modelview (cached)
+  transform3 t;         // projection*modelview (cached)
   bool infinity;
-  bool oblique;
   bool absolute=false;
   triple camera;        // Position of camera.
   triple up;            // A vector that should be projected to direction (0,1).
   triple target;        // Point where camera is looking at.
+  triple normal;        // Normal vector from target to projection plane.
   pair viewportshift;   // Fractional viewport shift.
   real zoom=1;          // Zoom factor.
   real angle;           // Lens angle (for perspective projection).
@@ -420,32 +420,28 @@ struct projection {
   bool autoadjust=true; // Adjust camera to lie outside bounding volume?
   bool center=false;    // Center target within bounding volume?
   int ninterpolate;     // Used for projecting nurbs to 2D Bezier curves.
+  transformation T;
 
   void calculate() {
-    transformation T=projector(camera,up,target);
+    T=projector(camera,up,target);
     t=T.compute();
     infinity=T.infinity;
-    oblique=T.oblique;
     ninterpolate=infinity ? 1 : 16;
   }
-
-  transformation transformation() {
-    return projector(camera,up,target);
-  }
-
-  transform3 modelview() {return transformation().modelview;}
 
   triple vector() {
     return camera-target;
   }
 
   void operator init(triple camera, triple up=(0,0,1), triple target=(0,0,0),
+                     triple normal=camera-target,
                      real zoom=1, real angle=0, pair viewportshift=0,
                      bool showtarget=true, bool autoadjust=true,
                      bool center=false, projector projector) {
     this.camera=camera;
     this.up=up;
     this.target=target;
+    this.normal=normal;
     this.zoom=zoom;
     this.angle=angle;
     this.viewportshift=viewportshift;
@@ -461,10 +457,10 @@ struct projection {
     P.t=t;
     P.infinity=infinity;
     P.absolute=absolute;
-    P.oblique=oblique;
     P.camera=camera;
     P.up=up;
     P.target=target;
+    P.normal=normal;
     P.zoom=zoom;
     P.angle=angle;
     P.viewportshift=viewportshift;
@@ -473,6 +469,7 @@ struct projection {
     P.center=center;
     P.projector=projector;
     P.ninterpolate=ninterpolate;
+    P.T=T.copy();
     return P;
   }
 
@@ -499,6 +496,71 @@ struct projection {
 }
 
 projection currentprojection;
+
+struct light {
+  real[][] diffuse;
+  real[][] ambient;
+  real[][] specular;
+  pen background=nullpen; // Background color of the 3D canvas.
+  real specularfactor;
+  bool viewport; // Are the lights specified (and fixed) in the viewport frame?
+  triple[] position; // Only directional lights are currently implemented.
+
+  transform3 T=identity(4); // Transform to apply to normal vectors.
+
+  bool on() {return position.length > 0;}
+  
+  void operator init(pen[] diffuse,
+                     pen[] ambient=array(diffuse.length,black),
+                     pen[] specular=diffuse, pen background=nullpen,
+                     real specularfactor=1,
+                     bool viewport=false, triple[] position) {
+    int n=diffuse.length;
+    assert(ambient.length == n && specular.length == n && position.length == n);
+    
+    this.diffuse=new real[n][];
+    this.ambient=new real[n][];
+    this.specular=new real[n][];
+    this.background=background;
+    this.position=new triple[n];
+    for(int i=0; i < position.length; ++i) {
+      this.diffuse[i]=rgba(diffuse[i]);
+      this.ambient[i]=rgba(ambient[i]);
+      this.specular[i]=rgba(specular[i]);
+      this.position[i]=unit(position[i]);
+    }
+    this.specularfactor=specularfactor;
+    this.viewport=viewport;
+  }
+
+  void operator init(pen diffuse=white, pen ambient=black, pen specular=diffuse,
+                     pen background=nullpen, real specularfactor=1,
+                     bool viewport=false...triple[] position) {
+    int n=position.length;
+    operator init(array(n,diffuse),array(n,ambient),array(n,specular),
+                  background,specularfactor,viewport,position);
+  }
+
+  void operator init(pen diffuse=white, pen ambient=black, pen specular=diffuse,
+                     pen background=nullpen, bool viewport=false,
+                     real x, real y, real z) {
+    operator init(diffuse,ambient,specular,background,viewport,(x,y,z));
+  }
+
+  void operator init(explicit light light) {
+    diffuse=copy(light.diffuse);
+    ambient=copy(light.ambient);
+    specular=copy(light.specular);
+    background=light.background;
+    specularfactor=light.specularfactor;
+    viewport=light.viewport;
+    position=copy(light.position);
+  }
+
+  real[] background() {return rgba(background == nullpen ? white : background);}
+}
+
+light currentlight;
 
 triple min3(pen p)
 {
@@ -990,7 +1052,7 @@ struct picture {
     if(status == simplex.problem.OPTIMAL) {
       return scaling.build(p.a(),p.b()).a;
     } else if(status == simplex.problem.UNBOUNDED) {
-      if(warn) write("warning: "+dir+" scaling in picture unbounded");
+      if(warn) warning("unbounded",dir+" scaling in picture unbounded");
       return 0;
     } else {
       if(!warn) return 1;
@@ -1001,8 +1063,8 @@ struct picture {
           abort("unbounded picture");
       }
       if(userzero) return 1;
-      write("warning: cannot fit picture to "+dir+"size "+(string) size
-            +"...enlarging...");
+      warning("cannotfit","cannot fit picture to "+dir+"size "+(string) size
+              +"...enlarging...");
       return calculateScaling(dir,coords,sqrt(2)*size,warn);
     }
   }
@@ -1184,11 +1246,11 @@ struct picture {
     pair d=size(f);
     static real epsilon=100*realEpsilon;
     if(d.x > xsize*(1+epsilon)) 
-      write("warning: frame exceeds xlimit: "+(string) d.x+" > "+
-            (string) xsize);
+      warning("xlimit","frame exceeds xlimit: "+(string) d.x+" > "+
+              (string) xsize);
     if(d.y > ysize*(1+epsilon))
-      write("warning: frame exceeds ylimit: "+(string) d.y+" > "+
-            (string) ysize);
+      warning("ylimit","frame exceeds ylimit: "+(string) d.y+" > "+
+              (string) ysize);
     return f;
   }
   
@@ -1212,7 +1274,7 @@ struct picture {
 
   }
 
-  // Calculate additional scaling required if only an approximate thisture
+  // Calculate additional scaling required if only an approximate picture
   // size estimate is available.
   transform3 scale3(frame f, real xsize3=this.xsize3,
                     real ysize3=this.ysize3, real zsize3=this.zsize3,
@@ -1290,16 +1352,29 @@ struct picture {
   }
 
   static frame fitter(string,picture,string,real,real,bool,bool,string,string,
-                      projection);
+                      light,projection);
   frame fit(string prefix="", string format="",
             real xsize=this.xsize, real ysize=this.ysize,
             bool keepAspect=this.keepAspect, bool view=false,
-            string options="", string script="",
+            string options="", string script="", light light=currentlight,
             projection P=currentprojection) {
     return fitter == null ? fit2(xsize,ysize,keepAspect) :
-      fitter(prefix,this,format,xsize,ysize,keepAspect,view,options,script,P);
+      fitter(prefix,this,format,xsize,ysize,keepAspect,view,options,script,
+             light,P);
   }
   
+  // Fit a 3D picture.
+  frame fit3(projection P=currentprojection) {
+    if(settings.render == 0) return fit(P);
+    if(fixed) return scaled();
+    if(empty3()) return newframe;
+    transform3 t=scaling(xsize3,ysize3,zsize3,keepAspect);
+    frame f=fit3(t,null,P);
+    transform3 s=scale3(f,xsize3,ysize3,zsize3,keepAspect);
+    if(s == identity4) return f;
+    return fit3(s*t,null,P);
+  }
+
   // In case only an approximate picture size estimate is available, return the
   // fitted frame slightly scaled (including labels and true size distances)
   // so that it precisely meets the given size specification. 
@@ -1497,7 +1572,19 @@ void add(picture pic=currentpicture, drawer d, bool exact=false)
   pic.add(d,exact);
 }
 
+typedef void drawer3(frame f, transform3 t, picture pic, projection P);
+void add(picture pic=currentpicture, drawer3 d, bool exact=false)
+{
+  pic.add(d,exact);
+}
+
 void add(picture pic=currentpicture, void d(picture,transform),
+         bool exact=false)
+{
+  pic.add(d,exact);
+}
+
+void add(picture pic=currentpicture, void d(picture,transform3),
          bool exact=false)
 {
   pic.add(d,exact);
@@ -1558,7 +1645,7 @@ void latticeshade(picture pic=currentpicture, path[] g, bool stroke=false,
     p=copy(p);
   }
   pic.add(new void(frame f, transform t) {
-      latticeshade(f,t*g,stroke,fillrule,p,false);
+      latticeshade(f,t*g,stroke,fillrule,p,t,false);
     },true);
   pic.addPath(g);
 }
@@ -1668,7 +1755,8 @@ void tensorshade(picture pic=currentpicture, path[] g, bool stroke=false,
 
 // Smoothly shade the regions between consecutive paths of a sequence using a
 // given array of pens:
-void draw(picture pic=currentpicture, path[] g, pen[] p)
+void draw(picture pic=currentpicture, path[] g, pen fillrule=currentpen,
+          pen[] p)
 {
   path[] G;
   pen[][] P;
@@ -1683,7 +1771,7 @@ void draw(picture pic=currentpicture, path[] g, pen[] p)
       P.push(new pen[] {p[i],p[i],p[i+1],p[i+1]});
     }
   }
-  tensorshade(pic,G,P);
+  tensorshade(pic,G,fillrule,P);
 }
 
 void functionshade(picture pic=currentpicture, path[] g, bool stroke=false,
@@ -1772,14 +1860,14 @@ transform fixedscaling(picture pic=currentpicture, pair min, pair max,
                                                  pic.keepAspect);
 }
 
-// Add frame src about position to frame dest with optional grouping.
+// Add frame src to frame dest about position with optional grouping.
 void add(frame dest, frame src, pair position, bool group=false,
          filltype filltype=NoFill, bool above=true)
 {
   add(dest,shift(position)*src,group,filltype,above);
 }
 
-// Add frame src about position to picture dest with optional grouping.
+// Add frame src to picture dest about position with optional grouping.
 void add(picture dest=currentpicture, frame src, pair position=0,
          bool group=true, filltype filltype=NoFill, bool above=true)
 {
@@ -1813,7 +1901,14 @@ void add(picture dest=currentpicture, frame src, pair position, pair align,
   add(dest,align(src,align),position,group,filltype,above);
 }
 
-// Like attach(picture,frame,pair) but extend picture to accommodate frame;
+// Like add(frame,frame,pair) but align frame in direction align.
+void add(frame dest, frame src, pair position, pair align,
+         bool group=true, filltype filltype=NoFill, bool above=true)
+{
+  add(dest,align(src,align),position,group,filltype,above);
+}
+
+// Like add(picture,frame,pair,pair) but extend picture to accommodate frame;
 void attach(picture dest=currentpicture, frame src, pair position,
             pair align, bool group=true, filltype filltype=NoFill,
             bool above=true)
@@ -1865,13 +1960,6 @@ void postscript(picture pic=currentpicture, string s)
     },true);
 }
 
-void tex(picture pic=currentpicture, string s)
-{
-  pic.add(new void(frame f, transform) {
-      tex(f,s);
-    },true);
-}
-
 void postscript(picture pic=currentpicture, string s, pair min, pair max)
 {
   pic.add(new void(frame f, transform t) {
@@ -1879,8 +1967,22 @@ void postscript(picture pic=currentpicture, string s, pair min, pair max)
     },true);
 }
 
+void tex(picture pic=currentpicture, string s)
+{
+  // Force TeX string s to be evaluated immediately (in case it is a macro).
+  frame g;
+  tex(g,s);
+  size(g);
+  pic.add(new void(frame f, transform) {
+      tex(f,s);
+    },true);
+}
+
 void tex(picture pic=currentpicture, string s, pair min, pair max)
 {
+  frame g;
+  tex(g,s);
+  size(g);
   pic.add(new void(frame f, transform t) {
       tex(f,s,t*min,t*max);
     },true);
@@ -1897,4 +1999,32 @@ void erase(picture pic=currentpicture)
 {
   pic.uptodate=false;
   pic.erase();
+}
+
+void begin(picture pic=currentpicture, string name, string id="",
+           bool visible=true)
+{
+  if(!latex() || !pdf()) return;
+  settings.twice=true;
+  if(id == "") id=string(++ocgindex);
+  tex(pic,"\begin{ocg}{"+name+"}{"+id+"}{"+(visible ? "1" : "0")+"}");
+  layer(pic);
+}
+
+void end(picture pic=currentpicture)
+{
+  if(!latex() || !pdf()) return;
+  tex(pic,"\end{ocg}");
+  layer(pic);
+}
+
+// For users of the LaTeX babel package.
+void deactivatequote(picture pic=currentpicture)
+{
+  tex(pic,"\catcode`\"=12");
+}
+
+void activatequote(picture pic=currentpicture)
+{
+  tex(pic,"\catcode`\"=13");
 }

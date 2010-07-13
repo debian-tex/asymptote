@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 #include "util.h"
 #include "modifier.h"
@@ -23,6 +24,8 @@ using namespace absyntax;
 using mem::string;
 
 #include "camp.tab.h"
+
+#include "opsymbols.h"
 
 #define YY_NO_UNPUT
 
@@ -81,19 +84,33 @@ void adjust()
   yylval.pos = here();
 } 
 
-void makesymbol(bool op=true, string text = yytext)
+void savesymbol(symbol name)
 {
   adjust();
-  yylval.ps.pos=here();
-  yylval.ps.sym=op ? symbol::opTrans(text) : symbol::literalTrans(text);
+  yylval.ps.pos=yylval.pos; // avoid invoking here() twice
+  yylval.ps.sym=name;
 }
 
-void makeselfsymbol(bool op=true, string text = yytext)
+/* For optimization reasons, the operator names are translated into symbols
+ * just once, and can be accessed throughout the code as SYM_PLUS, SYM_DASHES,
+ * etc.  Following the Don't Repeat Yourself principle, the mapping from
+ * strings to names is defined only here in camp.l (because we can't produce
+ * lex rules from a C style macro).
+ * The script opsymbols.pl reads this file scanning for rules using DEFSYMBOL
+ * and creates opsymbols.h which defines the names for use in C++ code.
+ */
+#define DEFSYMBOL(name) \
+    savesymbol(name)
+
+void makesymbol()
 {
-  /* Copy all but the last digit, which should be an =. */
-  assert(text[text.length()-1] == '=');
-  text.erase(text.length()-1);
-  makesymbol(op,text);
+  assert(strlen(yytext) == (size_t)yyleng);
+  savesymbol(symbol::rawTrans(yytext, yyleng+1));
+}
+
+void makeopsymbol()
+{
+  savesymbol(symbol::opTrans(yytext));
 }
 
 void makemod(trans::modifier mod) {
@@ -144,9 +161,16 @@ void reportEOF() {
   em.sync();
 }
 
-string stringbuild;
+position stringpos; // The position of the start of the string.
+string stringbuild; // Stores the string literal as it is read.
 
 namespace {
+void startstring()
+{
+  adjust();
+  stringpos = here();
+}
+
 void append(char c)
 {
   stringbuild.push_back(c);
@@ -156,7 +180,7 @@ void append(char c)
 void getstring(void)
 {
   // NOTE: Replace here() with a position at the start of the string.
-  makesymbol(false,stringbuild);
+  yylval.stre = new stringExp(stringpos, stringbuild);
   string().swap(stringbuild);
 }
 }
@@ -275,46 +299,47 @@ EXTRAOPS <<|>>|$|$$|@|@@|~
 "}"                {adjust(); return '}'; }
 "."                {adjust(); return '.'; }
 "..."              {adjust(); return ELLIPSIS; }
-"+"                {makesymbol(); return '+'; }
-"-"                {makesymbol(); return '-'; }
-"*"                {makesymbol(); return '*'; }
-"/"                {makesymbol(); return '/'; }
-"%"                {makesymbol(); return '%'; }
-"^"                {makesymbol(); return '^'; }
-"**"               {makesymbol(true,"^"); return '^'; }
+
+"+"                {DEFSYMBOL(SYM_PLUS); return '+'; }
+"-"                {DEFSYMBOL(SYM_MINUS); return '-'; }
+"*"                {DEFSYMBOL(SYM_TIMES); return '*'; }
+"/"                {DEFSYMBOL(SYM_DIVIDE); return '/'; }
+"%"                {DEFSYMBOL(SYM_MOD); return '%'; }
+"^"                {DEFSYMBOL(SYM_CARET); return '^'; }
+"**"               {savesymbol(SYM_CARET); return '^'; }
 "?"                {adjust(); return '?'; }
 "="                {adjust(); return ASSIGN; }
-"=="               {makesymbol(); return EQ; }
-"!="               {makesymbol(); return NEQ; }
-"<"                {makesymbol(); return LT; }
-"<="               {makesymbol(); return LE; }
-">"                {makesymbol(); return GT; }
-">="               {makesymbol(); return GE; }
-"&&"               {makesymbol(); return CAND; }
-"||"               {makesymbol(); return COR; }
-"!"                {makesymbol(); return LOGNOT; }
-"^^"               {makesymbol(); return CARETS; }
-"::"               {makesymbol(); return COLONS; }
-"++"               {makesymbol(); return INCR; }
-".."               {makesymbol(); return DOTS; }
-"--"               {makesymbol(); return DASHES; }
-"---"              {makesymbol(); return LONGDASH; }
-"&"                {makesymbol(); return AMPERSAND; }
-"|"                {makesymbol(); return BAR; }
-{EXTRAOPS}         {makesymbol(); return OPERATOR; }
+"=="               {DEFSYMBOL(SYM_EQ); return EQ; }
+"!="               {DEFSYMBOL(SYM_NEQ); return NEQ; }
+"<"                {DEFSYMBOL(SYM_LT); return LT; }
+"<="               {DEFSYMBOL(SYM_LE); return LE; }
+">"                {DEFSYMBOL(SYM_GT); return GT; }
+">="               {DEFSYMBOL(SYM_GE); return GE; }
+"&&"               {DEFSYMBOL(SYM_CAND); return CAND; }
+"||"               {DEFSYMBOL(SYM_COR); return COR; }
+"!"                {DEFSYMBOL(SYM_LOGNOT); return LOGNOT; }
+"^^"               {DEFSYMBOL(SYM_CARETS); return CARETS; }
+"::"               {DEFSYMBOL(SYM_COLONS); return COLONS; }
+"++"               {DEFSYMBOL(SYM_INCR); return INCR; }
+".."               {DEFSYMBOL(SYM_DOTS); return DOTS; }
+"--"               {DEFSYMBOL(SYM_DASHES); return DASHES; }
+"---"              {DEFSYMBOL(SYM_LONGDASH); return LONGDASH; }
+"&"                {DEFSYMBOL(SYM_AMPERSAND); return AMPERSAND; }
+"|"                {DEFSYMBOL(SYM_BAR); return BAR; }
+{EXTRAOPS}         {makeopsymbol(); return OPERATOR; }
 
-"+="               {makeselfsymbol(); return ADD; }
-"-="               {makeselfsymbol(); return SUBTRACT; }
-"*="               {makeselfsymbol(); return TIMES; }
-"/="               {makeselfsymbol(); return DIVIDE; }
-"%="               {makeselfsymbol(); return MOD; }
-"^="               {makeselfsymbol(); return EXPONENT; }
+"+="               {savesymbol(SYM_PLUS); return SELFOP; }
+"-="               {savesymbol(SYM_MINUS); return SELFOP; }
+"*="               {savesymbol(SYM_TIMES); return SELFOP; }
+"/="               {savesymbol(SYM_DIVIDE); return SELFOP; }
+"%="               {savesymbol(SYM_MOD); return SELFOP; }
+"^="               {savesymbol(SYM_CARET); return SELFOP; }
 
 and                {adjust(); return AND; }
-controls           {makesymbol(); return CONTROLS; }
-tension            {makesymbol(); return TENSION; }
-atleast            {makesymbol(); return ATLEAST; }
-curl               {makesymbol(); return CURL; }
+controls           {DEFSYMBOL(SYM_CONTROLS); return CONTROLS; }
+tension            {DEFSYMBOL(SYM_TENSION); return TENSION; }
+atleast            {DEFSYMBOL(SYM_ATLEAST); return ATLEAST; }
+curl               {DEFSYMBOL(SYM_CURL); return CURL; }
 
 if                 {adjust(); return IF; }
 else               {adjust(); return ELSE; }
@@ -376,31 +401,34 @@ operator           {adjust(); BEGIN opname; }
                     BEGIN INITIAL;
                     return GARBAGE;
                    }
-"**"               { makesymbol(true, "^");
+"**"               { savesymbol(SYM_CARET);
                      BEGIN INITIAL;
                      return ID;
                    }
 [-+*/%^!<>]|==|!=|<=|>=|&|\||\^\^|\.\.|::|--|---|\+\+|{EXTRAOPS} {
-  makesymbol();
+  makeopsymbol();
   BEGIN INITIAL;
   return ID;}
 {LETTER}({LETTER}|[0-9])* {
-  makesymbol(true);
+  makeopsymbol();
   BEGIN INITIAL;
   return ID; }
 .                   {}
 }
 
 {LETTER}({LETTER}|[0-9])* {
-  makesymbol(false);
+  makesymbol();
   return ID; }  
 
 \/\*               {adjust(); /*commentDepth = 1;*/ BEGIN lexcomment; }
-\"                 {adjust(); BEGIN texstring; }
-\'                 {adjust(); BEGIN cstring; }
+\"                 {startstring(); BEGIN texstring; }
+\'                 {startstring(); BEGIN cstring; }
 
 <<EOF>>            { setEOF("unexpected end of input"); yyterminate(); }
 
-.                  {
-  adjust(); error(); em <<"invalid token '" << yytext << "'"; }
-
+.                  {adjust();
+                    error();
+                    em << "invalid token";
+                    if (isgraph(yytext[0]))
+                      em << " '" << yytext[0] << "'";
+                   }

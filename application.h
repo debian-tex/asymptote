@@ -16,6 +16,11 @@
 #include "coenv.h"
 #include "exp.h"
 
+// Defined in runtime.in:
+namespace run {
+  void pushDefault(vm::stack *Stack);
+}
+
 using absyntax::arglist;
 using absyntax::varinit;
 using absyntax::arrayinit;
@@ -38,12 +43,20 @@ typedef mem::vector<score> score_vector;
 typedef mem::vector<tempExp *> temp_vector;
 
 struct arg : public gc {
-  virtual ~arg() {}
-  varinit *v;
   types::ty *t;
 
-  arg(varinit *v, types::ty *t)
-    : v(v), t(t) {}
+  arg(types::ty *t)
+    : t(t) {}
+  virtual ~arg() {}
+
+  virtual void trans(coenv &e, temp_vector &) = 0;
+};
+
+struct varinitArg : public arg {
+  varinit *v;
+
+  varinitArg(varinit *v, types::ty *t)
+    : arg(t), v(v)  {}
 
   virtual void trans(coenv &e, temp_vector &) {
     // Open signatures can match overloaded variables, but there is no way to
@@ -57,10 +70,16 @@ struct arg : public gc {
   }
 };
 
+
 // Pushes a default argument token on the stack as a placeholder for the
 // argument.
 struct defaultArg : public arg {
-  defaultArg(types::ty *t);
+  defaultArg(types::ty *t)
+    : arg(t) {}
+
+  virtual void trans(coenv &e, temp_vector &) {
+    e.c.encode(inst::builtin, run::pushDefault);
+  }
 };
 
 // Handles translation of all the arguments matched to the rest formal.
@@ -96,11 +115,11 @@ public:
 // used to ensure left-to-right order of evaluation of keyword arguments, even
 // if they are given out of the order specified in the declaration.
 class sequencer {
-  struct sequencedArg : public arg {
+  struct sequencedArg : public varinitArg {
     sequencer &parent;
     size_t i;
     sequencedArg(varinit *v, types::ty *t, sequencer &parent, size_t i)
-      : arg(v, t), parent(parent), i(i) {}
+      : varinitArg(v, t), parent(parent), i(i) {}
 
     void trans(coenv &e, temp_vector &temps) {
       parent.trans(e, i, temps);
@@ -138,7 +157,7 @@ class sequencer {
       advance(e, i, temps);
 
       // Translate using the base method.
-      args[i]->arg::trans(e,temps);
+      args[i]->varinitArg::trans(e,temps);
 
       // Push null to indicate the argument has been translated.
       temps.push_back(0);
@@ -213,7 +232,7 @@ class application : public gc {
   // Finds the first unmatched formal of the given name, returning the index.
   // The rest formal is not tested.  This function returns FAIL if no formals
   // match.
-  Int find(symbol *name);
+  Int find(symbol name);
 
   // Match the formal at index to its default argument (if it has one).
   bool matchDefault();
@@ -268,6 +287,15 @@ public:
   types::function *getType() {
     return t;
   }
+
+  // This returns true in the special case that the arguments matched without
+  // casting or packing into the rest formal.
+  bool exact();
+
+  // The next best thing (score-wise) to an exact match.  This returns true if
+  // there are two arguments, one of which is cast and one is matched exactly
+  // and neither are packed into the rest argument.
+  bool halfExact();
 };
 
 typedef mem::list<application *> app_list;

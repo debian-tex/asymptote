@@ -7,7 +7,6 @@ orientation=Landscape;
 import slide;
 import three;
 
-settings.toolbar=false;
 viewportsize=pagewidth-2pagemargin;
 
 usersetting();
@@ -21,6 +20,7 @@ bibliographystyle("alpha");
 
 // Generated needed files if they don't already exist.
 asy(nativeformat(),"Pythagoras","log","PythagoreanTree");
+usepackage("mflogo");
 
 // Optional background color or header:
 // import x11colors;
@@ -62,7 +62,7 @@ draw(pic,unitcircle);
 add(pic.fit(15cm));
 step();
 fill(pic2,unitcircle,paleblue);
-label(pic2,"$\pi$",(0,0),fontsize(500));
+label(pic2,"$\pi$",(0,0),fontsize(500pt));
 add(pic2.fit(15cm));
 
 newslide();
@@ -93,11 +93,12 @@ triple F3(real x) {return (x,f(x),0);}
 path p=graph(pic,F,0,1,n=30,operator ..)--(1,0)--cycle;
 path3 p3=path3(p);
 revolution a=revolution(p3,X,alpha,0);
-draw(pic,surface(a),color);
+render render=render(compression=0,merge=true);
+draw(pic,surface(a),color,render);
 draw(pic,p3,blue);
 surface s=surface(p);
-draw(pic,s,color);
-draw(pic,rotate(alpha,X)*s,color);
+draw(pic,s,color,render);
+draw(pic,rotate(alpha,X)*s,color,render);
 xaxis3(pic,Label("$x$",1),xmax=1.25,dashed,Arrow3);
 yaxis3(pic,Label("$y$",1),Arrow3);
 dot(pic,"$(1,1)$",(1,1,0));
@@ -107,11 +108,11 @@ draw(pic,F3(r)--(1,f(r),0),red);
 real x=(1+r)/2;
 draw(pic,"$r$",(x,0,0)--(x,f(r),0),X+0.2Z,red,Arrow3);
 draw(pic,arc(1.1X,0.4,90,90,3,-90),Arrow3);
-add(pic.fit(8.5cm));
+add(pic.fit(0,14cm));
 
 title("\mbox{Asymptote: 2D \& 3D Vector Graphics Language}");
 asyinclude("logo3");
 center("\tt http://asymptote.sf.net");
-center("(freely available under the GNU public license)");
+center("(freely available under the LGPL license)");
 
 bibliography("refs");
