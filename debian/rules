@@ -8,7 +8,7 @@ DEB_MAKE_BUILD_TARGET = all html
 DEB_COMPRESS_EXCLUDE = .pdf
 
 clean::
-	rm -f doc/*.aux doc/*.cp* doc/*.dvi doc/*.log doc/*.toc doc/.cvsignore doc/latexusage.asy config.log 
+	rm -f doc/*.aux doc/*.cp* doc/*.dvi doc/*.log doc/*.toc doc/latexusage.asy config.log 
 
 binary-predeb/asymptote::
 	chmod +x debian/$(cdbs_curpkg)/usr/share/asymptote/asy-kate.sh # script-not-executable
