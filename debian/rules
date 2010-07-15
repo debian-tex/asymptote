@@ -11,10 +11,6 @@ DEB_MAKE_INSTALL_TARGET =
 
 DEB_CONFIGURE_EXTRA_FLAGS = --enable-gc=system --with-latex=/usr/share/texmf/tex/latex --with-context=/usr/share/texmf/tex/context/third
 
-DEB_INSTALL_INFO_asymptote-doc = doc/png/asymptote.info* doc/FAQ/asy-faq.info
-DEB_INSTALL_DOCS_asymptote-doc = doc/asymptote.pdf doc/png doc/FAQ/asy-faq.ascii examples
-DEB_INSTALL_MANPAGES_asymptote = doc/asy.1 doc/xasy.1x
-
 DEB_COMPRESS_EXCLUDE = .pdf
 
 common-build-arch::
@@ -25,41 +21,13 @@ common-build-arch::
 #	make all html
 
 common-install-arch::
-	make install-asy DESTDIR=$(CURDIR)/debian/asymptote
+	make install-asy DESTDIR=$(CURDIR)/debian/tmp
 	dh_installtex -pasymptote
-
-binary-install/asymptote::
-	@ # asy-init is already covered by asymptote.emacsen-startup, so
-	@ # remove it
-	rm debian/asymptote/usr/share/asymptote/asy-init.el
-	@ # move emacs files to emacs directory
-	mv -f debian/asymptote/usr/share/asymptote/*.el debian/asymptote/usr/share/emacs/site-lisp
-
-	mv debian/asymptote/usr/share/asymptote/asy.vim debian/asymptote/usr/share/doc/asymptote/examples
-
-	@ # remove examples from asymptote binary
-	rm -rf debian/asymptote/usr/share/doc/asymptote/examples
 
 # this needs to be run before any of the binary-install/asymptote-doc stuff
 # from cdbs
 common-install-prehook-indep::
 	make all html
-
-binary-install/asymptote-doc::
-	mv -f debian/asymptote-doc/usr/share/doc/asymptote-doc/png debian/asymptote-doc/usr/share/doc/asymptote-doc/html
-	rm -f debian/asymptote-doc/usr/share/doc/asymptote-doc/html/Makefile* debian/asymptote-doc/usr/share/doc/asymptote-doc/html/asymptote.info*
-
-clean::
-#	cd doc && [ ! -f Makefile ] || $(MAKE) distclean
-#	[ ! -f Makefile ] || $(MAKE) distclean
-	$(RM) doc/asymptote.?? doc/*.dvi
-	$(RM) doc/*.toc doc/*.aux doc/*.log
-	$(RM) doc/asymptote.cps doc/latexusage.asy
-	$(RM) doc/.cvsignore examples/.cvsignore
-
-binary-predeb/asymptote::
-	chmod +x debian/$(cdbs_curpkg)/usr/share/asymptote/asy-kate.sh
-#	$(RM) debian/$(cdbs_curpkg)/usr/share/asymptote/*.el
 
 clean::
 	rm -f doc/*.aux doc/*.cp* doc/*.dvi doc/*.log doc/*.toc doc/latexusage.asy config.log 

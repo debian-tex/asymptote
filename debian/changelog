@@ -1,9 +1,9 @@
 asymptote (2.02-2) unstable; urgency=low
 
-  * Revert (most) debian/rules changes -- caused build failures when
-    building binary-only packages.
+  * Fix debian/rules to not fail when building arch-only
+    packages. (Closes: #589062)
 
- -- Hubert Chathi <uhoreg@debian.org>  Wed, 14 Jul 2010 14:09:11 -0400
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 15 Jul 2010 12:37:46 -0400
 
 asymptote (2.02-1) unstable; urgency=low
 
