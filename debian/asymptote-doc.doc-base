@@ -9,3 +9,6 @@ Files: /usr/share/doc/asymptote-doc/html/*.html
 
 Format: PDF
 Files: /usr/share/doc/asymptote-doc/asymptote.pdf
+       /usr/share/doc/asymptote-doc/asy-latex.pdf
+       /usr/share/doc/asymptote-doc/CAD.pdf
+       /usr/share/doc/asymptote-doc/TeXShopAndAsymptote.pdf

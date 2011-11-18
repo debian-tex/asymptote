@@ -83,16 +83,26 @@ void arrayTy::prettyprint(ostream &out, Int indent)
 // NOTE: Can this be merged with trans somehow?
 void arrayTy::addOps(coenv &e, record *r)
 {
-  types::array *t=dynamic_cast<types::array *>(trans(e, true));
-  e.e.addArrayOps(t);
-  if (r)
-    r->e.addArrayOps(t);
+  types::ty *t=trans(e, true);
+
+  // Only add ops if it is an array (and not, say, an error)
+  if (t->kind == types::ty_array) {
+    types::array *at=dynamic_cast<types::array *>(t);
+    assert(at);
+    e.e.addArrayOps(at);
+    if (r)
+      r->e.addArrayOps(at);
+  }
 }
   
 types::ty *arrayTy::trans(coenv &e, bool tacit)
 {
   types::ty *ct = cell->trans(e, tacit);
   assert(ct);
+
+  // Don't make an array of errors.
+  if (ct->kind == types::ty_error)
+    return ct;
 
   types::array *t = dims->truetype(ct);
   assert(t);
@@ -190,6 +200,28 @@ bool block::returns() {
     if ((*p)->returns())
       return true;
   return false;
+}
+
+vardec *block::asVardec()
+{
+  vardec *var = 0;
+  for (list<runnable *>::iterator p=stms.begin();
+       p != stms.end();
+       ++p)
+  {
+    vardec *v = dynamic_cast<vardec *>(*p);
+    if (v) {
+      if (var)
+        // Multiple vardecs.
+        return 0;
+      var = v;
+    }
+    else if (!dynamic_cast<emptyStm *>(*p))
+      // Failure due to another runnable in the block.
+      return 0;
+  }
+
+  return var;
 }
   
 
@@ -559,6 +591,23 @@ void vardec::transAsTypedefField(coenv &e, record *r)
   base->addOps(e, r);
   decs->transAsTypedefField(e, base->transAsTyEntry(e, r), r);
 }
+
+symbol vardec::singleName()
+{
+  decid *did = decs->singleEntry();
+  if (!did)
+    return symbol::nullsym;
+  return did->getStart()->getName();
+}
+
+types::ty *vardec::singleGetType(coenv &e)
+{
+  decid *did = decs->singleEntry();
+  if (!did)
+    return 0;
+  return did->getStart()->getType(base->trans(e), e);
+}
+
 
 // Helper class for imports.  This essentially evaluates to the run::loadModule
 // function.  However, that function returns different types of records

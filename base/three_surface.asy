@@ -1216,7 +1216,8 @@ void draw(transform t=identity(), frame f, surface s, int nu=1, int nv=1,
           light light=currentlight, light meshlight=light, string name="",
           render render=defaultrender, projection P=currentprojection)
 {
-  if(is3D()) {
+  bool is3D=is3D();
+  if(is3D) {
     begingroup3(f,name == "" ? "surface" : name,render);
     for(int i=0; i < s.s.length; ++i)
       draw3D(f,s.s[i],surfacepen[i],light);
@@ -1238,7 +1239,8 @@ void draw(transform t=identity(), frame f, surface s, int nu=1, int nv=1,
         endgroup3(f);
       }
     }
-  } else {
+  }
+  if(!is3D || settings.render == 0) {
     begingroup(f);
     // Sort patches by mean distance from camera
     triple camera=P.camera;
@@ -1299,11 +1301,10 @@ void draw(picture pic=currentpicture, surface s, int nu=1, int nv=1,
       surface S=t*s;
       if(is3D())
         draw(f,S,nu,nv,surfacepen,meshpen,light,meshlight,name,render);
-      else if(pic != null)
+      if(pic != null) {
         pic.add(new void(frame f, transform T) {
             draw(T,f,S,nu,nv,surfacepen,meshpen,light,meshlight,P);
           },true);
-      if(pic != null) {
         pic.addPoint(min(S,P));
         pic.addPoint(max(S,P));
       }
@@ -1435,7 +1436,8 @@ void label(frame f, Label L, triple position, align align=NoAlign,
     bool lighton=light.on();
     for(patch S : surface(L,position,bbox=P.bboxonly).s) {
       draw3D(f,S,position,L.p,light,interaction);
-      if(render.labelfill && !lighton) // Fill subdivision cracks
+      // Fill subdivision cracks
+      if(render.labelfill && opacity(L.p) == 1 && !lighton)
         _draw(f,S.external(),position,L.p,interaction.type);
     }
   } else {
@@ -1485,7 +1487,8 @@ void label(picture pic=currentpicture, Label L, triple position,
       if(is3D()) {
         for(patch S : surface(L,v,bbox=P.bboxonly).s) {
           draw3D(f,S,v,L.p,light,interaction);
-          if(render.labelfill && !lighton) // Fill subdivision cracks
+          // Fill subdivision cracks
+          if(render.labelfill && opacity(L.p) == 1 && !lighton)
             _draw(f,S.external(),v,L.p,interaction.type);
         }
       }
@@ -1817,6 +1820,26 @@ void dot(picture pic=currentpicture, Label L, triple v, align align=NoAlign,
   L.p((pen) p);
   dot(pic,v,p,light,name,render);
   label(pic,L,v,render);
+}
+
+void pixel(picture pic=currentpicture, triple v, pen p=currentpen,
+           real width=1)
+{
+  real h=0.5*width;
+  pic.add(new void(frame f, transform3 t, picture pic, projection P) {
+      triple V=t*v;
+      if(is3D())
+        drawpixel(f,V,p,width);
+      if(pic != null) {
+        triple R=h*unit(cross(unit(P.vector()),P.up));
+        pair z=project(V,P.t);
+        real h=0.5*abs(project(V+R,P.t)-project(V-R,P.t));
+        pair r=h*(1,1)/mm;
+        fill(pic,box(z-r,z+r),p,false);
+      }
+    },true);
+  triple R=h*(1,1,1);
+  pic.addBox(v,v,-R,R);
 }
 
 pair minbound(triple[] A, projection P)

@@ -67,16 +67,23 @@ using trans::refAccess;
 using trans::varEntry;
 using vm::array;
 
-void doConfig(string filename);
+void runFile(const string& filename);
+
 
 namespace settings {
   
 using camp::pair;
   
-#ifdef HAVE_GL
-const bool haveglut=true;  
+#ifdef HAVE_LIBOSMESA  
+const bool defaultoffscreen=true;
 #else
-const bool haveglut=false;
+const bool defaultoffscreen=false;
+#endif
+
+#ifdef HAVE_GL
+const bool havegl=true;  
+#else
+const bool havegl=false;
 #endif
   
 mode_t mask;
@@ -93,7 +100,7 @@ string defaultPSViewer="gv";
 #ifdef __APPLE__
 string defaultPDFViewer="open";
 #else  
-string defaultPDFViewer="xpdf";
+string defaultPDFViewer="acroread";
 #endif  
 string defaultGhostscript="gs";
 string defaultDisplay="display";
@@ -269,7 +276,7 @@ bool warn(const string& s)
 }
 
 // The dictionaries of long options and short options.
-class option;
+struct option;
 typedef mem::map<CONST string, option *> optionsMap_t;
 optionsMap_t optionsMap;
 
@@ -352,7 +359,7 @@ struct option : public gc {
         cerr << endl;
         cerr << std::left << std::setw(WIDTH) << "";
       }
-      cerr << desc;
+      cerr << " " << desc;
       if(cmdlineonly) cerr << "; command-line only";
       if(Default != "")
         cerr << " [" << Default << "]";
@@ -1083,11 +1090,13 @@ void initSettings() {
                             "Show 3D toolbar in PDF output", true));
   addOption(new realSetting("render", 0, "n",
                             "Render 3D graphics using n pixels per bp (-1=auto)",
-                            haveglut ? -1.0 : 0.0));
+                            havegl ? -1.0 : 0.0));
   addOption(new IntSetting("antialias", 0, "n",
                            "Antialiasing width for rasterized output", 2));
   addOption(new IntSetting("multisample", 0, "n",
                            "Multisampling width for screen images", 4));
+  addOption(new boolSetting("offscreen", 0,
+                            "Use offscreen rendering",defaultoffscreen));
   addOption(new boolSetting("twosided", 0,
                             "Use two-sided 3D lighting model for rendering",
                             true));
@@ -1096,7 +1105,7 @@ void initSettings() {
   addOption(new pairSetting("maxviewport", 0, "pair",
                             "Maximum viewport size",pair(2048,2048)));
   addOption(new pairSetting("maxtile", 0, "pair",
-                            "Maximum rendering tile size",pair(0,0)));
+                            "Maximum rendering tile size",pair(1024,768)));
   addOption(new boolSetting("iconify", 0,
                             "Iconify rendering window", false));
   addOption(new boolSetting("thick", 0,
@@ -1559,6 +1568,19 @@ Int getScroll()
   }
 #endif
   return scroll;
+}
+
+void doConfig(string file) 
+{
+  bool autoplain=getSetting<bool>("autoplain");
+  bool listvariables=getSetting<bool>("listvariables");
+  if(autoplain) Setting("autoplain")=false; // Turn off for speed.
+  if(listvariables) Setting("listvariables")=false;
+
+  runFile(file);
+
+  if(autoplain) Setting("autoplain")=true;
+  if(listvariables) Setting("listvariables")=true;
 }
 
 void setOptions(int argc, char *argv[])

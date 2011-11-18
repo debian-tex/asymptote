@@ -37,6 +37,19 @@ void yyerror(const char *s)
   }
 }
 
+// Check if the symbol given is "keyword".  Returns true in this case and
+// returns false and reports an error otherwise.
+bool checkKeyword(position pos, symbol sym)
+{
+  if (sym != symbol::trans("keyword")) {
+    em.error(pos);
+    em << "expected 'keyword' here";
+
+    return false;
+  }
+  return true;
+}
+
 namespace absyntax { file *root; }
 
 using namespace absyntax;
@@ -148,7 +161,7 @@ using mem::string;
 %type  <vi>  varinit
 %type  <ai>  arrayinit basearrayinit varinits
 %type  <fl>  formal
-%type  <fls> formals baseformals
+%type  <fls> formals
 %type  <e>   value exp fortest
 %type  <arg> argument
 %type  <slice> slice
@@ -156,7 +169,7 @@ using mem::string;
 %type  <e>   tension controls
 %type  <se>  dir
 %type  <elist> dimexps
-%type  <alist> arglist basearglist
+%type  <alist> arglist tuple
 %type  <s>   stm stmexp blockstm
 %type  <run> forinit
 %type  <sel> forupdate stmexplist
@@ -253,7 +266,7 @@ idpairlist:
 strid:
   ID               { $$ = $1; }
 | STRING           { $$.pos = $1->getPos();
-                     $$.sym = symbol::trans($1->getString()); }
+                     $$.sym = symbol::literalTrans($1->getString()); }
 ;
 
 stridpair:
@@ -351,16 +364,12 @@ varinits:
 ;
 
 formals:
-  baseformals      { $$ = $1; }
-| baseformals ELLIPSIS formal
-                   { $$ = $1; $$->addRest($3); }
-| ELLIPSIS formal  { $$ = new formals($1); $$->addRest($2); }
-;
-
-baseformals:
   formal           { $$ = new formals($1->getPos()); $$->add($1); }
-| baseformals ',' formal
+| ELLIPSIS formal  { $$ = new formals($1); $$->addRest($2); }
+| formals ',' formal
                    { $$ = $1; $$->add($3); }
+| formals ELLIPSIS formal
+                   { $$ = $1; $$->addRest($3); }
 ;
 
 explicitornot:
@@ -370,11 +379,18 @@ explicitornot:
 
 formal:
   explicitornot type
-                   { $$ = new formal($2->getPos(), $2, 0, 0, $1); }
+                   { $$ = new formal($2->getPos(), $2, 0, 0, $1, 0); }
 | explicitornot type decidstart
-                   { $$ = new formal($2->getPos(), $2, $3, 0, $1); }
+                   { $$ = new formal($2->getPos(), $2, $3, 0, $1, 0); }
 | explicitornot type decidstart ASSIGN varinit
-                   { $$ = new formal($2->getPos(), $2, $3, $5, $1); }
+                   { $$ = new formal($2->getPos(), $2, $3, $5, $1, 0); }
+/* The uses of ID below are 'keyword' qualifiers before the parameter name. */
+| explicitornot type ID decidstart
+                   { bool k = checkKeyword($3.pos, $3.sym);
+                     $$ = new formal($2->getPos(), $2, $4, 0, $1, k); }
+| explicitornot type ID decidstart ASSIGN varinit
+                   { bool k = checkKeyword($3.pos, $3.sym);
+                     $$ = new formal($2->getPos(), $2, $4, $6, $1, k); }
 ;
 
 fundec:
@@ -427,18 +443,20 @@ argument:
 ;
 
 arglist:
-  basearglist      { $$ = $1; }
-| basearglist ELLIPSIS argument
-                   { $$ = $1; $$->rest = $3; }
-| ELLIPSIS argument     { $$ = new arglist(); $$->rest = $2; }
-;
-
-basearglist:
   argument         { $$ = new arglist(); $$->add($1); }
-| basearglist ',' argument
+| ELLIPSIS argument
+                   { $$ = new arglist(); $$->addRest($2); }
+| arglist ',' argument
                    { $$ = $1; $$->add($3); }
+| arglist ELLIPSIS argument
+                   { $$ = $1; $$->addRest($3); }
 ;
 
+/* A list of two or more expressions, separated by commas. */
+tuple:
+  exp ',' exp      { $$ = new arglist(); $$->add($1); $$->add($3); }
+| tuple ',' exp    { $$ = $1; $$->add($3); }
+;
 
 exp:
   name             { $$ = new nameExp($1->getPos(), $1); }
@@ -502,13 +520,7 @@ exp:
 | exp '?' exp ':' exp
                    { $$ = new conditionalExp($2, $1, $3, $5); }
 | exp ASSIGN exp   { $$ = new assignExp($2, $1, $3); }
-// Camp stuff
-| '(' exp ',' exp ')'
-                   { $$ = new pairExp($1, $2, $4); }
-| '(' exp ',' exp ',' exp ')'
-                   { $$ = new tripleExp($1, $2, $4, $6); }
-| '(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')'
-                   { $$ = new transformExp($1, $2, $4, $6, $8, $10, $12); }
+| '(' tuple ')'    { $$ = new callExp($1, new nameExp($1, SYM_TUPLE), $2); }
 | exp join exp %prec JOIN_PREC 
                    { $2->pushFront($1); $2->pushBack($3); $$ = $2; }
 | exp dir %prec DIRTAG

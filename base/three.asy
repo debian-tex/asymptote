@@ -28,9 +28,11 @@ struct render
 
   bool closed;          // use one-sided rendering?
   bool tessellate;      // use tessellated mesh to store straight patches?
-  bool3 merge;          // merge nodes before rendering, for lower quality
-                        // but faster PRC rendering?
-                        // (default=merge only transparent patches)
+
+  bool3 merge;          // merge nodes before rendering, for faster but
+                        // lower quality PRC rendering (the value default means
+                        // merge opaque patches only).
+
   int sphere;           // PRC sphere type (PRCsphere or NURBSsphere).
 
   // General parameters:
@@ -2408,7 +2410,8 @@ triple point(frame f, triple dir)
 triple point(picture pic=currentpicture, triple dir, bool user=true,
              projection P=currentprojection)
 {
-  triple v=pic.userMin+realmult(rectify(dir),pic.userMax-pic.userMin);
+  triple min = pic.userMin(), max = pic.userMax();
+  triple v=min+realmult(rectify(dir),max-min);
   return user ? v : pic.calculateTransform3(P)*v;
 }
 
@@ -2508,8 +2511,6 @@ private string format(triple v, string sep=" ")
 {
   return string(v.x)+sep+string(v.y)+sep+string(v.z);
 }
-
-private string[] file3;
 
 private string projection(bool infinity, real viewplanesize)
 {
@@ -2696,9 +2697,8 @@ string embed3D(string label="", string text=label, string prefix,
   writeJavaScript(name,lightscript+projection(P.infinity,viewplanesize)+
                   billboard(index,center),script);
 
-  prefix += ".prc";
   if(!settings.inlinetex)
-    file3.push(prefix);
+    file3.push(prefix+".prc");
 
   triple target=P.target;
   if(P.viewportshift != 0) {
@@ -2730,9 +2730,11 @@ string embed3D(string label="", string text=label, string prefix,
     ",3Droo="+Format(abs(v))+
     ",3Dbg="+Format(light.background());
   if(options != "") options3 += ","+options;
-  if(name != "") options3 += ",3Djscript="+stripdirectory(name);
+  if(settings.inlinetex)
+    prefix=jobname(prefix);
+  options3 += ",3Djscript="+prefix+".js";
 
-  return Embed(stripdirectory(prefix),options3,width,height);
+  return Embed(prefix+".prc",options3,width,height);
 }
 
 struct scene
@@ -2828,13 +2830,13 @@ struct scene
             return b == 0 ? (0.5*(a.x+a.y)) :
               (b.x^2*a.x+b.y^2*a.y)/(b.x^2+b.y^2);
           }
-          pic2.erase();
           transform3 s=keepAspect ? scale3(min(f(v,x),f(v,y),f(v,z))) :
             xscale3(f(v,x))*yscale3(f(v,y))*zscale3(f(v,z));
           s=shift(this.P.target)*s*shift(-this.P.target);
           t=s*t;
           this.P=s*this.P;
           this.P.bboxonly=false;
+          if(!is3D) pic2.erase();
           f=pic.fit3(t,is3D ? null : pic2,this.P);
         }
 
@@ -2983,9 +2985,14 @@ object embed(string label="", string text=label, string prefix=defaultfilename,
   }
 
   string image;
-  if(preview && settings.embed) {
+  if((preview || (prc && settings.render == 0)) && settings.embed) {
     image=prefix;
     if(settings.inlinetex) image += "_0";
+    if(!preview && !shipped && !S.pic2.empty2()) {
+      transform T=S.pic2.scaling(S.width,S.height);
+      shipout(image,S.pic2.fit(T),newframe,nativeformat(),false,false,null);
+    }
+    
     image += "."+nativeformat();
     if(!settings.inlinetex) file3.push(image);
     image=graphic(image,"hiresbb");
@@ -3017,7 +3024,7 @@ object embed(string label="", string text=label,
     object F;
     transform T=S.pic2.scaling(xsize,ysize,keepAspect);
     F.f=pic.fit(scale(S.t[0][0])*T);
-    add(F.f,S.pic2.fit(T));
+    add(F.f,S.pic2.fit());
     return F;
   }
 }

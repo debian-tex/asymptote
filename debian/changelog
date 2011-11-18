@@ -1,3 +1,39 @@
+asymptote (2.15-1) unstable; urgency=low
+
+  * Imported Upstream version 2.15
+  * debian/copyright updated and fixed using config-edit
+  * debian/patches
+    - 0001-feature-fix-FTBFS-on-mips.patch (deleted - applyed upstream)
+    - 0004-feature-fix-FTBFS-on-hurd.patch (deleted - applyed upstream)
+
+ -- Picca Frédéric-Emmanuel <picca@debian.org>  Fri, 18 Nov 2011 21:39:01 +0100
+
+asymptote (2.13-2) unstable; urgency=low
+
+  * debian/control
+    - move the Build-Depends-Indep into the Build-Depends to
+      fix the FTBFS (Closes: #634202)
+  * debian/patches
+    - 0004-feature-fix-FTBFS-on-hurd.patch (new)
+
+ -- Picca Frédéric-Emmanuel <picca@debian.org>  Mon, 18 Jul 2011 22:17:05 +0200
+
+asymptote (2.13-1) unstable; urgency=low
+
+  * Imported Upstream version 2.13
+    - (Closes: #607341, #627125, #481910, #564862, #553973)
+  * switch to source format 3.0 (quilt)
+    - refresh the patch series
+  * Add myself as uploader.
+  * remove the asymptote-doc exemple symlink (Closes: #589124)
+  * debian/control
+    - Bump Standards-Version to 3.9.2 (no changes)
+    - Switch to compat 8
+  * Updating debian/copyright (Closes: #586798)
+  * Updating debian/rules (remove deprecated options)
+
+ -- Picca Frédéric-Emmanuel <picca@debian.org>  Sat, 02 Jul 2011 23:42:26 +0200
+
 asymptote (2.02-2) unstable; urgency=low
 
   * Fix debian/rules to not fail when building arch-only

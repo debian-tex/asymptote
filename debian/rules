@@ -3,10 +3,6 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
-CPPFLAGS += -I/usr/include/gc
-
-#DEB_MAKE_BUILD_TARGET = all html
-#DEB_MAKE_INSTALL_TARGET = install-asy DESTDIR=$(DEB_DESTDIR)
 DEB_MAKE_INSTALL_TARGET =
 
 DEB_CONFIGURE_EXTRA_FLAGS = --enable-gc=system --with-latex=/usr/share/texmf/tex/latex --with-context=/usr/share/texmf/tex/context/third
@@ -14,11 +10,7 @@ DEB_CONFIGURE_EXTRA_FLAGS = --enable-gc=system --with-latex=/usr/share/texmf/tex
 DEB_COMPRESS_EXCLUDE = .pdf
 
 common-build-arch::
-	make asy
-
-# Oh, why does dpkg-buildpackage still use the build target when using -B?
-#common-build-indep::
-#	make all html
+	make asy man
 
 common-install-arch::
 	make install-asy DESTDIR=$(CURDIR)/debian/tmp
@@ -30,7 +22,9 @@ common-install-prehook-indep::
 	make all html
 
 clean::
-	rm -f doc/*.aux doc/*.cp* doc/*.dvi doc/*.log doc/*.toc doc/latexusage.asy config.log 
+	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
+	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc asy.list
+	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi
 
 binary-predeb/asymptote::
 	chmod +x debian/$(cdbs_curpkg)/usr/share/asymptote/asy-kate.sh # script-not-executable

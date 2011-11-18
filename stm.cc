@@ -181,15 +181,10 @@ void ifStm::prettyprint(ostream &out, Int indent)
 
 void ifStm::trans(coenv &e)
 {
-  Int elseLabel = e.c.fwdLabel();
-  Int end = e.c.fwdLabel();
+  label elseLabel = e.c.fwdLabel();
+  label end = e.c.fwdLabel();
 
-#ifdef TRANSJUMP
   test->transConditionalJump(e, false, elseLabel);
-#else
-  test->transToType(e, types::primBoolean());
-  e.c.useLabel(inst::njmp,elseLabel);
-#endif
 
   onTrue->markTrans(e);
   
@@ -209,9 +204,47 @@ void ifStm::trans(coenv &e)
 
 
 void transLoopBody(coenv &e, stm *body) {
-  e.c.encodePushFrame();
+  // The semantics of the language are defined so that any variable declared
+  // inside a loop are new variables for each iteration of the loop.  For
+  // instance, the code 
+  //
+  //     int f();
+  //     for (int i = 0; i < 10; ++i) {
+  //       int j=10*i;
+  //       if (i == 5)
+  //         f = new int() { return j; };
+  //     }
+  //     write(f());
+  //
+  // will write 50.  This is implemented by allocating a new frame for each
+  // iteration.  However, this can have a big performance hit, so we first
+  // translate the code without the frame, check if it needed the closure, and
+  // rewrite the code if necessary.
+
+  label start = e.c.defNewLabel();
+
+  // Encode a no-op, in case we need to jump over the default implementation
+  // to a special case.
+  e.c.encode(inst::nop);
+
   body->markTrans(e);
-  e.c.encodePopFrame();
+
+  // Don't re-translate if there were errors.
+  if (em.errors())
+    return;
+
+  if (e.c.usesClosureSinceLabel(start)){
+    // Jump over the old section.
+    label end = e.c.defNewLabel();
+    e.c.encodePatch(start, end);
+
+    // Let coder know that break and continue need to pop the frame.
+    e.c.loopPushesFrame();
+
+    e.c.encodePushFrame();
+    body->markTrans(e);
+    e.c.encodePopFrame();
+  }
 }
 
 void whileStm::prettyprint(ostream &out, Int indent)
@@ -224,26 +257,18 @@ void whileStm::prettyprint(ostream &out, Int indent)
 
 void whileStm::trans(coenv &e)
 {
-  Int end = e.c.fwdLabel();
-  e.c.pushBreak(end);
+  label end = e.c.fwdLabel();
+  label start = e.c.defNewLabel();
+  e.c.pushLoop(start, end);
 
-  Int start = e.c.defLabel();
-  e.c.pushContinue(start);
-
-#ifdef TRANSJUMP
   test->transConditionalJump(e, false, end);
-#else
-  test->transToType(e, types::primBoolean());
-  e.c.useLabel(inst::njmp,end);
-#endif
 
   transLoopBody(e,body);
 
   e.c.useLabel(inst::jmp,start);
   e.c.defLabel(end);
 
-  e.c.popBreak();
-  e.c.popContinue();
+  e.c.popLoop();
 }
 
 
@@ -257,28 +282,21 @@ void doStm::prettyprint(ostream &out, Int indent)
 
 void doStm::trans(coenv &e)
 {
-  Int testLabel = e.c.fwdLabel();
-  e.c.pushContinue(testLabel);
-  Int end = e.c.fwdLabel();
-  e.c.pushBreak(end);
+  label testLabel = e.c.fwdLabel();
+  label end = e.c.fwdLabel();
+  e.c.pushLoop(testLabel, end);
  
-  Int start = e.c.defLabel();
+  label start = e.c.defNewLabel();
 
   transLoopBody(e,body);  
   
   e.c.defLabel(testLabel);
 
-#ifdef TRANSJUMP
   test->transConditionalJump(e, true, start);
-#else
-  test->transToType(e, types::primBoolean());
-  e.c.useLabel(inst::cjmp,start);
-#endif
 
   e.c.defLabel(end);
 
-  e.c.popBreak();
-  e.c.popContinue();
+  e.c.popLoop();
 }
 
 
@@ -299,19 +317,13 @@ void forStm::trans(coenv &e)
   if (init)
     init->markTrans(e);
 
-  Int ctarget = e.c.fwdLabel();
-  e.c.pushContinue(ctarget);
-  Int end = e.c.fwdLabel();
-  e.c.pushBreak(end);
+  label ctarget = e.c.fwdLabel();
+  label end = e.c.fwdLabel();
+  e.c.pushLoop(ctarget, end);
 
-  Int start = e.c.defLabel();
+  label start = e.c.defNewLabel();
   if(test) {
-#ifdef TRANSJUMP
     test->transConditionalJump(e, false, end);
-#else
-    test->transToType(e, types::primBoolean());
-    e.c.useLabel(inst::njmp,end);
-#endif
   }
 
   transLoopBody(e,body);
@@ -324,9 +336,9 @@ void forStm::trans(coenv &e)
 
   e.c.defLabel(end);
 
+  e.c.popLoop();
+
   e.e.endScope();
-  e.c.popBreak();
-  e.c.popContinue();
 }
 
 void extendedForStm::prettyprint(ostream &out, Int indent)
@@ -415,10 +427,6 @@ void breakStm::prettyprint(ostream &out, Int indent)
 
 void breakStm::trans(coenv &e)
 {
-  // Loop bodies have their own frame to declare variables for each iteration.
-  // Pop out of this frame when jumping out of the loop body.
-  e.c.encode(inst::popframe);
-
   if (!e.c.encodeBreak()) {
     em.error(getPos());
     em << "break statement outside of a loop";
@@ -433,10 +441,6 @@ void continueStm::prettyprint(ostream &out, Int indent)
 
 void continueStm::trans(coenv &e)
 {
-  // Loop bodies have their own frame to declare variables for each iteration.
-  // Pop out of this frame when jumping out of the loop body.
-  e.c.encode(inst::popframe);
-
   if (!e.c.encodeContinue()) {
     em.error(getPos()); 
     em << "continue statement outside of a loop";

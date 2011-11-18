@@ -1,0 +1,23 @@
+From: =?UTF-8?q?Picca=20Fr=C3=A9d=C3=A9ric-Emmanuel?=
+ <picca@synchrotron-soleil.fr>
+Date: Sat, 2 Jul 2011 23:13:24 +0200
+Subject: use xpdf instead of acroread
+
+---
+ settings.cc |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/settings.cc b/settings.cc
+index 66bd73c..64825e8 100644
+--- a/settings.cc
++++ b/settings.cc
+@@ -100,7 +100,7 @@ string defaultPSViewer="gv";
+ #ifdef __APPLE__
+ string defaultPDFViewer="open";
+ #else  
+-string defaultPDFViewer="acroread";
++string defaultPDFViewer="xpdf";
+ #endif  
+ string defaultGhostscript="gs";
+ string defaultDisplay="display";
+-- 
