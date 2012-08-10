@@ -14,11 +14,11 @@ Copyright: Copyright (C) 1993-1995 Ian Jackson
 License: GPL-2+
 
 Files: doc/asyRefCard.tex
-Copyright: Copyright (C) 2011 John C. Bowman
+Copyright: Copyright (C) 2012 John C. Bowman
 License: other
- Permission is granted to make and distribute copies of this card
- provided the copyright notice and this permission notice are
- preserved on all copies.
+ Permission is granted to make and distribute copies of this card, with
+ or without modifications, provided the copyright notice and this
+ permission notice are preserved on all copies.
 
 Files: camp.tab.h
 Copyright: Copyright 1984,1989-1990,2000-2006 Free Software Foundation, Inc.

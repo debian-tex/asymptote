@@ -1,3 +1,9 @@
+asymptote (2.15-2) unstable; urgency=low
+
+  * Clarify license for reference card. (Closes: #684417)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Fri, 10 Aug 2012 15:49:01 -0400
+
 asymptote (2.15-1) unstable; urgency=low
 
   * Imported Upstream version 2.15
