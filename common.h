@@ -21,7 +21,8 @@
 #include "config.h"
 #endif
 
-#if defined(HAVE_LIBGL) && defined(HAVE_LIBGLU) && defined(HAVE_LIBGLUT)
+#if !defined(FOR_SHARED) && defined(HAVE_LIBGLU) && \
+  ((defined(HAVE_LIBGL) && defined(HAVE_LIBGLUT)) || defined(HAVE_LIBOSMESA))
 #define HAVE_GL
 #endif
 
@@ -62,9 +63,13 @@ typedef unsigned int unsignedInt;
 #if COMPACT
 // Reserve highest two values for DefaultValue and Undefined states.
 #define Int_MAX (Int_MAX2-2)
+#define int_MAX (LONG_MAX-2)
 #else
 #define Int_MAX Int_MAX2
+#define int_MAX LONG_MAX
 #endif
+
+#define int_MIN LONG_MIN
 
 using std::cout;
 using std::cin;

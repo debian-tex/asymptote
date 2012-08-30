@@ -44,7 +44,7 @@ texfile::~texfile()
   
 void texfile::miniprologue()
 {
-  texpreamble(*out,processData().TeXpreamble,false,true);
+  texpreamble(*out,processData().TeXpreamble,false);
   if(settings::latex(texengine)) {
     *out << "\\pagestyle{empty}" << newl
          << "\\textheight=2048pt" << newl
@@ -62,11 +62,8 @@ void texfile::prologue()
 {
   if(inlinetex) {
     string prename=buildname(settings::outname(),"pre");
-    std::ifstream exists(prename.c_str());
-    std::ofstream *outpreamble=
-      new std::ofstream(prename.c_str(),std::ios::app);
-    bool ASYdefines=!exists;
-    texpreamble(*outpreamble,processData().TeXpreamble,ASYdefines,ASYdefines);
+    std::ofstream *outpreamble=new std::ofstream(prename.c_str());
+    texpreamble(*outpreamble,processData().TeXpreamble);
     outpreamble->close();
   }
   
@@ -149,15 +146,22 @@ void texfile::beginlayer(const string& psname, bool postscript)
              << "\\includegraphics";
         bool pdf=settings::pdf(texengine);
         string quote;
-        if(stripDir(psname) != psname)
-          quote="\"";
+        string name=stripExt(psname);
+        if(inlinetex) {
+          size_t pos=name.rfind("-");
+          if(pos < string::npos) name="\\ASYprefix\\jobname"+name.substr(pos);
+        } else {
+          name=pdf ? stripExt(psname) : psname;
+          if(stripDir(name) != name)
+            quote="\"";
+        }
         
-        if(!pdf)
+        if(pdf) *out << "{" << quote << name << quote << ".pdf}%" << newl;
+        else {
           *out << "[bb=" << box.left << " " << box.bottom << " "
-               << box.right << " " << box.top << "]";
-        if(pdf) *out << "{" << quote << stripExt(psname) << quote << ".pdf}%"
-                     << newl;
-        else *out << "{" << quote << psname << quote << "}%" << newl;
+               << box.right << " " << box.top << "]"
+               << "{" << quote << name << quote << "}%" << newl;
+        }
         *out << "}%" << newl;
       }
       if(!inlinetex)
@@ -254,14 +258,14 @@ void texfile::endpicture(const bbox& b)
   verbatimline("pt%");
 }
   
-void texfile::gsave()
+void texfile::gsave(bool)
 {
   *out << settings::beginspecial(texengine);
   psfile::gsave(true);
   *out << settings::endspecial() << newl;
 }
 
-void texfile::grestore()
+void texfile::grestore(bool)
 {
   *out << settings::beginspecial(texengine);
   psfile::grestore(true);
@@ -352,7 +356,7 @@ void svgtexfile::endtransform()
   *out << "</g>";
 }
   
-void svgtexfile::gsave(bool tex)
+void svgtexfile::gsave(bool)
 {
   if(clipstack.size() < 1)
     clipstack.push(0);
@@ -362,7 +366,7 @@ void svgtexfile::gsave(bool tex)
   pens.push(lastpen);
 }
   
-void svgtexfile::grestore(bool tex)
+void svgtexfile::grestore(bool)
 {
   if(pens.size() < 1 || clipstack.size() < 1)
     reportError("grestore without matching gsave");
@@ -414,7 +418,7 @@ void svgtexfile::beginclip()
   ++clipcount;
   *out << "id='clip" << clipcount << "'>" << nl;
   beginpath();
-  if(clipstack.size() >= 0)
+  if(clipstack.size() > 0)
     clipstack.pop();
   clipstack.push(clipcount);
 }
