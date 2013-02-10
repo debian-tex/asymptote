@@ -5,13 +5,13 @@ Subject: use xpdf instead of acroread
 
 ---
  settings.cc |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/settings.cc b/settings.cc
-index 66bd73c..64825e8 100644
+index af0278c..1bd2390 100644
 --- a/settings.cc
 +++ b/settings.cc
-@@ -100,7 +100,7 @@ string defaultPSViewer="gv";
+@@ -94,7 +94,7 @@ string defaultPSViewer="gv";
  #ifdef __APPLE__
  string defaultPDFViewer="open";
  #else  
@@ -20,4 +20,3 @@ index 66bd73c..64825e8 100644
  #endif  
  string defaultGhostscript="gs";
  string defaultDisplay="display";
--- 
