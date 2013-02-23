@@ -6,6 +6,7 @@ asymptote (2.21-1) UNRELEASED; urgency=low
     - add VCS-x fields for collab-maint.
   * debian/patches
     - 0003-clarify-ref-card-license.patch (deleted - applyed upstream)
+  * Add the doc sources into the asymptote-doc package (Closes: #607708)
 
  -- Picca Frédéric-Emmanuel <picca@debian.org>  Sun, 10 Feb 2013 20:43:18 +0100
 

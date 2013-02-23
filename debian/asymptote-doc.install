@@ -1,3 +1,4 @@
 ./doc/png/*.html		/usr/share/doc/asymptote-doc/html/
 ./doc/png/*.png			/usr/share/doc/asymptote-doc/html/
 ./doc/FAQ/asy-faq.html/*.html	/usr/share/doc/asymptote-doc/faq/
+./doc/*.asy			/usr/share/doc/asymptote-doc/src/
