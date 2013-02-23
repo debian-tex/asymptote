@@ -1,20 +1,52 @@
 Source: asymptote
-Section: tex
-Priority: optional
 Maintainer: Hubert Chathi <uhoreg@debian.org>
 Uploaders: Ruben Molina <rmolina@udea.edu.co>,
-	   Picca Frédéric-Emmanuel <picca@debian.org>
-Build-Depends: cdbs, debhelper (>= 8), flex, bison, libfftw3-dev, libreadline-dev, libncurses5-dev, libgc-dev (>= 1:6.4), libgsl0-dev, libsigsegv-dev, zlib1g-dev, freeglut3-dev, tex-common, autotools-dev, imagemagick, ghostscript, texlive-latex-base, texlive-latex-recommended, texlive-latex-extra, texlive-base-bin, texlive-pstricks, texinfo
-Standards-Version: 3.9.3
+           Picca Frédéric-Emmanuel <picca@debian.org>
+Section: tex
+Priority: optional
+Build-Depends: autotools-dev,
+               bison,
+               cdbs,
+               debhelper (>= 8),
+               flex,
+               freeglut3-dev,
+               ghostscript,
+               imagemagick,
+               libfftw3-dev,
+               libgc-dev,
+               libgsl0-dev,
+               libncurses5-dev,
+               libreadline-dev,
+               libsigsegv-dev,
+               tex-common,
+               texinfo,
+               texlive-base-bin,
+               texlive-latex-base,
+               texlive-latex-extra,
+               texlive-latex-recommended,
+               texlive-pstricks,
+               zlib1g-dev
+Standards-Version: 3.9.4
 Vcs-Browser: http://git.debian.org/?p=collab-maint/asymtote.git
 Vcs-Git: git://git.debian.org/git/collab-maint/asymtote.git
 Homepage: http://asymptote.sourceforge.net/
 
 Package: asymptote
 Architecture: any
-Depends: python, python-tk, python-imaging-tk, imagemagick, ghostscript, texlive-latex-base, texlive-base-bin, texlive-pstricks, ${shlibs:Depends}, ${misc:Depends}, dpkg (>= 1.15.4) | install-info
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         ghostscript,
+         imagemagick,
+         install-info,
+         python,
+         python-imaging-tk,
+         python-tk,
+         texlive-base-bin,
+         texlive-latex-base,
+         texlive-pstricks
 Recommends: asymptote-doc
-Suggests: gv, xpdf
+Suggests: gv,
+          xpdf
 Description: script-based vector graphics language inspired by MetaPost
  Asymptote is a powerful script-based vector graphics language for technical
  drawings, inspired by MetaPost but with an improved C++-like syntax.
@@ -22,10 +54,11 @@ Description: script-based vector graphics language inspired by MetaPost
  LaTeX does for scientific text.
 
 Package: asymptote-doc
-Section: doc
 Architecture: all
+Section: doc
 Depends: ${misc:Depends}
-Recommends: asymptote, info-browser | pdf-viewer | www-browser
+Recommends: asymptote,
+            info-browser | pdf-viewer | www-browser
 Replaces: asymptote (<< ${source:Version})
 Description: documentation and examples for asymptote
  Asymptote is a powerful descriptive vector graphics language that
