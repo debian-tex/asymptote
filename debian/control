@@ -6,6 +6,8 @@ Uploaders: Ruben Molina <rmolina@udea.edu.co>,
 	   Picca Frédéric-Emmanuel <picca@debian.org>
 Build-Depends: cdbs, debhelper (>= 8), flex, bison, libfftw3-dev, libreadline-dev, libncurses5-dev, libgc-dev (>= 1:6.4), libgsl0-dev, libsigsegv-dev, zlib1g-dev, freeglut3-dev, tex-common, autotools-dev, imagemagick, ghostscript, texlive-latex-base, texlive-latex-recommended, texlive-latex-extra, texlive-base-bin, texlive-pstricks, texinfo
 Standards-Version: 3.9.3
+Vcs-Browser: http://git.debian.org/?p=collab-maint/asymtote.git
+Vcs-Git: git://git.debian.org/git/collab-maint/asymtote.git
 Homepage: http://asymptote.sourceforge.net/
 
 Package: asymptote

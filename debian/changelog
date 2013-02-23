@@ -3,6 +3,7 @@ asymptote (2.21-1) UNRELEASED; urgency=low
   * Imported Upstream version 2.21
   * debian/control
     - Bump Standards-Version to 3.9.3 (no changes)
+    - add VCS-x fields for collab-maint.
   * debian/patches
     - 0003-clarify-ref-card-license.patch (deleted - applyed upstream)
 
