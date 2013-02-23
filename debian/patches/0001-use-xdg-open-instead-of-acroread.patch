@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Picca=20Fr=C3=A9d=C3=A9ric-Emmanuel?=
  <picca@synchrotron-soleil.fr>
 Date: Sat, 2 Jul 2011 23:13:24 +0200
-Subject: use xpdf instead of acroread
+Subject: use xdg-open instead of acroread
 
 ---
  settings.cc |    2 +-
@@ -16,7 +16,7 @@ index af0278c..1bd2390 100644
  string defaultPDFViewer="open";
  #else  
 -string defaultPDFViewer="acroread";
-+string defaultPDFViewer="xpdf";
++string defaultPDFViewer="xdg-open";
  #endif  
  string defaultGhostscript="gs";
  string defaultDisplay="display";

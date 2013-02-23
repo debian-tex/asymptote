@@ -5,8 +5,14 @@ asymptote (2.21-1) UNRELEASED; urgency=low
     - Bump Standards-Version to 3.9.4 (no changes)
     - Add VCS-x fields since the packaging is hosted under
       collab-maint.
-    - relax dependencies thanks to cme
+    - Remove useless version dependencies on libgc-dev thanks to cme
+    - Replace dpkg (>= 1.15.4) | install-info by install-info
+      now that the minimum version of dpkg is available everywhere.
   * debian/patches
+    - 0001-use-pdf-instead-of-acroread.path (deleted)
+    - 0001-use-xdg-utils-instead-of-acroread.path (new)
+      you can use your default pdf-viewer instead of xpdf to open
+      the generated pdf.
     - 0003-clarify-ref-card-license.patch (deleted - applyed upstream)
   * Add the doc sources into the asymptote-doc package (Closes: #607708)
 
