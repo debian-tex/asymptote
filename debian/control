@@ -26,7 +26,7 @@ Build-Depends: autotools-dev,
                texlive-latex-recommended,
                texlive-pstricks,
                zlib1g-dev
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 Vcs-Browser: http://git.debian.org/?p=collab-maint/asymtote.git
 Vcs-Git: git://git.debian.org/git/collab-maint/asymtote.git
 Homepage: http://asymptote.sourceforge.net/
