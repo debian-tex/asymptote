@@ -353,6 +353,8 @@ ADDSYMBOL(expi);
 ADDSYMBOL(expm1);
 ADDSYMBOL(exprel);
 ADDSYMBOL(exprel_2);
+ADDSYMBOL(extenda);
+ADDSYMBOL(extendb);
 ADDSYMBOL(extension);
 ADDSYMBOL(f);
 ADDSYMBOL(fabs);
