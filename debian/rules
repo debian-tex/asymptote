@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+PKG=asymptote
+
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
@@ -28,3 +30,21 @@ clean::
 
 binary-predeb/asymptote::
 	chmod +x debian/$(cdbs_curpkg)/usr/share/asymptote/asy-kate.sh # script-not-executable
+
+#
+# download current release based on the changelog entry from sf
+# and remove the generated files similarily to the clean target
+# code from the calibre packaging
+get-orig-source:
+	set -e; \
+	V=`dpkg-parsechangelog | sed -rn '/^Version:/ {s/^Version: ([0-9.]+).*$$/\1/; p}'`; \
+	mkdir -p debian/orig; cd debian/orig; \
+	wget -O - https://downloads.sourceforge.net/project/${PKG}/$$V/${PKG}-$$V.src.tgz | gzip -cd | tar x; \
+	D=`pwd`; \
+	cd ${PKG}*; \
+	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi; \
+	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc asy.list; \
+	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi;\
+	cd ..;\
+	tar c . | gzip -9 > ../../../${PKG}_$$V.orig.tar.gz; \
+	cd ../..; rm -r debian/orig
