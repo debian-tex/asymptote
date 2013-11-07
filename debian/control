@@ -1,7 +1,8 @@
 Source: asymptote
 Maintainer: Hubert Chathi <uhoreg@debian.org>
 Uploaders: Ruben Molina <rmolina@udea.edu.co>,
-           Picca Frédéric-Emmanuel <picca@debian.org>
+           Picca Frédéric-Emmanuel <picca@debian.org>,
+           Norbert Preining <preining@debian.org>
 Section: tex
 Priority: optional
 Build-Depends: autotools-dev,
@@ -40,8 +41,8 @@ Depends: ${misc:Depends},
          install-info,
          python,
          python-pil, 
-         python-pil.imagetk
-         texlive-base-bin,
+         python-pil.imagetk,
+         texlive-binaries,
          texlive-latex-base,
          texlive-pstricks,
          xdg-utils

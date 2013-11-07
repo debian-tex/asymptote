@@ -25,8 +25,9 @@ asymptote (2.23-1) UNRELEASED; urgency=low
     - switch dependencies to python-pil et al.
   * debian/rules
     - add get-orig-source target that removes generated files
+  * add myself to uploaders
 
- -- Norbert Preining <preining@debian.org>  Thu, 07 Nov 2013 09:45:27 +0900
+ -- Norbert Preining <preining@debian.org>  Thu, 07 Nov 2013 09:51:55 +0900
 
 asymptote (2.15-2) unstable; urgency=low
 
