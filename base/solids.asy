@@ -83,14 +83,6 @@ struct revolution {
     m=min(g);
   }
   
-  // Return the surface of rotation obtain by rotating the path3 (x,0,f(x))
-  // sampled n times between x=a and x=b about an axis lying in the XZ plane.
-  void operator init(triple c=O, real f(real x), real a, real b, int n=ngraph,
-                     interpolate3 join=operator --, triple axis=Z,
-                     real angle1=0, real angle2=360) {
-    operator init(c,graph(new triple(real x) {return (x,0,f(x));},a,b,n,
-                          join),axis,angle1,angle2);
-  }
 
   revolution copy() {
     return revolution(c,g,axis,angle1,angle2);
@@ -359,7 +351,9 @@ void draw(picture pic=currentpicture, revolution r, int m=0, int n=nslice,
       }
     }
 
-    begingroup3(pic,name == "" ? "skeleton" : name,render);
+    bool group=name != "" || render.defaultnames;
+    if(group)
+      begingroup3(pic,name == "" ? "skeleton" : name,render);
     pic.add(new void(frame f, transform3 t, picture pic, projection P) {
         drawskeleton(f,t,P);
         if(pic != null)
@@ -368,7 +362,8 @@ void draw(picture pic=currentpicture, revolution r, int m=0, int n=nslice,
     frame f;
     drawskeleton(f,identity4,P);
     pic.addBox(min3(f),max3(f));
-    endgroup3(pic);
+    if(group)
+      endgroup3(pic);
   } else {
     skeleton s=r.skeleton(m,n,P);
     if(frontpen != nullpen) {

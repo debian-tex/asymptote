@@ -1,4 +1,4 @@
-This is TeX, Version 3.1415926 (TeX Live 2011) (format=tex 2011.9.30)  16 NOV 2011 14:44
+This is TeX, Version 3.1415926 (TeX Live 2012) (format=tex 2012.8.10)  10 OCT 2012 11:38
 **asyRefCard
 (./asyRefCard.tex
 \columnsperpage=\count26
@@ -129,8 +129,209 @@ Overfull \hbox (1.6849pt too wide) detected at line 324
 .\eighttt r
 .etc.
 
+
+Overfull \hbox (5.4736pt too wide) detected at line 358
+[][]\eighttt .append(a)[] 
+
+\hbox(5.55556+1.77777)x231.26378
+.\vbox(5.55556+1.55556)x173.44783
+..\hbox(5.55556+1.55556)x173.44783, glue set 108.50246fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm a
+...\eightrm p
+...\eightrm p
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt a
+.\eighttt p
+.etc.
+
+
+Overfull \hbox (21.05716pt too wide) detected at line 359
+[][]\eighttt .insert(i,$[] $)[] 
+
+\hbox(5.55556+1.55556)x231.26378
+.\vbox(5.55556+1.55556)x173.44783
+..\hbox(5.55556+1.55556)x173.44783, glue set 45.7835fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm i
+...\eightrm n
+...\eightrm s
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt i
+.\eighttt n
+.etc.
+
+
+Overfull \hbox (5.4736pt too wide) detected at line 360
+[][]\eighttt .delete(i)[] 
+
+\hbox(5.55556+0.66666)x231.26378
+.\vbox(5.55556+0.0)x173.44783
+..\hbox(5.55556+0.0)x173.44783, glue set 71.44637fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm d
+...\eightrm e
+...\eightrm l
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt d
+.\eighttt e
+.etc.
+
+
+Overfull \hbox (13.97372pt too wide) detected at line 361
+[][]\eighttt .delete(i,j)[] 
+
+\hbox(6.0+2.0)x231.26378
+.\vbox(6.0+2.0)x173.44783
+..\hbox(6.0+2.0)x173.44783, glue set 32.86525fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm d
+...\eightrm e
+...\eightrm l
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt d
+.\eighttt e
+.etc.
+
+
+Overfull \hbox (1.22354pt too wide) detected at line 362
+[][]\eighttt .delete()[] 
+
+\hbox(5.55556+0.66666)x231.26378
+.\vbox(5.55556+0.0)x173.44783
+..\hbox(5.55556+0.0)x173.44783, glue set 96.66339fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm d
+...\eightrm e
+...\eightrm l
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt d
+.\eighttt e
+.etc.
+
+
+Overfull \hbox (26.7239pt too wide) detected at line 363
+[][]\eighttt .initialized(n)[] 
+
+\hbox(5.55556+0.66666)x231.26378
+.\vbox(5.55556+0.0)x173.44783
+..\hbox(5.55556+0.0)x173.44783, glue set 31.91385fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm t
+...\eightrm e
+...\eightrm s
+...etc.
+.\hbox(3.44444+0.0)x20.78894
+..\eightit n
+..\eightit a
+..\eightit m
+..\eightit e
+..\kern 0.6
+.\eighttt .
+.\eighttt i
+.\eighttt n
+.etc.
+
+
+Overfull \hbox (5.93497pt too wide) detected at line 365
+[]\eighttt complement(a,n)[] 
+
+\hbox(5.55556+1.77777)x231.26378
+.\vbox(5.55556+1.55556)x173.44783
+..\hbox(5.55556+1.55556)x173.44783, glue set 17.36226fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm c
+...\eightrm o
+...\eightrm m
+...etc.
+.\eighttt c
+.\eighttt o
+.\eighttt m
+.\eighttt p
+.etc.
+
+
+Overfull \hbox (1.6849pt too wide) detected at line 372
+[]\eighttt uniform(a,b,n)[] 
+
+\hbox(6.0+2.0)x231.26378
+.\vbox(6.0+2.0)x173.44783
+..\hbox(6.0+2.0)x173.44783, glue set 13.53026fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm u
+...\eightrm n
+...\eightrm i
+...etc.
+.\eighttt u
+.\eighttt n
+.\eighttt i
+.\eighttt f
+.etc.
+
+
+Overfull \hbox (4.51828pt too wide) detected at line 373
+[]\eighttt concat(a,b,$[] $)[] 
+
+\hbox(5.55556+1.55556)x231.26378
+.\vbox(5.55556+1.55556)x173.44783
+..\hbox(5.55556+1.55556)x173.44783, glue set 67.4463fil
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0
+...\eightrm c
+...\eightrm o
+...\eightrm n
+...etc.
+.\eighttt c
+.\eighttt o
+.\eighttt n
+.\eighttt c
+.etc.
+
 [1]
-Overfull \hbox (10.93721pt too wide) detected at line 380
+Overfull \hbox (10.93721pt too wide) detected at line 381
 [][] []\eighttt =[];[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -160,7 +361,7 @@ Overfull \hbox (10.93721pt too wide) detected at line 380
 .etc.
 
 
-Overfull \hbox (19.57921pt too wide) detected at line 381
+Overfull \hbox (19.57921pt too wide) detected at line 382
 [][]\eighttt [] []={$[] $};[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -185,7 +386,7 @@ Overfull \hbox (19.57921pt too wide) detected at line 381
 .etc.
 
 
-Overfull \hbox (35.6854pt too wide) detected at line 386
+Overfull \hbox (35.6854pt too wide) detected at line 387
 []\eighttt ..controls c0 and c1..[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -204,7 +405,7 @@ Overfull \hbox (35.6854pt too wide) detected at line 386
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 394
+Overfull \hbox (18.68515pt too wide) detected at line 395
 []\eighttt Label(s,real,pair)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -223,7 +424,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 394
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 395
+Overfull \hbox (18.68515pt too wide) detected at line 396
 []\eighttt Label(s,pair,pair)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -242,7 +443,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 395
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 400
+Overfull \hbox (1.6849pt too wide) detected at line 401
 []\eighttt draw(path,pen)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -261,7 +462,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 400
 .etc.
 
 
-Overfull \hbox (10.18503pt too wide) detected at line 401
+Overfull \hbox (10.18503pt too wide) detected at line 402
 []\eighttt draw(Label,path)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -280,7 +481,7 @@ Overfull \hbox (10.18503pt too wide) detected at line 401
 .etc.
 
 
-Overfull \hbox (27.18527pt too wide) detected at line 402
+Overfull \hbox (27.18527pt too wide) detected at line 403
 []\eighttt draw(path,pen,Arrow)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -299,7 +500,7 @@ Overfull \hbox (27.18527pt too wide) detected at line 402
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 403
+Overfull \hbox (18.68515pt too wide) detected at line 404
 []\eighttt draw(picture,path)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -318,7 +519,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 403
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 407
+Overfull \hbox (1.6849pt too wide) detected at line 408
 []\eighttt fill(path,pen)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -337,7 +538,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 407
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 408
+Overfull \hbox (18.68515pt too wide) detected at line 409
 []\eighttt fill(picture,path)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -356,7 +557,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 408
 .etc.
 
 
-Overfull \hbox (22.93521pt too wide) detected at line 411
+Overfull \hbox (22.93521pt too wide) detected at line 412
 []\eighttt label(Label,pair,z)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -375,7 +576,7 @@ Overfull \hbox (22.93521pt too wide) detected at line 411
 .etc.
 
 
-Overfull \hbox (22.93521pt too wide) detected at line 412
+Overfull \hbox (22.93521pt too wide) detected at line 413
 []\eighttt label(Label,path,z)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -394,7 +595,7 @@ Overfull \hbox (22.93521pt too wide) detected at line 412
 .etc.
 
 
-Overfull \hbox (27.18527pt too wide) detected at line 413
+Overfull \hbox (27.18527pt too wide) detected at line 414
 []\eighttt label(picture,Label)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -413,7 +614,7 @@ Overfull \hbox (27.18527pt too wide) detected at line 413
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 417
+Overfull \hbox (1.6849pt too wide) detected at line 418
 []\eighttt clip(path,pen)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -432,7 +633,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 417
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 418
+Overfull \hbox (18.68515pt too wide) detected at line 419
 []\eighttt clip(picture,path)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -451,7 +652,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 418
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 437
+Overfull \hbox (1.6849pt too wide) detected at line 438
 []\eighttt longdashdotted[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -470,7 +671,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 437
 .etc.
 
 
-Overfull \hbox (10.18503pt too wide) detected at line 444
+Overfull \hbox (10.18503pt too wide) detected at line 445
 []\eighttt miterlimit(real)[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -489,7 +690,7 @@ Overfull \hbox (10.18503pt too wide) detected at line 444
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 449
+Overfull \hbox (1.6849pt too wide) detected at line 450
 []\eighttt fontsize(real)[] 
 
 \hbox(6.0+2.0)x231.26378
@@ -508,7 +709,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 449
 .etc.
 
 
-Overfull \hbox (14.43509pt too wide) detected at line 452
+Overfull \hbox (14.43509pt too wide) detected at line 453
 []\eighttt font(string,real)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -527,7 +728,7 @@ Overfull \hbox (14.43509pt too wide) detected at line 452
 .etc.
 
 
-Overfull \hbox (31.43533pt too wide) detected at line 453
+Overfull \hbox (31.43533pt too wide) detected at line 454
 []\eighttt Courier(series,shape)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -546,7 +747,7 @@ Overfull \hbox (31.43533pt too wide) detected at line 453
 .etc.
 
 
-Overfull \hbox (27.18527pt too wide) detected at line 463
+Overfull \hbox (27.18527pt too wide) detected at line 464
 []\eighttt piecewisestraight(p)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -565,7 +766,7 @@ Overfull \hbox (27.18527pt too wide) detected at line 463
 .etc.
 
 
-Overfull \hbox (5.93497pt too wide) detected at line 470
+Overfull \hbox (5.93497pt too wide) detected at line 471
 []\eighttt precontrol(p,t)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -584,7 +785,7 @@ Overfull \hbox (5.93497pt too wide) detected at line 470
 .etc.
 
 
-Overfull \hbox (10.18503pt too wide) detected at line 471
+Overfull \hbox (10.18503pt too wide) detected at line 472
 []\eighttt postcontrol(p,t)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -603,7 +804,7 @@ Overfull \hbox (10.18503pt too wide) detected at line 471
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 480
+Overfull \hbox (1.6849pt too wide) detected at line 481
 []\eighttt subpath(p,a,b)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -622,7 +823,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 480
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 481
+Overfull \hbox (1.6849pt too wide) detected at line 482
 []\eighttt intersect(p,q)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -641,7 +842,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 481
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 484
+Overfull \hbox (18.68515pt too wide) detected at line 485
 []\eighttt intersections(p,q)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -660,7 +861,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 484
 .etc.
 
 
-Overfull \hbox (27.18527pt too wide) detected at line 485
+Overfull \hbox (27.18527pt too wide) detected at line 486
 []\eighttt intersections(p,a,b)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -679,7 +880,7 @@ Overfull \hbox (27.18527pt too wide) detected at line 485
 .etc.
 
 
-Overfull \hbox (35.6854pt too wide) detected at line 488
+Overfull \hbox (35.6854pt too wide) detected at line 489
 []\eighttt intersectionpoint(p,q)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -698,7 +899,7 @@ Overfull \hbox (35.6854pt too wide) detected at line 488
 .etc.
 
 
-Overfull \hbox (39.93546pt too wide) detected at line 489
+Overfull \hbox (39.93546pt too wide) detected at line 490
 []\eighttt intersectionpoints(p,q)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -717,7 +918,7 @@ Overfull \hbox (39.93546pt too wide) detected at line 489
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 490
+Overfull \hbox (18.68515pt too wide) detected at line 491
 []\eighttt extension(P,Q,p,q)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -736,7 +937,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 490
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 493
+Overfull \hbox (1.6849pt too wide) detected at line 494
 []\eighttt cut(p,knife,n)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -755,7 +956,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 493
 .etc.
 
 
-Overfull \hbox (18.68515pt too wide) detected at line 494
+Overfull \hbox (18.68515pt too wide) detected at line 495
 []\eighttt windingnumber(p,z)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -774,7 +975,7 @@ Overfull \hbox (18.68515pt too wide) detected at line 494
 .etc.
 
 
-Overfull \hbox (4.51828pt too wide) detected at line 497
+Overfull \hbox (4.51828pt too wide) detected at line 498
 []\eighttt buildcycle($[] $)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -793,7 +994,7 @@ Overfull \hbox (4.51828pt too wide) detected at line 497
 .etc.
 
 
-Overfull \hbox (5.93497pt too wide) detected at line 498
+Overfull \hbox (5.93497pt too wide) detected at line 499
 []\eighttt strokepath(g,p)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -812,7 +1013,7 @@ Overfull \hbox (5.93497pt too wide) detected at line 498
 .etc.
 
 [2]
-Overfull \hbox (10.18503pt too wide) detected at line 512
+Overfull \hbox (10.18503pt too wide) detected at line 513
 []\eighttt shift(real,real)[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -831,7 +1032,7 @@ Overfull \hbox (10.18503pt too wide) detected at line 512
 .etc.
 
 
-Overfull \hbox (31.43533pt too wide) detected at line 519
+Overfull \hbox (31.43533pt too wide) detected at line 520
 []\eighttt rotate(angle,z=(0,0))[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -850,7 +1051,7 @@ Overfull \hbox (31.43533pt too wide) detected at line 519
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 524
+Overfull \hbox (1.6849pt too wide) detected at line 525
 []\eighttt length(string)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -869,7 +1070,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 524
 .etc.
 
 
-Overfull \hbox (5.93497pt too wide) detected at line 525
+Overfull \hbox (5.93497pt too wide) detected at line 526
 []\eighttt find(s,t,pos=0)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -888,7 +1089,7 @@ Overfull \hbox (5.93497pt too wide) detected at line 525
 .etc.
 
 
-Overfull \hbox (14.43509pt too wide) detected at line 526
+Overfull \hbox (14.43509pt too wide) detected at line 527
 []\eighttt rfind(s,t,pos=-1)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -907,7 +1108,7 @@ Overfull \hbox (14.43509pt too wide) detected at line 526
 .etc.
 
 
-Overfull \hbox (5.93497pt too wide) detected at line 527
+Overfull \hbox (5.93497pt too wide) detected at line 528
 []\eighttt insert(s,pos,t)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -926,7 +1127,7 @@ Overfull \hbox (5.93497pt too wide) detected at line 527
 .etc.
 
 
-Overfull \hbox (1.6849pt too wide) detected at line 528
+Overfull \hbox (1.6849pt too wide) detected at line 529
 []\eighttt erase(s,pos,n)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -945,7 +1146,7 @@ Overfull \hbox (1.6849pt too wide) detected at line 528
 .etc.
 
 
-Overfull \hbox (5.93497pt too wide) detected at line 529
+Overfull \hbox (5.93497pt too wide) detected at line 530
 []\eighttt substr(s,pos,n)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -964,7 +1165,7 @@ Overfull \hbox (5.93497pt too wide) detected at line 529
 .etc.
 
 
-Overfull \hbox (39.93546pt too wide) detected at line 531
+Overfull \hbox (39.93546pt too wide) detected at line 532
 []\eighttt replace(s,before,after)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -983,7 +1184,7 @@ Overfull \hbox (39.93546pt too wide) detected at line 531
 .etc.
 
 
-Overfull \hbox (0.20467pt too wide) in paragraph at lines 533--533
+Overfull \hbox (0.20467pt too wide) in paragraph at lines 534--534
 [] \eightrm string \eighttt s \eightrm trans-lated via \eighttt {{before,after}
 ,$[] $}  
 
@@ -996,7 +1197,7 @@ Overfull \hbox (0.20467pt too wide) in paragraph at lines 533--533
 .etc.
 
 
-Overfull \hbox (61.18576pt too wide) detected at line 533
+Overfull \hbox (61.18576pt too wide) detected at line 534
 []\eighttt replace(s,string [][] table)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -1015,7 +1216,7 @@ Overfull \hbox (61.18576pt too wide) detected at line 533
 .etc.
 
 
-Overfull \hbox (56.9357pt too wide) detected at line 536
+Overfull \hbox (56.9357pt too wide) detected at line 537
 []\eighttt string(x,digits=realDigits)[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -1034,7 +1235,7 @@ Overfull \hbox (56.9357pt too wide) detected at line 536
 .etc.
 
 
-Overfull \hbox (78.186pt too wide) detected at line 537
+Overfull \hbox (78.186pt too wide) detected at line 538
 []\eighttt time(format="%a %b %d %T %Z %Y")[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -1053,7 +1254,7 @@ Overfull \hbox (78.186pt too wide) detected at line 537
 .etc.
 
 
-Overfull \hbox (14.43509pt too wide) detected at line 538
+Overfull \hbox (14.43509pt too wide) detected at line 539
 []\eighttt seconds(t,format)[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -1072,7 +1273,7 @@ Overfull \hbox (14.43509pt too wide) detected at line 538
 .etc.
 
 
-Overfull \hbox (27.18527pt too wide) detected at line 539
+Overfull \hbox (27.18527pt too wide) detected at line 540
 []\eighttt time(seconds,format)[] 
 
 \hbox(5.55556+1.55556)x231.26378
@@ -1091,7 +1292,7 @@ Overfull \hbox (27.18527pt too wide) detected at line 539
 .etc.
 
 
-Overfull \hbox (31.43533pt too wide) detected at line 540
+Overfull \hbox (31.43533pt too wide) detected at line 541
 []\eighttt split(s,delimiter="")[] 
 
 \hbox(5.55556+1.77777)x231.26378
@@ -1110,4 +1311,4 @@ Overfull \hbox (31.43533pt too wide) detected at line 540
 .etc.
 
 [3] )
-Output written on asyRefCard.dvi (3 pages, 17192 bytes).
+Output written on asyRefCard.dvi (3 pages, 17796 bytes).

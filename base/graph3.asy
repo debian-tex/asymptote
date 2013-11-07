@@ -931,9 +931,9 @@ void autoscale3(picture pic=currentpicture, axis axis)
       if(pic.scale.z.scale.logarithmic &&
          floor(pic.userMin().z) == floor(pic.userMax().z)) {
         if(pic.scale.z.automin())
-          pic.userMinz(floor(pic.userMin().z));
+          pic.userMinz3(floor(pic.userMin().z));
         if(pic.scale.z.automax())
-          pic.userMaxz(ceil(pic.userMax().z));
+          pic.userMaxz3(ceil(pic.userMax().z));
       }
     } else {mz.min=mz.max=0; pic.scale.set=false;}
     
@@ -1199,13 +1199,14 @@ void limits(picture pic=currentpicture, triple min, triple max)
 // Draw x, y and z axes.
 void axes3(picture pic=currentpicture,
            Label xlabel="", Label ylabel="", Label zlabel="", 
+           bool extend=false,
            triple min=(-infinity,-infinity,-infinity),
            triple max=(infinity,infinity,infinity),
            pen p=currentpen, arrowbar3 arrow=None, margin3 margin=NoMargin3)
 {
-  xaxis3(pic,xlabel,min.x,max.x,p,arrow,margin);
-  yaxis3(pic,ylabel,min.y,max.y,p,arrow,margin);
-  zaxis3(pic,zlabel,min.z,max.z,p,arrow,margin);
+  xaxis3(pic,xlabel,YZZero(extend),min.x,max.x,p,arrow,margin);
+  yaxis3(pic,ylabel,XZZero(extend),min.y,max.y,p,arrow,margin);
+  zaxis3(pic,zlabel,XYZero(extend),min.z,max.z,p,arrow,margin);
 }
 
 triple Scale(picture pic=currentpicture, triple v)
@@ -1222,6 +1223,7 @@ real ScaleZ(picture pic=currentpicture, real z)
 void tick(picture pic=currentpicture, triple v, triple dir, real size=Ticksize,
           pen p=currentpen)
 {
+  triple v=Scale(pic,v);
   pic.add(new void (picture f, transform3 t) {
       triple tv=t*v;
       draw(f,tv--tv+unit(dir)*size,p);
@@ -1233,27 +1235,27 @@ void tick(picture pic=currentpicture, triple v, triple dir, real size=Ticksize,
 void xtick(picture pic=currentpicture, triple v, triple dir=Y,
            real size=Ticksize, pen p=currentpen)
 {
-  tick(pic,Scale(pic,v),dir,size,p);
+  tick(pic,v,dir,size,p);
 }
 
 void xtick3(picture pic=currentpicture, real x, triple dir=Y,
             real size=Ticksize, pen p=currentpen)
 {
-  xtick(pic,(x,pic.scale.y.scale.logarithmic ? 1 : 0,
+  tick(pic,(x,pic.scale.y.scale.logarithmic ? 1 : 0,
              pic.scale.z.scale.logarithmic ? 1 : 0),dir,size,p);
 }
 
 void ytick(picture pic=currentpicture, triple v, triple dir=X,
            real size=Ticksize, pen p=currentpen) 
 {
-  xtick(pic,v,dir,size,p);
+  tick(pic,v,dir,size,p);
 }
 
-void ytick(picture pic=currentpicture, real y, triple dir=X,
-           real size=Ticksize, pen p=currentpen)
+void ytick3(picture pic=currentpicture, real y, triple dir=X,
+            real size=Ticksize, pen p=currentpen)
 {
-  xtick(pic,(pic.scale.x.scale.logarithmic ? 1 : 0,y,
-             pic.scale.z.scale.logarithmic ? 1 : 0),dir,size,p);
+  tick(pic,(pic.scale.x.scale.logarithmic ? 1 : 0,y,
+            pic.scale.z.scale.logarithmic ? 1 : 0),dir,size,p);
 }
 
 void ztick(picture pic=currentpicture, triple v, triple dir=X,
@@ -1262,8 +1264,8 @@ void ztick(picture pic=currentpicture, triple v, triple dir=X,
   xtick(pic,v,dir,size,p);
 }
 
-void ztick(picture pic=currentpicture, real z, triple dir=X,
-           real size=Ticksize, pen p=currentpen)
+void ztick3(picture pic=currentpicture, real z, triple dir=X,
+            real size=Ticksize, pen p=currentpen)
 {
   xtick(pic,(pic.scale.x.scale.logarithmic ? 1 : 0,
              pic.scale.y.scale.logarithmic ? 1 : 0,z),dir,size,p);
@@ -1274,15 +1276,14 @@ void tick(picture pic=currentpicture, Label L, real value, triple v,
 {
   Label L=L.copy();
   L.align(L.align,-dir);
-  if(shift(L.T3)*O == O) {
+  if(shift(L.T3)*O == O)
     L.T3=shift(dot(dir,L.align.dir3) > 0 ? dir*size :
                ticklabelshift(L.align.dir3,p))*L.T3;
-  }
   L.p(p);
   if(L.s == "") L.s=format(format == "" ? defaultformat : format,value);
   L.s=baseline(L.s,baselinetemplate);
-  label(pic,L,v);
-  xtick(pic,v,dir,size,p);
+  label(pic,L,Scale(pic,v));
+  tick(pic,v,dir,size,p);
 }
 
 void xtick(picture pic=currentpicture, Label L, triple v, triple dir=Y,
@@ -1295,7 +1296,7 @@ void xtick3(picture pic=currentpicture, Label L, real x, triple dir=Y,
             string format="", real size=Ticksize, pen p=currentpen)
 {
   xtick(pic,L,(x,pic.scale.y.scale.logarithmic ? 1 : 0,
-               pic.scale.z.scale.logarithmic ? 1 : 0),dir,size,p);
+              pic.scale.z.scale.logarithmic ? 1 : 0),dir,size,p);
 }
 
 void ytick(picture pic=currentpicture, Label L, triple v, triple dir=X,
@@ -1307,8 +1308,8 @@ void ytick(picture pic=currentpicture, Label L, triple v, triple dir=X,
 void ytick3(picture pic=currentpicture, Label L, real y, triple dir=X,
             string format="", real size=Ticksize, pen p=currentpen)
 {
-  ytick(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,y,
-               pic.scale.z.scale.logarithmic ? 1 : 0),dir,format,size,p);
+  xtick(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,y,
+              pic.scale.z.scale.logarithmic ? 1 : 0),dir,format,size,p);
 }
 
 void ztick(picture pic=currentpicture, Label L, triple v, triple dir=X,
@@ -1320,8 +1321,8 @@ void ztick(picture pic=currentpicture, Label L, triple v, triple dir=X,
 void ztick3(picture pic=currentpicture, Label L, real z, triple dir=X,
             string format="", real size=Ticksize, pen p=currentpen)
 {
-  ztick(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,
-               pic.scale.z.scale.logarithmic ? 1 : 0,z),dir,format,size,p);
+  xtick(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,
+              pic.scale.z.scale.logarithmic ? 1 : 0,z),dir,format,size,p);
 }
 
 private void label(picture pic, Label L, triple v, real x, align align,
@@ -1338,39 +1339,39 @@ private void label(picture pic, Label L, triple v, real x, align align,
 }
 
 void labelx(picture pic=currentpicture, Label L="", triple v,
-            align align=-Y, string format="", pen p=nullpen)
+            align align=-Y, string format="", pen p=currentpen)
 {
   label(pic,L,Scale(pic,v),v.x,align,format,p);
 }
 
 void labelx3(picture pic=currentpicture, Label L="", real x,
-             align align=-Y, string format="", pen p=nullpen)
+             align align=-Y, string format="", pen p=currentpen)
 {
   labelx(pic,L,(x,pic.scale.y.scale.logarithmic ? 1 : 0,
                 pic.scale.z.scale.logarithmic ? 1 : 0),align,format,p);
 }
 
 void labely(picture pic=currentpicture, Label L="", triple v,
-            align align=-X, string format="", pen p=nullpen)
+            align align=-X, string format="", pen p=currentpen)
 {
   label(pic,L,Scale(pic,v),v.y,align,format,p);
 }
 
 void labely3(picture pic=currentpicture, Label L="", real y,
-             align align=-X, string format="", pen p=nullpen)
+             align align=-X, string format="", pen p=currentpen)
 {
   labely(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,y,
                 pic.scale.z.scale.logarithmic ? 1 : 0),align,format,p);
 }
 
 void labelz(picture pic=currentpicture, Label L="", triple v,
-            align align=-X, string format="", pen p=nullpen)
+            align align=-X, string format="", pen p=currentpen)
 {
   label(pic,L,Scale(pic,v),v.z,align,format,p);
 }
 
 void labelz3(picture pic=currentpicture, Label L="", real z,
-             align align=-X, string format="", pen p=nullpen)
+             align align=-X, string format="", pen p=currentpen)
 {
   labelz(pic,L,(pic.scale.x.scale.logarithmic ? 1 : 0,
                 pic.scale.y.scale.logarithmic ? 1 : 0,z),align,format,p);
@@ -1884,7 +1885,8 @@ void draw(picture pic=currentpicture, Label[] L=new Label[],
           interaction interaction=LabelInteraction())
 {
   pen thin=is3D() ? thin() : defaultpen;
-  if(g.length > 1)
+  bool group=g.length > 1 && (name != "" || render.defaultnames);
+  if(group)
     begingroup3(pic,name == "" ? "contours" : name,render);
   for(int cnt=0; cnt < g.length; ++cnt) {
     guide3[] gcnt=g[cnt];
@@ -1899,7 +1901,7 @@ void draw(picture pic=currentpicture, Label[] L=new Label[],
       }
     }
   }
-  if(g.length > 1)
+  if(group)
     endgroup3(pic);
 }
 
@@ -1945,7 +1947,9 @@ picture vectorfield(path3 vector(pair v), triple f(pair z), pair a, pair b,
     scale=max > 0 ? maxlength/max : 1;
   } else scale=1;
 
-  begingroup3(pic,name == "" ? "vectorfield" : name,render);
+  bool group=name != "" || render.defaultnames;
+  if(group)
+    begingroup3(pic,name == "" ? "vectorfield" : name,render);
   for(int i=0; i <= nu; ++i) {
     real x=interp(a.x,b.x,i*du);
     for(int j=0; j <= nv; ++j) {
@@ -1962,7 +1966,8 @@ picture vectorfield(path3 vector(pair v), triple f(pair z), pair a, pair b,
       }
     }
   }
-  endgroup3(pic);
+  if(group)
+    endgroup3(pic);
   return pic;
 }
 

@@ -14,7 +14,7 @@
 #ifdef HAVE_GL
 
 #ifdef HAVE_LIBGLUT
-#ifdef __CYGWIN__
+#ifdef __MSDOS__
 #ifndef FGAPI
 #define FGAPI GLUTAPI
 #endif
@@ -151,7 +151,7 @@ OSMesaContext ctx;
 unsigned char *osmesa_buffer;
 #endif
 
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
 pthread_t mainthread;
 
 pthread_cond_t initSignal=PTHREAD_COND_INITIALIZER;
@@ -192,7 +192,8 @@ void lighting()
   for(size_t i=0; i < Nlights; ++i) {
     GLenum index=GL_LIGHT0+i;
     triple Lighti=Lights[i];
-    GLfloat position[]={Lighti.getx(),Lighti.gety(),Lighti.getz(),0.0};
+    GLfloat position[]={(GLfloat) Lighti.getx(),(GLfloat) Lighti.gety(),
+			(GLfloat) Lighti.getz(),0.0};
     glLightfv(index,GL_POSITION,position);
   }
 }
@@ -209,14 +210,16 @@ void initlighting()
     
     size_t i4=4*i;
     
-    GLfloat diffuse[]={Diffuse[i4],Diffuse[i4+1],Diffuse[i4+2],Diffuse[i4+3]};
+    GLfloat diffuse[]={(GLfloat) Diffuse[i4],(GLfloat) Diffuse[i4+1],
+		       (GLfloat) Diffuse[i4+2],(GLfloat) Diffuse[i4+3]};
     glLightfv(index,GL_DIFFUSE,diffuse);
     
-    GLfloat ambient[]={Ambient[i4],Ambient[i4+1],Ambient[i4+2],Ambient[i4+3]};
+    GLfloat ambient[]={(GLfloat) Ambient[i4],(GLfloat) Ambient[i4+1],
+		       (GLfloat) Ambient[i4+2],(GLfloat) Ambient[i4+3]};
     glLightfv(index,GL_AMBIENT,ambient);
     
-    GLfloat specular[]={Specular[i4],Specular[i4+1],Specular[i4+2],
-                        Specular[i4+3]};
+    GLfloat specular[]={(GLfloat) Specular[i4],(GLfloat) Specular[i4+1],
+			(GLfloat) Specular[i4+2],(GLfloat) Specular[i4+3]};
     glLightfv(index,GL_SPECULAR,specular);
   }
   
@@ -287,7 +290,7 @@ void setProjection()
 
 void drawscene(double Width, double Height)
 {
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
   static bool first=true;
   if(glthread && first && !getSetting<bool>("offscreen")) {
     wait(initSignal,initLock);
@@ -308,13 +311,13 @@ void drawscene(double Width, double Height)
   double size2=hypot(Width,Height);
   
   // Render opaque objects
-  Picture->render(nurb,size2,m,M,perspective,false);
+  Picture->render(nurb,size2,m,M,perspective,Nlights,false);
   
   // Enable transparency
   glDepthMask(GL_FALSE);
   
   // Render transparent objects
-  Picture->render(nurb,size2,m,M,perspective,true);
+  Picture->render(nurb,size2,m,M,perspective,Nlights,true);
   glDepthMask(GL_TRUE);
 }
 
@@ -385,7 +388,7 @@ void Export()
     glutPostRedisplay();
 #endif
 
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
   if(glthread && readyAfterExport && !offscreen) {
     readyAfterExport=false;        
     endwait(readySignal,readyLock);
@@ -433,7 +436,7 @@ void quit()
       Setting("interrupt")=true;
     home();
     Animate=getSetting<bool>("autoplay");
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
     if(!interact::interactive || animating)
       endwait(readySignal,readyLock);
 #endif    
@@ -559,7 +562,7 @@ void fullscreen(bool reposition=true)
   Width=screenWidth;
   Height=screenHeight;
   reshape0(Width,Height);
-#ifdef __CYGWIN__
+#ifdef __MSDOS__
   glutFullScreen();
 #else
   if(reposition)
@@ -666,7 +669,9 @@ void screen()
 void nextframe(int) 
 {
   glFinish();
+#ifdef HAVE_PTHREAD
   endwait(readySignal,readyLock);
+#endif    
   double framedelay=getSetting<double>("framedelay");
   if(framedelay > 0)
     usleep((unsigned int) (1000.0*framedelay+0.5));
@@ -681,7 +686,7 @@ void display()
   }
   drawscene(Width,Height);
   glutSwapBuffers();
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
   if(glthread && Animate) {
     queueExport=false;
     double delay=1.0/getSetting<double>("framerate");
@@ -1356,10 +1361,12 @@ void glrender(const string& prefix, const picture *pic, const string& format,
 {
   bool offscreen=getSetting<bool>("offscreen");
 
-#ifndef __CYGWIN__    
+#ifndef __MSDOS__    
   Iconify=getSetting<bool>("iconify");
 #endif
+#ifdef HAVE_PTHREAD
   static bool initializedView=false;
+#endif  
 
   width=max(width,1.0);
   height=max(height,1.0);
@@ -1485,7 +1492,7 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   size_t nbuttons=sizeof(buttons)/sizeof(int);
 #endif  
   
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
   if(glthread && initializedView && !offscreen) {
     if(!View)
       readyAfterExport=queueExport=true;
@@ -1621,7 +1628,9 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   
   if(View && !offscreen) {
 #ifdef HAVE_LIBGLUT
+#ifdef HAVE_PTHREAD
     initializedView=true;
+#endif    
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
@@ -1654,7 +1663,9 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     if(glthread && !offscreen) {
       if(havewindow) {
         readyAfterExport=true;
+#ifdef HAVE_PTHREAD
         pthread_kill(mainthread,SIGUSR1);
+#endif    
       } else {
         initialized=true;
         readyAfterExport=true;

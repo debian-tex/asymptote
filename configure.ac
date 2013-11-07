@@ -3,11 +3,12 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.15],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.21],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
+m4_include([ax_pthread.m4])
 
-test "$CFLAGS" || CFLAGS="-g -O3"
+test "$CFLAGS" || CFLAGS="-g -O3 -ansi"
 
 AC_C_BIGENDIAN
 
@@ -104,17 +105,20 @@ AC_PROG_YACC
 
 if test "$GXX" = yes ; then
    ac_gcc_version=`echo __GNUC__ | $CC -E - | grep -v ^\#`
+   ac_clang=`echo __clang__ | $CC -E - | grep -v ^\#`
    if test "$ac_gcc_version" -lt 4; then
        CFLAGS=$CFLAGS" -finline-limit=400"
    else
-       CFLAGS=$CFLAGS" --no-var-tracking"
+     if test "$ac_clang" != 1; then
+         CFLAGS=$CFLAGS" -fno-var-tracking"
+     fi
    fi
 fi
 
 AC_CHECK_HEADER(tr1/unordered_map,,
 		[AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])
 
-GCVERSION=gc-7.1
+GCVERSION=gc-7.2d
 
 AC_CHECK_FILE($GCVERSION.tar.gz,
 ac_cv_use_gc=$GCVERSION,
@@ -197,9 +201,9 @@ AC_ARG_ENABLE(gc-full-debug,
  fi
 ])
 
-if test "$OSTYPE" = "cygwin"; then
+if test "$OSTYPE" = "msdos"; then
 INCL=$INCL" -I/usr/include/tirpc"
-CPPFLAGS=$CPPFLAGS" $INCL"
+CPPFLAGS=$CPPFLAGS" -D__MSDOS__ $INCL"
 fi
 
 AC_CHECK_FUNC(getopt_long_only, AC_DEFINE(HAVE_GNU_GETOPT_H, 1,
@@ -222,7 +226,7 @@ AC_CHECK_LIB([m], [sqrt],,
 AC_MSG_ERROR([*** Please install libm on your system ***]))
 AC_CHECK_LIB([z], [deflate],,
 AC_MSG_ERROR([*** Please install libz on your system ***]))
-AC_CHECK_LIB([pthread], [pthread_create])
+AX_PTHREAD
 AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
 AC_CHECK_LIB([rt], [sched_yield])
 
@@ -238,7 +242,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 #ifndef RL_READLINE_VERSION
 abort
 #endif
-])],AC_CHECK_LIB([readline], [rl_completion_matches],,
+])],AC_CHECK_LIB([readline], [history_list],,
 AC_MSG_NOTICE(*** Could not find GNU readline 4.3 or later: will compile without readline support ***)))
 fi
 
@@ -279,22 +283,16 @@ AC_ARG_ENABLE(gl,
 [AS_HELP_STRING(--enable-gl[[[=yes]]],enable OpenGL Library)])
 
 AC_ARG_ENABLE(offscreen,
-[AS_HELP_STRING(--enable-offscreen[[[=no]]],enable offscreen rendering using OSMesa library)])
-
-# First check if GL is enabled. If so, then:
-# onscreen rendering requires GL, glut, and GLU libraries
-# offscreen rendering require OSMesa and GLU libraries 
+[AS_HELP_STRING(--enable-offscreen[[[=yes]]],enable offscreen rendering using OSMesa library)])
 
 if test "x$enable_gl" != "xno"; then
 case "$OSTYPE" in
-     cygwin)
-              if test "x$enable_offscreen" != "xyes"; then
-                AC_CHECK_HEADER(GL/gl.h,
+     msdos)
+              AC_CHECK_HEADER(GL/gl.h,
 				  [AC_DEFINE(HAVE_LIBGL, 1,
 		     [Define if you have the `opengl32' library (-lopengl32).])
 			     LIBS=$LIBS"-lopengl32 "],
 				   AC_MSG_NOTICE([*** Could not find libopengl32: will compile without OpenGL support ***]))
-              fi
 	    AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],[AC_DEFINE(HAVE_LIBGLU, 1,
 		              [Define to 1 if you have the `glu32' library (-lglu32).]) LIBS=$LIBS"-lglu32 "],
 	    AC_MSG_NOTICE([*** Could not find libglu32: will compile without OpenGL support ***]))
@@ -305,11 +303,9 @@ case "$OSTYPE" in
 				   AC_MSG_NOTICE([*** Could not find libfreeglut: will compile without GLUT support ***]))
         ;;                                 
      darwin*) 
-              if test "x$enable_offscreen" != "xyes"; then
-                AC_CHECK_HEADER(OpenGL/gl.h,
-                               [AC_DEFINE(HAVE_LIBGL, 1,
-  		               [Define if you have the `OpenGL' library.])])
-              fi                             
+              AC_CHECK_HEADER(OpenGL/gl.h,
+                             [AC_DEFINE(HAVE_LIBGL, 1,
+		             [Define if you have the `OpenGL' library.])])
               AC_CHECK_HEADER(OpenGL/glu.h,
                               [AC_DEFINE(HAVE_LIBGLU, 1,
 			      [Define if you have the `GLU' library.])])
@@ -328,16 +324,19 @@ void f(void) {
 			   LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa"],
 				 AC_MSG_NOTICE([*** Could not find glut: will compile without GLUT support ***]))
         ;;                                 
-     *)    if test "x$enable_offscreen" != "xyes"; then
-             AC_CHECK_LIB([GL], [glDepthMask])
-           fi
+     *) AC_CHECK_LIB([GL], [glDepthMask])
         AC_CHECK_LIB([GLU], [gluNewNurbsRenderer],,
 	             AC_MSG_NOTICE([*** Could not find libGLU: will compile without OpenGL support ***]))
 	  AC_CHECK_LIB([glut], [glutMainLoop],,
 		       AC_MSG_NOTICE([*** Could not find libglut: will compile without GLUT support ***]))
 esac
-   if test "x$enable_offscreen" == "xyes"; then
-           AC_CHECK_LIB([OSMesa],OSMesaCreateContext,,
+   if test "x$enable_offscreen" != "xno"; then
+           AC_CHECK_LIB([OSMesa],OSMesaCreateContext,
+               	       AC_CHECK_LIB([glapi],_glapi_get_context,
+				  [AC_DEFINE(HAVE_LIBOSMESA, 1,
+		     [Define if you have the `OSMesa' library (-lOSMesa).])
+			     LIBS=$LIBS"-lOSMesa -lglapi"],
+			AC_MSG_NOTICE([*** Could not find libglapi: will compile without offscreen rendering support ***])),
 			AC_MSG_NOTICE([*** Could not find libOSMesa: will compile without offscreen rendering support ***]))
    fi
 fi

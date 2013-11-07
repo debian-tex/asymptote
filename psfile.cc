@@ -122,7 +122,7 @@ void psfile::close()
   if(out) {
     out->flush();
     if(!filename.empty()) {
-#ifdef __CYGWIN__  
+#ifdef __MSDOS__  
       chmod(filename.c_str(),~settings::mask & 0777);
 #endif	    
       if(!out->good())
@@ -649,10 +649,10 @@ void psfile::image(stack *Stack, callable *f, Int width, Int height,
   imageheader(width,height,colorspace);
     
   beginImage(ncomponents*width*height);
-  for(Int i=0; i < width; i++) {
-    for(Int j=0; j < height; j++) {
-      Stack->push(i);
+  for(Int j=0; j < height; j++) {
+    for(Int i=0; i < width; i++) {
       Stack->push(j);
+      Stack->push(i);
       f->call(Stack);
       pen p=pop<pen>(Stack);
       p.convert();
