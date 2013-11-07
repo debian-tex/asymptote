@@ -13,8 +13,6 @@
 
 ADDSYMBOL(a);
 ADDSYMBOL(b);
-ADDSYMBOL(binput);
-ADDSYMBOL(boutput);
 ADDSYMBOL(check);
 ADDSYMBOL(clear);
 ADDSYMBOL(close);
@@ -30,6 +28,7 @@ ADDSYMBOL(from);
 ADDSYMBOL(getc);
 ADDSYMBOL(input);
 ADDSYMBOL(mktemp);
+ADDSYMBOL(mode);
 ADDSYMBOL(name);
 ADDSYMBOL(output);
 ADDSYMBOL(pos);
@@ -41,5 +40,3 @@ ADDSYMBOL(seekeof);
 ADDSYMBOL(tell);
 ADDSYMBOL(to);
 ADDSYMBOL(update);
-ADDSYMBOL(xinput);
-ADDSYMBOL(xoutput);

@@ -27,10 +27,6 @@
 
 #include "common.h"
 
-#ifdef __CYGWIN__
-#define NOMINMAX
-#endif
-
 #ifdef HAVE_LIBSIGSEGV
 #include <sigsegv.h>
 #endif
@@ -174,13 +170,17 @@ int main(int argc, char *argv[])
   Args args(argc,argv);
 #ifdef HAVE_GL
   gl::glthread=getSetting<bool>("threads");
-#if HAVE_LIBPTHREAD
+#if HAVE_PTHREAD
   
   if(gl::glthread) {
     pthread_t thread;
     try {
       if(pthread_create(&thread,NULL,asymain,&args) == 0) {
         gl::mainthread=pthread_self();
+        sigset_t set;
+        sigemptyset(&set);
+        sigaddset(&set, SIGCHLD);
+        pthread_sigmask(SIG_BLOCK, &set, NULL);
         while(true) {
           camp::glrenderWrapper();
           gl::initialize=true;

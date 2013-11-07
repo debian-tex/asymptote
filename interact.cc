@@ -12,12 +12,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <csignal>
+#include <cstdio>
 
 #include "interact.h"
 #include "runhistory.h"
 
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
-#include <cstdio>
 #include <readline/readline.h>
 #include <readline/history.h>
 #endif
@@ -72,7 +72,7 @@ void init_completion() {
 
 char *(*Readline)(const char *prompt);
 
-char *verbatimreadline(const char *prompt)
+char *readverbatimline(const char *prompt)
 {
   if(!cin.good()) {cin.clear(); return NULL;}
   cout << prompt;
@@ -81,14 +81,30 @@ char *verbatimreadline(const char *prompt)
   return StrdupMalloc(s);
 }
   
+FILE *fin=NULL;
+
+char *readpipeline(const char *prompt)
+{
+  char *line=NULL;
+  size_t n;
+  n=getline(&line,&n,fin);
+  return line;
+}
+  
 void pre_readline()
 {
+  int fd=intcast(settings::getSetting<Int>("inpipe"));
+  if(fd >= 0) {
+    if(!fin) fin=fdopen(fd,"r");
+    Readline=readpipeline;
+  } else {
 #if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
-  if(tty) {
-    Readline=readline;
-  } else
+    if(tty) {
+      Readline=readline;
+    } else
 #endif
-    Readline=verbatimreadline;
+      Readline=readverbatimline;
+  }
 }
 
 void init_interactive()

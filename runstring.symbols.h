@@ -28,6 +28,7 @@ ADDSYMBOL(reverse);
 ADDSYMBOL(rfind);
 ADDSYMBOL(s);
 ADDSYMBOL(seconds);
+ADDSYMBOL(separator);
 ADDSYMBOL(string);
 ADDSYMBOL(substr);
 ADDSYMBOL(t);

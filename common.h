@@ -7,6 +7,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#undef NDEBUG
+
 #include <iostream>
 #include <climits>
 
@@ -26,7 +28,7 @@
 #define HAVE_GL
 #endif
 
-#ifdef HAVE_LIBPTHREAD
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
