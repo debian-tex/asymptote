@@ -1,5 +1,6 @@
-asymptote (2.21-1) UNRELEASED; urgency=low
+asymptote (2.23-1) UNRELEASED; urgency=low
 
+  [ Picca Frédéric-Emmanuel ]
   * Imported Upstream version 2.21
   * debian/control
     - Bump Standards-Version to 3.9.4 (no changes)
@@ -16,7 +17,11 @@ asymptote (2.21-1) UNRELEASED; urgency=low
     - 0003-clarify-ref-card-license.patch (deleted - applyed upstream)
   * Add the doc sources into the asymptote-doc package (Closes: #607708)
 
- -- Picca Frédéric-Emmanuel <picca@debian.org>  Sun, 10 Feb 2013 20:43:18 +0100
+  [ Norbert Preining ]
+  * Imported upstream version 2.23
+  * switch dependencies to python-pil et al.
+
+ -- Norbert Preining <preining@debian.org>  Thu, 07 Nov 2013 09:16:51 +0900
 
 asymptote (2.15-2) unstable; urgency=low
 
