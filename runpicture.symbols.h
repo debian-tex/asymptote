@@ -51,6 +51,8 @@ ADDSYMBOL(endclip);
 ADDSYMBOL(endgroup);
 ADDSYMBOL(endgroup3);
 ADDSYMBOL(erase);
+ADDSYMBOL(extenda);
+ADDSYMBOL(extendb);
 ADDSYMBOL(f);
 ADDSYMBOL(fill);
 ADDSYMBOL(fillrule);
