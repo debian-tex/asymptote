@@ -1,6 +1,6 @@
 Source: asymptote
 Maintainer: Debian TeX Task Force <debian-tex-maint@lists.debian.org>
-Maintainer: Hubert Chathi <uhoreg@debian.org>,
+Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Ruben Molina <rmolina@udea.edu.co>,
            Picca Frédéric-Emmanuel <picca@debian.org>,
            Norbert Preining <preining@debian.org>
