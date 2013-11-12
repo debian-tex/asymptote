@@ -30,8 +30,9 @@ asymptote (2.23-1) UNRELEASED; urgency=low
   * switch maintainership to Debian TeX maintainers team, move Hubert
     from Maintainer to Uploaders
     (with permission by the current maintainer and the uploaders)
+  * dpkg-reconfigure now works (Closes: #617619)
 
- -- Norbert Preining <preining@debian.org>  Tue, 12 Nov 2013 14:24:51 +0900
+ -- Norbert Preining <preining@debian.org>  Tue, 12 Nov 2013 14:27:39 +0900
 
 asymptote (2.15-2) unstable; urgency=low
 
