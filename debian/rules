@@ -22,6 +22,9 @@ common-install-arch::
 # from cdbs
 common-install-prehook-indep::
 	make all html
+	# fix location of images in info document
+	cat doc/png/asymptote.info | sed -e 's!image src="\([^"]*\)"!image src="/usr/share/doc/asymptote-doc/html/\1"!g' > doc/png/asymptote.info.fixed
+	mv doc/png/asymptote.info.fixed doc/png/asymptote.info
 
 clean::
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
