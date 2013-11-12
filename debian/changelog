@@ -1,4 +1,4 @@
-asymptote (2.23-1) UNRELEASED; urgency=low
+asymptote (2.23-1) unstable; urgency=low
 
   [ Picca Frédéric-Emmanuel ]
   * Imported Upstream version 2.21
@@ -32,7 +32,7 @@ asymptote (2.23-1) UNRELEASED; urgency=low
     (with permission by the current maintainer and the uploaders)
   * dpkg-reconfigure now works (Closes: #617619)
 
- -- Norbert Preining <preining@debian.org>  Tue, 12 Nov 2013 14:27:39 +0900
+ -- Norbert Preining <preining@debian.org>  Tue, 12 Nov 2013 14:31:32 +0900
 
 asymptote (2.15-2) unstable; urgency=low
 
