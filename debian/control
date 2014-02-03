@@ -26,6 +26,7 @@ Build-Depends: autotools-dev,
                texlive-latex-base,
                texlive-latex-extra,
                texlive-latex-recommended,
+               texlive-fonts-recommended,
                texlive-pstricks,
                zlib1g-dev
 Standards-Version: 3.9.5
