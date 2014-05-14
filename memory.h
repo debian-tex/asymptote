@@ -14,19 +14,32 @@
 #include <string>
 #include <sstream>
 
-#ifndef __GNUC_PREREQ
-#define __GNUC_PREREQ(maj, min) (0)
+#if defined __GNUC__ && defined __GNUC_MINOR__
+# define PREREQ(maj,min) \
+        ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+# define PREREQ(maj,min) 1
 #endif
 
 #ifndef NOHASH
-#if __GNUC_PREREQ(4,3) || defined(__CYGWIN__)
+#if PREREQ(4,3) || defined(__CYGWIN__)
+
+#if __cplusplus >= 201103L
+#include <memory>
+#include <unordered_map>
+#define EXT std
+#else
 #include <tr1/unordered_map>
 #define EXT std::tr1
+#endif
+
 #else
+
 #define EXT __gnu_cxx
 #include <ext/hash_map>
 #define unordered_map hash_map
 #define unordered_multimap hash_multimap
+
 #endif
 #endif
 
@@ -171,7 +184,13 @@ typedef std::basic_ostringstream<char,std::char_traits<char>,
                                  gc_allocator<char> > ostringstream;
 typedef std::basic_stringbuf<char,std::char_traits<char>,
                              gc_allocator<char> > stringbuf;
+#if GC_TMP_VERSION_MAJOR >= 7 && GC_TMP_VERSION_MINOR > 1
+inline void compact(int x) {GC_set_dont_expand(x);}
 #else
+inline void compact(int x) {GC_dont_expand=x;}
+#endif    
+#else
+inline void compact(int x) {}
 typedef std::string string;
 typedef std::stringstream stringstream;
 typedef std::istringstream istringstream;
