@@ -7,8 +7,8 @@ Subject: update documentation for debian specific parts
  doc/asymptote.texi |   30 +++++++++++-------------------
  1 file changed, 11 insertions(+), 19 deletions(-)
 
---- working.orig/doc/asymptote.texi
-+++ working/doc/asymptote.texi
+--- asymptote.orig/doc/asymptote.texi
++++ asymptote/doc/asymptote.texi
 @@ -13,15 +13,16 @@
       
  @quotation
@@ -29,7 +29,7 @@ Subject: update documentation for debian specific parts
  @end direntry
  
  @titlepage
-@@ -437,7 +438,7 @@
+@@ -438,7 +439,7 @@
  @verbatim
  import settings;
  psviewer="gv";
@@ -38,7 +38,7 @@ Subject: update documentation for debian specific parts
  gs="gs";
  @end verbatim
  
-@@ -666,20 +667,9 @@
+@@ -672,20 +673,9 @@
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -61,7 +61,7 @@ Subject: update documentation for debian specific parts
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -703,8 +693,10 @@
+@@ -709,8 +699,10 @@
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  

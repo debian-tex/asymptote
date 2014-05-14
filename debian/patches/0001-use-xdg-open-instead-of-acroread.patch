@@ -7,11 +7,9 @@ Subject: use xdg-open instead of acroread
  settings.cc |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/settings.cc b/settings.cc
-index af0278c..1bd2390 100644
---- a/settings.cc
-+++ b/settings.cc
-@@ -94,7 +94,7 @@ string defaultPSViewer="gv";
+--- asymptote.orig/settings.cc
++++ asymptote/settings.cc
+@@ -94,7 +94,7 @@
  #ifdef __APPLE__
  string defaultPDFViewer="open";
  #else  
@@ -19,4 +17,4 @@ index af0278c..1bd2390 100644
 +string defaultPDFViewer="xdg-open";
  #endif  
  string defaultGhostscript="gs";
- string defaultDisplay="display";
+ string defaultGhostscriptLibrary="/usr/lib/libgs.so";
