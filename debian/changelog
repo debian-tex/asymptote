@@ -1,3 +1,10 @@
+asymptote (2.28-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.28
+  * unfuzzify patches
+
+ -- Norbert Preining <preining@debian.org>  Wed, 14 May 2014 18:19:39 +0900
+
 asymptote (2.23-2) unstable; urgency=medium
 
   * add texlive-fonts-recommended (new location of ec) (Closes: #737256)
