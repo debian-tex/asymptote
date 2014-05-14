@@ -77,8 +77,6 @@ bool Xspin,Yspin,Zspin;
 bool Animate;
 bool Step;
 
-int minimumsize=50; // Minimum initial rendering window width and height
-
 bool queueScreen=false;
 
 int x0,y0;
@@ -531,21 +529,9 @@ void windowposition(int& x, int& y, int width=Width, int height=Height)
   }
 }
 
-void setsize(int w, int h, int minsize=0, bool reposition=true)
+void setsize(int w, int h, bool reposition=true)
 {
   int x,y;
-  
-  if(minsize) {
-    if(w < minsize) {
-      h=(int) (h*(double) minsize/w+0.5);
-      w=minsize;
-    }
-  
-    if(h < minsize) {
-      w=(int) (w*(double) minsize/h+0.5);
-      h=minsize;
-    }
-  }
   
   capsize(w,h);
   if(reposition) {
@@ -579,7 +565,7 @@ void fitscreen(bool reposition=true)
     case 0: // Original size
     {
       Xfactor=Yfactor=1.0;
-      setsize(oldWidth,oldHeight,minimumsize,reposition);
+      setsize(oldWidth,oldHeight,reposition);
       break;
     }
     case 1: // Fit to screen in one dimension
@@ -590,7 +576,7 @@ void fitscreen(bool reposition=true)
       int h=screenHeight;
       if(w >= h*Aspect) w=(int) (h*Aspect+0.5);
       else h=(int) (w/Aspect+0.5);
-      setsize(w,h,minimumsize,reposition);
+      setsize(w,h,reposition);
       break;
     }
     case 2: // Full screen

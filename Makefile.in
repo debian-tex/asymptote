@@ -3,7 +3,9 @@
 ARCH = unix
 POLL = poll
 
-GC = @GCDIR@
+GCVERSION = @GCVERSION@
+GC = gc-$(GCVERSION)
+LIBATOMIC = libatomic_ops-$(GCVERSION)
 GCOPTIONS = @GCOPTIONS@
 GCLIB = @GCLIB@
 GCPPLIB = @GCPPLIB@
@@ -35,7 +37,7 @@ COREFILES = $(CAMP) $(SYMBOL_FILES) env genv stm dec errormsg \
 	fftw++asy simpson coder coenv impdatum \
 	@getopt@ locate parser program application varinit fundec refaccess \
 	envcompleter process constructor array Delaunay predicates \
-	$(PRC) glrender tr arcball algebra3 quaternion svnrevision
+	$(PRC) glrender tr arcball algebra3 quaternion
 
 FILES = $(COREFILES) main
 
@@ -48,7 +50,7 @@ CLEAN = camp.output svnrevision.cc base/version.asy doc/version.texi \
         GUI/xasyVersion.py $(XNAME) doc/asy-latex.pdf
 EXTRA = asy-mode.el asy-init.el asy.vim asy_filetype.vim asy-kate.sh \
         asymptote.py reload.js nopapersize.ps
-EXEXTRA = piicon.eps *.views *.dat
+EXEXTRA = piicon.eps *.views *.dat *.bib
 DOCEXTRA = *.asy *.csv *.dat latexusage.tex externalprc.tex pixel.pdf
 KEYWORDS = base $(ASYMPTOTE_SITEDIR)
 LATEXFILES = asymptote.sty asycolors.sty ocg.sty latexmkrc 
@@ -97,17 +99,23 @@ asy:	version GUIversion
 	if test -n "$(MSDOS)"; then \
 	  cat asy.rc | sed -e "s/ASYMPTOTE_VERSION/@VERSION@$(revision)/" | \
 	  windres -o asy.o; \
-	  $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) asy.o $(LIBS) -s -static; \
+	  $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) svnrevision.o asy.o $(LIBS) -s -static; \
 	else \
 	  ln -sf GUI/xasy.py $(XNAME); \
-	  $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) $(LIBS); \
+	  $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) svnrevision.o $(LIBS); \
 	fi
 
 version: $(GCLIB) $(FILES:=.o)
-	if test "$(revision)" != "$(last)"; then \
-	  echo $(REVISION)\"$(revision)\"\; > svnrevision.cc; \
+	if test -r svnrevision; then \
+	  if test "$(revision)" != "$(last)"; then \
+	    echo $(REVISION)\"$(revision)\"\; > svnrevision.cc; \
+	    $(CXX) $(OPTS) $(INCL) -o svnrevision.o -c svnrevision.cc; \
+          fi \
+	else \
+          echo $(REVISION)\"\"\; > svnrevision.cc; \
 	  $(CXX) $(OPTS) $(INCL) -o svnrevision.o -c svnrevision.cc; \
 	fi
+
 	echo string VERSION=\"@VERSION@$(revision)\"\; > base/version.asy
 	echo @set VERSION @VERSION@$(revision) > doc/version.texi
 	echo @set Datadir @datadir@ >> doc/version.texi
@@ -117,10 +125,7 @@ GUIversion:
 	echo xasyVersion = \"@VERSION@$(revision)\" >> GUI/xasyVersion.py
 
 asymptote.so: $(COREFILES:=.pic.o)
-	$(CXX) $(OPTS) -shared -o asymptote.so $(COREFILES:=.pic.o) $(SHAREDLIBS)
-
-svnrevision.cc:
-	echo $(REVISION)\"\"\; > svnrevision.cc;
+	$(CXX) $(OPTS) -shared -o asymptote.so svnrevision.o $(COREFILES:=.pic.o) $(SHAREDLIBS)
 
 all:  	asy sty man faq asy-keywords.el
 
@@ -128,8 +133,11 @@ $(GCLIB): $(GC).tar.gz
 	gunzip -c $(GC).tar.gz > $(GC).tar
 	tar -xf $(GC).tar
 	rm -f $(GC).tar
-	if test "$(GC)" = "gc6.8"; then \
-	  cd $(GC)/include && patch < ../../patches/gc6.8_AIX.patch; \
+	if test -r $(LIBATOMIC).tar.gz; then \
+	  gunzip -c $(LIBATOMIC).tar.gz > $(LIBATOMIC).tar; \
+	  tar -xf $(LIBATOMIC).tar; \
+	  rm -f $(LIBATOMIC).tar; \
+          mv $(LIBATOMIC) $(GC)/libatomic_ops; \
 	fi
 	if test "$(GC)" = "gc-7.0"; then \
 	  cd $(GC)/include/private && \
@@ -144,7 +152,7 @@ $(GCLIB): $(GC).tar.gz
 	if test "$(GC)" = "gc-7.2d"; then \
 	  mv gc-7.2 gc-7.2d; \
 	fi
-	cd $(GC); \
+	cd $(GC) && \
 	./configure $(GCOPTIONS); \
 	$(MAKE) check
 

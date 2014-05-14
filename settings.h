@@ -75,6 +75,7 @@ inline T getSetting(string name)
 }
 
 extern Int verbose;
+extern bool compact;
 extern bool gray;
 extern bool bw;
 extern bool rgb;
@@ -94,6 +95,7 @@ Int getScroll();
   
 extern mode_t mask;
   
+bool xe(const string& texengine);
 bool pdf(const string& texengine);
 bool latex(const string& texengine);
 bool context(const string& texengine);
