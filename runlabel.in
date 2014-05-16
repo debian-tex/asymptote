@@ -234,12 +234,10 @@ realarray *texsize(string *s, pen p=CURRENTPEN)
   processDataStruct &pd=processData();
   
   string texengine=getSetting<string>("tex");
-  const char **abort=texabort(texengine);
   setpen(pd.tex,texengine,p);
   
   double width,height,depth;
-  if(!texbounds(width,height,depth,pd.tex,*s,abort,false,true))
-    return new array(0);
+  texbounds(width,height,depth,pd.tex,*s);
   
   array *t=new array(3);
   (*t)[0]=width;
@@ -265,8 +263,12 @@ patharray2 *_texpath(stringarray *s, penarray *p)
   
   for(size_t i=0; i < n; ++i) {
     tex.setfont(read<pen>(p,i));
-    if(i != 0)
-      tex.verbatimline("\\newpage");
+    if(i != 0) {
+      if(texengine == "context")
+        tex.verbatimline("}\\page\\hbox{%");
+      else 
+        tex.verbatimline("\\newpage");
+    }
     if(!pdf) {
       tex.verbatimline("\\special{ps:");
       tex.verbatimline(ASYx);

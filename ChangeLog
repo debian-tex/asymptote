@@ -1,4 +1,162 @@
 ------------------------------------------------------------------------
+r5649 | jcbowman | 2014-05-15 01:52:40 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawlayer.h
+   M /trunk/asymptote/runlabel.in
+
+Enable page breaks and 3D OpenGL with ConTeXt TeX engine.
+
+------------------------------------------------------------------------
+r5648 | jcbowman | 2014-05-14 23:28:38 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/embed.asy
+   M /trunk/asymptote/doc/externalprc.tex
+
+Fix inlineimage.
+
+------------------------------------------------------------------------
+r5647 | jcbowman | 2014-05-14 22:54:25 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/embed.asy
+   M /trunk/asymptote/drawlabel.cc
+   M /trunk/asymptote/drawlabel.h
+   M /trunk/asymptote/runlabel.in
+
+Fix inlinetex.
+
+------------------------------------------------------------------------
+r5646 | jcbowman | 2014-05-14 19:02:41 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/triple.h
+
+Try to recover from division by 0 in transform of a triple.
+
+------------------------------------------------------------------------
+r5645 | jcbowman | 2014-05-14 18:16:01 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/prc/writePRC.h
+
+Use list unconditionally.
+
+------------------------------------------------------------------------
+r5644 | jcbowman | 2014-05-14 18:03:50 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/memory.h
+
+Fix typos.
+
+------------------------------------------------------------------------
+r5643 | jcbowman | 2014-05-14 17:34:17 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/memory.h
+   M /trunk/asymptote/prc/writePRC.h
+
+More portability tweaks.
+
+------------------------------------------------------------------------
+r5642 | jcbowman | 2014-05-14 16:44:10 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+   M /trunk/asymptote/memory.h
+
+More portability tweaks.
+
+------------------------------------------------------------------------
+r5641 | jcbowman | 2014-05-14 15:49:17 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/Makefile.in
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/drawlabel.cc
+   M /trunk/asymptote/drawlabel.h
+   A /trunk/asymptote/pipestream.cc
+   M /trunk/asymptote/pipestream.h
+   M /trunk/asymptote/runlabel.in
+   M /trunk/asymptote/settings.cc
+   M /trunk/asymptote/settings.h
+
+Simplify code.
+
+------------------------------------------------------------------------
+r5640 | jcbowman | 2014-05-14 15:43:56 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asyRefCard.tex
+
+Update reference card.
+
+------------------------------------------------------------------------
+r5639 | jcbowman | 2014-05-14 00:06:11 -0600 (Wed, 14 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawimage.h
+
+Remove duplicate variable.
+
+------------------------------------------------------------------------
+r5638 | jcbowman | 2014-05-13 22:51:12 -0600 (Tue, 13 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/pipestream.h
+
+Reinstate tailequals to support MSDOS in bidirectional tex pipe.
+
+------------------------------------------------------------------------
+r5637 | jcbowman | 2014-05-13 21:04:05 -0600 (Tue, 13 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/drawlabel.cc
+   M /trunk/asymptote/pipestream.h
+   M /trunk/asymptote/settings.cc
+   M /trunk/asymptote/texfile.h
+
+Improve bidirectional pipe; re-enable context tex engine.
+
+------------------------------------------------------------------------
+r5636 | jcbowman | 2014-05-13 00:23:51 -0600 (Tue, 13 May 2014) | 5 lines
+Changed paths:
+   M /trunk/asymptote/doc/asymptote.texi
+   M /trunk/asymptote/settings.cc
+
+Remove support for the ConTeXT tex engine since piping is broken in the
+latest (mkiv) version.
+
+Add support for luatex and lualatex.
+
+------------------------------------------------------------------------
+r5635 | jcbowman | 2014-05-12 19:38:09 -0600 (Mon, 12 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/texfile.cc
+   M /trunk/asymptote/texfile.h
+
+Update ConTeX support.
+
+------------------------------------------------------------------------
+r5634 | jcbowman | 2014-05-12 18:59:22 -0600 (Mon, 12 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/memory.h
+   M /trunk/asymptote/prc/writePRC.h
+
+Portability tweak.
+
+------------------------------------------------------------------------
+r5633 | jcbowman | 2014-05-12 14:12:43 -0600 (Mon, 12 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/settings.cc
+   M /trunk/asymptote/settings.h
+   M /trunk/asymptote/texfile.cc
+   M /trunk/asymptote/texfile.h
+
+Remove dependency on \put (contributed by Mojca Miklavec).
+
+------------------------------------------------------------------------
+r5632 | jcbowman | 2014-05-11 17:27:29 -0600 (Sun, 11 May 2014) | 1 line
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Increment version to 2.29svn.
+------------------------------------------------------------------------
 r5631 | jcbowman | 2014-05-11 14:56:56 -0600 (Sun, 11 May 2014) | 2 lines
 Changed paths:
    M /trunk/asymptote/asymptote.spec

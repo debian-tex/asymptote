@@ -1,3 +1,10 @@
+Release Notes for Version 2.29
+
+The TeX bidirectional pipe was overhauled to support the context tex engine
+again. The luatex and lualatex tex engines were enabled. The inline option
+used by the asymptote.sty LaTeX package and the inlineimage option used for
+generating external PRC files were fixed. Portability issues were addressed.
+
 Release Notes for Version 2.28
 
 A locale bug that interfered with the 3D PRC camera transformation was fixed.
