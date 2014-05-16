@@ -512,7 +512,7 @@ animate
 @end verbatim
 @noindent
 
-Warnings (such as "writeoverloaded") may be enabled or disabled with
+Warnings (such as "unbounded" and "offaxis") may be enabled or disabled with
 the functions
 @verbatim
 warn(string s);
@@ -1364,8 +1364,8 @@ and @code{rainbow.asy}.
 @cindex Function shading
 @cindex function shading
 @cindex @code{functionshade}
-More general shading possibilities are available with the @code{pdflatex},
-@code{context}, and @code{pdftex} @TeX{} engines: the routine
+More general shading possibilities are available using @TeX{} engines
+that produce PDF output (@pxref{texengines}): the routine
 @verbatim
 void functionshade(picture pic=currentpicture, path[] g, bool stroke=false,
                    pen fillrule=currentpen, string shader);
@@ -9069,14 +9069,17 @@ at the beginning of the configuration file, it can contain arbitrary
 @cindex @code{pdflatex}
 @cindex @code{xelatex}
 @cindex @code{context}
+@cindex @code{luatex}
+@cindex @code{lualatex}
 @cindex @code{EPS}
 @cindex @code{PDF}
+@anchor{texengines}
 @anchor{convert}
 The default output format is @acronym{EPS} for the (default)
 @code{latex} and @code{tex} tex engine and @acronym{PDF} for the
-@code{pdflatex}, @code{xelatex}, and @code{context} tex engines.
-Alternative output formats may be produced using the @code{-f} option 
-(or @code{outformat} setting). 
+@code{pdflatex}, @code{xelatex}, @code{context}, @code{luatex}, and
+@code{lualatex} tex engines. Alternative output formats may be
+produced using the @code{-f} option (or @code{outformat} setting). 
 
 @cindex @code{SVG}
 @cindex @code{dvisvgm}
@@ -9570,7 +9573,7 @@ Mark Henning, Steve Melenchuk, Martin Wiebusch, and Stefan Knorr.
 @c  LocalWords:  latexusage tex bbox PostScript subdirectory gcc emacs ASYDIR
 @c  LocalWords:  documentclass usepackage subpath shipout sqrt xN  Mx bw AcroRd
 @c  LocalWords:  xscale xaxis yaxis BeginBar GIF postprocessing fpu de rpair xy
-@c  LocalWords:  ImageMagick defaultfontsize defaultlinewidth cd asymptote Hy
+@c  LocalWords:  ImageMagick cd asymptote Hy
 @c  LocalWords:  startup natively xasy tkinter VxN yingyang currentpicture toc
 @c  LocalWords:  MetaPost MetaFont Hammerlindl Healy texinfo autoload setq setf
 @c  LocalWords:  printindex setfilename settitle dircategory direntry titlepage
