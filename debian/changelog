@@ -1,3 +1,10 @@
+asymptote (2.29-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.29
+  * add libosmesa6-dev for off-screen rendering to build-deps
+
+ -- Norbert Preining <preining@debian.org>  Fri, 16 May 2014 23:20:31 +0900
+
 asymptote (2.28-1) unstable; urgency=medium
 
   * Imported Upstream version 2.28
