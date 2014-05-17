@@ -160,7 +160,7 @@
 #undef HAVE_UNISTD_H
 
 /* Define to 1 if you have unordered_map */
-#undef HAVE_UNORDERDED_MAP
+#undef HAVE_UNORDERED_MAP
 
 /* Define to 1 if you have the `vfork' function. */
 #undef HAVE_VFORK
