@@ -1,4 +1,102 @@
 ------------------------------------------------------------------------
+r5662 | jcbowman | 2014-05-16 16:45:44 -0600 (Fri, 16 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/glrender.cc
+   M /trunk/asymptote/runlabel.in
+
+Fix zoom/menu button.
+
+------------------------------------------------------------------------
+r5661 | jcbowman | 2014-05-16 15:15:33 -0600 (Fri, 16 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/runlabel.in
+
+Workaround broken stringstream in MacOS 10.9 libc++.
+
+------------------------------------------------------------------------
+r5660 | jcbowman | 2014-05-16 10:00:52 -0600 (Fri, 16 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/Makefile.in
+
+Remove optional space.
+
+------------------------------------------------------------------------
+r5659 | jcbowman | 2014-05-16 09:45:21 -0600 (Fri, 16 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/Makefile.in
+
+Add CXXFLAGS.
+
+------------------------------------------------------------------------
+r5658 | jcbowman | 2014-05-16 00:11:20 -0600 (Fri, 16 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/pipestream.cc
+   M /trunk/asymptote/pipestream.h
+   M /trunk/asymptote/runlabel.in
+
+Use blocking reads by default.
+
+------------------------------------------------------------------------
+r5657 | jcbowman | 2014-05-15 22:15:21 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/pipestream.cc
+   M /trunk/asymptote/pipestream.h
+   M /trunk/asymptote/runlabel.in
+
+Simplify code.
+
+------------------------------------------------------------------------
+r5656 | jcbowman | 2014-05-15 22:13:58 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/triple.h
+
+Revert temporary division by 0 in transform of a triple workaround.
+
+------------------------------------------------------------------------
+r5655 | jcbowman | 2014-05-15 14:16:42 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/base/three.asy
+   M /trunk/asymptote/runlabel.in
+
+Support 3D for all texengines (but prc only for latex texengines).
+
+------------------------------------------------------------------------
+r5654 | jcbowman | 2014-05-15 10:56:24 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/drawlabel.cc
+
+Improve TeX pipe interaction.
+
+------------------------------------------------------------------------
+r5653 | jcbowman | 2014-05-15 09:28:22 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/asymptote.spec
+   M /trunk/asymptote/gsl.cc
+   M /trunk/asymptote/runfile.in
+
+Suppress warning messages.
+
+------------------------------------------------------------------------
+r5652 | jcbowman | 2014-05-15 09:09:25 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Fix typo.
+
+------------------------------------------------------------------------
+r5651 | jcbowman | 2014-05-15 08:34:10 -0600 (Thu, 15 May 2014) | 2 lines
+Changed paths:
+   M /trunk/asymptote/genv.cc
+
+Use standard STL include.
+
+------------------------------------------------------------------------
+r5650 | jcbowman | 2014-05-15 03:22:27 -0600 (Thu, 15 May 2014) | 1 line
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Increment version to 2.30svn.
+------------------------------------------------------------------------
 r5649 | jcbowman | 2014-05-15 01:52:40 -0600 (Thu, 15 May 2014) | 2 lines
 Changed paths:
    M /trunk/asymptote/drawlayer.h

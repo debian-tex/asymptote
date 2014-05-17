@@ -161,17 +161,15 @@ array *readpath(const string& psname, bool keep,
   iopipestream gs(cmd,"gs","Ghostscript");
   while(true) {
     stringstream buf;
-    while(true) {
-      string out;
-      gs >> out;
-      if(out.empty() && !gs.running()) break;
-      buf << out;
-      if(out[out.size()-1] == '\n') {
-        gs << newl;
-        break;
-      }
+    string s=gs.readline();
+    if(s.empty() || !gs.running()) break;
+    gs << newl;
+
+    // Workaround broken stringstream container in MacOS 10.9 libc++.
+    for(string::iterator i = s.begin(); i != s.end(); ++i) {
+      if(isalpha(*i)) {buf << " ";}
+      buf << *i;
     }
-    if(!gs.running()) break;
     
     if(verbose > 2) cout << endl;
   
@@ -267,7 +265,7 @@ array *readpath(const string& psname, bool keep,
 
 #endif
 namespace run {
-#line 220 "runlabel.in"
+#line 218 "runlabel.in"
 // void label(picture *f, string *s, string *size, transform t, pair position,           pair align, pen p);
 void gen_runlabel0(stack *Stack)
 {
@@ -278,26 +276,26 @@ void gen_runlabel0(stack *Stack)
   string * size=vm::pop<string *>(Stack);
   string * s=vm::pop<string *>(Stack);
   picture * f=vm::pop<picture *>(Stack);
-#line 222 "runlabel.in"
+#line 220 "runlabel.in"
   f->append(new drawLabel(*s,*size,t,position,align,p));
 }
 
-#line 226 "runlabel.in"
+#line 224 "runlabel.in"
 // bool labels(picture *f);
 void gen_runlabel1(stack *Stack)
 {
   picture * f=vm::pop<picture *>(Stack);
-#line 227 "runlabel.in"
+#line 225 "runlabel.in"
   {Stack->push<bool>(f->havelabels()); return;}
 }
 
-#line 231 "runlabel.in"
+#line 229 "runlabel.in"
 // realarray* texsize(string *s, pen p=CURRENTPEN);
 void gen_runlabel2(stack *Stack)
 {
   pen p=vm::pop<pen>(Stack,CURRENTPEN);
   string * s=vm::pop<string *>(Stack);
-#line 232 "runlabel.in"
+#line 230 "runlabel.in"
   texinit();
   processDataStruct &pd=processData();
   
@@ -314,13 +312,13 @@ void gen_runlabel2(stack *Stack)
   {Stack->push<realarray*>(t); return;}
 }
 
-#line 249 "runlabel.in"
+#line 247 "runlabel.in"
 // patharray2* _texpath(stringarray *s, penarray *p);
 void gen_runlabel3(stack *Stack)
 {
   penarray * p=vm::pop<penarray *>(Stack);
   stringarray * s=vm::pop<stringarray *>(Stack);
-#line 250 "runlabel.in"
+#line 248 "runlabel.in"
   size_t n=checkArrays(s,p);
   if(n == 0) {Stack->push<patharray2*>(new array(0)); return;}
   
@@ -339,7 +337,10 @@ void gen_runlabel3(stack *Stack)
     if(i != 0) {
       if(texengine == "context")
         tex.verbatimline("}\\page\\hbox{%");
-      else 
+      else if(texengine == "luatex" || texengine == "tex" ||
+              texengine == "pdftex")
+        tex.verbatimline("\\eject");
+      else
         tex.verbatimline("\\newpage");
     }
     if(!pdf) {
@@ -381,12 +382,9 @@ void gen_runlabel3(stack *Stack)
       cmd.push_back("-sOutputFile=-");
       cmd.push_back(pdfname);
       iopipestream gs(cmd,"gs","Ghostscript");
-      
-      gs.block(false);
       while(true) {
-        string line;
-        gs >> line;
-        if(line.empty() && !gs.running()) break;
+        string line=gs.readline();
+        if(line.empty() || !gs.running()) break;
         ps << line;
       }
       ps.close();
@@ -427,13 +425,13 @@ void gen_runlabel3(stack *Stack)
   {Stack->push<patharray2*>(pdf ? readpath(psname,keep,0.1) : readpath(psname,keep,0.12,-1.0)); return;}
 }
 
-#line 357 "runlabel.in"
+#line 355 "runlabel.in"
 // patharray2* textpath(stringarray *s, penarray *p);
 void gen_runlabel4(stack *Stack)
 {
   penarray * p=vm::pop<penarray *>(Stack);
   stringarray * s=vm::pop<stringarray *>(Stack);
-#line 358 "runlabel.in"
+#line 356 "runlabel.in"
   size_t n=checkArrays(s,p);
   if(n == 0) {Stack->push<patharray2*>(new array(0)); return;}
   
@@ -477,7 +475,6 @@ void gen_runlabel4(stack *Stack)
   cmd2.push_back("-sOutputFile=-");
   cmd2.push_back("-");
   iopipestream gs(cmd2,"gs","Ghostscript");
-  gs.block(false);
 
   // TODO: Simplify by connecting the pipes directly.
   while(true) {
@@ -505,13 +502,13 @@ void gen_runlabel4(stack *Stack)
   {Stack->push<patharray2*>(readpath(psname,keep,0.1)); return;}
 }
 
-#line 430 "runlabel.in"
+#line 427 "runlabel.in"
 // patharray* _strokepath(path g, pen p=CURRENTPEN);
 void gen_runlabel5(stack *Stack)
 {
   pen p=vm::pop<pen>(Stack,CURRENTPEN);
   path g=vm::pop<path>(Stack);
-#line 431 "runlabel.in"
+#line 428 "runlabel.in"
   array *P=new array(0);
   if(g.size() == 0) {Stack->push<patharray*>(P); return;}
   
@@ -541,17 +538,17 @@ namespace trans {
 
 void gen_runlabel_venv(venv &ve)
 {
-#line 220 "runlabel.in"
+#line 218 "runlabel.in"
   addFunc(ve, run::gen_runlabel0, primVoid(), SYM(label), formal(primPicture(), SYM(f), false, false), formal(primString(), SYM(s), false, false), formal(primString(), SYM(size), false, false), formal(primTransform(), SYM(t), false, false), formal(primPair(), SYM(position), false, false), formal(primPair(), SYM(align), false, false), formal(primPen(), SYM(p), false, false));
-#line 226 "runlabel.in"
+#line 224 "runlabel.in"
   addFunc(ve, run::gen_runlabel1, primBoolean(), SYM(labels), formal(primPicture(), SYM(f), false, false));
-#line 231 "runlabel.in"
+#line 229 "runlabel.in"
   addFunc(ve, run::gen_runlabel2, realArray(), SYM(texsize), formal(primString(), SYM(s), false, false), formal(primPen(), SYM(p), true, false));
-#line 249 "runlabel.in"
+#line 247 "runlabel.in"
   addFunc(ve, run::gen_runlabel3, pathArray2() , SYM(_texpath), formal(stringArray() , SYM(s), false, false), formal(penArray() , SYM(p), false, false));
-#line 357 "runlabel.in"
+#line 355 "runlabel.in"
   addFunc(ve, run::gen_runlabel4, pathArray2() , SYM(textpath), formal(stringArray() , SYM(s), false, false), formal(penArray() , SYM(p), false, false));
-#line 430 "runlabel.in"
+#line 427 "runlabel.in"
   addFunc(ve, run::gen_runlabel5, pathArray() , SYM(_strokepath), formal(primPath(), SYM(g), false, false), formal(primPen(), SYM(p), true, false));
 }
 
