@@ -1,3 +1,9 @@
+asymptote (2.31-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.31
+
+ -- Norbert Preining <preining@debian.org>  Mon, 19 May 2014 08:54:04 +0900
+
 asymptote (2.30-1) unstable; urgency=medium
 
   * Imported Upstream version 2.30
