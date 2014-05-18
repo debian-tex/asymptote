@@ -1,4 +1,18 @@
 ------------------------------------------------------------------------
+r5664 | jcbowman | 2014-05-16 23:32:06 -0600 (Fri, 16 May 2014) | 3 lines
+Changed paths:
+   M /trunk/asymptote/runlabel.in
+
+Fix hangs in 3D font generation and the "none" tex engine.
+Disable the MacOS 10.9 libc++ workaround on other platforms.
+
+------------------------------------------------------------------------
+r5663 | jcbowman | 2014-05-16 18:59:29 -0600 (Fri, 16 May 2014) | 1 line
+Changed paths:
+   M /trunk/asymptote/configure.ac
+
+Increment version to 2.31svn.
+------------------------------------------------------------------------
 r5662 | jcbowman | 2014-05-16 16:45:44 -0600 (Fri, 16 May 2014) | 2 lines
 Changed paths:
    M /trunk/asymptote/glrender.cc
