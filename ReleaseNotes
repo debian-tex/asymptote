@@ -1,3 +1,7 @@
+Release Notes for Version 2.31
+
+Hangs in 3D font generation and also in the "none" tex engine were fixed.
+
 Release Notes for Version 2.30
 
 Compilation issues were addressed. A workaround for the broken stringstream
