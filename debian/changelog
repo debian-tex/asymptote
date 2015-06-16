@@ -1,3 +1,10 @@
+asymptote (2.35-1) experimental; urgency=medium
+
+  * Imported Upstream version 2.35
+  * unfuzzify patches
+
+ -- Norbert Preining <preining@debian.org>  Tue, 16 Jun 2015 15:13:51 +0900
+
 asymptote (2.31-2) unstable; urgency=medium
 
   * fix missing backslash quote in asy-mode.el (Closes: #756188)
