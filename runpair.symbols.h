@@ -29,6 +29,7 @@ ADDSYMBOL(bezierPPP);
 ADDSYMBOL(c);
 ADDSYMBOL(conj);
 ADDSYMBOL(cos);
+ADDSYMBOL(cross);
 ADDSYMBOL(d);
 ADDSYMBOL(deg);
 ADDSYMBOL(degrees);

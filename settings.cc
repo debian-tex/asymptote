@@ -1147,6 +1147,8 @@ void initSettings() {
   addOption(new versionOption("version", 0, "Show version"));
 
   addOption(new pairSetting("offset", 'O', "pair", "PostScript offset"));
+  addOption(new pairSetting("aligndir", 0, "pair",
+                             "Directional page alignment (overrides align)"));
   addOption(new alignSetting("align", 'a', "C|B|T|Z",
                              "Center, Bottom, Top, or Zero page alignment",
                              "C"));
@@ -1162,7 +1164,7 @@ void initSettings() {
   addOption(new boolSetting("keepaux", 0,
                             "Keep intermediate LaTeX .aux files"));
   addOption(new engineSetting("tex", 0, "engine",
-                              "latex|pdflatex|xelatex|tex|pdftex|luatex|lualatex|none",
+                              "latex|pdflatex|xelatex|lualatex|tex|pdftex|luatex|context|none",
                               "latex"));
 
   addOption(new boolSetting("twice", 0,
