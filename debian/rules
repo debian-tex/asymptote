@@ -22,6 +22,9 @@ override_dh_auto_install:
 	make install-asy DESTDIR=$(CURDIR)/debian/tmp
 	dh_installtex -pasymptote
 
+override_dh_auto_test:
+	: do nothing here, otherwise make tries to compile prc/test.cc
+
 override_dh_clean:
 	dh_clean
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
