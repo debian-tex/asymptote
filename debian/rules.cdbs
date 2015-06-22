@@ -2,31 +2,37 @@
 
 PKG=asymptote
 
-%:
-	dh $@
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
 
-override_dh_auto_configure:
-	./configure --enable-gc=system		\
-		--with-latex=/usr/share/texmf/tex/latex	\
-		--with-context=/usr/share/texmf/tex/context/third
+DEB_MAKE_INSTALL_TARGET =
 
+DEB_CONFIGURE_EXTRA_FLAGS = --enable-gc=system --with-latex=/usr/share/texmf/tex/latex --with-context=/usr/share/texmf/tex/context/third
 
-override_dh_auto_build:
+DEB_COMPRESS_EXCLUDE = .pdf
+
+common-build-arch::
 	make asy man
+
+common-install-arch::
+	make install-asy DESTDIR=$(CURDIR)/debian/tmp
+	dh_installtex -pasymptote
+
+# this needs to be run before any of the binary-install/asymptote-doc stuff
+# from cdbs
+common-install-prehook-indep::
 	make all html
 	# fix location of images in info document
 	cat doc/png/asymptote.info | sed -e 's!image src="\([^"]*\)"!image src="/usr/share/doc/asymptote-doc/html/\1"!g' > doc/png/asymptote.info.fixed
 	mv doc/png/asymptote.info.fixed doc/png/asymptote.info
 
-override_dh_auto_install:
-	make install-asy DESTDIR=$(CURDIR)/debian/tmp
-	dh_installtex -pasymptote
-
-override_dh_clean:
-	dh_clean
+clean::
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
 	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc doc/asymptote.fn doc/asymptote.ky doc/asymptote.pg doc/asymptote.tp doc/asymptote.vr asy.list
 	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi
+
+binary-predeb/asymptote::
+	chmod +x debian/$(cdbs_curpkg)/usr/share/asymptote/asy-kate.sh # script-not-executable
 
 #
 # download current release based on the changelog entry from sf

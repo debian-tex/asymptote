@@ -8,7 +8,6 @@ Section: tex
 Priority: optional
 Build-Depends: autotools-dev,
                bison,
-               cdbs,
                debhelper (>= 8),
                flex,
                freeglut3-dev,
