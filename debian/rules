@@ -6,8 +6,8 @@ PKG=asymptote
 	dh $@
 
 override_dh_auto_configure:
-	./configure --enable-gc=system		\
-		--with-latex=/usr/share/texmf/tex/latex	\
+	dh_auto_configure -- --prefix=/usr --enable-gc=system	\
+		--with-latex=/usr/share/texmf/tex/latex		\
 		--with-context=/usr/share/texmf/tex/context/third
 
 
