@@ -25,6 +25,9 @@ override_dh_auto_install:
 override_dh_auto_test:
 	: do nothing here, otherwise make tries to compile prc/test.cc
 
+override_dh_compress:
+	dh_compress -X.pdf
+
 override_dh_clean:
 	dh_clean
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
