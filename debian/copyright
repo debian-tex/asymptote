@@ -7,6 +7,7 @@ Files: debian/*
 Copyright: Copyright (C) 2004-2010 Hubert Chathi
            Copyright (C) 2009-2010 Ruben Molina
            Copyright (C) 2011 Picca Frédéric-Emmanuel
+           Copyright (C) 2014-2015 Norbert Preining
 License: GPL-2+
 
 Files: doc/FAQ/*.pl
@@ -14,18 +15,11 @@ Copyright: Copyright (C) 1993-1995 Ian Jackson
 License: GPL-2+
 
 Files: doc/asyRefCard.tex
-Copyright: Copyright (C) 2012 John C. Bowman
-License: other
+Copyright: Copyright (C) 2014 John C. Bowman
+License: refcardlicense
  Permission is granted to make and distribute copies of this card, with
  or without modifications, provided the copyright notice and this
  permission notice are preserved on all copies.
-
-Files: doc/asyRefCard.tex
-Copyright: Copyright (C) 2011 John C. Bowman
-License: other
- Permission is granted to make and distribute copies of this card
- provided the copyright notice and this permission notice are
- preserved on all copies.
 
 Files: camp.tab.cc camp.tab.h
 Copyright: 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
@@ -33,7 +27,7 @@ License: GPL-3+
 
 Files: doc/asy-latex.dtx
 Copyright: Copyright (C) 2003 Tom Prince
-           Copyright (C) 2003-2010 John Bowman
+           Copyright (C) 2003-2015 John Bowman
            Copyright (C) 2010 Will Robertson
 License: GPL-2+
 
@@ -96,7 +90,7 @@ License: LGPL-3+
 
 Files: base/lmfit.asy
 Copyright: Copyright (C) 2009 Philipp Stephani
-License: other
+License: otherlmfit
   Permission is hereby granted, free of charge, to any person
   obtaining a copy of this software and associated documentation files
   (the "Software"), to deal in the Software without restriction,
@@ -119,7 +113,7 @@ License: other
 
 Files: install-sh doc/install-sh doc/FAQ/install-sh
 Copyright: Copyright (C) 1994 X Consortium
-License: other
+License: otherx
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to
   deal in the Software without restriction, including without limitation the
