@@ -2,3 +2,4 @@
 0002-update-documentation-for-debian-specific-parts.patch
 fix-docstring-backslash
 #old-gs-use-epswrite
+upstream-gsl2
