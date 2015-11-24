@@ -1,3 +1,9 @@
+asymptote (2.35-3~1) UNRELEASED; urgency=medium
+
+  * switch to libgsl-dev for build-deps (Closes: #805749)
+
+ -- Norbert Preining <preining@debian.org>  Tue, 24 Nov 2015 14:53:30 +0900
+
 asymptote (2.35-2) unstable; urgency=medium
 
   * switch back to new gs support now that gs is updated (Closes: #797098)
