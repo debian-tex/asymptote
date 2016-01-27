@@ -3,3 +3,4 @@
 fix-docstring-backslash
 #old-gs-use-epswrite
 upstream-gsl2
+upstream-fix-mips-build-failure

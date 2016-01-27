@@ -1,0 +1,30 @@
+fix ftbfs on mips with upstream git change (Closes: #808821)
+---
+ pair.h   |    3 ++-
+ triple.h |    3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+--- asymptote.orig/pair.h
++++ asymptote/pair.h
+@@ -145,7 +145,8 @@
+   friend pair unit(const pair& z)
+   {
+     double scale=z.length();
+-    if(scale != 0.0) scale=1.0/scale;
++    if(scale == 0.0) return z;
++    scale=1.0/scale;
+     return pair(z.x*scale,z.y*scale);
+   }
+   
+--- asymptote.orig/triple.h
++++ asymptote/triple.h
+@@ -251,7 +251,8 @@
+   friend triple unit(const triple& v)
+   {
+     double scale=v.length();
+-    if(scale != 0.0) scale=1.0/scale;
++    if(scale == 0.0) return v;
++    scale=1.0/scale;
+     return triple(v.x*scale,v.y*scale,v.z*scale);
+   }
+   
