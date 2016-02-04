@@ -1,0 +1,113 @@
+### Compiled source
+*.o
+*.d
+*.d.*
+
+### Compressed packages and Garbage Collector
+gc-*
+*.tar.gz
+*.tgz
+libatomic*
+
+### Binaries
+asy
+xasy
+
+### Version info
+*version.*
+revision.*
+/GUI/xasyVersion.py
+
+### Runtime objects
+run*.cc
+run*.h
+
+### Generated files
+newDrawing.asy 
+/Makefile
+/doc/Makefile
+/doc/png/Makefile
+/doc/FAQ/asy-faq.*
+!/doc/FAQ/asy-faq.bfnn
+*.png
+*.gif
+*.pnm
+*.jpg
+*.prc
+*.svg
+*.roff
+/doc/png/*.html
+GUI/*.pyc
+/.wisdom
+/allsymbols.h
+/asy-keywords.el
+/asy.list
+/autom4te.cache/
+/builtin.symbols.h
+/camp.output
+/camp.tab.cc
+/camp.tab.h
+/config.h
+/config.h.in
+/config.status
+/configure
+/doc/asy-latex.i*
+/doc/asy.1
+/glrender.d.54461
+/gsl.symbols.h
+/keywords.cc
+/lex.yy.cc
+/opsymbols.h
+/types.symbols.h
+*.dSYM
+
+### TeX-related
+## Core latex/pdflatex auxiliary files:
+*_.tex
+*+[0-9]*.tex
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.tuc
+
+## Intermediate documents:
+*.dvi
+*-converted-to.*
+# these rules might exclude image files for figures etc.
+*.ps
+*.eps
+*.pdf
+*.pre
+*.m9
+*-[0-9].*
+/doc/**/asymptote.*
+!/doc/asymptote.texi
+/doc/options
+.asy_*
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.brf
+*.run.xml
+
+### Data files
+*.obj
+*.dat
+*.pdb1
+
+### Debugging files
+core.*
+
+### Backups
+*~
+\#*
+.\#*
+
