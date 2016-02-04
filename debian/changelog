@@ -1,3 +1,13 @@
+asymptote (2.37-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.37
+  * Building on mips hopefully finally fixed - GCC bug (Closes: #808821)
+    Big thanks to Julian Gilbey for tracking this down together with
+    upstream!!!
+  * update patches for new release
+
+ -- Norbert Preining <preining@debian.org>  Thu, 04 Feb 2016 15:03:35 +0900
+
 asymptote (2.35-4) unstable; urgency=medium
 
   * fix ftbfs on mips with upstream git change (Closes: #808821)
