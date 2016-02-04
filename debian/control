@@ -9,6 +9,7 @@ Priority: optional
 Build-Depends: autotools-dev,
                bison,
                debhelper (>= 9),
+               dh-autoreconf,
                flex,
                freeglut3-dev,
                libosmesa6-dev,

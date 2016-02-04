@@ -3,7 +3,7 @@
 PKG=asymptote
 
 %:
-	dh $@
+	dh $@ --with autoreconf
 
 override_dh_auto_configure:
 	dh_auto_configure -- --prefix=/usr --enable-gc=system	\
