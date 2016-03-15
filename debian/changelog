@@ -1,3 +1,11 @@
+asymptote (2.37.real-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.37.real - the previous 2.37 was only
+    a temporary git tag, this is now the released version
+  * update patches to real 2.37 release
+
+ -- Norbert Preining <preining@debian.org>  Tue, 15 Mar 2016 11:42:53 +0900
+
 asymptote (2.37-1) unstable; urgency=medium
 
   * Imported Upstream version 2.37
