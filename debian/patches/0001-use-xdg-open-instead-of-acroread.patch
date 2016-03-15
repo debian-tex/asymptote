@@ -9,7 +9,7 @@ Subject: use xdg-open instead of acroread
 
 --- asymptote.orig/settings.cc
 +++ asymptote/settings.cc
-@@ -94,7 +94,7 @@
+@@ -95,7 +95,7 @@
  #ifdef __APPLE__
  string defaultPDFViewer="open";
  #else  
