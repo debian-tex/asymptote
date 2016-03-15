@@ -29,7 +29,7 @@ Build-Depends: autotools-dev,
                texlive-fonts-recommended,
                texlive-pstricks,
                zlib1g-dev
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 Homepage: http://asymptote.sourceforge.net/
 Vcs-Git: git://anonscm.debian.org/debian-tex/asymptote.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=debian-tex/asymptote.git
