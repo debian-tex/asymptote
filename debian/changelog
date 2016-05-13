@@ -5,8 +5,9 @@ asymptote (2.38-1) unstable; urgency=medium
 
   [ Norbert Preining ]
   * Imported Upstream version 2.38
+  * bump standards version, no changes necessary
 
- -- Norbert Preining <preining@debian.org>  Sat, 14 May 2016 08:53:43 +0900
+ -- Norbert Preining <preining@debian.org>  Sat, 14 May 2016 08:57:02 +0900
 
 asymptote (2.37.real-1) unstable; urgency=medium
 
