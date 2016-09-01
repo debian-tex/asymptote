@@ -1,3 +1,9 @@
+asymptote (2.38-2) unstable; urgency=medium
+
+  * include upstream fix to work with TL2016 (Closes: #836252)
+
+ -- Norbert Preining <preining@debian.org>  Thu, 01 Sep 2016 17:33:03 +0900
+
 asymptote (2.38-1) unstable; urgency=medium
 
   [ Alexis Bienvenüe ]
