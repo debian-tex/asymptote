@@ -534,7 +534,6 @@ ADDSYMBOL(ni);
 ADDSYMBOL(nib);
 ADDSYMBOL(nobreak);
 ADDSYMBOL(norm);
-ADDSYMBOL(normal);
 ADDSYMBOL(normalize);
 ADDSYMBOL(nowarn);
 ADDSYMBOL(nu);
