@@ -90,7 +90,6 @@ ADDSYMBOL(nativeformat);
 ADDSYMBOL(newpage);
 ADDSYMBOL(ni);
 ADDSYMBOL(nobreak);
-ADDSYMBOL(normal);
 ADDSYMBOL(offset);
 ADDSYMBOL(opacity);
 ADDSYMBOL(p);

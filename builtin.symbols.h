@@ -41,6 +41,7 @@ ADDSYMBOL(file);
 ADDSYMBOL(identity);
 ADDSYMBOL(inf);
 ADDSYMBOL(infinity);
+ADDSYMBOL(initialized);
 ADDSYMBOL(intMax);
 ADDSYMBOL(intMin);
 ADDSYMBOL(interp);
