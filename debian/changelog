@@ -1,3 +1,9 @@
+asymptote (2.41-2) unstable; urgency=medium
+
+  * upload to unstable
+
+ -- Norbert Preining <preining@debian.org>  Mon, 19 Jun 2017 16:29:22 +0900
+
 asymptote (2.41-1) experimental; urgency=medium
 
   * New upstream version 2.41
