@@ -47,6 +47,7 @@ Depends: ${misc:Depends},
          texlive-binaries,
          texlive-latex-base,
          texlive-pstricks,
+         texlive-plain-generic,
          xdg-utils
 Recommends: asymptote-doc
 Suggests: gv,
