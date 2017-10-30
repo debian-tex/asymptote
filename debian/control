@@ -32,7 +32,7 @@ Build-Depends: autotools-dev,
 Standards-Version: 4.1.1
 Homepage: http://asymptote.sourceforge.net/
 Vcs-Git: git://anonscm.debian.org/debian-tex/asymptote.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=debian-tex/asymptote.git
+Vcs-Browser: https://anonscm.debian.org/gitweb/?p=debian-tex/asymptote.git
 
 Package: asymptote
 Architecture: any
