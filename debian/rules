@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PKG=asymptote
+include /usr/share/dpkg/pkg-info.mk
 
 %:
 	dh $@ --with autoreconf
@@ -40,14 +40,13 @@ override_dh_clean:
 # code from the calibre packaging
 get-orig-source:
 	set -e; \
-	V=`dpkg-parsechangelog | sed -rn '/^Version:/ {s/^Version: ([0-9.]+).*$$/\1/; p}'`; \
 	mkdir -p debian/orig; cd debian/orig; \
-	wget -O - https://downloads.sourceforge.net/project/${PKG}/$$V/${PKG}-$$V.src.tgz | gzip -cd | tar x; \
+	wget -O - https://downloads.sourceforge.net/project/$(DEB_SOURCE)/$(DEB_VERSION_UPSTREAM)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).src.tgz | gzip -cd | tar x; \
 	D=`pwd`; \
-	cd ${PKG}*; \
+	cd $(DEB_SOURCE)*; \
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi; \
 	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc asy.list; \
 	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi;\
 	cd ..;\
-	tar c . | gzip -9 > ../../../${PKG}_$$V.orig.tar.gz; \
+	tar c . | gzip -9 > ../../../$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz; \
 	cd ../..; rm -r debian/orig
