@@ -66,7 +66,6 @@ Section: doc
 Depends: ${misc:Depends}
 Recommends: asymptote,
             info-browser | pdf-viewer | www-browser
-Replaces: asymptote (<< ${source:Version})
 Description: documentation and examples for asymptote
  Asymptote is a powerful descriptive vector graphics language that
  provides a natural coordinate-based framework for technical drawing.
