@@ -7,3 +7,4 @@
 honour-source-date-epoch
 #upstream-2f209f9e-fix-for-tl2016
 typos.diff
+python3_nonintrusive.diff
