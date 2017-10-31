@@ -61,6 +61,7 @@ Description: script-based vector graphics language inspired by MetaPost
 
 Package: asymptote-doc
 Architecture: all
+Multi-Arch: foreign
 Section: doc
 Depends: ${misc:Depends}
 Recommends: asymptote,
