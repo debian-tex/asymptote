@@ -42,7 +42,7 @@ Depends: ${misc:Depends},
          imagemagick,
          install-info,
          python,
-         python-pil, 
+         python-pil,
          python-pil.imagetk,
          texlive-binaries,
          texlive-latex-base,
@@ -67,5 +67,5 @@ Recommends: asymptote,
 Replaces: asymptote (<< ${source:Version})
 Description: documentation and examples for asymptote
  Asymptote is a powerful descriptive vector graphics language that
- provides a natural coordinate-based framework for technical drawing. 
+ provides a natural coordinate-based framework for technical drawing.
  This package provides documentation and examples.

@@ -219,9 +219,9 @@ asymptote (1.99-1) unstable; urgency=low
   * New upstream version
   * Reworking debian/rules
   * Adding autotools-dev to Build-Depends so config.* can be updated.
-  * Adding dpkg (>= 1.15.4) | install-info to Depends, as recommended by 
+  * Adding dpkg (>= 1.15.4) | install-info to Depends, as recommended by
     Policy 12.2 (It's needed for the transition to triggerized install-info)
-  * Patching prc/PRCdouble.h to solve a FTBFS in hppa (Closes: ##561423) 
+  * Patching prc/PRCdouble.h to solve a FTBFS in hppa (Closes: ##561423)
   * Updating Copyright on debian/*
 
  -- Ruben Molina <rmolina@udea.edu.co>  Sun, 20 Jun 2010 21:30:54 -0500
@@ -254,7 +254,7 @@ asymptote (1.88-1) unstable; urgency=low
     + Remove Makefile and info files installed in html/ (Julian Gilbey)
     + Cleaning unnecesary/commented lines
     + Remove .cvsignore files
-  * Moved symlinks to docs from asymptote to asymptote-doc, adding a new 
+  * Moved symlinks to docs from asymptote to asymptote-doc, adding a new
     symlink to the recently moved examples/ (Closes: #551483)
   * Updating Build-Depends: libreadline5-dev -> libreadline-dev
 
@@ -265,7 +265,7 @@ asymptote (1.86-1) unstable; urgency=low
   * Add myself to uploaders.
   * New upstream version.
   * Bump Standards-Version to 3.8.3 (no changes)
-  * Bump versioned Build-Depends on debhelper to >= 5, and set 
+  * Bump versioned Build-Depends on debhelper to >= 5, and set
     debian/compat to 5 (package-uses-deprecated-debhelper-compat-version 4)
   * Add a clean rule to solve a FTBFS building twice in a row
     (qa-doublebuild).
@@ -601,4 +601,3 @@ asymptote (0.53-1) unstable; urgency=low
   * Initial Debian package. (closes: 284030)
 
  -- Hubert Chan <hubert@uhoreg.ca>  Wed,  1 Dec 2004 16:37:32 -0500
-
