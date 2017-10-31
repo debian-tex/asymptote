@@ -6,10 +6,8 @@ Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Norbert Preining <preining@debian.org>
 Section: tex
 Priority: optional
-Build-Depends: autotools-dev,
-               bison,
-               debhelper (>= 9),
-               dh-autoreconf,
+Build-Depends: bison,
+               debhelper (>= 10),
                dpkg-dev (>= 1.16.1),
                flex,
                freeglut3-dev,
