@@ -15,6 +15,11 @@ override_dh_auto_configure:
 		--with-context=/usr/share/texmf/tex/context/third \
 		$(foreach v,CFLAGS CPPFLAGS CXXFLAGS LDFLAGS,'$(v)=$($(v))')
 
+# Avoid a warning every time asy is run if HOME is unset.
+export ASYMPTOTE_HOME := $(CURDIR)/debian/tmp_asymptote_home
+override_dh_auto_configure: | $(ASYMPTOTE_HOME)
+$(ASYMPTOTE_HOME):
+	mkdir $(ASYMPTOTE_HOME)
 
 override_dh_auto_build:
 	make asy man
@@ -38,6 +43,7 @@ override_dh_clean:
 	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
 	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc doc/asymptote.fn doc/asymptote.ky doc/asymptote.pg doc/asymptote.tp doc/asymptote.vr asy.list
 	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi
+	rm -fr $(ASYMPTOTE_HOME)
 
 #
 # download current release based on the changelog entry from sf
