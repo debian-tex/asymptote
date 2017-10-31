@@ -3,6 +3,10 @@ Upstream-Name: Andy Hammerlindl, John Bowman, and Tom Prince
 Upstream-Contact: bowman@math.ualberta.ca
 Source: http://asymptote.sourceforge.net
 
+Files: *
+Copyright: Copyright (C) 2004-2009 Andy Hammerlindl, John Bowman, Tom Prince
+License: GPL-3+
+
 Files: debian/*
 Copyright: Copyright (C) 2004-2010 Hubert Chathi
            Copyright (C) 2009-2010 Ruben Molina
@@ -149,10 +153,6 @@ License: GPL-3+
 
 Files: pen.cc
 Copyright: Copyright (C) 2011 John Bowman
-License: GPL-3+
-
-Files: *
-Copyright: Copyright (C) 2004-2009 Andy Hammerlindl, John Bowman, Tom Prince
 License: GPL-3+
 
 License: GPL-2+
