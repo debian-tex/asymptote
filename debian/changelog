@@ -1,4 +1,4 @@
-asymptote (2.41-4) UNRELEASED; urgency=medium
+asymptote (2.41-4) unstable; urgency=medium
 
   [ Nicolas Boulenguez ]
   * Use HTTPS instead of HTTP for Vcs-Browser URL.
@@ -15,8 +15,10 @@ asymptote (2.41-4) UNRELEASED; urgency=medium
   * Use dh-python helper.
   * Allow -doc package to satisfy Multi-Arch foreign dependencies.
   * Remove Replaces dependency between main and -doc package.
+  * Switch to python3 interpreter.
+  (Closes: #880422) (Big thanks to Nicolas for his excellent work!)
 
- -- Norbert Preining <preining@debian.org>  Wed, 01 Nov 2017 00:04:08 +0900
+ -- Norbert Preining <preining@debian.org>  Sun, 05 Nov 2017 21:06:27 +0900
 
 asymptote (2.41-3) unstable; urgency=medium
 
