@@ -18,7 +18,10 @@ asymptote (2.41-4) unstable; urgency=medium
   * Switch to python3 interpreter.
   (Closes: #880422) (Big thanks to Nicolas for his excellent work!)
 
- -- Norbert Preining <preining@debian.org>  Sun, 05 Nov 2017 21:06:27 +0900
+  [ Norbert Preining ]
+  * make xasy relative symlinks, otherwise dh_python3 breaks
+
+ -- Norbert Preining <preining@debian.org>  Sun, 05 Nov 2017 21:32:47 +0900
 
 asymptote (2.41-3) unstable; urgency=medium
 
