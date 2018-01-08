@@ -32,8 +32,8 @@ Build-Depends: bison,
                zlib1g-dev
 Standards-Version: 4.1.1
 Homepage: http://asymptote.sourceforge.net/
-Vcs-Git: git://anonscm.debian.org/debian-tex/asymptote.git
-Vcs-Browser: https://anonscm.debian.org/gitweb/?p=debian-tex/asymptote.git
+Vcs-Git: https://salsa.debian.org/tex-team/asymptote.git
+Vcs-Browser: https://salsa.debian.org/tex-team/asymptote
 
 Package: asymptote
 Architecture: any
