@@ -9,3 +9,4 @@ honour-source-date-epoch
 typos.diff
 python3_nonintrusive.diff
 python3_intrusive.diff
+upstream-improve-diagnostics

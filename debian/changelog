@@ -1,3 +1,9 @@
+asymptote (2.41-5) UNRELEASED; urgency=medium
+
+  * Improve diagnostics (Closes: #890294)
+
+ -- Norbert Preining <preining@debian.org>  Mon, 19 Feb 2018 13:48:55 +0900
+
 asymptote (2.41-4) unstable; urgency=medium
 
   [ Nicolas Boulenguez ]

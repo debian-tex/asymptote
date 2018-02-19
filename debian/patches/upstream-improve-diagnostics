@@ -1,0 +1,20 @@
+Improve diagnostics (Closes: #890294)
+See https://github.com/vectorgraphics/asymptote/issues/59
+---
+ exp.cc |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- asymptote.orig/exp.cc
++++ asymptote/exp.cc
+@@ -39,8 +39,9 @@
+ #endif
+ 
+ void exp::transAsType(coenv &e, types::ty *target) {
+-  types::ty *t=trans(e);
+-  assert(t->kind==ty_error || equivalent(t,target));
++  trans(e);
++//  types::ty *t=trans(e);
++//  assert(t->kind==ty_error || equivalent(t,target));
+ }
+ 
+ void exp::transToType(coenv &e, types::ty *target)
