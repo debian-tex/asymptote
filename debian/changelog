@@ -1,8 +1,11 @@
-asymptote (2.41-5) UNRELEASED; urgency=medium
+asymptote (2.42-1) unstable; urgency=medium
 
-  * Improve diagnostics (Closes: #890294)
+  * New upstream version 2.42
+    - improved diagnostics (Closes: #890294)
+  * update/cleanup patches
+  * bump standards version, no changes necessary
 
- -- Norbert Preining <preining@debian.org>  Mon, 19 Feb 2018 13:48:55 +0900
+ -- Norbert Preining <preining@debian.org>  Wed, 04 Apr 2018 10:02:23 +0900
 
 asymptote (2.41-4) unstable; urgency=medium
 
