@@ -1,12 +1,6 @@
 0001-use-xdg-open-instead-of-acroread.patch
 0002-update-documentation-for-debian-specific-parts.patch
-#fix-docstring-backslash
-#old-gs-use-epswrite
-#upstream-gsl2
-#upstream-fix-mips-build-failure
 honour-source-date-epoch
-#upstream-2f209f9e-fix-for-tl2016
 typos.diff
 python3_nonintrusive.diff
 python3_intrusive.diff
-upstream-improve-diagnostics
