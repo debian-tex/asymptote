@@ -1,3 +1,10 @@
+asymptote (2.43-1) unstable; urgency=medium
+
+  * New upstream version 2.43
+  * update patches
+
+ -- Norbert Preining <preining@debian.org>  Fri, 06 Apr 2018 14:17:59 +0900
+
 asymptote (2.42-1) unstable; urgency=medium
 
   * New upstream version 2.42

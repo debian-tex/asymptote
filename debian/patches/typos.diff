@@ -13,7 +13,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
 
 --- asymptote.orig/ChangeLog
 +++ asymptote/ChangeLog
-@@ -13600,7 +13600,7 @@
+@@ -13684,7 +13684,7 @@
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -22,7 +22,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -13630,7 +13630,7 @@
+@@ -13714,7 +13714,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  
@@ -33,7 +33,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  commit 77595bbb56fc7489ccfa2123c3d33b19a43de9a3
 --- asymptote.orig/ReleaseNotes
 +++ asymptote/ReleaseNotes
-@@ -819,9 +819,9 @@
+@@ -825,9 +825,9 @@
  Release Notes for Version 1.62
  
  Outputting PDF format to other directories was fixed. An int hex(string)
@@ -111,7 +111,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  @c  LocalWords:  functionshading maxlength LeftView odetest RadialShadeDraw CLZ
 --- asymptote.orig/runstring.cc
 +++ asymptote/runstring.cc
-@@ -520,7 +520,7 @@
+@@ -522,7 +522,7 @@
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) {Stack->push<Int>(value); return;}
    ostringstream buf;
@@ -122,7 +122,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
 --- asymptote.orig/runstring.in
 +++ asymptote/runstring.in
-@@ -390,7 +390,7 @@
+@@ -392,7 +392,7 @@
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) return value;
    ostringstream buf;
