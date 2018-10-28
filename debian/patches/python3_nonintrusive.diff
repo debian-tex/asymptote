@@ -2,9 +2,15 @@ Description: fix incompatibilities between python2 to python3
  Most of the work has already been done upstream.
 Author: Nicolas Boulenguez <nicolas@debian.org>
 
---- a/aspy.py
-+++ b/aspy.py
-@@ -339,7 +339,7 @@
+---
+ aspy.py           |    2 +-
+ base/asymptote.py |    5 ++++-
+ profile.py        |   14 +++++++-------
+ 3 files changed, 12 insertions(+), 9 deletions(-)
+
+--- asymptote.orig/aspy.py
++++ asymptote/aspy.py
+@@ -339,7 +339,7 @@ def DatumFromCallable(f):
  
      return DatumFromHandle(h)
  
@@ -13,23 +19,9 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  state = State(baseState)
  
---- a/base/asymptote.py
-+++ b/base/asymptote.py
-@@ -23,10 +23,10 @@
- 	def erase(self):
- 		self.send("erase();")
- 	def help(self):
--		print "Asymptote session is open.  Available methods are:"
--		print "    help(), size(int), draw(str), fill(str), clip(str), label(str), shipout(str), send(str), erase()"
-+		print ("Asymptote session is open.  Available methods are:")
-+		print ("    help(), size(int), draw(str), fill(str), clip(str), label(str), shipout(str), send(str), erase()")
- 	def __del__(self):
--		print "closing Asymptote session..."
-+		print ("closing Asymptote session...")
- 		self.send('quit');
- 		self.session.stdin.close();
- 		self.session.wait()
-@@ -43,6 +43,9 @@
+--- asymptote.orig/base/asymptote.py
++++ asymptote/base/asymptote.py
+@@ -45,6 +45,9 @@ if __name__=="__main__":
  	g.fill("unitsquare, blue")
  	g.clip("unitcircle")
  	g.label("\"$O$\", (0,0), SW")
@@ -40,9 +32,9 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
 +		raw_input ("press ENTER to continue")
  	g.erase()
  	del g
---- a/profile.py
-+++ b/profile.py
-@@ -30,8 +30,8 @@
+--- asymptote.orig/profile.py
++++ asymptote/profile.py
+@@ -30,8 +30,8 @@ def computeTotals(tree):
                       + sum(child['nsecsTotal'] for child in tree['children']))
  
  def printName(name, prefix=''):
@@ -53,7 +45,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  class Arc:
      def __init__(self):
-@@ -61,13 +61,13 @@
+@@ -61,13 +61,13 @@ class Func:
              self.addChildTime(child)
  
      def dump(self):
@@ -71,7 +63,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  def analyse(funcs, tree):
      funcs[nameFromNode(tree)].analyse(tree)
-@@ -75,7 +75,7 @@
+@@ -75,7 +75,7 @@ def analyse(funcs, tree):
          analyse(funcs, child)
  
  def dump(funcs):

@@ -13,7 +13,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
 
 --- asymptote.orig/ChangeLog
 +++ asymptote/ChangeLog
-@@ -13732,7 +13732,7 @@
+@@ -16192,7 +16192,7 @@ Author: John Bowman <bowman@ualberta.ca>
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -22,7 +22,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -13762,7 +13762,7 @@
+@@ -16222,7 +16222,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  
@@ -33,7 +33,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  commit 77595bbb56fc7489ccfa2123c3d33b19a43de9a3
 --- asymptote.orig/ReleaseNotes
 +++ asymptote/ReleaseNotes
-@@ -830,9 +830,9 @@
+@@ -855,9 +855,9 @@ with operator init. An electromagnetic s
  Release Notes for Version 1.62
  
  Outputting PDF format to other directories was fixed. An int hex(string)
@@ -47,7 +47,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
 --- asymptote.orig/base/plain_pens.asy
 +++ asymptote/base/plain_pens.asy
-@@ -321,7 +321,7 @@
+@@ -321,7 +321,7 @@ pen rgba(real[] a)
    return rgb(a[0],a[1],a[2])+opacity(a[3]);
  }
  
@@ -55,10 +55,10 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
 +// Return a pen corresponding to a given 6-character RGB hexadecimal string.
  pen rgb(string s) 
  {
-   real value(string s, int i) {return hex(substr(s,2i,2))/255;}
+   int offset=substr(s,0,1) == '#' ? 1 : 0;
 --- asymptote.orig/doc/asyRefCard.tex
 +++ asymptote/doc/asyRefCard.tex
-@@ -534,7 +534,7 @@
+@@ -534,7 +534,7 @@ do \statement
  \key{string {\tt s} translated via {\tt \{\{before,after\},\dots\}}}{replace({\tt
  s},string [][] table)}
  \key{format {\tt x} using C-style format string {\tt s} }{format({\tt s},x)}
@@ -69,7 +69,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  \key{time in seconds of string {\tt t} using {\tt format}}{seconds(t,format)}
 --- asymptote.orig/doc/asymptote.texi
 +++ asymptote/doc/asymptote.texi
-@@ -2171,9 +2171,9 @@
+@@ -2171,9 +2171,9 @@ used to typeset scientific notation usin
  @code{defaultseparator="\!\times\!";};
  
  @cindex @code{hex}
@@ -81,7 +81,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  @cindex @code{ascii}
  @cindex @code{ascii}
-@@ -2834,15 +2834,15 @@
+@@ -2840,15 +2840,15 @@ arguments to the respective color spaces
  The function @code{colorless(pen=currentpen)} returns a copy of its argument
  with the color attributes stripped (to avoid color mixing).
  
@@ -100,7 +100,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  @cindex @code{hex}
  @item string hex(pen p);
  
-@@ -9864,7 +9864,7 @@
+@@ -9875,7 +9875,7 @@ Martin Wiebusch, and Stefan Knorr.
  @c  LocalWords:  multisampling autogen multisample coloredpath relstep flowdir
  @c  LocalWords:  colortype coloredSegments coloredNodes trefoilknot scaledgraph
  @c  LocalWords:  minblockwidth minblockheight mincirclediameter nonassociative
@@ -111,7 +111,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  @c  LocalWords:  functionshading maxlength LeftView odetest RadialShadeDraw CLZ
 --- asymptote.orig/runstring.cc
 +++ asymptote/runstring.cc
-@@ -522,7 +522,7 @@
+@@ -522,7 +522,7 @@ void gen_runstring13(stack *Stack)
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) {Stack->push<Int>(value); return;}
    ostringstream buf;
@@ -122,7 +122,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
 --- asymptote.orig/runstring.in
 +++ asymptote/runstring.in
-@@ -392,7 +392,7 @@
+@@ -392,7 +392,7 @@ Int hex(string s)
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) return value;
    ostringstream buf;

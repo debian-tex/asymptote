@@ -9,7 +9,7 @@ Subject: use xdg-open instead of acroread
 
 --- asymptote.orig/settings.cc
 +++ asymptote/settings.cc
-@@ -95,7 +95,7 @@
+@@ -95,7 +95,7 @@ string defaultPSViewer="gv";
  #ifdef __APPLE__
  string defaultPDFViewer="open";
  #else  
@@ -17,4 +17,4 @@ Subject: use xdg-open instead of acroread
 +string defaultPDFViewer="xdg-open";
  #endif  
  string defaultGhostscript="gs";
- string defaultGhostscriptLibrary="/usr/lib/libgs.so";
+ string defaultGhostscriptLibrary="";
