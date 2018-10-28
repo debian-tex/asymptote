@@ -31,7 +31,7 @@ Build-Depends: bison,
                texlive-fonts-recommended,
                texlive-pstricks,
                zlib1g-dev
-Standards-Version: 4.1.3
+Standards-Version: 4.2.1
 Homepage: http://asymptote.sourceforge.net/
 Vcs-Git: https://salsa.debian.org/tex-team/asymptote.git
 Vcs-Browser: https://salsa.debian.org/tex-team/asymptote
