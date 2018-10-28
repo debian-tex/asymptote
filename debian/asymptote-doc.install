@@ -2,3 +2,4 @@
 ./doc/png/*.png			/usr/share/doc/asymptote-doc/html/
 ./doc/FAQ/asy-faq.html/*.html	/usr/share/doc/asymptote-doc/faq/
 ./doc/*.asy			/usr/share/doc/asymptote-doc/src/
+debian/tmp/usr/share/doc/asymptote/examples /usr/share/doc/asymptote-doc/examples

@@ -1,9 +1,13 @@
 ./debian/tmp/usr/bin/
 ./debian/tmp/usr/share/texmf/
 ./debian/tmp/usr/share/asymptote/GUI/*.py
+./debian/tmp/usr/share/asymptote/GUI/pyUIClass/*.py
+./debian/tmp/usr/share/asymptote/GUI/configs
+./debian/tmp/usr/share/asymptote/GUI/res
 ./debian/tmp/usr/share/asymptote/*.asy
 ./debian/tmp/usr/share/asymptote/*.sh
 ./debian/tmp/usr/share/asymptote/*.py
 ./debian/tmp/usr/share/asymptote/*.ps
 ./debian/tmp/usr/share/asymptote/*.js
 ./debian/tmp/usr/share/asymptote/*.el	/usr/share/emacs/site-lisp/
+./debian/tmp/usr/share/asymptote/asy_filetype.vim /usr/share/vim/addons/ftdetect/asymptote.vim
