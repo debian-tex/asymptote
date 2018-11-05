@@ -1,4 +1,4 @@
-asymptote (2.47-1) UNRELEASED; urgency=medium
+asymptote (2.47-1) unstable; urgency=medium
 
   * New upstream version 2.47
   * update patches
@@ -6,7 +6,7 @@ asymptote (2.47-1) UNRELEASED; urgency=medium
   * bump standards version, no changes necessary
   * install examples and necessary xasy files
 
- -- Norbert Preining <preining@debian.org>  Mon, 29 Oct 2018 00:06:48 +0900
+ -- Norbert Preining <preining@debian.org>  Mon, 05 Nov 2018 11:41:02 +0900
 
 asymptote (2.44-1) unstable; urgency=medium
 
