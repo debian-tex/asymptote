@@ -3,7 +3,7 @@ Maintainer: Debian TeX Task Force <debian-tex-maint@lists.debian.org>
 Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Ruben Molina <rmolina@udea.edu.co>,
            Picca Frédéric-Emmanuel <picca@debian.org>,
-           Norbert Preining <preining@debian.org>
+           Norbert Preining <norbert@preining.info>
 Section: tex
 Priority: optional
 Build-Depends: bison,
@@ -33,8 +33,8 @@ Build-Depends: bison,
                zlib1g-dev
 Standards-Version: 4.2.1
 Homepage: http://asymptote.sourceforge.net/
-Vcs-Git: https://salsa.debian.org/tex-team/asymptote.git
-Vcs-Browser: https://salsa.debian.org/tex-team/asymptote
+Vcs-Git: https://github.com/debian-tex/asymptote.git
+Vcs-Browser: https://github.com/debian-tex/asymptote
 
 Package: asymptote
 Architecture: any
