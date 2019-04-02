@@ -4,6 +4,7 @@ asymptote (2.48-1) UNRELEASED; urgency=medium
   * New upstream release, drop patch
     d98f3793c4df96dcae238312aac889502912872d.diff
   * Add libglm-dev, libglew-dev to B-D, they are needed for building.
+  * Add lintian override "asymptote source: source-is-missing" for js files.
 
  -- Norbert Preining <norbert@preining.info>  Sun, 31 Mar 2019 23:51:25 +0200
 
