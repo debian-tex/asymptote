@@ -5,11 +5,11 @@ Description: Honour SOURCE_DATE_EPOCH.
  See https://reproducible-builds.org/specs/source-date-epoch/.
 Author: Alexis Bienvenüe <pado@passoire.fr>
 
-Index: asymptote-2.37.real/doc/FAQ/m-html.pl
+Index: asymptote-2.48/doc/FAQ/m-html.pl
 ===================================================================
---- asymptote-2.37.real.orig/doc/FAQ/m-html.pl
-+++ asymptote-2.37.real/doc/FAQ/m-html.pl
-@@ -34,8 +34,8 @@ sub html_init {
+--- asymptote-2.48.orig/doc/FAQ/m-html.pl	2019-03-31 23:30:39.917770401 +0200
++++ asymptote-2.48/doc/FAQ/m-html.pl	2019-03-31 23:30:39.905770381 +0200
+@@ -34,8 +34,8 @@
      print HTML "<html>\n";
      $html_needpara= -1;
      $html_end='';
@@ -20,10 +20,10 @@ Index: asymptote-2.37.real/doc/FAQ/m-html.pl
  }
  
  sub html_startup {
-Index: asymptote-2.37.real/doc/FAQ/m-lout.pl
+Index: asymptote-2.48/doc/FAQ/m-lout.pl
 ===================================================================
---- asymptote-2.37.real.orig/doc/FAQ/m-lout.pl
-+++ asymptote-2.37.real/doc/FAQ/m-lout.pl
+--- asymptote-2.48.orig/doc/FAQ/m-lout.pl	2019-03-31 23:30:39.917770401 +0200
++++ asymptote-2.48/doc/FAQ/m-lout.pl	2019-03-31 23:30:39.905770381 +0200
 @@ -23,7 +23,7 @@
  
  sub lout_init {
@@ -33,10 +33,10 @@ Index: asymptote-2.37.real/doc/FAQ/m-lout.pl
      $dprint =~ s/^0//;
  }
  
-Index: asymptote-2.37.real/doc/FAQ/bfnnconv.pl
+Index: asymptote-2.48/doc/FAQ/bfnnconv.pl
 ===================================================================
---- asymptote-2.37.real.orig/doc/FAQ/bfnnconv.pl
-+++ asymptote-2.37.real/doc/FAQ/bfnnconv.pl
+--- asymptote-2.48.orig/doc/FAQ/bfnnconv.pl	2019-03-31 23:30:39.917770401 +0200
++++ asymptote-2.48/doc/FAQ/bfnnconv.pl	2019-03-31 23:30:39.905770381 +0200
 @@ -21,6 +21,8 @@
  # by the GPL.  However, I would appreciate it if you credited me if
  # appropriate in any documents you format using BFNN.)
@@ -46,7 +46,7 @@ Index: asymptote-2.37.real/doc/FAQ/bfnnconv.pl
  @outputs=('ascii','info','html');
  
  while ($ARGV[0] =~ m/^\-/) {
-@@ -135,7 +137,12 @@ while (<>) {
+@@ -135,7 +137,12 @@
                  m/([^\\])\`/ || warn "`$_'";
                  $_= $';
                  $cmd= $`.$1;

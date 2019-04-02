@@ -7,9 +7,11 @@ Subject: use xdg-open instead of acroread
  settings.cc |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- asymptote.orig/settings.cc
-+++ asymptote/settings.cc
-@@ -95,7 +95,7 @@ string defaultPSViewer="gv";
+Index: asymptote-2.48/settings.cc
+===================================================================
+--- asymptote-2.48.orig/settings.cc	2019-03-31 23:30:39.865770316 +0200
++++ asymptote-2.48/settings.cc	2019-03-31 23:30:39.861770310 +0200
+@@ -95,7 +95,7 @@
  #ifdef __APPLE__
  string defaultPDFViewer="open";
  #else  

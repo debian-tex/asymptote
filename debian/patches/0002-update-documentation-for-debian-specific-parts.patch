@@ -7,8 +7,10 @@ Subject: update documentation for debian specific parts
  doc/asymptote.texi |   30 +++++++++++-------------------
  1 file changed, 11 insertions(+), 19 deletions(-)
 
---- asymptote.orig/doc/asymptote.texi
-+++ asymptote/doc/asymptote.texi
+Index: asymptote-2.48/doc/asymptote.texi
+===================================================================
+--- asymptote-2.48.orig/doc/asymptote.texi	2019-03-31 23:30:39.893770362 +0200
++++ asymptote-2.48/doc/asymptote.texi	2019-03-31 23:31:09.000000000 +0200
 @@ -15,15 +15,16 @@
       
  @quotation

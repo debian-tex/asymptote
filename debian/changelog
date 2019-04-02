@@ -1,3 +1,10 @@
+asymptote (2.48-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+  * Add libglm-dev, libglew-dev to B-D, they are needed for building.
+
+ -- Norbert Preining <norbert@preining.info>  Sun, 31 Mar 2019 23:51:25 +0200
+
 asymptote (2.47-2) unstable; urgency=medium
 
   [ Hilmar Preuße ]
