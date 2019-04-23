@@ -1,3 +1,10 @@
+asymptote (2.49-1) experimental; urgency=medium
+
+  * New upstream version 2.49
+  * update patches
+
+ -- Norbert Preining <norbert@preining.info>  Tue, 23 Apr 2019 20:00:50 +0900
+
 asymptote (2.48-1) experimental; urgency=medium
 
   * New upstream release, drop patch
