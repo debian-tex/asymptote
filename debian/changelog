@@ -1,3 +1,9 @@
+asymptote (2.49-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Norbert Preining <norbert@preining.info>  Wed, 10 Jul 2019 17:33:16 +0900
+
 asymptote (2.49-1) experimental; urgency=medium
 
   * New upstream version 2.49
