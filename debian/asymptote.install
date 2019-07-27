@@ -1,4 +1,4 @@
-./debian/tmp/usr/bin/
+./debian/tmp/usr/bin/asy
 ./debian/tmp/usr/share/texmf/
 ./debian/tmp/usr/share/asymptote/*.asy
 ./debian/tmp/usr/share/asymptote/*.sh
