@@ -4,7 +4,7 @@ Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Ruben Molina <rmolina@udea.edu.co>,
            Picca Frédéric-Emmanuel <picca@debian.org>,
            Norbert Preining <norbert@preining.info>,
-           Hilmar Preuße <hille42@web.de>
+           Hilmar Preusse <hille42@web.de>
 Section: tex
 Priority: optional
 Build-Depends: bison,
@@ -47,11 +47,8 @@ Depends: ${misc:Depends},
          ghostscript,
          imagemagick,
          install-info,
-         librsvg2-bin,
          python3-cson,
          python3-numpy,
-         python3-pyqt5,
-         python3-pyqt5.qtsvg,
          texlive-binaries,
          texlive-latex-base,
          texlive-pstricks,
@@ -65,6 +62,25 @@ Description: script-based vector graphics language inspired by MetaPost
  drawings, inspired by MetaPost but with an improved C++-like syntax.
  Asymptote provides for figures the same high-quality level of typesetting that
  LaTeX does for scientific text.
+
+Package: asymptote-x11
+Architecture: any
+Depends: asymptote (= ${binary:Version}),
+         librsvg2-bin,
+         python3-pyqt5,
+         python3-pyqt5.qtsvg
+Suggests: gv,
+          evince-gtk | pdf-viewer
+Description: script-based vector graphics language inspired by MetaPost
+ Asymptote is a powerful script-based vector graphics language for technical
+ drawings, inspired by MetaPost but with an improved C++-like syntax.
+ Asymptote provides for figures the same high-quality level of typesetting that
+ LaTeX does for scientific text.
+ .
+ In the event that adjustments to the final figure are required, the
+ preliminary Graphical User Interface (GUI) xasy included with Asymptote allows
+ you to move graphical objects and draw new ones. The modified figure can then
+ be saved as a normal Asymptote file.
 
 Package: asymptote-doc
 Architecture: all

@@ -1,0 +1,5 @@
+./debian/tmp/usr/bin/xasy
+./debian/tmp/usr/share/asymptote/GUI/*.py
+./debian/tmp/usr/share/asymptote/GUI/pyUIClass/*.py
+./debian/tmp/usr/share/asymptote/GUI/configs
+./debian/tmp/usr/share/asymptote/GUI/res
