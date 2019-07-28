@@ -2,6 +2,7 @@ asymptote (2.49-3) unstable; urgency=medium
 
   * Split graphical UI into a new package to provide small asymptote
     CLI package (Closes: #923369).
+  * Bug Standards Version to 4.4.0, no changes needed.
 
  -- Hilmar Preusse <hille42@web.de>  Sun, 28 Jul 2019 15:18:45 +0200
 
