@@ -53,8 +53,6 @@ Depends: ${misc:Depends},
          texlive-plain-generic,
          xdg-utils
 Recommends: asymptote-doc
-Suggests: gv,
-          evince-gtk | pdf-viewer
 Description: script-based vector graphics language inspired by MetaPost
  Asymptote is a powerful script-based vector graphics language for technical
  drawings, inspired by MetaPost but with an improved C++-like syntax.
