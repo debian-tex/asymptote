@@ -1,3 +1,10 @@
+asymptote (2.49-3) UNRELEASED; urgency=medium
+
+  * Split graphical UI into a new package to provide small asymptote
+    CLI package (Closes: #923369).
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 28 Jul 2019 10:43:46 +0200
+
 asymptote (2.49-2) unstable; urgency=medium
 
   * Upload to unstable
