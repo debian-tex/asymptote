@@ -52,6 +52,7 @@ Depends: ${misc:Depends},
          texlive-pstricks,
          texlive-plain-generic,
          xdg-utils
+Suggests: asymptote-x11
 Recommends: asymptote-doc
 Description: script-based vector graphics language inspired by MetaPost
  Asymptote is a powerful script-based vector graphics language for technical
