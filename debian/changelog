@@ -1,3 +1,9 @@
+asymptote (2.49-4) UNRELEASED; urgency=medium
+
+  * Change BD: libncurses5-dev -> libncurses-dev.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 06 Aug 2019 13:49:31 +0200
+
 asymptote (2.49-3) unstable; urgency=medium
 
   * Split graphical UI into a new package to provide small asymptote
