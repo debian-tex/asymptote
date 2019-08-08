@@ -1,4 +1,4 @@
-asymptote (2.51-1) UNRELEASED; urgency=medium
+asymptote (2.51-1) unstable; urgency=medium
 
   * New upstream version.
   * Add BD: pyqt5-dev-tools to convert Qt Resource File (.qrc)
@@ -6,7 +6,7 @@ asymptote (2.51-1) UNRELEASED; urgency=medium
   * dyn_link_GLEW.patch: ...we still link dynamically w/ libglew2.1.
   * Change BD: libncurses5-dev -> libncurses-dev.
 
- -- Hilmar Preusse <hille42@web.de>  Tue, 06 Aug 2019 13:49:31 +0200
+ -- Hilmar Preusse <hille42@web.de>  Thu, 08 Aug 2019 13:15:18 +0200
 
 asymptote (2.49-3) unstable; urgency=medium
 
