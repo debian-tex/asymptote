@@ -11,9 +11,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  runstring.in        |    2 +-
  7 files changed, 14 insertions(+), 14 deletions(-)
 
---- asymptote.orig/ChangeLog
-+++ asymptote/ChangeLog
-@@ -17094,7 +17094,7 @@ Author: John Bowman <bowman@ualberta.ca>
+Index: asymptote-2.51/ChangeLog
+===================================================================
+--- asymptote-2.51.orig/ChangeLog	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/ChangeLog	2019-08-08 09:01:48.488650694 +0200
+@@ -17804,7 +17804,7 @@
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -22,7 +24,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -17124,7 +17124,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
+@@ -17834,7 +17834,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  
@@ -31,9 +33,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
      integer.
  
  commit 77595bbb56fc7489ccfa2123c3d33b19a43de9a3
---- asymptote.orig/ReleaseNotes
-+++ asymptote/ReleaseNotes
-@@ -871,9 +871,9 @@ with operator init. An electromagnetic s
+Index: asymptote-2.51/ReleaseNotes
+===================================================================
+--- asymptote-2.51.orig/ReleaseNotes	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/ReleaseNotes	2019-08-08 09:01:48.488650694 +0200
+@@ -880,9 +880,9 @@
  Release Notes for Version 1.62
  
  Outputting PDF format to other directories was fixed. An int hex(string)
@@ -45,9 +49,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  arguments were added and minor bugs were fixed. A parametric version of
  markuniform was added.
  
---- asymptote.orig/base/plain_pens.asy
-+++ asymptote/base/plain_pens.asy
-@@ -321,7 +321,7 @@ pen rgba(real[] a)
+Index: asymptote-2.51/base/plain_pens.asy
+===================================================================
+--- asymptote-2.51.orig/base/plain_pens.asy	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/base/plain_pens.asy	2019-08-08 09:01:48.488650694 +0200
+@@ -321,7 +321,7 @@
    return rgb(a[0],a[1],a[2])+opacity(a[3]);
  }
  
@@ -56,9 +62,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  pen rgb(string s) 
  {
    int offset=substr(s,0,1) == '#' ? 1 : 0;
---- asymptote.orig/doc/asyRefCard.tex
-+++ asymptote/doc/asyRefCard.tex
-@@ -534,7 +534,7 @@ do \statement
+Index: asymptote-2.51/doc/asyRefCard.tex
+===================================================================
+--- asymptote-2.51.orig/doc/asyRefCard.tex	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/doc/asyRefCard.tex	2019-08-08 09:01:48.488650694 +0200
+@@ -534,7 +534,7 @@
  \key{string {\tt s} translated via {\tt \{\{before,after\},\dots\}}}{replace({\tt
  s},string [][] table)}
  \key{format {\tt x} using C-style format string {\tt s} }{format({\tt s},x)}
@@ -67,9 +75,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  \key{casts {\tt x} to string using precision {\tt digits}}{string(x,digits=realDigits)}
  \key{current time formatted by {\tt format}}{time(format="\%a \%b \%d \%T \%Z \%Y")}
  \key{time in seconds of string {\tt t} using {\tt format}}{seconds(t,format)}
---- asymptote.orig/doc/asymptote.texi
-+++ asymptote/doc/asymptote.texi
-@@ -2171,9 +2171,9 @@ used to typeset scientific notation usin
+Index: asymptote-2.51/doc/asymptote.texi
+===================================================================
+--- asymptote-2.51.orig/doc/asymptote.texi	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/doc/asymptote.texi	2019-08-08 09:01:48.488650694 +0200
+@@ -2175,9 +2175,9 @@
  @code{defaultseparator="\!\times\!";};
  
  @cindex @code{hex}
@@ -81,7 +91,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  @cindex @code{ascii}
  @cindex @code{ascii}
-@@ -2840,15 +2840,15 @@ arguments to the respective color spaces
+@@ -2844,15 +2844,15 @@
  The function @code{colorless(pen=currentpen)} returns a copy of its argument
  with the color attributes stripped (to avoid color mixing).
  
@@ -100,7 +110,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  @cindex @code{hex}
  @item string hex(pen p);
  
-@@ -9873,7 +9873,7 @@ Martin Wiebusch, Stefan Knorr, and Supak
+@@ -9877,7 +9877,7 @@
  @c  LocalWords:  multisampling autogen multisample coloredpath relstep flowdir
  @c  LocalWords:  colortype coloredSegments coloredNodes trefoilknot scaledgraph
  @c  LocalWords:  minblockwidth minblockheight mincirclediameter nonassociative
@@ -109,9 +119,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  @c  LocalWords:  dvipdfmx autoadjust viewportsize viewportwidth viewportheight
  @c  LocalWords:  subregions nonsimply functionshade shader floatingdisk TopView
  @c  LocalWords:  functionshading maxlength LeftView odetest RadialShadeDraw CLZ
---- asymptote.orig/runstring.cc
-+++ asymptote/runstring.cc
-@@ -522,7 +522,7 @@ void gen_runstring13(stack *Stack)
+Index: asymptote-2.51/runstring.cc
+===================================================================
+--- asymptote-2.51.orig/runstring.cc	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/runstring.cc	2019-08-08 09:01:48.492652694 +0200
+@@ -522,7 +522,7 @@
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) {Stack->push<Int>(value); return;}
    ostringstream buf;
@@ -120,9 +132,11 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
    error(buf);
  }
  
---- asymptote.orig/runstring.in
-+++ asymptote/runstring.in
-@@ -392,7 +392,7 @@ Int hex(string s)
+Index: asymptote-2.51/runstring.in
+===================================================================
+--- asymptote-2.51.orig/runstring.in	2019-08-08 09:01:48.492652694 +0200
++++ asymptote-2.51/runstring.in	2019-08-08 09:01:48.492652694 +0200
+@@ -392,7 +392,7 @@
    Int value;
    if(is && is >> value && ((is >> std::ws).eof())) return value;
    ostringstream buf;
