@@ -1,3 +1,12 @@
+Release Notes for Version 2.51
+Portability fixes for FreeBSD x86 and MacOS X were made.
+
+Release Notes for Version 2.50
+
+The Phong-Blinn lighting model was replaced by a physically based rendering
+model; the ambient attribute was removed. Various portability and build issues
+were addressed. OpenGL is supported again for both 32-bit and 64-bit MSWindows.
+
 Release Notes for Version 2.49
 
 Portability issues and numerical precision issues were fixed. 
