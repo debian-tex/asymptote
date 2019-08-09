@@ -33,8 +33,7 @@ Build-Depends: bison,
                texlive-pstricks,
                zlib1g-dev,
                libglm-dev,
-               libglew-dev,
-               pyqt5-dev-tools
+               libglew-dev
 Standards-Version: 4.4.0
 Homepage: http://asymptote.sourceforge.net/
 Vcs-Git: https://github.com/debian-tex/asymptote.git

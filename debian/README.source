@@ -1,0 +1,3 @@
+The upstream tar balls from github need an additional Build
+Depend: pyqt5-dev-tools. In case we want to build from there
+it needs to be added.

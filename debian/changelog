@@ -1,3 +1,9 @@
+asymptote (2.51-2) UNRELEASED; urgency=medium
+
+  * Remove BD on pyqt5-dev-tools, document it in README.source.
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 09 Aug 2019 23:02:13 +0200
+
 asymptote (2.51-1) unstable; urgency=medium
 
   * New upstream version.
