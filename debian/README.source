@@ -1,3 +1,4 @@
-The upstream tar balls from github need an additional Build
-Depend: pyqt5-dev-tools. In case we want to build from there
-it needs to be added.
+The upstream tar balls from github need an additional
+Build Depend: pyqt5-dev-tools
+(it provides pyuic5 and pyrcc5). In case we want to build packages from
+github it needs to be added.
