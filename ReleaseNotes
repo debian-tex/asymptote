@@ -1,4 +1,18 @@
+Release Notes for Version 2.53
+
+A memory leak and antialiasing artifacts in the 3D rendering engine were fixed.
+For PRC content, oblique projections are now converted to orthographic
+projections. Portability issues were addressed.
+
+Release Notes for Version 2.52
+
+Under MacOS X, 3D rendering is supported again, the xasy menubar is
+now visible, and the default PostScript previewer was changed to "open".
+VISUAL, EDITOR, and OS-specific editor overrides are now supported in xasy.
+Obsolete code was removed and spelling mistakes were fixed.
+
 Release Notes for Version 2.51
+
 Portability fixes for FreeBSD x86 and MacOS X were made.
 
 Release Notes for Version 2.50
@@ -880,9 +894,9 @@ with operator init. An electromagnetic spectrum example was added.
 Release Notes for Version 1.62
 
 Outputting PDF format to other directories was fixed. An int hex(string)
-function that casts a hexidecimal string to an integer and a 
+function that casts a hexadecimal string to an integer and a 
 pen rgb(string) routine that returns a pen corresponding to a given
-6-character RGB hexidecimal string were added. In the dot routines, Label
+6-character RGB hexadecimal string were added. In the dot routines, Label
 arguments were added and minor bugs were fixed. A parametric version of
 markuniform was added.
 
