@@ -1,20 +1,11 @@
-From: =?UTF-8?q?Picca=20Fr=C3=A9d=C3=A9ric-Emmanuel?=
- <picca@synchrotron-soleil.fr>
-Date: Sat, 2 Jul 2011 23:13:24 +0200
-Subject: use xdg-open instead of acroread
-
----
- settings.cc |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Index: asymptote-2.48/settings.cc
+Index: asymptote-2.53/settings.cc
 ===================================================================
---- asymptote-2.48.orig/settings.cc	2019-03-31 23:30:39.865770316 +0200
-+++ asymptote-2.48/settings.cc	2019-03-31 23:30:39.861770310 +0200
-@@ -95,7 +95,7 @@
- #ifdef __APPLE__
+--- asymptote-2.53.orig/settings.cc	2019-08-21 06:51:14.000000000 +0200
++++ asymptote-2.53/settings.cc	2019-08-21 23:14:28.830527539 +0200
+@@ -96,7 +96,7 @@
  string defaultPDFViewer="open";
  #else  
+ string defaultPSViewer="gv";
 -string defaultPDFViewer="acroread";
 +string defaultPDFViewer="xdg-open";
  #endif  

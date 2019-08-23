@@ -1,7 +1,7 @@
-Index: asymptote-2.51/Makefile.in
+Index: asymptote-2.53/Makefile.in
 ===================================================================
---- asymptote-2.51.orig/Makefile.in	2019-08-08 12:13:46.000000000 +0200
-+++ asymptote-2.51/Makefile.in	2019-08-08 12:15:33.643655330 +0200
+--- asymptote-2.53.orig/Makefile.in	2019-08-21 23:23:32.490247435 +0200
++++ asymptote-2.53/Makefile.in	2019-08-21 23:23:32.482243435 +0200
 @@ -113,7 +113,7 @@
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
@@ -11,14 +11,14 @@ Index: asymptote-2.51/Makefile.in
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
-Index: asymptote-2.51/configure.ac
+Index: asymptote-2.53/configure.ac
 ===================================================================
---- asymptote-2.51.orig/configure.ac	2019-08-08 12:13:46.000000000 +0200
-+++ asymptote-2.51/configure.ac	2019-08-08 12:15:58.907655330 +0200
-@@ -399,7 +399,7 @@
+--- asymptote-2.53.orig/configure.ac	2019-08-21 23:23:32.490247435 +0200
++++ asymptote-2.53/configure.ac	2019-08-21 23:23:32.482243435 +0200
+@@ -404,7 +404,7 @@
           AC_CHECK_LIB([GL], [glDepthMask],
                                   [AC_DEFINE(HAVE_LIBGL,1,
-                              DEFINE_LIB[GL])
+                              DEFINE_LIB([GL]))
 -                             LIBS=$LIBS"-lGL glew.o "],
 +                             LIBS=$LIBS"-lGL -lGLEW "],
                                     AC_MSG_NOTICE([*** Could not find libGL: will compile without OpenGL support ***]))
