@@ -1,3 +1,215 @@
+commit 35867d43297d07045d52916bcd3d906f62f7b023
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 22:50:54 2019 -0600
+
+    Update example.
+
+commit 6570978b49f65c708ea8921ca5fd95a1dab0954b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 22:06:06 2019 -0600
+
+    Improve diagnostic about unimplemented feature.
+
+commit d741dd1701c53b6ab697b75bc280ced837611669
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 16:49:25 2019 -0600
+
+    Fix memory leak.
+
+commit 767b059789cd375336d6f2ad42f5c49a9b7d387e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 14:52:15 2019 -0600
+
+    Check for lgamma instead of gamma, in both libm and libc.
+
+commit d12068ef272111b0831187f2906fecaca1b5fa9d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 14:10:23 2019 -0600
+
+    Use gc_allocator_ignore_off_page.
+
+commit ea6ec5dc839626629062044ae9291f1289875aeb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 14:03:43 2019 -0600
+
+    Only initialize glew once.
+
+commit 437acdd38d4c73eaabf8b52f3cec77247b58fe91
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 20 12:44:19 2019 -0600
+
+    Update gc tests.
+
+commit f01f7ed4f10ee092be2208e8e3fd63f11d1cd6ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 19 03:33:53 2019 -0600
+
+    Fix gc struct test.
+
+commit bd88b6dcd02dd442a9765195f28502ee9255490c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 15 23:22:19 2019 -0600
+
+    Disable bulky and leaky OpenImageIO library by default.
+
+commit d84dd8cb79c8b0b85211643427eaa6ad1dba0a99
+Author: Supakorn "Jamie" Rassameemasmuang <rassamee@ualberta.ca>
+Date:   Wed Aug 14 12:15:13 2019 -0600
+
+    Add in development WebGL version.
+
+commit 94ac15f88e5723e38d4e4f3231944b538d8c17ec
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 01:36:04 2019 -0600
+
+    Fix operator *(transform, revolution).
+
+commit fbef675f843d99f46475fbe92a01fe214a03d146
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 00:39:44 2019 -0600
+
+    Fix skeletons of transformed solids of revolution.
+
+commit f4ac68fd0660655a055c3bc41115e8f8a7752d8c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 13 19:29:04 2019 -0600
+
+    Fix documentation.
+
+commit c694474b38ecb4057cb6380441732a6a2bb6018d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 13 18:02:47 2019 -0600
+
+    Add border to OpenGL tiles to remove antialiasing artifacts.
+
+commit 74172faf075afc446556df90acf3966931e82679
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 13 10:24:29 2019 -0600
+
+    Remove obsolete MacOS X workaround.
+
+commit 05f68ab80e7caa521c967b32ba672fa58bcaae3c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 00:49:22 2019 -0600
+
+    Fix DEFINE calls in configure.ac; simplify compilation under CYGWIN.
+
+commit 38280e0f75fedc2fe9e9cc1b3e5336d05bba6e56
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 23:56:34 2019 -0600
+
+    Prioritize tr/unorderedmap over unorderedmap (for Centos 7).
+
+commit 64121726ecd13cda057699758020d7e94c289465
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 23:08:15 2019 -0600
+
+    Handle oblique projections as orthographic projections in PRC.
+
+commit 557ff750b0043c3bce5fc998bf601211c7bcafa5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 00:37:06 2019 -0600
+
+    Simplify code.
+
+commit 7c4367160de72d618382f5a164078a11d9d07edc
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 03:30:03 2019 -0600
+
+    Increment version to 2.53.
+
+commit c1db74235565570e829b865756794a0c5ab0f5fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 02:23:28 2019 -0600
+
+    Fix xasy permissions; update old code.
+
+commit b14c49397f59c29929cd21a9da855b1f89b5566a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:44:11 2019 -0600
+
+    Fix spelling of default.
+
+commit 6506b94d5b6d97191ce9e26018c414d4d010e6fa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:36:02 2019 -0600
+
+    Revert "Prevent xasy menubar from disappearing under MacOS X."
+    
+    This reverts commit 40407fc4644a21e04ad77680939ab48281ad34d8.
+
+commit 27d51ec09bb95fe5c18181a807174b65ebbdd487
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:33:44 2019 -0600
+
+    Support VISUAL, EDITOR, and os-specific xasy editor overrides.
+
+commit deebce8021396aa35fb95786099e55c0ee24072c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:31:17 2019 -0600
+
+    Update documentation.
+
+commit b7586ef668e8701b5358da1a1d5ab29e226525fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:30:40 2019 -0600
+
+    Use open as default PostScript previewer under MacOS X.
+
+commit 40407fc4644a21e04ad77680939ab48281ad34d8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 01:04:54 2019 -0600
+
+    Prevent xasy menubar from disappearing under MacOS X.
+
+commit 4f11b34a79a5a95ee6df1cc160502eca1d80ac04
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 8 19:50:11 2019 -0600
+
+    Fix spelling of hexadecimal.
+
+commit c79584995e095c4736fae67060618577285f253d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 8 18:45:05 2019 -0600
+
+    Fix GLSL shader initialization on MacOS X.
+
+commit 03f7b5ac9e6a814bb5dd720209f68c5eb76933a2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 8 18:18:05 2019 -0600
+
+    Remove obsolete code.
+
+commit 887964b07bc000c7d840d18370cded3561bdd263
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 7 10:38:46 2019 -0600
+
+    Don't attempt to install GUI files if unavailable (due to lack of pyuic5 and pyrcc5).
+
+commit c258b9a21580aeb09e68b9109977ee1382b2b3ba
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 6 23:58:18 2019 -0600
+
+    Remove obsolete assignment.
+
+commit 8a4f415210836d1893e9eb51b0afeebc37c63711
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 6 19:24:18 2019 -0600
+
+    Request OpenGL core profile under MacOS X.
+
+commit 6ee0cb2f03140555c09d5a0d9af62c51acd21d33
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 6 06:00:03 2019 -0600
+
+    Remove obsolete code from tr.cc.
+
+commit e36a9fc91abe8e9fd55997c86a26d68f16084c03
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 5 17:02:26 2019 -0600
+
+    Increment version to 2.52.
+
 commit e0b0d417fb075bc210ce7ddc9f192912e8bab4dd
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Mon Aug 5 16:05:15 2019 -0600

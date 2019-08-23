@@ -195,6 +195,7 @@ using utils::statistics;
 statistics S;
 
 ModelView modelView;
+GLuint ubo;
 
 #ifdef HAVE_LIBOPENIMAGEIO
 GLuint envMapBuf;
@@ -415,6 +416,7 @@ void Export()
   glFinish();
   try {
     size_t ndata=3*fullWidth*fullHeight;
+    unsigned border=1;
     unsigned char *data=new unsigned char[ndata];
     if(data) {
       TRcontext *tr=trNew();
@@ -426,7 +428,7 @@ void Export()
              << fullHeight << " image" << " using tiles of size "
              << width << "x" << height << endl;
 
-      trTileSize(tr,width,height,0);
+      trTileSize(tr,width,height,border);
       trImageSize(tr,fullWidth,fullHeight);
       trImageBuffer(tr,GL_RGB,GL_UNSIGNED_BYTE,data);
 
@@ -783,7 +785,6 @@ void update()
   glutShowWindow();
   if(Zoom != lastzoom) remesh=true;
   lastzoom=Zoom;
-  glLoadIdentity();
   double cz=0.5*(zmin+zmax);
   
   dviewMat=translate(translate(dmat4(1.0),dvec3(cx,cy,cz))*drotateMat,
@@ -1457,7 +1458,7 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   for(int i=0; i < 4; ++i)
     Background[i]=background[i];
   
-  nlights0=nlights=min(nlightsin,(size_t) GL_MAX_LIGHTS);
+  nlights0=nlights=nlightsin;
   
   Lights=lights;
   Diffuse=diffuse;
@@ -1500,7 +1501,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   }
   
   if(glinitialize) {
-    glinitialize=false;
     init();
     Fitscreen=1;
   }
@@ -1559,6 +1559,10 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   
 #ifdef HAVE_LIBGLUT    
   unsigned int displaymode=GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH;
+#endif  
+  
+#ifdef __APPLE__
+  displaymode |= GLUT_3_2_CORE_PROFILE;
 #endif  
   
   camp::clearMaterialBuffer();
@@ -1634,14 +1638,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
 #endif // HAVE_LIBGLUT
   initialized=true;
 
-  glewExperimental = GL_TRUE;
-  int result = glewInit();
-
-  if (result != GLEW_OK) {
-    cerr << "GLEW initialization error." << endl;
-    exit(-1);
-  }
-  
   GLint val;
   glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE,&val);
   Maxmaterials=val/sizeof(Material);
@@ -1649,6 +1645,18 @@ void glrender(const string& prefix, const picture *pic, const string& format,
 
   glGetIntegerv(GL_MAX_ELEMENTS_VERTICES,&Maxvertices);
 
+  if(glinitialize) {
+    glinitialize=false;
+    int result = glewInit();
+
+    if (result != GLEW_OK) {
+      cerr << "GLEW initialization error." << endl;
+      exit(-1);
+    }
+    
+    initshader();
+  }
+  
   home();
     
 #ifdef HAVE_LIBGLUT
@@ -1664,8 +1672,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   }
 #endif
 
-  initshader();
-  
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -1732,13 +1738,12 @@ void setUniforms(GLint shader)
   GLint blockindex=glGetUniformBlockIndex(shader,"MaterialBuffer");
   glUniformBlockBinding(shader,blockindex,binding);
     
-  GLuint ubo;
-  glGenBuffers(1,&ubo);
-  glBindBuffer(GL_UNIFORM_BUFFER,ubo);
+  glGenBuffers(1,&gl::ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER,gl::ubo);
     
   glBufferData(GL_UNIFORM_BUFFER,drawElement::material.size()*sizeof(Material),
                drawElement::material.data(),GL_STATIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER,binding,ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER,binding,gl::ubo);
   
   glUniform1i(glGetUniformLocation(shader,"nlights"),gl::nlights);
   
@@ -1772,6 +1777,13 @@ void setUniforms(GLint shader)
 #endif
 }
 
+void deleteUniforms()
+{
+  glBindBuffer(GL_UNIFORM_BUFFER,0);
+  glDeleteBuffers(1,&gl::ubo);
+  glUseProgram(0);
+}
+  
 }
 
 #endif

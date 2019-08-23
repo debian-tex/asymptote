@@ -24,6 +24,7 @@
 #include "GL/glew.h"
 
 #ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl.h>
 #ifdef HAVE_LIBGLUT
 #include <GLUT/glut.h>
@@ -79,6 +80,7 @@ extern bool outlinemode;
 extern bool wireframeMode;
 extern Int maxvertices;
 extern bool forceRemesh;
+extern GLuint ubo;
 
 struct projection 
 {
@@ -160,6 +162,14 @@ struct billboard
 };
 
 extern billboard BB;
+
+extern GLint materialShader;
+extern GLint colorShader;
+extern GLint noNormalShader;
+extern GLint pixelShader;
+
+void setUniforms(GLint shader);
+void deleteUniforms();
 
 }
 
