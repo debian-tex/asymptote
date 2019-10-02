@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.53],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.55],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -126,11 +126,17 @@ AC_DEFUN([DEFINE_LIB],[
 Define to 1 if you have the `$1' library (-l$1).
 ])
 
-AC_CHECK_HEADER(tr1/unordered_map,AC_DEFINE(HAVE_TR1_UNORDERED_MAP,1,
-                              DEFINE([<tr1/unordered_map>])),
-        [AC_CHECK_HEADER(unordered_map,AC_DEFINE(HAVE_UNORDERED_MAP,1,
-                              DEFINE([<unordered_map>])),
-        [AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])])
+AC_CHECK_HEADER(tr1/unordered_map)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [#include <tr1/unordered_map>]
+    [std::tr1::unordered_map<int,int> map;]
+  )],
+  AC_DEFINE(HAVE_TR1_UNORDERED_MAP,1,
+  DEFINE([<tr1/unordered_map>])),
+  [
+  AC_CHECK_HEADER(unordered_map,AC_DEFINE(HAVE_UNORDERED_MAP,1,
+                   DEFINE([<unordered_map>])),
+  [AC_CHECK_HEADER(ext/hash_map,,OPTIONS=$OPTIONS"-DNOHASH ")])])
 
 GCVERSION=8.0.4
 ATOMICVERSION=7.6.10
@@ -362,10 +368,11 @@ AC_ARG_ENABLE(offscreen,
 AC_ARG_ENABLE(OpenImageIO,
 [AS_HELP_STRING(--enable-openimageio[[[=no]]],enable experimental OpenImageIO Library)])
 
-if test "x$enable_gl" != "xno"; then
             AC_CHECK_HEADER(glm/glm.hpp,
                        [AC_DEFINE(HAVE_LIBGLM,1,
-                    DEFINE([the <glm/glm.hpp> header]))],AC_MSG_NOTICE([*** Could not find glm header files: will compile without OpenGL support ***]))
+                    DEFINE([the <glm/glm.hpp> header]))],AC_MSG_NOTICE([*** Could not find glm header files: will compile without WebGL or OpenGL support ***]))
+
+if test "x$enable_gl" != "xno"; then
                     AC_CHECK_HEADERS([ncurses/curses.h ncurses.h curses.h],[break])
 if test "x$enable_openimageio" = "xyes"; then
             AC_CHECK_HEADER([OpenEXR/ImathVec.h],
@@ -400,7 +407,7 @@ case "$OSTYPE" in
      *)
          AC_CHECK_LIB([gccpp],[GC_throw_bad_alloc])
           AC_CHECK_LIB([glut], [glutMainLoop],,
-                       AC_MSG_NOTICE([*** Could not find libglut: will compile without GLUT support ***]))
+                       AC_MSG_NOTICE([*** Could not find libglut: will compile without OpenGL support ***]))
          AC_CHECK_LIB([GL], [glDepthMask],
                                  [AC_DEFINE(HAVE_LIBGL,1,
                              DEFINE_LIB([GL]))
@@ -429,7 +436,7 @@ AC_DEFUN([ac_FUNC_STRPTIME], [
 
 # Checks for library functions.
 AC_FUNC_FORK
-AC_CHECK_FUNCS([dup2 floor memset pow sqrt strchr tgamma memrchr])
+AC_CHECK_FUNCS([dup2 floor memset strchr tgamma lgamma memrchr])
 AC_FUNC_STRFTIME
 ac_FUNC_STRPTIME
 AC_FUNC_ERROR_AT_LINE

@@ -39,6 +39,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `lgamma' function. */
+#undef HAVE_LGAMMA
+
 /* Define to 1 if you have the `ncurses' library (-lncurses). */
 #undef HAVE_LIBCURSES
 
@@ -108,9 +111,6 @@
 /* Define to 1 if you have the <ncurses.h> header file. */
 #undef HAVE_NCURSES_H
 
-/* Define to 1 if you have the `pow' function. */
-#undef HAVE_POW
-
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
 
@@ -122,9 +122,6 @@
 
 /* Define to 1 if you have a working <tirpc/rpc/rpc.h> header. */
 #undef HAVE_RPC_RPC_H
-
-/* Define to 1 if you have the `sqrt' function. */
-#undef HAVE_SQRT
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H
