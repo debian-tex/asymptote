@@ -1,3 +1,10 @@
+asymptote (2.55-1) UNRELEASED; urgency=medium
+
+  * New upstream version 2.55
+  * update patches for new release
+
+ -- Norbert Preining <norbert@preining.info>  Wed, 02 Oct 2019 10:05:00 +0900
+
 asymptote (2.53-1) unstable; urgency=medium
 
   * New upstream version.
