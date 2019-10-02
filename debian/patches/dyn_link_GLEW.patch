@@ -1,8 +1,11 @@
-Index: asymptote-2.53/Makefile.in
-===================================================================
---- asymptote-2.53.orig/Makefile.in	2019-08-21 23:23:32.490247435 +0200
-+++ asymptote-2.53/Makefile.in	2019-08-21 23:23:32.482243435 +0200
-@@ -113,7 +113,7 @@
+---
+ Makefile.in  |    2 +-
+ configure.ac |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- asymptote.orig/Makefile.in
++++ asymptote/Makefile.in
+@@ -114,7 +114,7 @@ endif
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
  
@@ -11,11 +14,9 @@ Index: asymptote-2.53/Makefile.in
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
-Index: asymptote-2.53/configure.ac
-===================================================================
---- asymptote-2.53.orig/configure.ac	2019-08-21 23:23:32.490247435 +0200
-+++ asymptote-2.53/configure.ac	2019-08-21 23:23:32.482243435 +0200
-@@ -404,7 +404,7 @@
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
+@@ -411,7 +411,7 @@ case "$OSTYPE" in
           AC_CHECK_LIB([GL], [glDepthMask],
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))

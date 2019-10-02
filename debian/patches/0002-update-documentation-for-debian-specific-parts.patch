@@ -4,14 +4,12 @@ Date: Sat, 2 Jul 2011 23:17:05 +0200
 Subject: update documentation for debian specific parts
 
 ---
- doc/asymptote.texi |   30 +++++++++++-------------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ doc/asymptote.texi |   34 +++++++++++++---------------------
+ 1 file changed, 13 insertions(+), 21 deletions(-)
 
-Index: asymptote-2.48/doc/asymptote.texi
-===================================================================
---- asymptote-2.48.orig/doc/asymptote.texi	2019-03-31 23:30:39.893770362 +0200
-+++ asymptote-2.48/doc/asymptote.texi	2019-03-31 23:31:09.000000000 +0200
-@@ -15,15 +15,16 @@
+--- asymptote.orig/doc/asymptote.texi
++++ asymptote/doc/asymptote.texi
+@@ -15,15 +15,16 @@ Copyright @copyright{} 2004-19 Andy Hamm
       
  @quotation
  Permission is granted to copy, distribute and/or modify this document
@@ -31,16 +29,20 @@ Index: asymptote-2.48/doc/asymptote.texi
  @end direntry
  
  @titlepage
-@@ -430,7 +431,7 @@
+@@ -435,9 +436,9 @@ important configuration variables under
+ @noindent
  @verbatim
  import settings;
- psviewer="gv";
 -pdfviewer="acroread";
-+pdfviewer="xpdf";
+-htmlviewer="google-chrome";
+-psviewer="gv";
++pdfviewer="xdg-open";
++htmlviewer="xdg-open";
++psviewer="xdg-open";
+ display="display";
+ animate="animate";
  gs="gs";
- @end verbatim
- 
-@@ -670,20 +671,9 @@
+@@ -682,20 +683,9 @@ to the directory @code{base} (in the top
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -63,7 +65,7 @@ Index: asymptote-2.48/doc/asymptote.texi
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -707,8 +697,10 @@
+@@ -719,8 +709,10 @@ Further documentation of @code{asy-mode}
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  

@@ -1,13 +1,19 @@
-Index: asymptote-2.53/settings.cc
-===================================================================
---- asymptote-2.53.orig/settings.cc	2019-08-21 06:51:14.000000000 +0200
-+++ asymptote-2.53/settings.cc	2019-08-21 23:14:28.830527539 +0200
-@@ -96,7 +96,7 @@
+---
+ settings.cc |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- asymptote.orig/settings.cc
++++ asymptote/settings.cc
+@@ -98,9 +98,9 @@ string defaultPSViewer="open";
  string defaultPDFViewer="open";
+ string defaultHTMLViewer="open";
  #else  
- string defaultPSViewer="gv";
+-string defaultPSViewer="gv";
 -string defaultPDFViewer="acroread";
+-string defaultHTMLViewer="google-chrome";
++string defaultPSViewer="xdg-open";
 +string defaultPDFViewer="xdg-open";
++string defaultHTMLViewer="xdg-open";
  #endif  
  string defaultGhostscript="gs";
  string defaultGhostscriptLibrary="";

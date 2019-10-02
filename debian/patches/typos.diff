@@ -2,20 +2,12 @@ Description: fix various typos detected by lintian.
 Author: Nicolas Boulenguez <nicolas@debian.org>
 
 ---
- ChangeLog           |    4 ++--
- ReleaseNotes        |    4 ++--
- base/plain_pens.asy |    2 +-
- doc/asyRefCard.tex  |    2 +-
- doc/asymptote.texi  |   12 ++++++------
- runstring.cc        |    2 +-
- runstring.in        |    2 +-
- 7 files changed, 14 insertions(+), 14 deletions(-)
+ ChangeLog |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Index: asymptote-2.53/ChangeLog
-===================================================================
---- asymptote-2.53.orig/ChangeLog	2019-08-23 06:29:49.768860123 +0200
-+++ asymptote-2.53/ChangeLog	2019-08-23 06:29:49.764858123 +0200
-@@ -18016,7 +18016,7 @@
+--- asymptote.orig/ChangeLog
++++ asymptote/ChangeLog
+@@ -19463,7 +19463,7 @@ Author: John Bowman <bowman@ualberta.ca>
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -24,7 +16,7 @@ Index: asymptote-2.53/ChangeLog
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -18046,7 +18046,7 @@
+@@ -19493,7 +19493,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  
