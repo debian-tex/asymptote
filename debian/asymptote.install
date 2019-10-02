@@ -9,3 +9,4 @@
 ./debian/tmp/usr/share/asymptote/asy_filetype.vim /usr/share/vim/addons/ftdetect/
 ./debian/tmp/usr/share/asymptote/asy.vim /usr/share/vim/addons/ftplugin/
 ./debian/tmp/usr/share/asymptote/shaders/*.glsl
+./debian/tmp/usr/share/asymptote/webgl/
