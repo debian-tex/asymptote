@@ -1,3 +1,262 @@
+commit 45b49582cbcd3188c713b0fce1eda8ca1a459441
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 8 00:55:18 2019 -0600
+
+    Improve feature description.
+
+commit 051f1a6386034b5631f9fa64fc293e92e65667e9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 8 00:22:52 2019 -0600
+
+    Remove unused variables.
+
+commit 2a237885ddc65eb8db7fc9a8d2fa51c17a5b25a1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 8 00:17:47 2019 -0600
+
+    Fix numerical degeneracy in points[] intersectionpoints(bqe bqe1, bqe bqe2) of geometry module.
+
+commit b9d73d9aca44db0196e74e3d52895396cf8d7288
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 8 00:10:35 2019 -0600
+
+    Make --version option display compiled-in features.
+
+commit 8544d4972958ff35132da346e4ca5a5422eb77ca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 17:48:46 2019 -0600
+
+    Update examples.
+
+commit 28d26ed92f31224381dfcab4adf54e3b915320b9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 16:20:59 2019 -0600
+
+    Fix animations.
+
+commit b4bbb947303dca29e6ac3f45ebd4a34d0d97282e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 15:48:22 2019 -0600
+
+    Fix warning message.
+
+commit b0b0f33ca9dbdb63cde838c863ee173534ea3295
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 14:28:36 2019 -0700
+
+    Workaround broken XDR headers under MacOS X.
+
+commit 9d890eca34a9413f2f9f145546d7430acf2e8d7d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 03:28:07 2019 -0600
+
+    Update asygl.
+
+commit cf3745d5699be73b72f1cac2b355e689dd9c1bb1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 03:21:43 2019 -0600
+
+    Remesh on home.
+
+commit 49c6cc075c1f587577c6a6fa1aad130adf5b4666
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 03:11:22 2019 -0600
+
+    Fix viewportshift.
+
+commit 12739aee501fdb72956b6bc0ceec97dfd2db35d7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 00:00:26 2019 -0600
+
+    Add missing conditional.
+
+commit 383bd8479e344c7dd7181808507122a31663a149
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 6 23:39:39 2019 -0600
+
+    Set ASYGLVERSION in configure.ac; install asygl.js.
+
+commit 4e60948a42e1a2e8504b3a76b300bc8f00b02d2e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 6 21:21:00 2019 -0600
+
+    Remove version number from offline asygl library;
+    include pruned gl-matrix source file and license in release.
+
+commit 56c9b2ec67ed1e0c20d933f2f6414abdaa81412a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 6 20:26:57 2019 -0600
+
+    Update asygl.
+
+commit c55b40e0cba6deb6a431affd1fcc6de9968707ec
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 6 20:24:41 2019 -0600
+
+    Use unminified pruned gl-matrix source to build asygl (to satisfy Debian rules).
+
+commit 353ed86880e1e6e75d6548708b0533bf4ad30655
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 6 02:22:54 2019 -0600
+
+    Update documentation.
+
+commit 8307d5ad2f3d37998e87c231b30009b23e47278b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 21:00:00 2019 -0600
+
+    Update asygl.
+
+commit dbbfca33d40d31bab922e92f92a6f8e80edb319b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 20:58:51 2019 -0600
+
+    Implement viewportshift in webgl.
+
+commit 562d634042a295db93d5eaa4651df35350b13f7a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 20:23:53 2019 -0600
+
+    Update examples.
+
+commit e4da7cbd7ef81b2ce81f84b7240602494096fce0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 16:28:06 2019 -0600
+
+    Remove run-time conditional from fragment shader; move initshader caller.
+
+commit 88887ac90cd05e56905dbc6f06e81b0d73b992d4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:42:15 2019 -0600
+
+    Output svg rather than html for 2D pictures.
+
+commit 3e7af8b130b37a606d0941ad30a4824313dfb196
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:41:34 2019 -0600
+
+    Cap border.
+
+commit bd00509cefeb85989ad059f3a8b6993a1ea3be85
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:41:19 2019 -0600
+
+    Remove unwanted MSDOS terminators.
+
+commit 58bbf1171a5479b8f73d504d15ab4566d4578e91
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:40:23 2019 -0600
+
+    Simplify code.
+
+commit bb7a20bfe034c0ffa2e1a64af3535491d9f4c526
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:39:14 2019 -0600
+
+    Fix light=nolight in WebGL.
+
+commit deddebe4b300db59dabf56c5d8ae736ca7007db6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:36:10 2019 -0600
+
+    Update asygl.
+
+commit f3136218f7a1bcc7c5e2e8da99e423d11d0ae5bf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 5 14:33:26 2019 -0600
+
+    Handle currentlight=nolight in WebGL.
+
+commit 12778d70f1d862dfa815f244cd01cccc84039f71
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 3 11:39:09 2019 -0600
+
+    Increment version to 2.57.
+
+commit be2e06c3b0c223338cb8b88906ff84db67690e71
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 3 10:41:51 2019 -0600
+
+    Remove suffix argument from build-script.
+
+commit b2558d9e829450fee2baa7c5017c505e99c1a53a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 3 09:49:13 2019 -0600
+
+    Update required dvisgm version in documentation.
+
+commit 09715350e4873b76339f06de179fb45868037553
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Oct 2 15:51:20 2019 -0600
+
+    Update documentation and example.
+
+commit 7614a954e5f4f81ff8dd004475afb2486c5a4fd4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Oct 2 00:49:42 2019 -0600
+
+    Document physically based rendering and transparent background option for WebGL.
+
+commit 499ae43068ae3cb8c31e3e4a94dd0b10a9bae77a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Oct 2 00:01:03 2019 -0600
+
+    Remove unused code.
+
+commit c8238140ab01cbe3c960fb55b36d17ba01c98d82
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 22:58:29 2019 -0600
+
+    Fix array bounds.
+
+commit 6a3d04c27ac85cb862bbe4d9ae7968941da9785b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 21:56:04 2019 -0600
+
+    Disable scrolling within viewport.
+
+commit 76aebefd6557f5590e61dfbe32b5391176e2e935
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 21:55:25 2019 -0600
+
+    Update asygl.
+
+commit 0b49c13bfd465d55bdd96baf9ac273ffe98fe10b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 14:46:58 2019 -0600
+
+    Update asygl.
+
+commit 437223b1a10947e0496a7cf810796d3081cfb2f9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 14:38:09 2019 -0600
+
+    Allow transparent background in webgl.
+
+commit f35a22b836d0c4b2fa3f4182ff852c8aeb3cb44d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 09:54:28 2019 -0600
+
+    Implement background color in webgl.
+
+commit c3b7f41f9be0dcbca35296aa8ff172a99c63c2f8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 1 09:54:05 2019 -0600
+
+    Update asygl.
+
+commit 451be75316e09552b424bf11612db9a0404bbd9f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Sep 30 23:54:36 2019 -0600
+
+    Fix handling of missing glm library.
+
+commit 17694a76cfac4212110f5d9ae271e66222f7d2d4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Sep 29 16:21:30 2019 -0600
+
+    Increment version to 2.56.
+
 commit a8198d8ff1c6742469d0b913adaa6645628fc005
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sun Sep 29 15:53:20 2019 -0600

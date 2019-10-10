@@ -1,3 +1,21 @@
+Release Notes for Version 2.57
+
+Scenes with lighting disabled are rendered correctly in WebGL.
+Attempting to output HTML for 2D pictures produces an SVG file.
+A conditional was removed from the fragment shaders. A viewportshift option
+was added to the WebGL driver; the home (h) option now forces a remesh.
+The version number was removed from the local offline copy of asygl. 
+A numerical degeneracy in the conic sections intersection routine
+was fixed. A workaround for the broken XDR headers under MacOS X was
+implemented. An issue with animations was fixed. The --version option displays
+a list of compiled-in features. 
+
+Release Notes for Version 2.56
+
+An array bounds error was fixed. WebGL output now supports background
+colors, including transparent backgrounds. Preprocessor conditionals were
+fixed. Scrolling of webgl images is now disabled within the viewport.
+
 Release Notes for Version 2.55
 
 An initialization bug in the OpenGL renderer and portability issues were
