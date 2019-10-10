@@ -1,2 +1,5 @@
-# is is there in webgl/gl.js!
-asymptote source: source-is-missing base/webgl/asygl-1.00.js *
+# the one is the source of the other
+# the second line length is based on a long matrix multiplication written in one line
+asymptote source: source-is-missing base/webgl/asygl.js *
+asymptote source: source-is-missing gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
+
