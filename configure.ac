@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.57],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.58],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -229,7 +229,7 @@ AC_ARG_ENABLE(gc-full-debug,
 
 INCL=$INCL" -I/usr/include/tirpc"
 
-if test "$OSTYPE" = "cygwin"; then
+if test "$OSTYPE" = "msdos"; then
 CPPFLAGS=$CPPFLAGS" -D__MSDOS__ -I/usr/include/w32api -I/usr/include -DCALLBACK=__stdcall $INCL"
 else
 CPPFLAGS=$CPPFLAGS" $INCL"
@@ -238,7 +238,6 @@ fi
 AC_CHECK_FUNC(getopt_long_only, AC_DEFINE(HAVE_GNU_GETOPT_H, 1,
                            DEFINE([GNU <getopt.h>])),
                            getopt="getopt getopt1",)
-
 AC_SUBST(getopt)
 AC_SUBST(GCVERSION)
 AC_SUBST(ASYGLVERSION)
@@ -248,6 +247,7 @@ AC_SUBST(GCLIB)
 AC_SUBST(GCPPLIB)
 AC_SUBST(INCL)
 AC_SUBST(OPTIONS)
+AC_SUBST(GLEW)
 
 # Checks for libraries.
 AC_SEARCH_LIBS([lgamma],[m c],,
@@ -384,7 +384,7 @@ if test "x$enable_openimageio" = "xyes"; then
 fi
 
 case "$OSTYPE" in
-     cygwin)
+     msdos)
               AC_CHECK_LIB([gccpp],[GC_throw_bad_alloc])
               AC_CHECK_HEADER(GL/glut.h,
                                   [AC_DEFINE(HAVE_LIBGLUT,1,
@@ -414,7 +414,10 @@ case "$OSTYPE" in
          AC_CHECK_LIB([GL], [glDepthMask],
                                  [AC_DEFINE(HAVE_LIBGL,1,
                              DEFINE_LIB([GL]))
-                             LIBS=$LIBS"-lGL glew.o "],
+                             LIBS=$LIBS"-lGL "
+                             GLEW="glew.o "
+                             AC_CHECK_LIB([GLX],[glXGetProcAddressARB],
+                             GLEW=$GLEW"-lGLX ")],
                                    AC_MSG_NOTICE([*** Could not find libGL: will compile without OpenGL support ***]))
 esac
    if test "x$enable_offscreen" = "xyes"; then
