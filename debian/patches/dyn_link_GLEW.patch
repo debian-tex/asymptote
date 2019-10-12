@@ -16,12 +16,12 @@
  	else \
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
-@@ -414,7 +414,7 @@ case "$OSTYPE" in
-          AC_CHECK_LIB([GL], [glDepthMask],
+@@ -415,7 +415,7 @@ case "$OSTYPE" in
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
--                             LIBS=$LIBS"-lGL glew.o "],
-+                             LIBS=$LIBS"-lGL -lGLEW "],
+                              LIBS=$LIBS"-lGL "
+-                             GLEW="glew.o "
++                             GLEW="-lGLEW "
+                              AC_CHECK_LIB([GLX],[glXGetProcAddressARB],
+                              GLEW=$GLEW"-lGLX ")],
                                     AC_MSG_NOTICE([*** Could not find libGL: will compile without OpenGL support ***]))
- esac
-    if test "x$enable_offscreen" = "xyes"; then
