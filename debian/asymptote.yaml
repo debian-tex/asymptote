@@ -1,0 +1,5 @@
+addon: asymptote
+description: "easier editing of Asymptote .asy files"
+files:
+  - syntax/asy.vim
+  - ftdetect/asy_filetype.vim
