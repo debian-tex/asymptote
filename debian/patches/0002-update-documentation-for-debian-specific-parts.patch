@@ -42,7 +42,7 @@ Subject: update documentation for debian specific parts
  display="display";
  animate="animate";
  gs="gs";
-@@ -682,20 +683,9 @@ to the directory @code{base} (in the top
+@@ -683,20 +684,9 @@ to the directory @code{base} (in the top
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -65,7 +65,7 @@ Subject: update documentation for debian specific parts
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -719,8 +709,10 @@ Further documentation of @code{asy-mode}
+@@ -720,8 +710,10 @@ Further documentation of @code{asy-mode}
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  

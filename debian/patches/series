@@ -2,5 +2,4 @@
 0002-update-documentation-for-debian-specific-parts.patch
 honour-source-date-epoch
 typos.diff
-python3_nonintrusive.diff
 dyn_link_GLEW.patch
