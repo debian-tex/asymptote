@@ -1,3 +1,10 @@
+asymptote (2.60-1) unstable; urgency=medium
+
+  * New upstream version 2.60
+  * adjust typo patch
+
+ -- Norbert Preining <norbert@preining.info>  Thu, 07 Nov 2019 09:57:06 +0900
+
 asymptote (2.59-1) unstable; urgency=medium
 
   * rework vim integration according to Francesco Poli (Closes: #942224)
