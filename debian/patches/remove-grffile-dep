@@ -1,0 +1,14 @@
+---
+ doc/asy-latex.dtx |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- asymptote.orig/doc/asy-latex.dtx
++++ asymptote/doc/asy-latex.dtx
+@@ -196,7 +196,6 @@ Licence: GPL2+
+ \RequirePackage{keyval}
+ \RequirePackage{ifthen}
+ \RequirePackage{color,graphicx}
+-\RequirePackage[space]{grffile}
+ %    \end{macrocode}
+ %
+ % \paragraph{Emulating packages}
