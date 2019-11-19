@@ -137,8 +137,7 @@ void texdefines(T& out, mem::list<string>& preamble=processData().TeXpreamble,
   string texengine=settings::getSetting<string>("tex");
   if(settings::latex(texengine)) {
     if(pipe || !settings::getSetting<bool>("inlinetex")) {
-      out << "\\usepackage{graphicx}" << newl
-          << "\\usepackage[space]{grffile}" << newl;
+      out << "\\usepackage{graphicx}" << newl;
       if(settings::xe(texengine)) {
         out << "\\makeatletter" << newl
             << "\\def\\Gread@@xetex#1{%" << newl

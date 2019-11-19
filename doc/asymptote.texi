@@ -15,15 +15,16 @@ Copyright @copyright{} 2004-19 Andy Hammerlindl, John Bowman, and Tom Prince.
      
 @quotation
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the @acronym{GNU} Lesser General Public License (see the
-file LICENSE in the top-level source directory).
+under the terms of the @acronym{GNU} Lesser General Public License.  On
+Debian systems, the @acronym{LGPL} can be found at
+/usr/share/common-licenses/LGPL.
 
 @end quotation
 @end copying
      
 @dircategory Languages
 @direntry
-* asymptote: (asymptote/asymptote). Vector graphics language.
+* asymptote: (asymptote). Vector graphics language.
 @end direntry
 
 @titlepage
@@ -435,9 +436,9 @@ important configuration variables under @code{UNIX}:
 @noindent
 @verbatim
 import settings;
-pdfviewer="acroread";
-htmlviewer="google-chrome";
-psviewer="gv";
+pdfviewer="xdg-open";
+htmlviewer="xdg-open";
+psviewer="xdg-open";
 display="display";
 animate="animate";
 gs="gs";
@@ -683,20 +684,9 @@ to the directory @code{base} (in the top level directory of the
 @cindex @code{asy-mode}
 @cindex @code{lasy-mode}
 Users of @code{emacs} can edit @code{Asymptote} code with the mode
-@code{asy-mode}, after enabling it by putting the following lines in their
-@code{.emacs} initialization file, replacing @code{ASYDIR} with the
-location of the @code{Asymptote} system directory (by default,
-@code{@value{Datadir}/asymptote} or @code{C:\Program Files\Asymptote}
-under @code{MSDOS}):
-@verbatim
-(add-to-list 'load-path "ASYDIR")
-(autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
-(autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
-(autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
-(add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
+@code{asy-mode}, which is installed and enabled by default in the Debian
+package.
 
-@end verbatim
-@noindent
 Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
 and displays the current buffer, and the key binding @code{C-c ?}, which
 shows the available function prototypes for the command at the cursor.
@@ -720,8 +710,10 @@ Further documentation of @code{asy-mode} is available within
 @cindex @code{asy.vim}
 Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
 
-@noindent
-@code{cp @value{Datadir}/asymptote/asy.vim ~/.vim/syntax/asy.vim}
+@verbatim
+cp @value{Datadir}/doc/asymptote/examples/asy.vim.gz ~/.vim/syntax/asy.vim.gz
+gunzip ~/.vim/syntax/asy.vim.gz
+@end verbatim
 
 @noindent
 and add the following to their @code{~/.vimrc} file:

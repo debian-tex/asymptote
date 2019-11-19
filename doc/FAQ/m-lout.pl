@@ -23,7 +23,7 @@
 
 sub lout_init {
     open(LOUT,">$prefix.lout");
-    chop($dprint= `date '+%d %B %Y'`);
+    $dprint = time2str("%d %B %Y", $ENV{SOURCE_DATE_EPOCH} || time, "UTC");
     $dprint =~ s/^0//;
 }
 

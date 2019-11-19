@@ -98,9 +98,9 @@ string defaultPSViewer="open";
 string defaultPDFViewer="open";
 string defaultHTMLViewer="open";
 #else  
-string defaultPSViewer="gv";
-string defaultPDFViewer="acroread";
-string defaultHTMLViewer="google-chrome";
+string defaultPSViewer="xdg-open";
+string defaultPDFViewer="xdg-open";
+string defaultHTMLViewer="xdg-open";
 #endif  
 string defaultGhostscript="gs";
 string defaultGhostscriptLibrary="";

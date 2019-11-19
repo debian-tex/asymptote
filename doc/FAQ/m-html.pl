@@ -34,8 +34,8 @@ sub html_init {
     print HTML "<html>\n";
     $html_needpara= -1;
     $html_end='';
-    chop($html_date=`date '+%d %B %Y'`);
-    chop($html_year=`date '+%Y'`);
+    $html_date=time2str("%d %B %Y", $ENV{SOURCE_DATE_EPOCH} || time, "UTC");
+    $html_year=time2str("%Y", $ENV{SOURCE_DATE_EPOCH} || time, "UTC");
 }
 
 sub html_startup {

@@ -415,7 +415,7 @@ case "$OSTYPE" in
                                  [AC_DEFINE(HAVE_LIBGL,1,
                              DEFINE_LIB([GL]))
                              LIBS=$LIBS"-lGL "
-                             GLEW="glew.o "
+                             GLEW="-lGLEW "
                              AC_CHECK_LIB([GLX],[glXGetProcAddressARB],
                              GLEW=$GLEW"-lGLX ")],
                                    AC_MSG_NOTICE([*** Could not find libGL: will compile without OpenGL support ***]))

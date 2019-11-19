@@ -1,8 +1,9 @@
 asymptote (2.61-1) unstable; urgency=medium
 
   * New upstream version 2.61
+  * Improve grffile removal (also from generated files)
 
- -- Norbert Preining <norbert@preining.info>  Tue, 19 Nov 2019 16:26:21 +0900
+ -- Norbert Preining <norbert@preining.info>  Tue, 19 Nov 2019 17:35:06 +0900
 
 asymptote (2.60-2) unstable; urgency=medium
 
