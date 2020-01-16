@@ -21,8 +21,6 @@
 # by the GPL.  However, I would appreciate it if you credited me if
 # appropriate in any documents you format using BFNN.)
 
-use Date::Format;
-
 @outputs=('ascii','info','html');
 
 while ($ARGV[0] =~ m/^\-/) {
@@ -137,12 +135,7 @@ while (<>) {
                 m/([^\\])\`/ || warn "`$_'";
                 $_= $';
                 $cmd= $`.$1;
-                if($cmd =~ /date [\"\']\+(.*?)[\"\']/) {
-                  my $format=$1;
-                  $it=time2str($format, $ENV{SOURCE_DATE_EPOCH} || time, "UTC");
-                } else {
-                  $it= `$cmd`; chop $it;
-                }
+                $it= `$cmd`; chop $it;
                 print $fh $it;
             }
             print $fh $_;

@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.61],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.62],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -415,7 +415,7 @@ case "$OSTYPE" in
                                  [AC_DEFINE(HAVE_LIBGL,1,
                              DEFINE_LIB([GL]))
                              LIBS=$LIBS"-lGL "
-                             GLEW="-lGLEW "
+                             GLEW="glew.o "
                              AC_CHECK_LIB([GLX],[glXGetProcAddressARB],
                              GLEW=$GLEW"-lGLX ")],
                                    AC_MSG_NOTICE([*** Could not find libGL: will compile without OpenGL support ***]))

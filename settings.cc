@@ -98,9 +98,9 @@ string defaultPSViewer="open";
 string defaultPDFViewer="open";
 string defaultHTMLViewer="open";
 #else  
-string defaultPSViewer="xdg-open";
-string defaultPDFViewer="xdg-open";
-string defaultHTMLViewer="xdg-open";
+string defaultPSViewer="gv";
+string defaultPDFViewer="acroread";
+string defaultHTMLViewer="google-chrome";
 #endif  
 string defaultGhostscript="gs";
 string defaultGhostscriptLibrary="";
@@ -961,7 +961,7 @@ struct versionOption : public option {
 #ifdef HAVE_RPC_RPC_H
     xdr=true;
 #endif
-#ifdef HAVE_LIBREADLINE
+#if defined(HAVE_LIBREADLINE) && defined(HAVE_LIBCURSES)
     readline=true;
 #endif
 #ifdef HAVE_LIBSIGSEGV
