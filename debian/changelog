@@ -1,9 +1,9 @@
-asymptote (2.62-1) UNRELEASED; urgency=medium
+asymptote (2.62-1) unstable; urgency=medium
 
   * New upstream version 2.62
   * update patches
 
- -- Norbert Preining <norbert@preining.info>  Thu, 16 Jan 2020 22:34:47 +0900
+ -- Norbert Preining <norbert@preining.info>  Mon, 10 Feb 2020 23:52:53 +0900
 
 asymptote (2.61-1) unstable; urgency=medium
 
