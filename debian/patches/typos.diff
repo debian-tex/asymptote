@@ -7,7 +7,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
 
 --- asymptote.orig/ChangeLog
 +++ asymptote/ChangeLog
-@@ -20675,7 +20675,7 @@ Author: John Bowman <bowman@ualberta.ca>
+@@ -21214,7 +21214,7 @@ Author: John Bowman <bowman@ualberta.ca>
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -16,7 +16,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -20705,7 +20705,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
+@@ -21244,7 +21244,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  

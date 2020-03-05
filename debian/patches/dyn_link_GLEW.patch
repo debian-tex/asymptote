@@ -16,7 +16,7 @@
  	else \
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
-@@ -415,7 +415,7 @@ case "$OSTYPE" in
+@@ -419,7 +419,7 @@ case "$OSTYPE" in
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "
