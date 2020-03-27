@@ -8,7 +8,7 @@ Uploaders: Hubert Chathi <uhoreg@debian.org>,
 Section: tex
 Priority: optional
 Build-Depends: bison,
-               debhelper (>= 10),
+               debhelper-compat (= 12),
                dh-python,
                dpkg-dev (>= 1.16.1),
                flex,
