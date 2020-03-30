@@ -1,3 +1,9 @@
+asymptote (2.65-2) unstable; urgency=medium
+
+  * fix doc-base specification for new location of doc files
+
+ -- Norbert Preining <norbert@preining.info>  Mon, 30 Mar 2020 18:28:17 +0900
+
 asymptote (2.65-1) unstable; urgency=medium
 
   * New upstream version 2.65
