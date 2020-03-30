@@ -1,0 +1,3 @@
+symlink_to_dir /usr/share/doc/asymptote/examples ../asymptote-doc/examples 2.65-1~
+symlink_to_dir /usr/share/doc/asymptote/faq ../asymptote-doc/faq 2.65-1~
+symlink_to_dir /usr/share/doc/asymptote/html ../asymptote-doc/html 2.65-1~
