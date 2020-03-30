@@ -4,12 +4,12 @@ Abstract: This document describes the Asymptote system and programming language.
 Section: Science/Mathematics
 
 Format: HTML
-Index: /usr/share/doc/asymptote-doc/html/index.html
-Files: /usr/share/doc/asymptote-doc/html/*.html
+Index: /usr/share/doc/asymptote/html/index.html
+Files: /usr/share/doc/asymptote/html/*.html
 
 Format: PDF
-Files: /usr/share/doc/asymptote-doc/asymptote.pdf
-       /usr/share/doc/asymptote-doc/asyRefCard.pdf
-       /usr/share/doc/asymptote-doc/asy-latex.pdf
-       /usr/share/doc/asymptote-doc/CAD.pdf
-       /usr/share/doc/asymptote-doc/TeXShopAndAsymptote.pdf
+Files: /usr/share/doc/asymptote/asymptote.pdf
+       /usr/share/doc/asymptote/asyRefCard.pdf
+       /usr/share/doc/asymptote/asy-latex.pdf
+       /usr/share/doc/asymptote/CAD.pdf
+       /usr/share/doc/asymptote/TeXShopAndAsymptote.pdf
