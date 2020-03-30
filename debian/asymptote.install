@@ -1,13 +1,13 @@
-./debian/tmp/usr/bin/asy
-./debian/tmp/usr/share/texmf/
-./debian/tmp/usr/share/asymptote/*.asy
-./debian/tmp/usr/share/asymptote/*.sh
-./debian/tmp/usr/share/asymptote/*.py
-./debian/tmp/usr/share/asymptote/*.ps
-./debian/tmp/usr/share/asymptote/*.js
-./debian/tmp/usr/share/asymptote/*.el	/usr/share/emacs/site-lisp/
-./debian/tmp/usr/share/asymptote/shaders/*.glsl
-./debian/tmp/usr/share/asymptote/webgl/
-./debian/tmp/usr/share/asymptote/asy_filetype.vim /usr/share/vim/addons/ftdetect/
-./debian/tmp/usr/share/asymptote/asy.vim /usr/share/vim/addons/syntax/
+usr/bin/asy
+usr/share/texmf/
+usr/share/asymptote/*.asy
+usr/share/asymptote/*.sh
+usr/share/asymptote/*.py
+usr/share/asymptote/*.ps
+usr/share/asymptote/*.js
+usr/share/asymptote/*.el	/usr/share/emacs/site-lisp/
+usr/share/asymptote/shaders/*.glsl
+usr/share/asymptote/webgl/
+usr/share/asymptote/asy_filetype.vim /usr/share/vim/addons/ftdetect/
+usr/share/asymptote/asy.vim /usr/share/vim/addons/syntax/
 ./debian/asymptote.yaml /usr/share/vim/registry/
