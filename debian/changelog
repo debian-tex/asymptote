@@ -2,9 +2,9 @@ asymptote (2.65-1) unstable; urgency=medium
 
   * New upstream version 2.65
   * update typos patch
-  * switch to dh 12
+  * switch to dh 12, cleanup install process
 
- -- Norbert Preining <norbert@preining.info>  Fri, 27 Mar 2020 17:54:26 +0900
+ -- Norbert Preining <norbert@preining.info>  Mon, 30 Mar 2020 11:16:34 +0900
 
 asymptote (2.64-1) unstable; urgency=medium
 
