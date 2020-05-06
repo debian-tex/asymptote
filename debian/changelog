@@ -1,3 +1,10 @@
+asymptote (2.65-3) UNRELEASED; urgency=medium
+
+  * Set upstream metadata fields: Bug-Submit (from ./configure),
+    Repository.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Wed, 06 May 2020 07:22:55 +0000
+
 asymptote (2.65-2) unstable; urgency=medium
 
   * fix doc-base specification for new location of doc files
