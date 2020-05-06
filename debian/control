@@ -34,7 +34,7 @@ Build-Depends: bison,
                zlib1g-dev,
                libglm-dev,
                libglew-dev
-Standards-Version: 4.4.0
+Standards-Version: 4.5.0
 Homepage: http://asymptote.sourceforge.net/
 Vcs-Git: https://github.com/debian-tex/asymptote.git
 Vcs-Browser: https://github.com/debian-tex/asymptote
