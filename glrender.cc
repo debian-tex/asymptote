@@ -24,6 +24,7 @@
 #include "bbox3.h"
 #include "drawimage.h"
 #include "interact.h"
+#include "fpu.h"
 
 namespace gl {
 #ifdef HAVE_PTHREAD
@@ -79,9 +80,6 @@ vertexBuffer triangleData;
 
 const size_t Nbuffer=10000;
 const size_t nbuffer=1000;
-
-GLuint attributeBuffer;
-GLuint indicesBuffer; 
 }
 
 #endif /* HAVE_GL */
@@ -103,12 +101,15 @@ size_t Nmaterials=1;
 size_t nmaterials=48;
 }
 
+extern void exitHandler(int);
+
 namespace gl {
   
 bool outlinemode=false;
 bool glthread=false;
+bool glupdate=false;
+bool glexit=false;
 bool initialize=true;
-bool exporting=false;
 
 using camp::picture;
 using camp::drawRawImage;
@@ -123,7 +124,8 @@ using settings::Setting;
 
 bool Iconify=false;
 bool ignorezoom;
-int Fitscreen;
+int Fitscreen=1;
+bool firstFit;
 
 bool queueExport=false;
 bool readyAfterExport=false;
@@ -141,8 +143,6 @@ int fullWidth,fullHeight;
 int Width,Height;
 double oWidth,oHeight;
 int screenWidth,screenHeight;
-int maxWidth;
-int maxHeight;
 int maxTileWidth;
 int maxTileHeight;
 
@@ -205,8 +205,6 @@ dmat4 drotateMat;
 const double *dprojView;
 const double *dView;
 double BBT[9];
-
-GLuint ubo;
 
 unsigned int framecount;
 
@@ -313,6 +311,7 @@ bool Animate;
 bool Step;
 
 #ifdef HAVE_GL
+
 void idle() 
 {
   glutIdleFunc(NULL);
@@ -325,8 +324,10 @@ void home(bool webgl=false)
   X=Y=cx=cy=0.0;
 #ifdef HAVE_GL  
 #ifdef HAVE_LIBGLUT
-  if(!webgl && !getSetting<bool>("offscreen"))
+#ifndef HAVE_LIBOSMESA
+  if(!webgl)
     idle();
+#endif
 #endif
 #endif
   dviewMat=dmat4(1.0);
@@ -392,7 +393,7 @@ GLuint initHDR() {
   return tex;
 }
 
-#endif 
+#endif
 GLint shaderProg,shaderProgColor;
 
 void *glrenderWrapper(void *a);
@@ -479,10 +480,6 @@ void deleteShaders()
 
 void setBuffers()
 {
-  glGenBuffers(1,&camp::attributeBuffer);
-  glGenBuffers(1,&camp::indicesBuffer);
-  glGenBuffers(1,&ubo);
-  
   GLuint vao;
   glGenVertexArrays(1,&vao);
   glBindVertexArray(vao);
@@ -498,7 +495,7 @@ void drawscene(int Width, int Height)
 {
 #ifdef HAVE_PTHREAD
   static bool first=true;
-  if(glthread && first && !getSetting<bool>("offscreen")) {
+  if(glthread && first) {
     wait(initSignal,initLock);
     endwait(initSignal,initLock);
     first=false;
@@ -561,17 +558,15 @@ void Export()
       (orthographic ? trOrtho : trFrustum)(tr,xmin,xmax,ymin,ymax,-zmax,-zmin);
    
       size_t count=0;
-      exporting=true;
       do {
         trBeginTile(tr);
+        fpu_trap(false); // Work around FE_INVALID in OSMesa.
         drawscene(fullWidth,fullHeight);
+        fpu_trap(settings::trap());
         ++count;
       } while (trEndTile(tr));
-      exporting=false;
-
       if(settings::verbose > 1)
-        cout << count << " tile" << (count != 1 ? "s" : "") << " drawn"
-             << endl;
+        cout << count << " tile" << (count != 1 ? "s" : "") << " drawn" << endl;
       trDelete(tr);
 
       picture pic;
@@ -594,17 +589,18 @@ void Export()
     outOfMemory();
   }
   setProjection();
-  bool offscreen=getSetting<bool>("offscreen");
+
+#ifndef HAVE_LIBOSMESA
 #ifdef HAVE_LIBGLUT
-  if(!offscreen)
     glutPostRedisplay();
 #endif
 
 #ifdef HAVE_PTHREAD
-  if(glthread && readyAfterExport && !offscreen) {
+  if(glthread && readyAfterExport) {
     readyAfterExport=false;        
     endwait(readySignal,readyLock);
   }
+#endif
 #endif
 }
 
@@ -631,11 +627,9 @@ inline unsigned int floorpow2(unsigned int n)
 void quit() 
 {
 #ifdef HAVE_LIBOSMESA
-  if(getSetting<bool>("offscreen")) {
     if(osmesa_buffer) delete[] osmesa_buffer;
     if(ctx) OSMesaDestroyContext(ctx);
     exit(0);
-  }
 #endif
 #ifdef HAVE_LIBGLUT
   if(glthread) {
@@ -650,7 +644,7 @@ void quit()
       glutDisplayFunc(nodisplay);
       endwait(readySignal,readyLock);
     }
-#endif    
+#endif
     if(interact::interactive)
       glutHideWindow();
   } else {
@@ -683,8 +677,9 @@ void mode()
       break;
   }
 #ifdef HAVE_LIBGLUT
-  if(!getSetting<bool>("offscreen"))
+#ifndef HAVE_LIBOSMESA
     glutPostRedisplay();
+#endif
 #endif
 }
 
@@ -693,12 +688,12 @@ void mode()
 bool capsize(int& width, int& height) 
 {
   bool resize=false;
-  if(width > maxWidth) {
-    width=maxWidth;
+  if(width > screenWidth) {
+    width=screenWidth;
     resize=true;
   }
-  if(height > maxHeight) {
-    height=maxHeight;
+  if(height > screenHeight) {
+    height=screenHeight;
     resize=true;
   }
   return resize;
@@ -745,10 +740,30 @@ void setsize(int w, int h, bool reposition=true)
   glutPostRedisplay();
 }
 
+void capzoom()
+{
+  static double maxzoom=sqrt(DBL_MAX);
+  static double minzoom=1.0/maxzoom;
+  if(Zoom <= minzoom) Zoom=minzoom;
+  if(Zoom >= maxzoom) Zoom=maxzoom;
+
+  if(Zoom != lastzoom) remesh=true;
+  lastzoom=Zoom;
+}
+
 void fullscreen(bool reposition=true) 
 {
   Width=screenWidth;
   Height=screenHeight;
+  if(firstFit) {
+    if(Width < Height*Aspect)
+      Zoom *= Width/(Height*Aspect);
+    capzoom();
+    setProjection();
+    firstFit=false;
+  }
+  Xfactor=((double) screenHeight)/Height;
+  Yfactor=((double) screenWidth)/Width;
   reshape0(Width,Height);
   if(reposition)
     glutPositionWindow(0,0);
@@ -772,15 +787,15 @@ void fitscreen(bool reposition=true)
       oldHeight=Height;
       int w=screenWidth;
       int h=screenHeight;
-      if(w >= h*Aspect) w=(int) (h*Aspect+0.5);
-      else h=(int) (w/Aspect+0.5);
+      if(w > h*Aspect)
+        w=min((int) ceil(h*Aspect),w);
+      else
+        h=min((int) ceil(w/Aspect),h);
       setsize(w,h,reposition);
       break;
     }
     case 2: // Full screen
     {
-      Xfactor=((double) screenHeight)/Height;
-      Yfactor=((double) screenWidth)/Width;
       fullscreen(reposition);
       break;
     }
@@ -816,7 +831,7 @@ void nextframe(int)
 {
 #ifdef HAVE_PTHREAD
   endwait(readySignal,readyLock);
-#endif    
+#endif
   double framedelay=getSetting<double>("framedelay");
   if(framedelay > 0)
     usleep((unsigned int) (1000.0*framedelay+0.5));
@@ -901,10 +916,24 @@ void update()
 void updateHandler(int)
 {
   queueScreen=true;
+  remesh=true;
   update();
   if(interact::interactive || !Animate) {
     glutShowWindow();
   }
+}
+
+void poll(int)
+{
+  if(glupdate) {
+    updateHandler(0);
+    glupdate=false;
+  }
+  if(glexit) {
+    exitHandler(0);
+    glexit=false;
+  }
+  glutTimerFunc(100.0,poll,0);
 }
 
 void animate() 
@@ -959,17 +988,6 @@ void pan(int x, int y)
   update();
 }
   
-void capzoom() 
-{
-  static double maxzoom=sqrt(DBL_MAX);
-  static double minzoom=1.0/maxzoom;
-  if(Zoom <= minzoom) Zoom=minzoom;
-  if(Zoom >= maxzoom) Zoom=maxzoom;
-  
-  if(Zoom != lastzoom) remesh=true;
-  lastzoom=Zoom;
-}
-
 void zoom(int x, int y)
 {
   if(ignorezoom) {ignorezoom=false; y0=y; return;}
@@ -1380,17 +1398,21 @@ void setosize()
 void exportHandler(int=0)
 {
 #ifdef HAVE_LIBGLUT  
-  bool offscreen=getSetting<bool>("offscreen");
-  if(!Iconify && !offscreen)
+#ifndef HAVE_LIBOSMESA
+  if(!Iconify)
     glutShowWindow();
-#endif  
+#endif
+#endif
   readyAfterExport=true;
   Export();
+
 #ifdef HAVE_LIBGLUT  
-  if(!Iconify && !offscreen)
+#ifndef HAVE_LIBOSMESA
+  if(!Iconify)
     glutHideWindow();
-#endif  
   glutDisplayFunc(nodisplay);
+#endif
+#endif
 }
 
 static bool glinitialize=true;
@@ -1456,7 +1478,7 @@ void init()
 
 #ifndef __APPLE__
   glutInitContextProfile(GLUT_CORE_PROFILE);
-#endif  
+#endif
 
   glutInit(&argc,argv);
   screenWidth=glutGet(GLUT_SCREEN_WIDTH);
@@ -1563,24 +1585,27 @@ void glrender(const string& prefix, const picture *pic, const string& format,
 #ifdef HAVE_GL  
 #ifdef HAVE_PTHREAD
   static bool initializedView=false;
-#endif  
+#endif
   
-  bool offscreen=getSetting<bool>("offscreen");
-  if(offscreen && !webgl) {
+#ifdef HAVE_LIBOSMESA
+  if(!webgl) {
     screenWidth=maxTileWidth;
     screenHeight=maxTileHeight;
 
     static bool osmesa_initialized=false;
     if(!osmesa_initialized) {
       osmesa_initialized=true;
+      fpu_trap(false); // Work around FE_INVALID.
       init_osmesa();
+      fpu_trap(settings::trap());
     }
   }
-  
+#else
   if(glinitialize) {
     if(!webgl) init();
     Fitscreen=1;
   }
+#endif
 #endif
 
   static bool initialized=false;
@@ -1606,23 +1631,25 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     // Alternatively, one can use -glOptions=-indirect (with a performance
     // penalty).
     pair maxViewport=getSetting<pair>("maxviewport");
-    maxWidth=(int) ceil(maxViewport.getx());
-    maxHeight=(int) ceil(maxViewport.gety());
+    int maxWidth=maxViewport.getx() > 0 ? (int) ceil(maxViewport.getx()) :
+      screenWidth;
+    int maxHeight=maxViewport.gety() > 0 ? (int) ceil(maxViewport.gety()) :
+      screenHeight;
     if(maxWidth <= 0) maxWidth=max(maxHeight,2);
     if(maxHeight <= 0) maxHeight=max(maxWidth,2);
     
+    if(screenWidth <= 0) screenWidth=maxWidth;
+    else screenWidth=min(screenWidth,maxWidth);
+    if(screenHeight <= 0) screenHeight=maxHeight;
+      else screenHeight=min(screenHeight,maxHeight);
+
     fullWidth=(int) ceil(expand*width);
     fullHeight=(int) ceil(expand*height);
-  
+
     if(webgl) {
       Width=fullWidth;
       Height=fullHeight;
     } else {
-      if(screenWidth <= 0) screenWidth=maxWidth;
-      else screenWidth=min(screenWidth,maxWidth);
-      if(screenHeight <= 0) screenHeight=maxHeight;
-      else screenHeight=min(screenHeight,maxHeight);
-
       Width=min(fullWidth,screenWidth);
       Height=min(fullHeight,screenHeight);
   
@@ -1642,7 +1669,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     for(int i=0; i < 16; ++i)
       T[i]=t[i];
   
-    remesh=true;
     Aspect=((double) Width)/Height;
 
     if(maxTileWidth <= 0) maxTileWidth=screenWidth;
@@ -1654,33 +1680,40 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     if(View && settings::verbose > 1)
       cout << "Rendering " << stripDir(prefix) << " as "
            << Width << "x" << Height << " image" << endl;
-#endif    
+#endif
   }
 
 #ifdef HAVE_GL    
-  bool havewindow=initialized && glthread && !offscreen;
+  bool havewindow=initialized && glthread;
   
+#ifndef HAVE_LIBOSMESA
 #ifdef HAVE_LIBGLUT    
   unsigned int displaymode=GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH;
-#endif  
+#endif
   
 #ifdef __APPLE__
   displaymode |= GLUT_3_2_CORE_PROFILE;
-#endif  
+#endif
+#endif
   
   camp::clearMaterialBuffer();
   
+#ifndef HAVE_LIBOSMESA
+
 #ifdef HAVE_PTHREAD
-  if(glthread && initializedView && !offscreen) {
-    if(!View)
-      readyAfterExport=queueExport=true;
+  if(glthread && initializedView) {
+    if(View) {
+#ifdef __MSDOS__ // Signals are unreliable in MSWindows
+    glupdate=true;
+#else
     pthread_kill(mainthread,SIGUSR1);
+#endif
+    } else readyAfterExport=queueExport=true;
     return;
   }
-#endif    
+#endif
   
 #ifdef HAVE_LIBGLUT
-  if(!offscreen) {
     if(View) {
       int x,y;
       if(havewindow)
@@ -1702,8 +1735,8 @@ void glrender(const string& prefix, const picture *pic, const string& format,
       while(true) {
         if(multisample > 0)
           glutSetOption(GLUT_MULTISAMPLE,multisample);
-#endif      
-#endif      
+#endif
+#endif
         string title=string(settings::PROGRAM)+": "+prefix;
         window=glutCreateWindow(title.c_str());
 
@@ -1724,8 +1757,8 @@ void glrender(const string& prefix, const picture *pic, const string& format,
         }
         break;
       }
-#endif      
-#endif      
+#endif
+#endif
       if(settings::verbose > 1 && samples > 1)
         cout << "Multisampling enabled with sample width " << samples
              << endl;
@@ -1734,11 +1767,14 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     } else if(!havewindow) {
       glutInitWindowSize(maxTileWidth,maxTileHeight);
       glutInitDisplayMode(displaymode);
+      fpu_trap(false); // Work around FE_INVALID in Gallium
       window=glutCreateWindow("");
+      fpu_trap(settings::trap());
       glutHideWindow();
     }
-  }
 #endif // HAVE_LIBGLUT
+#endif // HAVE_LIBOSMESA
+
   initialized=true;
 
   GLint val;
@@ -1762,16 +1798,17 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   glClearColor(Background[0],Background[1],Background[2],Background[3]);
     
 #ifdef HAVE_LIBGLUT
-  if(!offscreen) {
-    Animate=getSetting<bool>("autoplay") && glthread;
+#ifndef HAVE_LIBOSMESA
+  Animate=getSetting<bool>("autoplay") && glthread;
   
-    if(View) {
-      if(!getSetting<bool>("fitscreen"))
-        Fitscreen=0;
-      fitscreen();
-      setosize();
-    }
+  if(View) {
+    if(!getSetting<bool>("fitscreen"))
+      Fitscreen=0;
+    firstFit=true;
+    fitscreen();
+    setosize();
   }
+#endif
 #endif
 
   glEnable(GL_BLEND);
@@ -1781,25 +1818,34 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   mode();
   
-  if(View && !offscreen) {
+#ifdef HAVE_LIBOSMESA
+  View=false;
+#endif
+
+  if(View) {
 #ifdef HAVE_LIBGLUT
 #ifdef HAVE_PTHREAD
     initializedView=true;
-#endif    
+#endif
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(mouse);
     glutDisplayFunc(display);
 
+#ifdef __MSDOS__
+    if(glthread && interact::interactive)
+      poll(0);
+#endif
+
     glutMainLoop();
 #endif // HAVE_LIBGLUT
   } else {
-    if(glthread && !offscreen) {
+    if(glthread) {
       if(havewindow) {
         readyAfterExport=true;
 #ifdef HAVE_PTHREAD
         pthread_kill(mainthread,SIGUSR1);
-#endif    
+#endif
       } else {
         initialized=true;
         readyAfterExport=true;
@@ -1836,16 +1882,21 @@ string getCenterIndex(size_t const& index) {
 } 
 
 template<class T>
-void registerBuffer(const std::vector<T>& buffervector, GLuint bufferIndex,
-                    GLint type=GL_ARRAY_BUFFER) {
+void registerBuffer(const std::vector<T>& buffervector, GLuint& bufferIndex,
+                    bool copy, GLenum type=GL_ARRAY_BUFFER) {
   if(!buffervector.empty()) {
+    if(bufferIndex == 0) {
+      glGenBuffers(1,&bufferIndex);
+      copy=true;
+    }
     glBindBuffer(type,bufferIndex);
-    glBufferData(type,buffervector.size()*sizeof(T),
-                 buffervector.data(),GL_STATIC_DRAW);
+    if(copy)
+      glBufferData(type,buffervector.size()*sizeof(T),
+                   buffervector.data(),GL_STATIC_DRAW);
   }
 }
 
-void setUniforms(const vertexBuffer& data, GLint shader)
+void setUniforms(vertexBuffer& data, GLint shader)
 {
   bool normal=shader != pixelShader;
     
@@ -1883,8 +1934,9 @@ void setUniforms(const vertexBuffer& data, GLint shader)
   GLuint binding=0;
   GLint blockindex=glGetUniformBlockIndex(shader,"MaterialBuffer");
   glUniformBlockBinding(shader,blockindex,binding);
-  registerBuffer(data.materials,gl::ubo,GL_UNIFORM_BUFFER);
-  glBindBufferBase(GL_UNIFORM_BUFFER,binding,gl::ubo);
+  bool copy=gl::remesh || data.partial || !data.rendered;
+  registerBuffer(data.materials,data.materialsBuffer,copy,GL_UNIFORM_BUFFER);
+  glBindBufferBase(GL_UNIFORM_BUFFER,binding,data.materialsBuffer);
   
   glUniformMatrix4fv(glGetUniformLocation(shader,"projViewMat"),1,GL_FALSE,
                      value_ptr(gl::projViewMat));
@@ -1908,16 +1960,16 @@ void drawBuffer(vertexBuffer& data, GLint shader)
   const size_t bytestride=color ? sizeof(VertexData) :
     (normal ? sizeof(vertexData) : sizeof(vertexData0));
 
-  if(color) registerBuffer(data.Vertices,attributeBuffer);
-  else if(normal) registerBuffer(data.vertices,attributeBuffer);
-  else registerBuffer(data.vertices0,attributeBuffer);
+  bool copy=gl::remesh || data.partial || !data.rendered;
+  if(color) registerBuffer(data.Vertices,data.VerticesBuffer,copy);
+  else if(normal) registerBuffer(data.vertices,data.verticesBuffer,copy);
+  else registerBuffer(data.vertices0,data.vertices0Buffer,copy);
   
-  registerBuffer(data.indices,indicesBuffer,GL_ELEMENT_ARRAY_BUFFER);
+  registerBuffer(data.indices,data.indicesBuffer,copy,GL_ELEMENT_ARRAY_BUFFER);
   
-  glBindBuffer(GL_ARRAY_BUFFER,attributeBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesBuffer);
-
   camp::setUniforms(data,shader);
+
+  data.rendered=true;
 
   glVertexAttribPointer(positionAttrib,3,GL_FLOAT,GL_FALSE,bytestride,
                         (void *) 0);
@@ -1987,6 +2039,7 @@ void drawColor()
 void drawTriangle()
 {
   drawBuffer(triangleData,transparentShader);
+  triangleData.rendered=false; // Force copying of sorted triangles to GPU.
   triangleData.clear();
 }
 
@@ -1995,6 +2048,7 @@ void drawTransparent()
   sortTriangles();
   glDepthMask(GL_FALSE); // Enable transparency
   drawBuffer(transparentData,transparentShader);
+  transparentData.rendered=false; // Force copying of sorted triangles to GPU.
   glDepthMask(GL_TRUE); // Disable transparency
   transparentData.clear();
 }
@@ -2015,14 +2069,23 @@ void clearMaterialBuffer()
   material.reserve(nmaterials);
   materialMap.clear();
   materialIndex=0;
+  
+  material0Data.partial=false;
+  material1Data.partial=false;
+  materialData.partial=false;
+  colorData.partial=false;
+  triangleData.partial=false;
+  transparentData.partial=false;
 }
 
 void setMaterial(vertexBuffer& data, draw_t *draw)
 {
   if(materialIndex >= data.materialTable.size() ||
      data.materialTable[materialIndex] == -1) {
-    if(data.materials.size() >= Maxmaterials)
+    if(data.materials.size() >= Maxmaterials) {
+      data.partial=true;
       (*draw)();
+    }
     size_t size0=data.materialTable.size();
     data.materialTable.resize(materialIndex+1);
     for(size_t i=size0; i < materialIndex; ++i)

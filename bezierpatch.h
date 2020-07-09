@@ -141,9 +141,21 @@ struct BezierPatch
     }
   }
   
+  virtual void notRendered() {
+    if(transparent)
+      transparentData.rendered=false;
+    else {
+      if(color)
+        colorData.rendered=false;
+      else
+        materialData.rendered=false;
+    }
+  }
+
   void queue(const triple *g, bool straight, double ratio, bool Transparent,
              GLfloat *colors=NULL) {
     data.clear();
+    notRendered();
     Onscreen=true;
     transparent=Transparent;
     color=colors;
@@ -193,6 +205,13 @@ public:
       transparentData.Append(data);
     else
       triangleData.Append(data);
+  }
+
+  void notRendered() {
+    if(transparent)
+      transparentData.rendered=false;
+    else
+      triangleData.rendered=false;
   }
 
 };

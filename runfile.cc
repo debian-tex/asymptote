@@ -573,21 +573,23 @@ void gen_runfile42(stack *Stack)
   {Stack->push<Int>(rc); return;}
 }
 
-// Create a unique temporary file name.
+// Create a uniquely named temporary file.
 #line 352 "runfile.in"
 // string mktemp(string s);
 void gen_runfile43(stack *Stack)
 {
   string s=vm::pop<string>(Stack);
 #line 353 "runfile.in"
-  char *S=Strdup(s+"XXXXXX");
+  char *S=StrdupMalloc(s+"XXXXXX");
   int fd=mkstemp(S);
   if(fd < 0) {
     ostringstream buf;
     buf << "Could not create unique temporary filename based on " << s;
     error(buf);
   }
-  {Stack->push<string>(S); return;}
+  string T(S);
+  free(S);
+  {Stack->push<string>(T); return;}
 }
 
 } // namespace run

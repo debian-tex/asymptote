@@ -1,3 +1,25 @@
+Release Notes for Version 2.66
+
+A bug in the Bezier patch bounds was fixed. Vertex and material data are
+copied from the CPU to GPU only when necessary. The default Headlamp light
+was brightened. WebGL output is centered in the viewport, extending to the
+canvas boundary; the precision of planar Bezier surfaces was increased  
+to avoid artifacts. Fullscreen mode has been fixed; the new default
+maxviewport=(0,0) specifies the screen dimensions. Camera adjustment was fixed.
+Problems with Xasy and interactive signals under MSWindows were fixed.
+A background color for both 2D and 3D images can be specified with
+currentlight.background. Offscreen rendering on headless machines has been
+reinstated; while the setting offscreen has been removed, one can again
+configure asy for either onscreen or offscreen rendering. Clipping was removed from the slopefield module. Functions mapArray, mapTemplate, real abs2(pair),
+and real abs2(triple) were implemented. The new Ghostscript transparency model
+requires Ghostscript 9.52 or later. The detection of TeX errors was improved.
+An array segmentation fault was fixed; array dimensions are checked.
+Flattened monochrome tensor patches with interior internal control points are
+now drawn as filled cyclic paths. PDF offsets were fixed, along with the
+auto-reload feature for Acroread. SVG support was improved; 2D images can now
+be output in HTML format using inline SVG code, to support the
+Asymptote Web Application, a new cloud service at http://asymptote.ualberta.ca.
+
 Release Notes for Version 2.65
 
 A bug in rendering 2D preview images of a 3D scene was fixed.

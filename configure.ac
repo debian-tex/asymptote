@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.65],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.66],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -368,7 +368,7 @@ AC_ARG_ENABLE(gl,
 [AS_HELP_STRING(--enable-gl[[[=yes]]],enable OpenGL Library)])
 
 AC_ARG_ENABLE(offscreen,
-[AS_HELP_STRING(--enable-offscreen[[[=no]]],enable experimental offscreen rendering using OSMesa library)])
+[AS_HELP_STRING(--enable-offscreen[[[=no]]],use OSMesa library to implement offscreen rendering)])
 
 AC_ARG_ENABLE(OpenImageIO,
 [AS_HELP_STRING(--enable-openimageio[[[=no]]],enable experimental OpenImageIO Library)])
