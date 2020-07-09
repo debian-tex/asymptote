@@ -31,6 +31,7 @@ size_t drawElement::lastcenterIndex=0;
 const triple drawElement::zero;
 
 using vm::array;
+using settings::getSetting;
 
 #ifdef HAVE_LIBGLM
 
@@ -104,14 +105,14 @@ void drawBezierPatch::bounds(const double* t, bbox3& b)
     double cz[16];
 
     if(t == NULL) {
-      for(int i=0; i < 16; ++i) {
+      for(unsigned int i=0; i < 16; ++i) {
         triple v=controls[i];
         cx[i]=v.getx();
         cy[i]=v.gety();
         cz[i]=v.getz();
       }
     } else {
-      for(int i=0; i < 16; ++i) {
+      for(unsigned int i=0; i < 16; ++i) {
         triple v=t*controls[i];
         cx[i]=v.getx();
         cy[i]=v.gety();
@@ -127,7 +128,7 @@ void drawBezierPatch::bounds(const double* t, bbox3& b)
     c0=cy[0];
     fuzz=Fuzz*run::norm(cy,16);
     y=bound(cy,min,b.empty ? c0 : min(c0,b.bottom),fuzz,maxdepth);
-    Y=boundtri(cy,max,b.empty ? c0 : max(c0,b.top),fuzz,maxdepth);
+    Y=bound(cy,max,b.empty ? c0 : max(c0,b.top),fuzz,maxdepth);
 
     c0=cz[0];
     fuzz=Fuzz*run::norm(cz,16);
@@ -232,11 +233,13 @@ bool drawBezierPatch::write(jsfile *out)
   
   setcolors(colors,diffuse,emissive,specular,shininess,metallic,fresnel0,out);
   
+  out->precision(digits);
   if(straight) {
     triple Controls[]={controls[0],controls[12],controls[15],controls[3]};
     out->addPatch(Controls,4,Min,Max,colors,4);
   } else
     out->addPatch(controls,16,Min,Max,colors,4);
+  out->precision(getSetting<Int>("digits"));
                     
 #endif  
   return true;
@@ -262,18 +265,17 @@ void drawBezierPatch::render(double size2, const triple& b, const triple& B,
   }
   
   bool offscreen;
-  if(gl::exporting)
-    offscreen=false;
-  else if(billboard) {
+  if(billboard) {
     drawElement::centerIndex=centerIndex;
     BB.init(center);
     offscreen=bbox2(Min,Max,BB).offscreen();
   } else
     offscreen=bbox2(Min,Max).offscreen();
-
+  
   if(offscreen) { // Fully offscreen
     S.Onscreen=false;
     S.data.clear();
+    S.notRendered();
     return;
   }
 
@@ -361,7 +363,7 @@ void drawBezierTriangle::bounds(const double* t, bbox3& b)
         cz[i]=v.getz();
       }
     }
-    
+
     double c0=cx[0];
     double fuzz=Fuzz*run::norm(cx,10);
     x=boundtri(cx,min,b.empty ? c0 : min(c0,b.left),fuzz,maxdepth);
@@ -475,11 +477,13 @@ bool drawBezierTriangle::write(jsfile *out)
   
   setcolors(colors,diffuse,emissive,specular,shininess,metallic,fresnel0,out);
   
+  out->precision(digits);
   if(straight) {
     triple Controls[]={controls[0],controls[6],controls[9]};
     out->addPatch(Controls,3,Min,Max,colors,3);
   } else
     out->addPatch(controls,10,Min,Max,colors,3);
+  out->precision(getSetting<Int>("digits"));
                     
 #endif  
   return true;
@@ -505,9 +509,7 @@ void drawBezierTriangle::render(double size2, const triple& b, const triple& B,
   }
 
   bool offscreen;
-  if(gl::exporting)
-    offscreen=false;
-  else if(billboard) {
+  if(billboard) {
     drawElement::centerIndex=centerIndex;
     BB.init(center);
     offscreen=bbox2(Min,Max,BB).offscreen();
@@ -517,6 +519,7 @@ void drawBezierTriangle::render(double size2, const triple& b, const triple& B,
   if(offscreen) { // Fully offscreen
     S.Onscreen=false;
     S.data.clear();
+    S.notRendered();
     return;
   }
 
@@ -974,9 +977,10 @@ void drawTriangles::render(double size2, const triple& b,
   
   transparent=diffuse.A < 1.0;
 
-  if(!gl::exporting && bbox2(Min,Max).offscreen()) { // Fully offscreen
+  if(bbox2(Min,Max).offscreen()) { // Fully offscreen
     R.Onscreen=false;
     R.data.clear();
+    R.notRendered();
     return;
   }
 

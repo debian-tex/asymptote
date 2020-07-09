@@ -23,7 +23,6 @@
 #include <csignal>
 
 #define GLEW_NO_GLU
-//#define GLEW_OSMESA
 
 #ifdef __MSDOS__
 #define GLEW_STATIC
@@ -109,7 +108,6 @@ namespace gl {
 
 extern bool outlinemode;
 extern bool wireframeMode;
-extern bool exporting;
 
 extern bool orthographic;
 extern double xmin,xmax;
@@ -270,7 +268,14 @@ public:
 
 class vertexBuffer {
 public:  
-  GLint type;
+  GLenum type;
+
+  GLuint verticesBuffer;
+  GLuint VerticesBuffer;
+  GLuint vertices0Buffer;
+  GLuint indicesBuffer;
+  GLuint materialsBuffer;
+
   std::vector<vertexData> vertices;
   std::vector<VertexData> Vertices;
   std::vector<vertexData0> vertices0;
@@ -279,7 +284,18 @@ public:
   std::vector<Material> materials;
   std::vector<GLint> materialTable;
 
-  vertexBuffer(GLint type=GL_TRIANGLES) : type(type) {}
+  bool rendered; // Are all patches in this buffer fully rendered?
+  bool partial;  // Does buffer contain incomplete data?
+
+  vertexBuffer(GLint type=GL_TRIANGLES) : type(type),
+                                          verticesBuffer(0),
+                                          VerticesBuffer(0),
+                                          vertices0Buffer(0),
+                                          indicesBuffer(0),
+                                          materialsBuffer(0),
+                                          rendered(false),
+                                          partial(false)
+                                          {}
 
   void clear() {
     vertices.clear();
@@ -342,7 +358,6 @@ public:
       a[n+i]=b[i]+offset;
   }
 
-  // append array b onto array a
   void append(const vertexBuffer& b) {
     appendOffset(indices,b.indices,vertices.size());
     vertices.insert(vertices.end(),b.vertices.begin(),b.vertices.end());
