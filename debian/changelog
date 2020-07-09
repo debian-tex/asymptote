@@ -1,10 +1,15 @@
-asymptote (2.65-3) UNRELEASED; urgency=medium
+asymptote (2.66-1) unstable; urgency=medium
 
+  [ Debian Janitor ]
   * Set upstream metadata fields: Bug-Submit (from ./configure),
     Repository.
   * Update standards version to 4.5.0, no changes needed.
 
- -- Debian Janitor <janitor@jelmer.uk>  Wed, 06 May 2020 07:22:55 +0000
+  [ Norbert Preining ]
+  * New upstream version 2.66
+  * update patches
+
+ -- Norbert Preining <norbert@preining.info>  Thu, 09 Jul 2020 09:35:27 +0900
 
 asymptote (2.65-2) unstable; urgency=medium
 
