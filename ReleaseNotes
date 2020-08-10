@@ -1,3 +1,24 @@
+Release Notes for Version 2.67
+
+Support was added for importing and inputting URLs. Compilation and 2D SVG
+to HTML conversion no longer requires the GLM library; 2D html output is
+fit to the canvas unless settings.absolute=true. Diagnostics for dvisvgm
+were enabled; SVG clipping was fixed.  A -globalread setting (default true)
+was implemented.  Files are opened using the search path, which now
+includes the examples directory.  An invalid array dimensions error was fixed.
+A WebGL resize event listener was added; the + and - keys now zoom in and out,
+rather than expanding and shrinking the viewport. Remeshing on export is
+forced; unnecessary remeshing on zoom in AsyGL is avoided. 
+The triple dir(path3, path3) function was normalized.  The repositioning of
+OpenGL windows was fixed. The copy constructors for path and path3 were fixed.
+Asymptote errors no longer cause Xasy to hang. A numerical precision issue
+was fixed.  A portable way of skipping whitespace was implemented; casts
+from empty strings now yield uninitialized values. Interrupt handling under
+MacOS X was fixed. A devicepixelratio setting was implemented. The error
+location is displayed in the console. Segmentation faults were fixed.
+The documentation was updated and the code was reformatted. A hang on exit
+under MSWindows was fixed. Obsolete encoding modules were removed.  
+
 Release Notes for Version 2.66
 
 A bug in the Bezier patch bounds was fixed. Vertex and material data are
@@ -10,7 +31,8 @@ Problems with Xasy and interactive signals under MSWindows were fixed.
 A background color for both 2D and 3D images can be specified with
 currentlight.background. Offscreen rendering on headless machines has been
 reinstated; while the setting offscreen has been removed, one can again
-configure asy for either onscreen or offscreen rendering. Clipping was removed from the slopefield module. Functions mapArray, mapTemplate, real abs2(pair),
+configure asy for either onscreen or offscreen rendering. Clipping was removed
+from the slopefield module. Functions mapArray, mapTemplate, real abs2(pair),
 and real abs2(triple) were implemented. The new Ghostscript transparency model
 requires Ghostscript 9.52 or later. The detection of TeX errors was improved.
 An array segmentation fault was fixed; array dimensions are checked.

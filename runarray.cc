@@ -71,7 +71,7 @@ function *realRealFunction();
 
 #ifdef HAVE_LIBFFTW3
 #include "fftw++.h"
-static const char *rectangular="matrix must be rectangular";
+  static const char *rectangular="matrix must be rectangular";
 #else
 static const char *installFFTW=
   "Please install fftw3, run ./configure, and recompile";
@@ -113,7 +113,7 @@ void outOfBounds(const char *op, size_t len, Int n)
   error(buf);
 }
 
-inline item& arrayRead(array *a, Int n)  
+inline item& arrayRead(array *a, Int n)
 {
   size_t len=checkArray(a);
   bool cyclic=a->cyclic();
@@ -126,7 +126,7 @@ inline item& arrayRead(array *a, Int n)
 static array* deepArray(Int depth, Int *dims)
 {
   assert(depth > 0);
-  
+
   if (depth == 1) {
     return new array(dims[0]);
   } else {
@@ -204,7 +204,7 @@ array *copyArray(array *a)
 {
   size_t size=checkArray(a);
   array *c=new array(size);
-  for(size_t i=0; i < size; i++) 
+  for(size_t i=0; i < size; i++)
     (*c)[i]=(*a)[i];
   return c;
 }
@@ -218,7 +218,7 @@ array *copyArray2(array *a)
     size_t aisize=checkArray(ai);
     array *ci=new array(aisize);
     (*c)[i]=ci;
-    for(size_t j=0; j < aisize; j++) 
+    for(size_t j=0; j < aisize; j++)
       (*ci)[j]=(*ai)[j];
   }
   return c;
@@ -229,12 +229,12 @@ double *copyTripleArray2Components(array *a, size_t &N, GCPlacement placement)
   size_t n=checkArray(a);
   N=0;
   for(size_t i=0; i < n; i++)
-      N += checkArray(read<array*>(a,i));
-  
+    N += checkArray(read<array*>(a,i));
+
   double *A=(placement == NoGC) ? new double [3*N] :
     new(placement) double[3*N];
   double *p=A;
-  
+
   for(size_t i=0; i < n; i++) {
     array *ai=read<array*>(a,i);
     size_t m=checkArray(ai);
@@ -254,12 +254,12 @@ triple *copyTripleArray2C(array *a, size_t &N, GCPlacement placement)
   size_t n=checkArray(a);
   N=0;
   for(size_t i=0; i < n; i++)
-      N += checkArray(read<array*>(a,i));
-  
+    N += checkArray(read<array*>(a,i));
+
   triple *A=(placement == NoGC) ? new triple [N] :
     new(placement) triple[N];
   triple *p=A;
-  
+
   for(size_t i=0; i < n; i++) {
     array *ai=read<array*>(a,i);
     size_t m=checkArray(ai);
@@ -277,20 +277,20 @@ triple operator *(const array& t, const triple& v)
   array *t1=read<array*>(t,1);
   array *t2=read<array*>(t,2);
   array *t3=read<array*>(t,3);
-  
-  if(checkArray(t0) != 4 || checkArray(t1) != 4 || 
+
+  if(checkArray(t0) != 4 || checkArray(t1) != 4 ||
      checkArray(t2) != 4 || checkArray(t3) != 4)
     error(incommensurate);
 
   double x=v.getx();
   double y=v.gety();
   double z=v.getz();
-  
+
   double f=read<real>(t3,0)*x+read<real>(t3,1)*y+read<real>(t3,2)*z+
     read<real>(t3,3);
   if(f == 0.0) run::dividebyzero();
   f=1.0/f;
-  
+
   return triple((read<real>(t0,0)*x+read<real>(t0,1)*y+read<real>(t0,2)*z+
                  read<real>(t0,3))*f,
                 (read<real>(t1,0)*x+read<real>(t1,1)*y+read<real>(t1,2)*z+
@@ -303,14 +303,14 @@ template<class T>
 array *mult(array *a, array *b)
 {
   size_t n=checkArray(a);
-  
+
   size_t nb=checkArray(b);
   size_t na0=n == 0 ? 0 : checkArray(read<array*>(a,0));
-  if(na0 != nb) 
+  if(na0 != nb)
     error(incommensurate);
-  
+
   size_t nb0=nb == 0 ? 0 : checkArray(read<array*>(b,0));
-    
+
   array *c=new array(n);
 
   T *A,*B;
@@ -329,10 +329,10 @@ array *mult(array *a, array *b)
       (*ci)[j]=sum;
     }
   }
-  
+
   delete[] B;
   delete[] A;
-  
+
   return c;
 }
 
@@ -342,7 +342,7 @@ array *AtA(array *a)
 {
   size_t n=checkArray(a);
   size_t m=n == 0 ? 0 : checkArray(read<array*>(a,0));
-  
+
   array *c=new array(m);
 
   T *A;
@@ -360,12 +360,12 @@ array *AtA(array *a)
       (*ci)[j]=sum;
     }
   }
-  
+
   delete[] A;
   return c;
 }
 
-double norm(double *a, size_t n) 
+double norm(double *a, size_t n)
 {
   if(n == 0) return 0.0;
   double M=fabs(a[0]);
@@ -374,7 +374,7 @@ double norm(double *a, size_t n)
   return M;
 }
 
-double norm(triple *a, size_t n) 
+double norm(triple *a, size_t n)
 {
   if(n == 0) return 0.0;
   double M=a[0].abs2();
@@ -393,7 +393,7 @@ void transpose(double *a, size_t n)
       double temp=a[ij];
       a[ij]=a[ji];
       a[ji]=temp;
-     }
+    }
   }
 }
 
@@ -420,16 +420,16 @@ void inverse(double *M, size_t n)
     real a=M[0], b=M[1], c=M[2];
     real d=M[3], e=M[4], f=M[5];
     real g=M[6], h=M[7], i=M[8];
-    
+
     real A=e*i-f*h;
     real B=f*g-d*i;
     real C=d*h-e*g;
-    
+
     real det=a*A+b*B+c*C;
     if(det == 0.0)
       error(singular);
     det=1.0/det;
-    
+
     M[0]=A*det; M[1]=(c*h-b*i)*det; M[2]=(b*f-c*e)*det;
     M[3]=B*det; M[4]=(a*i-c*g)*det; M[5]=(c*d-a*f)*det;
     M[6]=C*det; M[7]=(b*g-a*h)*det; M[8]=(a*e-b*d)*det;
@@ -437,10 +437,10 @@ void inverse(double *M, size_t n)
   }
 
   inverseAllocate(n);
-  
+
   for(size_t i=0; i < n; i++)
     pivot[i]=0;
- 
+
   size_t col=0, row=0;
   // This is the main loop over the columns to be reduced.
   for(size_t i=0; i < n; i++) {
@@ -465,7 +465,7 @@ void inverse(double *M, size_t n)
       }
     }
     ++(pivot[col]);
-    
+
     // Interchange rows, if needed, to put the pivot element on the diagonal.
     double *acol=M+n*col;
     if(row != col) {
@@ -476,8 +476,8 @@ void inverse(double *M, size_t n)
         acol[k]=temp;
       }
     }
-    
-    Row[i]=row; 
+
+    Row[i]=row;
     Col[i]=col;
 
     // Divide the pivot row by the pivot element.
@@ -488,12 +488,12 @@ void inverse(double *M, size_t n)
     }
     real pivinv=1.0/denom;
     acol[col]=1.0;
-    for(size_t k=0; k < n; k++) 
+    for(size_t k=0; k < n; k++)
       acol[k]=acol[k]*pivinv;
-    
+
     // Reduce all rows except for the pivoted one.
     for(size_t k=0; k < n; k++) {
-      if(k != col) { 
+      if(k != col) {
         double *ak=M+n*k;
         real akcol=ak[col];
         ak[col]=0.0;
@@ -502,7 +502,7 @@ void inverse(double *M, size_t n)
       }
     }
   }
-  
+
   // Unscramble the inverse matrix in view of the column interchanges.
   for(size_t k=n; k > 0;) {
     k--;
@@ -593,7 +593,7 @@ Int LUdecompose(double *a, size_t n, size_t* index, bool warn=true)
       swap *= -1;
       vv[imax]=vv[j];
     }
-    if(index) 
+    if(index)
       index[j]=imax;
     if(j != n) {
       double denom=aj[j];
@@ -619,7 +619,7 @@ void dividebyzero(size_t i)
   buf << "Divide by zero";
   error(buf);
 }
-  
+
 void integeroverflow(size_t i)
 {
   ostringstream buf;
@@ -704,7 +704,7 @@ void newAppendedArray(stack *Stack)
 
   for (Int index = n-1; index >= 0; index--)
     (*a)[index] = pop(Stack);
-  
+
   copy(tail->begin(), tail->end(), back_inserter(*a));
 
   {Stack->push<array*>(a); return;}
@@ -989,7 +989,7 @@ void arrayPopHelper(stack *Stack)
   array * a=vm::pop<array *>(Stack);
 #line 841 "runarray.in"
   size_t asize=checkArray(a);
-  if(asize == 0) 
+  if(asize == 0)
     error("cannot pop element from empty array");
   {Stack->push(a->pop()); return;}
 }
@@ -1014,7 +1014,7 @@ void arrayInsertHelper(stack *Stack)
   size_t asize=checkArray(a);
   checkArray(x);
   if(a->cyclic() && asize > 0) i=imod(i,asize);
-  if(i < 0 || i > (Int) asize) 
+  if(i < 0 || i > (Int) asize)
     outOfBounds("inserting",asize,i);
   (*a).insert((*a).begin()+i,(*x).begin(),(*x).end());
 }
@@ -1087,7 +1087,7 @@ void gen_runarray32(stack *Stack)
   }
   for(Int i=0; i < n; i++)
     if(keep[i]) r->push(i);
-  
+
   delete[] keep;
   {Stack->push<Intarray*>(r); return;}
 }
@@ -1170,7 +1170,7 @@ void arraySearch(stack *Stack)
   size_t u=size-1;
   if(!compareFunction(key,(*a)[u])) {Stack->push<Int>(Intcast(u)); return;}
   size_t l=0;
-        
+
   while (l < u) {
     size_t i=(l+u)/2;
     if(compareFunction(key,(*a)[i])) u=i;
@@ -1280,7 +1280,7 @@ void array2Transpose(stack *Stack)
 // a is a rectangular 3D array; perm is an Int array indicating the type of
 // permutation  (021 or 120, etc; original is 012).
 // Transpose by sending respective members to the permutated locations:
-// return the array obtained by putting a[i][j][k] into position perm{ijk}. 
+// return the array obtained by putting a[i][j][k] into position perm{ijk}.
 #line 1068 "runarray.in"
 void array3Transpose(stack *Stack)
 {
@@ -1294,10 +1294,10 @@ void array3Transpose(stack *Stack)
     buf << "permutation array must have length " << DIM;
     error(buf);
   }
-  
+
   size_t* size=new size_t[DIM];
   for(size_t i=0; i < DIM; ++i) size[i]=DIM;
-  
+
   for(size_t i=0; i < DIM; ++i) {
     Int p=read<Int>(perm,i);
     size_t P=(size_t) p;
@@ -1308,13 +1308,13 @@ void array3Transpose(stack *Stack)
     }
     size[P]=P;
   }
-  
+
   for(size_t i=0; i < DIM; ++i)
     if(size[i] == DIM) error("permutation indices must be distinct");
-  
+
   static const char *rectangular=
     "3D transpose implemented for rectangular matrices only";
-  
+
   size_t isize=size[0]=checkArray(a);
   array *a0=read<array*>(a,0);
   size[1]=checkArray(a0);
@@ -1329,15 +1329,15 @@ void array3Transpose(stack *Stack)
       if(checkArray(aij) != size[2]) error(rectangular);
     }
   }
-  
+
   size_t perm0=(size_t) read<Int>(perm,0);
   size_t perm1=(size_t) read<Int>(perm,1);
   size_t perm2=(size_t) read<Int>(perm,2);
-  
+
   size_t sizep0=size[perm0];
   size_t sizep1=size[perm1];
   size_t sizep2=size[perm2];
-  
+
   array *c=new array(sizep0);
   for(size_t i=0; i < sizep0; ++i) {
     array *ci=new array(sizep1);
@@ -1347,9 +1347,9 @@ void array3Transpose(stack *Stack)
       (*ci)[j]=cij;
     }
   }
-  
+
   size_t* i=new size_t[DIM];
-  
+
   for(i[0]=0; i[0] < size[0]; ++i[0]) {
     array *a0=read<array*>(a,i[0]);
     for(i[1]=0; i[1] < size[1]; ++i[1]) {
@@ -1361,9 +1361,9 @@ void array3Transpose(stack *Stack)
       }
     }
   }
-  
-  delete[] i;  
-  delete[] size;  
+
+  delete[] i;
+  delete[] size;
 
   {Stack->push<array*>(c); return;}
 }
@@ -1392,7 +1392,7 @@ void gen_runarray44(stack *Stack)
   {Stack->push<Int>(j); return;}
 }
 
-// Find all indices of true values in a boolean array. 
+// Find all indices of true values in a boolean array.
 #line 1171 "runarray.in"
 // Intarray* findall(boolarray *a);
 void gen_runarray45(stack *Stack)
@@ -1478,24 +1478,24 @@ void gen_runarray49(stack *Stack)
   realarray2 * a=vm::pop<realarray2 *>(Stack);
 #line 1231 "runarray.in"
   size_t n=checkArray(a);
-  
+
   if(n == 0) {Stack->push<realarray*>(new array(0)); return;}
-  
+
   size_t m=checkArray(b);
   if(m != n) error(incommensurate);
-  
+
   real *A;
   copyArray2C(A,a);
   size_t *index=new size_t[n];
-  
+
   if(LUdecompose(A,n,index,warn) == 0)
     {Stack->push<realarray*>(new array(0)); return;}
 
   array *x=new array(n);
-  
+
   real *B;
   copyArrayC(B,b);
-  
+
   for(size_t i=0; i < n; ++i) {
     size_t ip=index[i];
     real sum=B[ip];
@@ -1505,7 +1505,7 @@ void gen_runarray49(stack *Stack)
       sum -= Ai[j]*B[j];
     B[i]=sum;
   }
-  
+
   for(size_t i=n; i > 0;) {
     --i;
     real sum=B[i];
@@ -1514,14 +1514,14 @@ void gen_runarray49(stack *Stack)
       sum -= Ai[j]*B[j];
     B[i]=sum/Ai[i];
   }
-  
+
   for(size_t i=0; i < n; ++i)
     (*x)[i]=B[i];
 
   delete[] index;
   delete[] B;
   delete[] A;
-  
+
   {Stack->push<realarray*>(x); return;}
 }
 
@@ -1537,23 +1537,23 @@ void gen_runarray50(stack *Stack)
   realarray2 * a=vm::pop<realarray2 *>(Stack);
 #line 1284 "runarray.in"
   size_t n=checkArray(a);
-  
+
   if(n == 0) {Stack->push<realarray2*>(new array(0)); return;}
-  
+
   if(checkArray(b) != n) error(incommensurate);
   size_t m=checkArray(read<array*>(b,0));
-  
+
   real *A,*B;
   copyArray2C(A,a);
   copyArray2C(B,b,false);
-  
+
   size_t *index=new size_t[n];
-  
+
   if(LUdecompose(A,n,index,warn) == 0)
     {Stack->push<realarray2*>(new array(0)); return;}
 
   array *x=new array(n);
-  
+
   for(size_t i=0; i < n; ++i) {
     real *Ai=A+i*n;
     real *Bi=B+i*m;
@@ -1567,7 +1567,7 @@ void gen_runarray50(stack *Stack)
       Bi[k]=sum;
     }
   }
-  
+
   for(size_t i=n; i > 0;) {
     --i;
     real *Ai=A+i*n;
@@ -1580,7 +1580,7 @@ void gen_runarray50(stack *Stack)
       Bi[k]=sum/Ai[i];
     }
   }
-  
+
   for(size_t i=0; i < n; ++i) {
     real *Bi=B+i*m;
     array *xi=new array(m);
@@ -1588,11 +1588,11 @@ void gen_runarray50(stack *Stack)
     for(size_t j=0; j < m; ++j)
       (*xi)[j]=Bi[j];
   }
-    
+
   delete[] index;
   delete[] B;
   delete[] A;
-  
+
   {Stack->push<realarray2*>(x); return;}
 }
 
@@ -1606,14 +1606,14 @@ void gen_runarray51(stack *Stack)
   real *A;
   copyArray2C(A,a);
   size_t n=checkArray(a);
-  
+
   real det=LUdecompose(A,n,NULL,false);
   size_t n1=n+1;
   for(size_t i=0; i < n; ++i)
     det *= A[i*n1];
-  
+
   delete[] A;
-  
+
   {Stack->push<real>(det); return;}
 }
 
@@ -1738,16 +1738,16 @@ void gen_runarray59(stack *Stack)
   array *t3=read<array*>(t,3);
   if(checkArray(t0) != 4 || checkArray(t1) != 4 || checkArray(t3) != 4)
     error(incommensurate);
-  
+
   real x=v.getx();
   real y=v.gety();
   real z=v.getz();
-  
+
   real f=read<real>(t3,0)*x+read<real>(t3,1)*y+read<real>(t3,2)*z+
     read<real>(t3,3);
   if(f == 0.0) dividebyzero();
   f=1.0/f;
-  
+
   {Stack->push<pair>(pair((read<real>(t0,0)*x+read<real>(t0,1)*y+read<real>(t0,2)*z+
                read<real>(t0,3))*f,
               (read<real>(t1,0)*x+read<real>(t1,1)*y+read<real>(t1,2)*z+
@@ -1803,22 +1803,22 @@ void gen_runarray62(stack *Stack)
   size_t n=checkArrays(a,b);
   checkEqual(n,checkArray(c));
   checkEqual(n,checkArray(f));
-  
+
   array *up=new array(n);
   array& u=*up;
 
   if(n == 0) {Stack->push<realarray*>(up); return;}
-  
+
   // Special case: zero Dirichlet boundary conditions
   if(read<real>(a,0) == 0.0 && read<real>(c,n-1) == 0.0) {
     real temp=read<real>(b,0);
     if(temp == 0.0) dividebyzero();
     temp=1.0/temp;
-    
+
     real *work=new real[n];
     u[0]=read<real>(f,0)*temp;
     work[0]=-read<real>(c,0)*temp;
-        
+
     for(size_t i=1; i < n; i++) {
       real temp=(read<real>(b,i)+read<real>(a,i)*work[i-1]);
       if(temp == 0.0) {delete[] work; dividebyzero();}
@@ -1829,15 +1829,15 @@ void gen_runarray62(stack *Stack)
 
     for(size_t i=n-1; i >= 1; i--)
       u[i-1]=read<real>(u,i-1)+work[i-1]*read<real>(u,i);
-    
+
     delete[] work;
     {Stack->push<realarray*>(up); return;}
   }
-  
+
   real binv=read<real>(b,0);
   if(binv == 0.0) dividebyzero();
   binv=1.0/binv;
-  
+
   if(n == 1) {u[0]=read<real>(f,0)*binv; {Stack->push<realarray*>(up); return;}}
   if(n == 2) {
     real factor=(read<real>(b,0)*read<real>(b,1)-
@@ -1851,10 +1851,10 @@ void gen_runarray62(stack *Stack)
     u[1]=temp;
     {Stack->push<realarray*>(up); return;}
   }
-        
+
   real *gamma=new real[n-2];
   real *delta=new real[n-2];
-  
+
   gamma[0]=read<real>(c,0)*binv;
   delta[0]=read<real>(a,0)*binv;
   u[0]=read<real>(f,0)*binv;
@@ -1873,7 +1873,7 @@ void gen_runarray62(stack *Stack)
     delta[i]=-read<real>(a,i)*delta[i-1]*alphainv;
     alpha -= beta*delta[i];
   }
-        
+
   real alphainv=read<real>(b,n-2)-read<real>(a,n-2)*gamma[n-3];
   if(alphainv == 0.0) {delete[] gamma; delete[] delta; dividebyzero();}
   alphainv=1.0/alphainv;
@@ -1885,13 +1885,13 @@ void gen_runarray62(stack *Stack)
   if(temp == 0.0) {delete[] gamma; delete[] delta; dividebyzero();}
   u[n-1]=temp=(fn-beta*read<real>(u,n-2))/temp;
   u[n-2]=read<real>(u,n-2)-dnm1*temp;
-        
+
   for(size_t i=n-2; i >= 1; i--)
     u[i-1]=read<real>(u,i-1)-gamma[i-1]*read<real>(u,i)-delta[i-1]*temp;
-  
+
   delete[] delta;
   delete[] gamma;
-  
+
   {Stack->push<realarray*>(up); return;}
 }
 
@@ -1909,18 +1909,18 @@ void gen_runarray63(stack *Stack)
   static const real fuzz=1000.0*DBL_EPSILON;
   Int i=0;
   size_t oldPrec=0;
-  if(verbose) 
+  if(verbose)
     oldPrec=cout.precision(DBL_DIG);
 
   real diff=DBL_MAX;
   real lastdiff;
   do {
     real x0=x;
-    
+
     Stack->push(x);
     fprime->call(Stack);
     real dfdx=pop<real>(Stack);
-    
+
     if(dfdx == 0.0) {
       x=DBL_MAX;
       break;
@@ -1929,14 +1929,14 @@ void gen_runarray63(stack *Stack)
     Stack->push(x);
     f->call(Stack);
     real fx=pop<real>(Stack);
-    
+
     x -= fx/dfdx;
 
     lastdiff=diff;
-    
+
     if(verbose)
       cout << "Newton-Raphson: " << x << endl;
-    
+
     diff=fabs(x-x0);
     if(++i == iterations) {
       x=DBL_MAX;
@@ -1964,19 +1964,19 @@ void gen_runarray64(stack *Stack)
 #line 1635 "runarray.in"
   static const real fuzz=1000.0*DBL_EPSILON;
   size_t oldPrec=0;
-  if(verbose) 
+  if(verbose)
     oldPrec=cout.precision(DBL_DIG);
 
   Stack->push(x1);
   f->call(Stack);
   real f1=pop<real>(Stack);
   if(f1 == 0.0) {Stack->push<real>(x1); return;}
-  
+
   Stack->push(x2);
   f->call(Stack);
   real f2=pop<real>(Stack);
   if(f2 == 0.0) {Stack->push<real>(x2); return;}
-        
+
   if((f1 > 0.0 && f2 > 0.0) || (f1 < 0.0 && f2 < 0.0)) {
     ostringstream buf;
     buf << "root not bracketed, f(x1)=" << f1 << ", f(x2)=" << f2 << endl;
@@ -1990,7 +1990,7 @@ void gen_runarray64(stack *Stack)
     x1=x2;
     x2=temp;
   }
-        
+
   if(verbose)
     cout << "midpoint: " << x << endl;
 
@@ -1998,7 +1998,7 @@ void gen_runarray64(stack *Stack)
   Stack->push(x);
   f->call(Stack);
   real y=pop<real>(Stack);
-  
+
   Stack->push(x);
   fprime->call(Stack);
   real dy=pop<real>(Stack);
@@ -2022,11 +2022,11 @@ void gen_runarray64(stack *Stack)
       if(temp == x) {Stack->push<real>(x); return;}
     }
     if(fabs(dx) < fuzz*fabs(x)) {Stack->push<real>(x); return;}
-    
+
     Stack->push(x);
     f->call(Stack);
     y=pop<real>(Stack);
-    
+
     Stack->push(x);
     fprime->call(Stack);
     dy=pop<real>(Stack);
@@ -2060,10 +2060,10 @@ void gen_runarray65(stack *Stack)
 #line 1723 "runarray.in"
   if(fa == 0.0) {Stack->push<real>(a); return;}
   if(fb == 0.0) {Stack->push<real>(b); return;}
-  
+
   const char* oppsign="fa and fb must have opposite signs";
   int sign;
-  
+
   if(fa < 0.0) {
     if(fb < 0.0) error(oppsign);
     sign=1;
@@ -2080,7 +2080,7 @@ void gen_runarray65(stack *Stack)
 
   while(b-a > tolerance) {
     t=(a+b)*0.5;
-    
+
     Stack->push(t);
     f->call(Stack);
     ft=sign*pop<double>(Stack);
@@ -2094,11 +2094,11 @@ void gen_runarray65(stack *Stack)
       real q_A=2.0*(fa-2.0*ft+fb)*factor*factor;
       real q_B=(fb-fa)*factor;
       quadraticroots Q=quadraticroots(q_A,q_B,ft);
-    
+
       // If the interpolation somehow failed, continue on to the next binary
       // search step. This may or may not be possible, depending on what
       // theoretical guarantees are provided by the quadraticroots function.
-    
+
       real root;
       bool found=Q.roots > 0;
       if(found) {
@@ -2111,7 +2111,7 @@ void gen_runarray65(stack *Stack)
           }
         }
       }
-      
+
       if(found) {
         if(ft > 0.0) {
           b=t;
@@ -2120,7 +2120,7 @@ void gen_runarray65(stack *Stack)
           a=t;
           fa=ft;
         }
-      
+
         t=root;
 
         // If the interpolated value is close to one edge of
@@ -2129,7 +2129,7 @@ void gen_runarray65(stack *Stack)
         real margin=(b-a)*1.0e-3;
         if(t-a < margin) t=a+2.0*(t-a);
         else if(b-t < margin) t=b-2.0*(b-t);
-    
+
         Stack->push(t);
         f->call(Stack);
         ft=sign*pop<double>(Stack);
@@ -2137,7 +2137,7 @@ void gen_runarray65(stack *Stack)
         if(ft == 0.0) {Stack->push<real>(t); return;}
       }
     }
-    
+
     if(ft > 0.0) {
       b=t;
       fb=ft;
@@ -2184,13 +2184,13 @@ void gen_runarray67(stack *Stack)
   if(n) {
     Complex *f=utils::ComplexAlign(n);
     fftwpp::fft1d Forward(n,intcast(sign),f);
-  
+
     for(size_t i=0; i < n; i++) {
       pair z=read<pair>(a,i);
       f[i]=Complex(z.getx(),z.gety());
     }
     Forward.fft(f);
-  
+
     for(size_t i=0; i < n; i++) {
       Complex z=f[i];
       (*c)[i]=pair(z.real(),z.imag());
@@ -2333,14 +2333,14 @@ void gen_runarray70(stack *Stack)
 
   XYZ *pxyz=new XYZ[nv+3];
   ITRIANGLE *V=new ITRIANGLE[4*nv];
-  
+
   for(size_t i=0; i < nv; ++i) {
     pair w=read<pair>(z,i);
     pxyz[i].p[0]=w.getx();
     pxyz[i].p[1]=w.gety();
     pxyz[i].i=(Int) i;
   }
-  
+
   Int ntri;
   Triangulate((Int) nv,pxyz,V,ntri,true,false);
 
@@ -2354,7 +2354,7 @@ void gen_runarray70(stack *Stack)
     (*ti)[1]=pxyz[Vi->p2].i;
     (*ti)[2]=pxyz[Vi->p3].i;
   }
-   
+
   delete[] V;
   delete[] pxyz;
   {Stack->push<Intarray2*>(t); return;}
@@ -2421,13 +2421,13 @@ void gen_runarray74(stack *Stack)
 #line 2042 "runarray.in"
   size_t n=checkArray(a);
   if(n == 0) {Stack->push<real>(0.0); return;}
-  
+
   vm::array *a0=vm::read<vm::array*>(a,0);
   size_t m=checkArray(a0);
   if(m == 0) {Stack->push<real>(0.0); return;}
   triple a00=vm::read<triple>(a0,0);
   real M=0.0;
-    
+
   for(size_t i=0; i < n; ++i) {
     vm::array *ai=vm::read<vm::array*>(a,i);
     size_t m=checkArray(ai);
@@ -2517,25 +2517,25 @@ void gen_runarray79(stack *Stack)
   gl::projection P=gl::camera();
   size_t k=0;
   (*a)[k++]=P.orthographic ? 1.0 : 0.0;
-  
+
   triple camera=P.camera;
   (*a)[k++]=camera.getx();
   (*a)[k++]=camera.gety();
   (*a)[k++]=camera.getz();
-  
+
   triple up=P.up;
   (*a)[k++]=up.getx();
   (*a)[k++]=up.gety();
   (*a)[k++]=up.getz();
-  
+
   triple target=P.target;
   (*a)[k++]=target.getx();
   (*a)[k++]=target.gety();
   (*a)[k++]=target.getz();
-  
+
   (*a)[k++]=P.zoom;
   (*a)[k++]=P.angle;
-  
+
   (*a)[k++]=P.viewportshift.getx();
   (*a)[k++]=P.viewportshift.gety();
 #endif
