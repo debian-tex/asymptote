@@ -1,3 +1,11 @@
+asymptote (2.67-1) unstable; urgency=medium
+
+  * New upstream version 2.67
+  * update patches
+  * clean up clean target in d/rules, by creating d/clean
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 11 Aug 2020 00:22:30 +0200
+
 asymptote (2.66-1) unstable; urgency=medium
 
   [ Debian Janitor ]

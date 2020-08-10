@@ -48,9 +48,7 @@ override_dh_missing:
 
 override_dh_clean:
 	dh_clean
-	rm --force doc/latexusage.pdf doc/latexusage.dvi doc/TeXShopAndAsymptote.dvi doc/CAD.dvi
-	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc doc/asymptote.fn doc/asymptote.ky doc/asymptote.pg doc/asymptote.tp doc/asymptote.vr asy.list
-	rm --force doc/asyRefCard.pdf doc/asyRefCard.dvi
+	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc
 	rm -fr $(ASYMPTOTE_HOME)
 
 #
