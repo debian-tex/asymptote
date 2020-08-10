@@ -4,8 +4,6 @@
 #include "glrender.h"
 #include "drawelement.h"
 
-#ifdef HAVE_LIBGLM
-
 using namespace settings;
 
 namespace camp {
@@ -25,18 +23,6 @@ void jsfile::header(string name)
   out << "<!DOCTYPE html>" << newl << newl;
 }
 
-void jsfile::comment(string name)
-{
-  out << "<!-- Use the following line to embed this file within another web page:" << newl
-      << newl
-      << "<iframe src=\"" << name
-      << "\" width=\"" << gl::fullWidth
-      << "\" height=\"" << gl::fullHeight
-      << "\" frameborder=\"0\"></iframe>" << newl
-      << newl
-      << "-->" << newl << newl;
-}
-
 void jsfile::meta(string name, bool svg)
 {
   out << "<html lang=\"\">" << newl
@@ -45,13 +31,22 @@ void jsfile::meta(string name, bool svg)
       << "<title>" << stripExt(name) << "</title>" << newl
       << newl
       << "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>" << newl;
-  if(svg) {
-    out << "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>"
-        << newl << "</head>";
-  } else {
+  if(svg)
+    out << "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>";
+  else
     out << "<meta name=\"viewport\" content=\"user-scalable=no\"/>";
-  }
-  out << newl << newl;
+  out << newl << "<style>" << newl;
+  if(svg && !getSetting<bool>("absolute"))
+    out << "svg, #container {" << newl
+        << "display: block;" << newl
+        << "width: 100vw;" << newl
+        << "height: 100vh;" << newl
+        << "}" << newl;
+  out << "body {margin: 0;}" << newl
+      << "</style>" << newl;
+  if(svg)
+    out << "</head>" << newl;
+  out << newl;
 }
 
 void jsfile::footer(string name)
@@ -69,9 +64,24 @@ void jsfile::svgtohtml(string prefix)
   string name=buildname(prefix,"html");
   header(name);
   meta(name);
+
   out << "<body>" << newl << newl;
   copy(locateFile(auxname(prefix,"svg")),true);
   footer(name);
+}
+
+#ifdef HAVE_LIBGLM
+
+void jsfile::comment(string name)
+{
+  out << "<!-- Use the following line to embed this file within another web page:" << newl
+      << newl
+      << "<iframe src=\"" << name
+      << "\" width=\"" << gl::fullWidth
+      << "\" height=\"" << gl::fullHeight
+      << "\" frameborder=\"0\"></iframe>" << newl
+      << newl
+      << "-->" << newl << newl;
 }
 
 void jsfile::open(string name)
@@ -81,7 +91,7 @@ void jsfile::open(string name)
   meta(name,false);
 
   out.precision(getSetting<Int>("digits"));
-  
+
   if(getSetting<bool>("offline")) {
     out << "<script>" << newl;
     copy(locateFile(AsyGL));
@@ -90,15 +100,15 @@ void jsfile::open(string name)
     out << "<script" << newl << "src=\""
         << getSetting<string>("asygl") << "\">" << newl << "</script>" << newl;
   }
-  out << "<script>" << newl;
+  out << newl << "<script>" << newl;
   out << newl
       << "canvasWidth=" << gl::fullWidth << ";" << newl
       << "canvasHeight=" << gl::fullHeight << ";" << newl
       << "absolute=" << std::boolalpha << getSetting<bool>("absolute") << ";"
       << newl << newl
-      <<  "b=[" << gl::xmin << "," << gl::ymin << "," << gl::zmin << "];" 
+      <<  "b=[" << gl::xmin << "," << gl::ymin << "," << gl::zmin << "];"
       << newl
-      <<  "B=[" << gl::xmax << "," << gl::ymax << "," << gl::zmax << "];" 
+      <<  "B=[" << gl::xmax << "," << gl::ymax << "," << gl::zmax << "];"
       << newl
       << "orthographic=" << gl::orthographic << ";"
       << newl
@@ -160,18 +170,18 @@ void jsfile::finish(string name)
   footer(name);
 }
 
-void jsfile::addColor(const prc::RGBAColour& c) 
+void jsfile::addColor(const prc::RGBAColour& c)
 {
   out << "[" << byte(c.R) << "," << byte(c.G) << "," << byte(c.B)
       << "," << byte(c.A) << "]";
 }
 
-void jsfile::addIndices(const uint32_t *I) 
+void jsfile::addIndices(const uint32_t *I)
 {
   out << "[" << I[0] << "," << I[1] << "," << I[2] << "]";
 }
 
-bool distinct(const uint32_t *I, const uint32_t *J) 
+bool distinct(const uint32_t *I, const uint32_t *J)
 {
   return I[0] != J[0] || I[1] != J[1] || I[2] != J[2];
 }
@@ -184,7 +194,7 @@ void jsfile::addPatch(triple const* controls, size_t n,
   size_t last=n-1;
   for(size_t i=0; i < last; ++i)
     out << controls[i] << "," << newl;
-  out << controls[last] << newl << "]," 
+  out << controls[last] << newl << "],"
       << drawElement::centerIndex << "," << materialIndex << ","
       << Min << "," << Max;
   if(c) {
@@ -232,7 +242,7 @@ void jsfile::addPixel(const triple& z0, double width,
 void jsfile::addMaterial(size_t index)
 {
   out << "Materials.push(new Material(" << newl
-       << material[index]
+      << material[index]
       << "));" << newl << newl;
 }
 
@@ -244,18 +254,18 @@ void jsfile::addTriangles(size_t nP, const triple* P, size_t nN,
 {
   for(size_t i=0; i < nP; ++i)
     out << "Positions.push(" << P[i] << ");" << newl;
-  
+
   for(size_t i=0; i < nN; ++i)
     out << "Normals.push(" << N[i] << ");" << newl;
-  
+
   for(size_t i=0; i < nC; ++i) {
     out << "Colors.push(";
     addColor(C[i]);
     out << ");" << newl;
   }
-  
+
   for(size_t i=0; i < nI; ++i) {
-    out << "Indices.push(["; 
+    out << "Indices.push([";
     const uint32_t *PIi=PI[i];
     const uint32_t *NIi=NI[i];
     bool keepNI=distinct(NIi,PIi);
@@ -316,10 +326,10 @@ void jsfile::addTube(const triple *g, double width,
       << g[1] << "," << newl
       << g[2] << "," << newl
       << g[3] << newl << "],"
-      << width << "," 
+      << width << ","
       << drawElement::centerIndex << "," << materialIndex << ","
       << Min << "," << Max << "," << core <<");" << newl << newl;
 }
+#endif
 
 }
-#endif

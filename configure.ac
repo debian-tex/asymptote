@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.66],[http://sourceforge.net/projects/asymptote])
+AC_INIT([Asymptote],[2.67],[http://sourceforge.net/projects/asymptote])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -264,6 +264,9 @@ if test "x$enable_sigsegv" != "xno"; then
 fi
 
 AC_CHECK_LIB([rt], [sched_yield])
+
+AC_CHECK_LIB([curl],[curl_easy_init],,
+AC_MSG_NOTICE([*** Could not find libcurl: will compile without optional URL support. ***]))
 
 AC_ARG_ENABLE(readline,
 [AS_HELP_STRING(--enable-readline[[[=yes]]],enable GNU Readline Library)])

@@ -72,11 +72,11 @@ extern pair zero;
 
 pair sin(pair z)
 {
-  return pair(sin(z.getx())*cosh(z.gety()),cos(z.getx())*sinh(z.gety())); 
+  return pair(sin(z.getx())*cosh(z.gety()),cos(z.getx())*sinh(z.gety()));
 }
 
-pair exp(pair z) 
-{ 
+pair exp(pair z)
+{
   return exp(z.getx())*expi(z.gety());
 }
 
@@ -356,7 +356,7 @@ void gen_runpair23(stack *Stack)
 void gen_runpair24(stack *Stack)
 {
   pair z=vm::pop<pair>(Stack);
-#line 199 "runpair.in" 
+#line 199 "runpair.in"
   {Stack->push<pair>(exp(z)); return;}
 }
 
@@ -365,7 +365,7 @@ void gen_runpair24(stack *Stack)
 void gen_runpair25(stack *Stack)
 {
   pair z=vm::pop<pair>(Stack);
-#line 204 "runpair.in" 
+#line 204 "runpair.in"
   {Stack->push<pair>(pair(log(z.length()),z.angle())); return;}
 }
 
@@ -374,7 +374,7 @@ void gen_runpair25(stack *Stack)
 void gen_runpair26(stack *Stack)
 {
   pair z=vm::pop<pair>(Stack);
-#line 209 "runpair.in" 
+#line 209 "runpair.in"
   {Stack->push<pair>(sin(z)); return;}
 }
 
@@ -383,8 +383,8 @@ void gen_runpair26(stack *Stack)
 void gen_runpair27(stack *Stack)
 {
   pair z=vm::pop<pair>(Stack);
-#line 214 "runpair.in" 
-  {Stack->push<pair>(pair(cos(z.getx())*cosh(z.gety()),-sin(z.getx())*sinh(z.gety()))); return;} 
+#line 214 "runpair.in"
+  {Stack->push<pair>(pair(cos(z.getx())*cosh(z.gety()),-sin(z.getx())*sinh(z.gety()))); return;}
 }
 
 // Complex Gamma function
