@@ -1,3 +1,11 @@
+asymptote (2.67-2) unstable; urgency=medium
+
+  * Apply patch from https://github.com/vectorgraphics/asymptote/pull/181
+    to solve issues with gs 9.53.x. I assume this to be a work around
+    until ghostscript has been fixed. (Closes: #971846)
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 20 Oct 2020 23:56:57 +0200
+
 asymptote (2.67-1) unstable; urgency=medium
 
   * New upstream version 2.67
