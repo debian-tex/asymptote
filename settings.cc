@@ -85,6 +85,7 @@ const bool havegl=false;
 mode_t mask;
 
 string systemDir=ASYMPTOTE_SYSDIR;
+string defaultPSdriver="ps2write";
 string defaultEPSdriver="eps2write";
 string defaultAsyGL="https://vectorgraphics.github.io/asymptote/base/webgl/asygl-"+
   string(AsyGLVersion)+".js";
@@ -888,7 +889,7 @@ void version()
 void usage(const char *program)
 {
   version();
-  cerr << "\t\t\t" << "http://asymptote.sourceforge.net/"
+  cerr << "\t\t\t" << "https://asymptote.sourceforge.io/"
        << endl
        << "Usage: " << program << " [options] [file ...]"
        << endl;
@@ -997,7 +998,11 @@ struct versionOption : public option {
 #endif
 
     feature("WebGL    3D HTML rendering",glm);
+#ifdef HAVE_LIBOSMESA
+    feature("OpenGL   3D OSMesa offscreen rendering",gl);
+#else
     feature("OpenGL   3D OpenGL rendering",gl);
+#endif
     feature("GSL      GNU Scientific Library (special functions)",gsl);
     feature("FFTW3    Fast Fourier transforms",fftw3);
     feature("XDR      external data representation (portable binary file format)",xdr);
@@ -1282,6 +1287,8 @@ void initSettings() {
 
   addOption(new boolSetting("inlineimage", 0,
                             "Generate inline embedded image"));
+  addOption(new boolSetting("compress", 0,
+                            "Compress images in PDF output", true));
   addOption(new boolSetting("parseonly", 'p', "Parse file"));
   addOption(new boolSetting("translate", 's',
                             "Show translated virtual machine code"));
@@ -1423,6 +1430,7 @@ void initSettings() {
   addOption(new envSetting("gs", defaultGhostscript));
   addOption(new envSetting("libgs", defaultGhostscriptLibrary));
   addOption(new envSetting("epsdriver", defaultEPSdriver));
+  addOption(new envSetting("psdriver", defaultPSdriver));
   addOption(new envSetting("asygl", defaultAsyGL));
   addOption(new envSetting("texpath", ""));
   addOption(new envSetting("texcommand", ""));

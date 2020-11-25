@@ -616,24 +616,22 @@ used; if it is old we recommend first putting
 in the @code{Asymptote} source directory.
 
 On @code{UNIX} platforms (other than @code{MacOS X}), we recommend
-using version @code{3.0.0} of the @code{freeglut} library. To compile
+using version @code{3.2.1} of the @code{freeglut} library. To compile
 @code{freeglut}, download
 @quotation
-@url{https://prdownloads.sourceforge.net/freeglut/freeglut-3.0.0.tar.gz}
+@url{https://prdownloads.sourceforge.net/freeglut/freeglut-3.2.1.tar.gz}
 @end quotation
 @noindent
 and type (as the root user):
 @verbatim
-gunzip freeglut-3.0.0.tar.gz
-tar -xf freeglut-3.0.0.tar
-cd freeglut-3.0.0
-./configure --prefix=/usr
-cmake .
+gunzip freeglut-3.2.1.tar.gz
+tar -xf freeglut-3.2.1.tar
+cd freeglut-3.2.1
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS=-fcommon .
 make
 make install
-cd ..
 @end verbatim
-@noindent 
+@noindent
 
 Then compile @code{Asymptote} with the commands
 @verbatim
@@ -1192,21 +1190,22 @@ Margins can be used to shrink the visible portion of a path by
 Typical values of @code{margin} 
 are @code{NoMargin}, @code{BeginMargin}, @code{EndMargin} (or
 equivalently @code{Margin}), and @code{Margins} (which leaves a margin
-at both ends of the path). One may use @code{Margin(real begin, real end)}
+at both ends of the path). One may use
+@code{Margin(real begin, real end=begin)}
 to specify the size of the beginning and ending margin, respectively,
 in multiples of the units @code{labelmargin(p)} used for aligning labels.
 Alternatively, @code{BeginPenMargin}, @code{EndPenMargin}
 (or equivalently @code{PenMargin}), @code{PenMargins},
-@code{PenMargin(real begin, real end)} specify a margin in units of
+@code{PenMargin(real begin, real end=begin)} specify a margin in units of
 the pen line width, taking account of the pen line width when drawing
 the path or arrow. For example, use @code{DotMargin}, an
 abbreviation for @code{PenMargin(-0.5*dotfactor,0.5*dotfactor)},
 to draw from the usual beginning point just up to the boundary of an
 end dot of width @code{dotfactor*linewidth(p)}.  The qualifiers
 @code{BeginDotMargin}, @code{EndDotMargin}, and @code{DotMargins} work
-similarly. The qualifier @code{TrueMargin(real begin, real end)} allows one to
-specify a margin directly in @code{PostScript} units, independent of
-the pen line width.
+similarly. The qualifier @code{TrueMargin(real begin, real end=begin)}
+allows one to specify a margin directly in @code{PostScript} units,
+independent of the pen line width.
 
 The use of arrows, bars, and margins is illustrated by the examples
 @code{@uref{https://asymptote.sourceforge.io/gallery/Pythagoras.svg,,Pythagoras}@uref{https://asymptote.sourceforge.io/gallery/Pythagoras.asy,,.asy}} and
@@ -3102,7 +3101,7 @@ The default setting, @code{nobasealign},which may be changed with
 full label bounding box for alignment. In contrast, @code{basealign}
 requests that the @TeX{} baseline be respected.
 The base align setting of a pen is returned by
-@code{int basealigin(pen p=currentpen)}.
+@code{int basealign(pen p=currentpen)}.
 
 @cindex @code{fontsize}
 @cindex @code{lineskip}
@@ -3397,6 +3396,8 @@ The implicit initializer for transforms is @code{identity()}.
 The routines @code{shift(transform t)} and @code{shiftless(transform t)}
 return the transforms @code{(t.x,t.y,0,0,0,0)} and
 @code{(0,0,t.xx,t.xy,t.yx,t.yy)} respectively.
+The function bool @code{isometry(transform t)} can be used to test if @code{t}
+is an isometry (preserves distance).
 
 
 @node Frames and pictures, Files, Transforms, Programming
@@ -3849,7 +3850,7 @@ value) files and portable @acronym{XDR} (External Data Representation)
 binary files.
 
 @cindex @code{input}
-An input file must first be opened with 
+An input file can be opened with
 @verbatim
 input(string name="", bool check=true, string comment="#", string mode="");
 @end verbatim
@@ -3979,7 +3980,8 @@ Data Representation) portable binary format (available on all
 @code{UNIX} platforms).
 Alternatively, a file may also be opened with @code{mode="binary"}
 to read or write double precision reals and single
-precision integers in the native (nonportable) machine binary format.
+precision integers in the native (nonportable) machine binary format,
+or to read the entire file into a string.
 The virtual member functions
 @code{file singlereal(bool b=true)} and @code{file singleint(bool b=true)}
 be used to change the precision of real and integer I/O
@@ -4399,10 +4401,12 @@ while in the second, it must be the (non-@code{void}) type of the variable.
 The function @code{cputime()}
 returns a structure @code{cputime} with cumulative @acronym{CPU} times
 broken down into the fields @code{parent.user}, @code{parent.system},
-@code{child.user}, and @code{child.system}. For convenience, the
-incremental fields @code{change.user} and @code{change.system} indicate
-the change in the corresponding total parent and child @acronym{CPU}
-times since the last call to @code{cputime()}. The function
+@code{child.user}, and @code{child.system}, along with the cumulative
+wall clock time in @code{parent.clock}, all measured in seconds.
+For convenience, the incremental fields @code{change.user},
+@code{change.system}, and @code{change.clock} indicate  the change in
+the corresponding fields since the last call to @code{cputime()}. The
+function
 @verbatim
 void write(file file=stdout, string s="", cputime c,
            string format=cputimeformat, suffix suffix=none); 
@@ -10082,7 +10086,7 @@ Pedram Emami developed the @code{Asymptote Web Application} at
 @c  LocalWords:  XZEquals XYEquals XZZero XYZero InTicks OutTicks InOutTicks
 @c  LocalWords:  fitscreen planeproject strokepath meshlight nullpens arrowdir
 @c  LocalWords:  diffusepen emissivepen specularpen arrowbarb keyval
-@c  LocalWords:  hstretch vstretch roundbox nonconvex miterlimit basealigin cmd
+@c  LocalWords:  hstretch vstretch roundbox nonconvex miterlimit basealign cmd
 @c  LocalWords:  maxviewport maxtile antialiased sphericalharmonic attachfile
 @c  LocalWords:  vertexshading smoothelevation glOptions iconified iconify kate
 @c  LocalWords:  psviewerOptions pdfviewerOptions viewportmargin asyattach SVG
