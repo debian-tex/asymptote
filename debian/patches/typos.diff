@@ -5,9 +5,9 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  ChangeLog |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- asymptote-2.67.orig/ChangeLog
-+++ asymptote-2.67/ChangeLog
-@@ -22295,7 +22295,7 @@
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -22603,7 +22603,7 @@ Author: John Bowman <bowman@ualberta.ca>
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -16,7 +16,7 @@ Author: Nicolas Boulenguez <nicolas@debian.org>
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -22325,7 +22325,7 @@
+@@ -22633,7 +22633,7 @@ commit b08d2bd76c59e4f21bf7f0e9c80ee5b1c
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  

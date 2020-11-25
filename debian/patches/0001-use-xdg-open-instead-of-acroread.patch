@@ -2,9 +2,9 @@
  settings.cc |    6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
---- asymptote.orig/settings.cc
-+++ asymptote/settings.cc
-@@ -100,9 +100,9 @@ string defaultPSViewer="open";
+--- a/settings.cc
++++ b/settings.cc
+@@ -101,9 +101,9 @@ string defaultPSViewer="open";
  string defaultPDFViewer="open";
  string defaultHTMLViewer="open";
  #else

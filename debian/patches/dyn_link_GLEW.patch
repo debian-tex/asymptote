@@ -3,9 +3,9 @@
  configure.ac |    2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
---- asymptote-2.67.orig/Makefile.in
-+++ asymptote-2.67/Makefile.in
-@@ -115,7 +115,7 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -115,7 +115,7 @@ endif
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
  
@@ -14,9 +14,9 @@
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
---- asymptote-2.67.orig/configure.ac
-+++ asymptote-2.67/configure.ac
-@@ -422,7 +422,7 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -428,7 +428,7 @@ case "$OSTYPE" in
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "

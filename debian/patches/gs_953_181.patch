@@ -5,14 +5,12 @@ Subject: [PATCH] Fix issue preventing asymptote from working with Ghostscript
  9.35.0+
 
 ---
- runlabel.in | 19 ++++++++++++++++---
+ runlabel.in |   19 ++++++++++++++++---
  1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/runlabel.in b/runlabel.in
-index 61f66bfcb..0e34999fd 100644
 --- a/runlabel.in
 +++ b/runlabel.in
-@@ -106,14 +106,27 @@ array *readpath(const string& psname, bool keep, bool pdf=false,
+@@ -106,14 +106,27 @@ array *readpath(const string& psname, bo
    cmd.push_back("-dBATCH");
    cmd.push_back("-P");
    if(safe) cmd.push_back("-dSAFER");
@@ -36,8 +34,8 @@ index 61f66bfcb..0e34999fd 100644
 -  const string null="/dev/null";
 +  const string tempmf="/tmp/asy%d.tmp";
  #endif
-   string epsdriver=getSetting<string>("epsdriver");
-   cmd.push_back("-sDEVICE="+epsdriver);
+   string psdriver=getSetting<string>("psdriver");
+   cmd.push_back("-sDEVICE="+psdriver);
 -  cmd.push_back("-sOutputFile="+null);
 +  cmd.push_back("-sOutputFile="+tempmf);
    cmd.push_back(stripDir(psname));
