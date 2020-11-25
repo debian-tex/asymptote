@@ -1,3 +1,24 @@
+Release Notes for Version 2.68
+
+Floating point exceptions in OpenGL libraries are now masked.
+A normalization used to render tubes was fixed.  A Label align(Label,dir)
+function was added for aligning label normals.  A new settings.compress=true
+option controls PDF image compression.  A bool isometry(transform) function
+was added.  Various bugs in the geometry module were fixed.
+The transpose function ignores uninitialized elements.
+Null fields are treated as undefined values in cvs mode and in line mode.
+Uninitialized rendering variables were fixed. A RELEASE variable was added.
+Logarithmic graphs of surfaces are supported. Files are opened
+without assuming an asy suffix.  Suport for Ghostscript 9.53 was implemented.
+The end argument of Margin functions is now optional. A function
+cputime().change.clock that returns the high-resolution elapsed wall clock
+time was added.  A --disable-curl option was added.
+The centering of slides was fixed.  Null characters and null strings are
+supported in the replace function.  Configuration without readline support
+was fixed.  In binary mode, an entire file can be read into a string.
+The getc function now works properly when reading the NUL character.
+Reproducible builds are supported.
+
 Release Notes for Version 2.67
 
 Support was added for importing and inputting URLs. Compilation and 2D SVG

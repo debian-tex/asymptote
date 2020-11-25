@@ -1,3 +1,311 @@
+commit 3b88c382bf0dd59daa6427a9fc4f03c246b5d218
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 22 18:02:21 2020 -0700
+
+    Fix normalization in tube rendering.
+
+commit 31ab4195580be6ac65ad226d29a568c82147e166
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 22 15:09:09 2020 -0700
+
+    Update freeglut installation instructions.
+
+commit 7cedd768019efd0fe435fa7d7a8b281298f4d6ba
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 22 10:34:07 2020 -0700
+
+    Work around further floating point exceptions in OpenGL libraries.
+
+commit 437aef9cb8ae639727f635b51121a00fdb16423d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 22 01:29:47 2020 -0700
+
+    Add Label align(Label,dir) for aligning Label normal in direction dir.
+
+commit df6f1c2641fd51975a11244be7b66c477f73a856
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 21 22:15:22 2020 -0700
+
+    Add settings.compress=true option to control PDF image compression.
+
+commit a36959ecbdc74fe83720dd28a009d65e16a0302a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 21 21:48:36 2020 -0700
+
+    Implement bool isometry(transform) function.
+
+commit 1108f83337b6d6f2ac33b9fd0bb0fb47c0578065
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 21 21:18:53 2020 -0700
+
+    Fix bug2 #149 and #154 (thanks to Oliver Guibe).
+
+commit b1ab048d6cf6b703a992a296c870d3b1c5a63b3e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 21 20:54:05 2020 -0700
+
+    Skip over uninitialized elements of transposed arrays.
+
+commit 959cdd4823cb1e61b407878c89a66ae97a90e326
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Nov 20 23:33:21 2020 -0700
+
+     Work around floating point exceptions (FE_INVALID) in OpenGL libraries.
+
+commit d541f69d20ed7d7a88e25cfe08323780796439ff
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Nov 19 14:30:13 2020 -0700
+
+    Qualify namespace.
+
+commit f8de14a7ed23d3496188275092c731f8a0fc9aa5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Nov 19 11:51:58 2020 -0700
+
+    Restore image enccoding.
+
+commit 9606da530260600112145360c3eaadada1ed645f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Nov 16 09:57:35 2020 -0700
+
+    Fix comment.
+
+commit f513ffde5c8540e1b45a93fd0391541a6f4aa2f7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Nov 16 09:53:28 2020 -0700
+
+    Read null fields as undefined values in cvs mode and in line mode.
+
+commit 5402f40f5c752ed3069a8102b9a1f46a561bc8b0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 15 23:35:42 2020 -0700
+
+    Fix warning message.
+
+commit e67fba800818c8713165829ee64268c445355da3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 15 00:26:51 2020 -0700
+
+    Fix more uninitialized variables.
+
+commit ea1eca1727d19625c5be8359cd88d38236eb0737
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 15 00:06:41 2020 -0700
+
+    Fix uninitialized variable.
+
+commit a9d1f7abf90309502026af608db3aed4cb405ce2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 14 23:44:25 2020 -0700
+
+    Return unbounded direction in rationalSimplex.
+
+commit ac9ece43497c23bba3d0738db5a0fb1e8e7090d8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 8 12:49:10 2020 -0700
+
+    Fix comment.
+
+commit 4d6872d552573ba947d3a524549b159d322ff284
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 8 12:39:12 2020 -0700
+
+    Add RELEASE variable.
+
+commit a3d85fb37e5a28e021f417b8355362b03f93b5d1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 27 21:49:55 2020 -0600
+
+    Always define xStandard in optimal case in rationalSimplex.
+
+commit 5ced24a1d9658364e76ddc04a9b61890ee53d543
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 27 03:18:54 2020 -0600
+
+    Support logarithmic graphs of surfaces.
+
+commit e688d42e33a521facdb050c77b454b819478d3fd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 23:08:36 2020 -0600
+
+    Open files without assuming an asy suffix.
+
+commit 3361214340d58235f4dbb8f24017d0cd5d94da72
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 22:24:51 2020 -0600
+
+    Use ps2write instead of eps2write where possible, for compatibility with gs 9.53.
+
+commit 42b291049920c2a023ab5f3598cc917eb36297ca
+Merge: e62d0401 d9826965
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 20:18:21 2020 -0600
+
+    Merge branch 'spotrh-curl-config', standardized.
+
+commit d9826965be5768c417b790fb6ff6ba59aeb89246
+Merge: e62d0401 a055a0ae
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 20:09:49 2020 -0600
+
+    Merge branch 'curl-config' of https://github.com/spotrh/asymptote into spotrh-curl-config.
+
+commit e62d040114aaadfa9c3a6d6a70cd001cdea11e36
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 20:01:06 2020 -0600
+
+    Make end argument of Margin functions optional.
+
+commit e5db49aa7b3ede25ae2cf4c08adfe2fe533420b1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 25 19:59:54 2020 -0600
+
+    Expose solution to standard problem in rationalSimplex.
+
+commit 69e5f0cc8ccdb8128319c4cd8c1f13cae01ce82d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 10 00:11:57 2020 -0600
+
+    Make --version indicate if configured for OSMesa software rendering.
+
+commit d54e2ac82481e410ffa2bb52a1fb9d217d95eb98
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Oct 7 17:39:51 2020 -0600
+
+    Add high resolution wall clock time.
+
+commit a055a0ae813e7ed443b3d48e0822e5e7199bef65
+Author: Tom Callaway <spot@fedoraproject.org>
+Date:   Fri Oct 2 18:50:51 2020 -0400
+
+    add --disable-curl option to prevent curl check and compile without optional URL support
+
+commit 27a55b7891214aa0654e7a97207c5ba762ceb1aa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Sep 14 13:48:03 2020 -0600
+
+    Fix centering of slides.
+
+commit 576b7333baf56cd833a1098dd85a22af1bbfdafb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 28 21:56:16 2020 -0600
+
+    Support null characters and null strings in replace.
+
+commit be534393f9b3404573479dc9851817e6c5fbda94
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 24 12:59:25 2020 -0600
+
+    Disable image encoding in PDF conversion.
+
+commit 1fd27cc14606206aba81bf131e0bef36e9329457
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 22 12:15:26 2020 -0600
+
+    Fix extraction of git revision.
+
+commit 8dbece952d9ddece1349215243c473bafcc7b4c6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 22 09:56:46 2020 -0600
+
+    Fix configuration without readline support.
+
+commit d6500a226b021edf99002596f7226015950dc6af
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 20 22:47:49 2020 -0600
+
+    Allow binary mode to read the entire file into a string.
+
+commit 880ef36e9878dfbcdcf28b953d11bfd392805643
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 20 21:04:51 2020 -0600
+
+    Fix getc when reading NUL character.
+
+commit e3ac2208915f6c496974a8dc3342861de4f2e2d1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 15 12:52:42 2020 -0600
+
+    Fix commit 986d64236b299c1643451f4e774170cb8ebcec00.
+
+commit 6cea1c06c2054f1b7433e2d01ed6a2ec863b6726
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 13 16:06:15 2020 -0600
+
+    Update URLs.
+
+commit af12ec3b6fcca4e273dad4fdd3b431bada30608f
+Merge: 986d6423 68682879
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 9 08:29:58 2020 -0600
+
+    Merge pull request #170 from bmwiedemann/date
+    
+    Allow to override build date with SOURCE_DATE_EPOCH.
+
+commit 68682879ce9704606fb0d46734dfaba4966de9b5
+Author: Bernhard M. Wiedemann <bwiedemann@suse.de>
+Date:   Sun Aug 9 14:10:55 2020 +0200
+
+    Allow to override build date with SOURCE_DATE_EPOCH
+    
+    in order to make builds reproducible.
+    See https://reproducible-builds.org/ for why this is good
+    and https://reproducible-builds.org/specs/source-date-epoch/
+    for the definition of this variable.
+    
+    Also consistently use ISO 8601 date format to be understood everywhere.
+    This also avoids %B and %h that are locale-dependent.
+    
+    Also use UTC/gmtime to be independent of timezone.
+    
+    Also rewrite the shell `date` calls into perl to avoid
+    trouble with the different date command implementations.
+    
+    This PR was done while working on reproducible builds for openSUSE.
+
+commit 986d64236b299c1643451f4e774170cb8ebcec00
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 8 11:18:38 2020 -0600
+
+    Fix last revision.
+
+commit 4c06e580baa7051128d3e8ab4b06a0315a1eecd7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 8 01:05:57 2020 -0600
+
+    Simplify code.
+
+commit d2f6e59eb42763c2e9a1f6ca5e057f6bf13991cd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 6 22:27:33 2020 -0600
+
+    Fix last revision.
+
+commit 7ae96b7754d1025c02be514e3d31433cce52b609
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 6 22:05:07 2020 -0600
+
+    Remove -0 suffix from git version for tagged releases.
+
+commit 610c4624a7ac69ee4ccfedd6075b1cb28c14d7ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 5 23:39:05 2020 -0600
+
+    Fix last revision.
+
+commit dc4243ccd1c5ab766241707ab10f16d7c9738ef7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 5 23:34:47 2020 -0600
+
+    Backport curlProgress to libCurl < 7.32.
+
+commit 94f99a26ab9b72f3a3fbc2239f9e7b529b7166e2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 5 22:18:03 2020 -0600
+
+    Increment version to 2.68.
+
 commit bccdb51e0cfa5b7b7bf5c08c1f9496a7ba9a012d
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Wed Aug 5 17:45:17 2020 -0600
