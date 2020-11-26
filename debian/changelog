@@ -1,10 +1,10 @@
-asymptote (2.68-1) UNRELEASED; urgency=medium
+asymptote (2.68-1) unstable; urgency=medium
 
   * New upstream version 2.68
   * Update patches, remove gs 9.53 specific patches, fixed differently by
     upstream
 
- -- Norbert Preining <norbert@preining.info>  Wed, 25 Nov 2020 11:52:46 +0900
+ -- Norbert Preining <norbert@preining.info>  Thu, 26 Nov 2020 13:21:38 +0900
 
 asymptote (2.67-2) unstable; urgency=medium
 
