@@ -43,9 +43,6 @@ override_dh_auto_test:
 override_dh_compress:
 	dh_compress -X.pdf
 
-override_dh_missing:
-	dh_missing --fail-missing
-
 override_dh_clean:
 	dh_clean
 	rm --force doc/*.aux doc/*.cp doc/*.cps doc/*.idx doc/*.ins doc/*.log doc/*.toc

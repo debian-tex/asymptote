@@ -1,6 +1,7 @@
 asymptote (2.68-2) UNRELEASED; urgency=medium
 
   * Link docs to /u/s/texmf/doc so that texdoc finds them (Closes: #977147)
+  * Use dh compat 13, remove dh_missing override
 
  -- Norbert Preining <norbert@preining.info>  Sat, 12 Dec 2020 17:56:58 +0900
 
