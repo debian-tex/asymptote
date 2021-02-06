@@ -2,6 +2,8 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Andy Hammerlindl, John Bowman, and Tom Prince
 Upstream-Contact: bowman@math.ualberta.ca
 Source: http://asymptote.sourceforge.net
+Files-Excluded:
+ asy.list
 
 Files: *
 Copyright: Copyright (C) 2004-2009 Andy Hammerlindl, John Bowman, Tom Prince
