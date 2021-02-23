@@ -74,7 +74,7 @@ Suggests: gv,
           evince-gtk | pdf-viewer
 Conflicts: asymptote (<= 2.49-2)
 Replaces: asymptote (<= 2.49-2)
-Description: script-based vector graphics language inspired by MetaPost
+Description: script-based vector graphics language inspired by MetaPost - the GUI part
  Asymptote is a powerful script-based vector graphics language for technical
  drawings, inspired by MetaPost but with an improved C++-like syntax.
  Asymptote provides for figures the same high-quality level of typesetting that
