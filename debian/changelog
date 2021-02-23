@@ -1,3 +1,9 @@
+asymptote (2.69+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Hilmar Preusse <hille42@web.de>  Tue, 23 Feb 2021 22:29:11 +0100
+
 asymptote (2.68-2) unstable; urgency=medium
 
   * Link docs to /u/s/texmf/doc so that texdoc finds them (Closes: #977147)
