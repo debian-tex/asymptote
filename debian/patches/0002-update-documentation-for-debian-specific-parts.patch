@@ -2,6 +2,7 @@ From: =?UTF-8?q?Picca=20Fr=C3=A9d=C3=A9ric-Emmanuel?=
  <picca@synchrotron-soleil.fr>
 Date: Sat, 2 Jul 2011 23:17:05 +0200
 Subject: update documentation for debian specific parts
+Forwarded: not needed.
 
 ---
  doc/asymptote.texi |   34 +++++++++++++---------------------

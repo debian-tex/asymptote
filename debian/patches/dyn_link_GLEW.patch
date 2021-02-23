@@ -1,3 +1,9 @@
+Description: We link dynamically w/ libglew2.1.
+Origin: Hilmar Preusse <hille42@web.de>
+Forwarded: Refused by upstream.
+Author: Hilmar Preusse <hille42@web.de>
+Last-Update: 20190808
+
 ---
  Makefile.in  |    2 +-
  configure.ac |    2 +-

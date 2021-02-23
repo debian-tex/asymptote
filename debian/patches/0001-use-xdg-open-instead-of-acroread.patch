@@ -1,3 +1,9 @@
+Description: Replace specific commands by Debian commands.
+Origin: Norbert Preining <preining@debian.org>
+Forwarded: No. Patch is specific to Debian.
+Author: Norbert Preining <preining@debian.org>
+Last-Update: 20131112
+
 ---
  settings.cc |    6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
