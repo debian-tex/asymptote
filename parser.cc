@@ -111,8 +111,10 @@ bool isURL(const string& filename)
 absyntax::file *parseFile(const string& filename,
                           const char *nameOfAction)
 {
+#ifdef HAVE_LIBCURL
   if(isURL(filename))
     return parseURL(filename,nameOfAction);
+#endif
 
   if(filename == "-")
     return parseStdin();
@@ -169,7 +171,14 @@ size_t curlCallback(char *data, size_t size, size_t n, stringstream& buf)
   return Size;
 }
 
-int curlProgress(void *, curl_off_t, curl_off_t, curl_off_t, curl_off_t)
+#ifdef CURLOPT_XFERINFODATA
+#define CURL_OFF_T curl_off_t
+#else
+#define CURL_OFF_T double
+#define CURLOPT_XFERINFOFUNCTION CURLOPT_PROGRESSFUNCTION
+#endif
+
+int curlProgress(void *, CURL_OFF_T, CURL_OFF_T, CURL_OFF_T, CURL_OFF_T)
 {
   return errorstream::interrupt ? -1 : 0;
 }

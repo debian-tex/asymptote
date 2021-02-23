@@ -1,3 +1,34 @@
+Release Notes for Version 2.69
+
+A segmentation fault in subpath3 was fixed. The fuzz parameter in bezulate
+was increased to handle font precision issues. A missing above argument was
+added in plain_boxes.asy. Scaling bugs in the palette module were fixed.
+The contour module now respects picture scaling. Bugs in reading null
+fields were fixed. Orthographic scaling is now consistent with perspective
+scaling when keepAspect=false. The obsolete everypage package was removed.
+A compilation issue with LIBCURL and compilation warnings were fixed. 
+
+Release Notes for Version 2.68
+
+Floating point exceptions in OpenGL libraries are now masked.
+A normalization used to render tubes was fixed.  A Label align(Label,dir)
+function was added for aligning label normals.  A new settings.compress=true
+option controls PDF image compression.  A bool isometry(transform) function
+was added.  Various bugs in the geometry module were fixed.
+The transpose function ignores uninitialized elements.
+Null fields are treated as undefined values in cvs mode and in line mode.
+Uninitialized rendering variables were fixed. A RELEASE variable was added.
+Logarithmic graphs of surfaces are supported. Files are opened
+without assuming an asy suffix.  Support for Ghostscript 9.53 was implemented.
+The end argument of Margin functions is now optional. A function
+cputime().change.clock that returns the high-resolution elapsed wall clock
+time was added.  A --disable-curl option was added.
+The centering of slides was fixed.  Null characters and null strings are
+supported in the replace function.  Configuration without readline support
+was fixed.  In binary mode, an entire file can be read into a string.
+The getc function now works properly when reading the NUL character.
+Reproducible builds are supported.
+
 Release Notes for Version 2.67
 
 Support was added for importing and inputting URLs. Compilation and 2D SVG
