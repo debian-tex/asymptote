@@ -1,0 +1,70 @@
+Description: Fix charset in source code.
+Origin: Hilmar Preusse <hille42@web.de>
+Forwarded: Not done, could be done.
+Author: Hilmar Preusse <hille42@web.de>
+Last-Update: 20210224
+
+Index: asymptote/base/CAD.asy
+===================================================================
+--- asymptote.orig/base/CAD.asy	2021-02-23 23:12:56.375129537 +0100
++++ asymptote/base/CAD.asy	2021-02-24 20:40:59.588726176 +0100
+@@ -7,16 +7,16 @@
+   pA,
+   pVisibleEdge,            // Sichtbare Kanten
+   pVisibleContour,        // Sichtbarer Umriss
+-  pUsableWindingLength,    // Nitzbare Gewindel‰nge
++  pUsableWindingLength,    // Nutzbare Gewindel√§nge
+   pSystemLine,            // Systemlinie (Stahlbau)
+   pDiagramCurve,            // Kurve in Diagrammen
+-  pSurfaceStructure,        // Oberfl‰chenstrukturen
++  pSurfaceStructure,        // Oberfl√§chenstrukturen
+   // B
+   pB,
+   pLightEdge,                // Lichtkante
+-  pMeasureLine,            // Maﬂlinie
+-  pMeasureHelpLine,        // Maﬂhilfslinie
+-  pMeasureLineBound,        // Maﬂlinienbegrenzung
++  pMeasureLine,            // Ma√ülinie
++  pMeasureHelpLine,        // Ma√ühilfslinie
++  pMeasureLineBound,        // Ma√ülinienbegrenzung
+   pReferenceLine,            // Hinweislinie
+   pHatch,                    // Schraffur
+   pWindingGround,            // Gewindegrund
+@@ -31,7 +31,7 @@
+   // keine Mittellinie ist
+   // E
+   pE,
+-  pSurfaceTreatmentAllowed,    // Bereich zul‰ssiger Oberfl‰chenbehandlung
++  pSurfaceTreatmentAllowed,    // Bereich zul√§ssiger Oberfl√§chenbehandlung
+   // F
+   pF,
+   pInvisibleEdge,            // unsichtbare Kante
+@@ -43,7 +43,7 @@
+   pPartialCircle,            // Teilkreis
+   pCircularHole,            // Lochkreis
+   pDivisionPlane,            // Teilungsebene
+-  pTransferLine,            // Trajektorien (‹bertragunslinien)
++  pTransferLine,            // Trajektorien (√úbertragungslinien)
+   // J
+   pJ,
+   pCuttingPlane,                // Schnittebene
+@@ -53,7 +53,7 @@
+   pContourBeforeDeformation,    // Umrisse vor Verformung
+   pAdjacentPartContour,        // Umrisse angrenzender Teile
+   pEndShapeRawMaterial,        // Fertigformen in Rohteilen
+-  pContourEligibleType,        // Umrisse wahlweiser Ausf¸hrungen
++  pContourEligibleType,        // Umrisse wahlweiser Ausf√ºhrungen
+   pPartInFrontOfCuttingPlane;    // Teile vor der Schnittebene
+ 
+ 
+Index: asymptote/base/interpolate.asy
+===================================================================
+--- asymptote.orig/base/interpolate.asy	2021-02-23 23:12:56.387129511 +0100
++++ asymptote/base/interpolate.asy	2021-02-23 23:12:56.000000000 +0100
+@@ -1,5 +1,5 @@
+ // Lagrange and Hermite interpolation in Asymptote
+-// Author: Olivier GuibÈ
++// Author: Olivier Guib√©
+ // Acknowledgements: Philippe Ivaldi
+ 
+ // diffdiv(x,y) computes Newton's Divided Difference for
