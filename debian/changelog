@@ -1,8 +1,8 @@
-asymptote (2.69+ds-1) UNRELEASED; urgency=medium
+asymptote (2.69+ds-1) unstable; urgency=medium
 
-  * New upstream release.
+  * New upstream release, do some lintian cleanup.
 
- -- Hilmar Preusse <hille42@web.de>  Tue, 23 Feb 2021 22:29:11 +0100
+ -- Hilmar Preusse <hille42@web.de>  Wed, 24 Feb 2021 09:33:52 +0100
 
 asymptote (2.68-2) unstable; urgency=medium
 
