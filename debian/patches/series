@@ -3,4 +3,4 @@
 honour-source-date-epoch
 typos.diff
 dyn_link_GLEW.patch
-local_charset.patch
+#local_charset.patch
