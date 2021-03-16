@@ -62,7 +62,7 @@ Description: script-based vector graphics language inspired by MetaPost
  LaTeX does for scientific text.
 
 Package: asymptote-x11
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
          asymptote (= ${binary:Version}),
