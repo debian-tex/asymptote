@@ -65,7 +65,7 @@ Package: asymptote-x11
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
-         asymptote (= ${binary:Version}),
+         asymptote (>= ${binary:Version}),
          librsvg2-bin,
          python3-cson,
          python3-numpy,
