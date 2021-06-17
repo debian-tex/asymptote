@@ -3,6 +3,7 @@ asymptote (2.70+ds-1) UNRELEASED; urgency=medium
   * New upstream release, refresh patches, disable obsolete patch.
   * Lintian clean (local charset) + overrides.
   * asy-x11 is arch: all.
+  * Enable test suite provided by upstream.
 
  -- Hilmar Preusse <hille42@web.de>  Tue, 16 Mar 2021 09:19:28 +0100
 

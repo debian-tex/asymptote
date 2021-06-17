@@ -1,0 +1,22 @@
+Tests: test-suite
+Depends: bison,
+	dh-python,
+	dpkg-dev (>= 1.16.1),
+	flex,
+	freeglut3-dev,
+	libosmesa6-dev,
+	ghostscript,
+	imagemagick,
+	libfftw3-dev,
+	libgc-dev,
+	libgsl-dev,
+	libncurses-dev,
+	libreadline-dev,
+	libsigsegv-dev,
+	libtimedate-perl,
+	python3,
+	zlib1g-dev,
+	libglm-dev,
+	libglew-dev,
+	texlive-latex-base
+Restrictions: build-needed
