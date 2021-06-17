@@ -1,0 +1,19 @@
+Description: Remove error message "failed to create directory /home/<user>/.asy" from output.
+Origin: Hilmar Preusse <hille42@web.de>
+Forwarded: Not yet
+Author: Hilmar Preusse <hille42@web.de>
+Last-Update: 20210617
+
+Index: asymptote/wce
+===================================================================
+--- asymptote.orig/wce	2021-02-23 23:12:56.491129303 +0100
++++ asymptote/wce	2021-06-17 21:02:07.956503772 +0200
+@@ -1,6 +1,7 @@
+ #!/bin/sh
+ printf "Testing errors..."
+-./asy -q -sysdir base -noautoplain -debug errortest 2> errors.temp
++./asy -q -sysdir base -noautoplain -debug errortest 2> errors.temp1
++grep -v "failed to create directory" errors.temp1 > errors.temp
+ result=`diff errors.temp errors`
+ if test "$result" = ""; then
+ echo PASSED.

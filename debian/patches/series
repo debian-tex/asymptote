@@ -4,3 +4,5 @@ honour-source-date-epoch
 typos.diff
 dyn_link_GLEW.patch
 #local_charset.patch
+remove_dot_asy_message.patch
+redirect_test_stderr_dev_null.patch
