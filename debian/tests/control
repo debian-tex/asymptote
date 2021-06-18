@@ -2,6 +2,7 @@ Tests: test-suite
 Depends: bison,
 	dh-python,
 	dpkg-dev (>= 1.16.1),
+	build-essential,
 	flex,
 	freeglut3-dev,
 	libosmesa6-dev,
