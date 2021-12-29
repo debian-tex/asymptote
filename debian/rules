@@ -33,7 +33,6 @@ override_dh_auto_install:
 	# fix xasy absolute link
 	ln -sf ../share/asymptote/GUI/xasy.py debian/tmp/usr/bin/xasy
 	# fix permissions
-	chmod 0644 debian/tmp/usr/share/asymptote/GUI/icons_rc.py
 	chmod 0644 debian/tmp/usr/share/asymptote/shaders/*.glsl
 	dh_installtex -pasymptote
 
