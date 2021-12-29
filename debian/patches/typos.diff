@@ -6,11 +6,9 @@ Forwarded: not done. Could be done.
  ChangeLog |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Index: asymptote/ChangeLog
-===================================================================
---- asymptote.orig/ChangeLog	2021-03-16 09:20:24.624238945 +0100
-+++ asymptote/ChangeLog	2021-03-16 09:20:24.608238973 +0100
-@@ -22839,7 +22839,7 @@
+--- asymptote.orig/ChangeLog
++++ asymptote/ChangeLog
+@@ -27251,7 +27251,7 @@
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -19,7 +17,7 @@ Index: asymptote/ChangeLog
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -22869,7 +22869,7 @@
+@@ -27281,7 +27281,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  

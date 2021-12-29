@@ -1,3 +1,9 @@
+asymptote (2.73+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream version, refresh/update patches.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 29 Dec 2021 13:48:29 +0100
+
 asymptote (2.70+ds-2) unstable; urgency=medium
 
   * Export ASYMPTOTE_HOME in Debian autopkgtest, instead of patching

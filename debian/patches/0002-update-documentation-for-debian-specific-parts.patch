@@ -8,12 +8,10 @@ Forwarded: not needed.
  doc/asymptote.texi |   34 +++++++++++++---------------------
  1 file changed, 13 insertions(+), 21 deletions(-)
 
-Index: asymptote/doc/asymptote.texi
-===================================================================
---- asymptote.orig/doc/asymptote.texi	2021-03-16 09:20:14.516256077 +0100
-+++ asymptote/doc/asymptote.texi	2021-03-16 09:20:14.508256091 +0100
+--- asymptote.orig/doc/asymptote.texi
++++ asymptote/doc/asymptote.texi
 @@ -15,15 +15,16 @@
-      
+ 
  @quotation
  Permission is granted to copy, distribute and/or modify this document
 -under the terms of the @acronym{GNU} Lesser General Public License (see the
@@ -24,7 +22,7 @@ Index: asymptote/doc/asymptote.texi
  
  @end quotation
  @end copying
-      
+ 
  @dircategory Languages
  @direntry
 -* asymptote: (asymptote/asymptote). Vector graphics language.
@@ -32,7 +30,7 @@ Index: asymptote/doc/asymptote.texi
  @end direntry
  
  @titlepage
-@@ -444,9 +445,9 @@
+@@ -449,9 +450,9 @@
  @noindent
  @verbatim
  import settings;
@@ -45,7 +43,7 @@ Index: asymptote/doc/asymptote.texi
  display="display";
  animate="animate";
  gs="gs";
-@@ -701,20 +702,9 @@
+@@ -706,20 +707,9 @@
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -68,7 +66,7 @@ Index: asymptote/doc/asymptote.texi
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -738,8 +728,10 @@
+@@ -743,8 +733,10 @@
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  

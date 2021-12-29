@@ -9,20 +9,20 @@ Last-Update: 20190808
  configure.ac |    2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -115,7 +115,7 @@ endif
+--- asymptote.orig/Makefile.in
++++ asymptote/Makefile.in
+@@ -125,7 +125,7 @@
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
  
--asy:	version glew.o
-+asy:	version
+-asy:	version glew.o @LSPLIB@
++asy:	version @LSPLIB@
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
---- a/configure.ac
-+++ b/configure.ac
-@@ -428,7 +428,7 @@ case "$OSTYPE" in
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
+@@ -468,7 +468,7 @@
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "
