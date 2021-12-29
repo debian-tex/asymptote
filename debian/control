@@ -73,7 +73,7 @@ Depends: ${misc:Depends},
          python3-pyqt5.qtsvg
 Suggests: gv,
           evince | pdf-viewer
-Conflicts: asymptote (<= 2.49-2)
+Breaks: asymptote (<= 2.49-2)
 Replaces: asymptote (<= 2.49-2)
 Description: script-based vector graphics language inspired by MetaPost - the GUI part
  Asymptote is a powerful script-based vector graphics language for technical
