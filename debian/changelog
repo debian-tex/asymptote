@@ -3,6 +3,9 @@ asymptote (2.73+ds-1) UNRELEASED; urgency=medium
   * New upstream version, refresh/update patches.
   * Lintian:
     W: info-document-missing-image-file
+    I: Replace "Conflicts" by "Breaks"
+    Overrides: script-not-executable, spelling-error-in-binary,
+    debian-watch-does-not-check-gpg-signature, national-encoding
 
  -- Hilmar Preusse <hille42@web.de>  Wed, 29 Dec 2021 13:48:29 +0100
 
