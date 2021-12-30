@@ -5,7 +5,8 @@ asymptote (2.73+ds-1) UNRELEASED; urgency=medium
     W: info-document-missing-image-file
     I: Replace "Conflicts" by "Breaks"
     Overrides: script-not-executable, spelling-error-in-binary,
-    debian-watch-does-not-check-gpg-signature.
+    debian-watch-does-not-check-gpg-signature,
+    package-contains-documentation-outside-usr-share-doc.
 
  -- Hilmar Preusse <hille42@web.de>  Wed, 29 Dec 2021 13:48:29 +0100
 
