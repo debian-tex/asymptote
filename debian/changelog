@@ -1,6 +1,8 @@
 asymptote (2.73+ds-1) UNRELEASED; urgency=medium
 
   * New upstream version, refresh/update patches.
+  * Add libcurl4-gnutls-dev, libboost-filesystem1.74-dev, rapidjson-dev &
+    libboost-thread1.74-dev & to B-D.
   * Lintian:
     W: info-document-missing-image-file
     I: Replace "Conflicts" by "Breaks"
