@@ -1,16 +1,17 @@
-asymptote (2.73+ds-1) UNRELEASED; urgency=medium
+asymptote (2.73+ds-1) unstable; urgency=medium
 
   * New upstream version, refresh/update patches.
+  * Bump Standards Version to 4.6.0, no changes needed.
   * Add libcurl4-gnutls-dev, libboost-filesystem1.74-dev, rapidjson-dev &
-    libboost-thread1.74-dev & to B-D.
+    libboost-thread1.74-dev to Build-Depend.
   * Lintian:
-    W: info-document-missing-image-file
-    I: Replace "Conflicts" by "Breaks"
-    Overrides: script-not-executable, spelling-error-in-binary,
-    debian-watch-does-not-check-gpg-signature,
-    package-contains-documentation-outside-usr-share-doc.
+      W: info-document-missing-image-file
+      I: Replace "Conflicts" by "Breaks" in asymptote-x11.
+      Overrides: script-not-executable, spelling-error-in-binary,
+      debian-watch-does-not-check-gpg-signature,
+      package-contains-documentation-outside-usr-share-doc.
 
- -- Hilmar Preusse <hille42@web.de>  Wed, 29 Dec 2021 13:48:29 +0100
+ -- Hilmar Preusse <hille42@web.de>  Thu, 30 Dec 2021 20:48:43 +0100
 
 asymptote (2.70+ds-2) unstable; urgency=medium
 
