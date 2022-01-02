@@ -1,3 +1,9 @@
+asymptote (2.73+ds-3) UNRELEASED; urgency=medium
+
+  * Try to build reproducible.
+
+ -- Hilmar Preusse <hille42@web.de>  Sun, 02 Jan 2022 20:32:04 +0100
+
 asymptote (2.73+ds-2) unstable; urgency=medium
 
   * Add missing Dep's for autopkg test suite.

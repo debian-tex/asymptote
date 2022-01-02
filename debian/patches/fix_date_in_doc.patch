@@ -1,0 +1,24 @@
+Description: Fix date in documentation file.
+Origin: Hilmar Preusse <hille42@web.de>
+Forwarded: Not done, could be done.
+Author: Hilmar Preusse <hille42@web.de>
+Last-Update: 20220102
+
+--- asymptote.orig/doc/TeXShopAndAsymptote.tex
++++ asymptote/doc/TeXShopAndAsymptote.tex
+@@ -1,4 +1,6 @@
+ \documentclass[11pt]{article}
++\pdfinfoomitdate=1
++\pdftrailerid{}
+ \usepackage{geometry} 
+ \geometry{letterpaper}
+ 
+@@ -8,7 +10,7 @@
+ 
+ \title{Integrating Asymptote and TeXShop for Mac OS X}
+ \author{Vishaal Rajani \& Cole Zmurchok \\ University of Alberta}
+-\date{\today}
++\date{11.03.2011}
+ 
+ 
+ \begin{document}
