@@ -1,6 +1,6 @@
 // Enum class for v3dtypes
 // AUTO-GENERATED from v3dtypes.csv
-// Generated at 2021-12-27 17:51:07.172168
+// Generated at 2022-01-01 13:54:42.600940
 
 namespace camp
 {
