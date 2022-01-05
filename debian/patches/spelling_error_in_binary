@@ -1,0 +1,17 @@
+Description: Fix spelling error in source code.
+Origin: Hilmar Preusse <hille42@web.de>
+Forwarded: Not done, could be done.
+Author: Hilmar Preusse <hille42@web.de>
+Last-Update: 20220105
+
+--- asymptote.orig/lspserv.cc
++++ asymptote/lspserv.cc
+@@ -301,7 +301,7 @@
+ 
+   void AsymptoteLspServer::onInitialized(Notify_InitializedNotification::notify& notify)
+   {
+-    logInfo("server initalized notification");
++    logInfo("server initialized notification");
+   }
+ 
+   void AsymptoteLspServer::onExit(Notify_Exit::notify& notify)

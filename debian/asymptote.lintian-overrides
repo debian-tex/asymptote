@@ -1,5 +1,4 @@
 asymptote binary: script-not-executable usr/share/asymptote/asy-kate.sh
-asymptote binary: spelling-error-in-binary usr/bin/asy ment meant
-asymptote binary: spelling-error-in-binary usr/bin/asy nam name
 asymptote binary: spelling-error-in-binary usr/bin/asy initalized initialized
+asymptote binary: spelling-error-in-binary usr/bin/asy matchin matching
 asymptote binary: package-contains-documentation-outside-usr-share-doc usr/share/texmf/tex/context/third/asymptote/colo-asy.tex

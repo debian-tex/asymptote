@@ -5,3 +5,4 @@ typos.diff
 dyn_link_GLEW.patch
 #local_charset.patch
 fix_date_in_doc.patch
+spelling_error_in_binary
