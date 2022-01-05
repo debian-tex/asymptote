@@ -1385,7 +1385,7 @@ void radialshade(picture pic=currentpicture, path g, bool stroke=false,
 The boolean parameters @code{extenda} and @code{extendb} indicate
 whether the shading should extend beyond the radii @code{a} and @code{b}.
 Illustrations of radial shading are provided in the example files
-@code{@uref{https://asymptote.sourceforge.io/gallery/shade.svg,,shade}@uref{https://asymptote.sourceforge.io/gallery/shade.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/ring.pdf,,ring}@uref{https://asymptote.sourceforge.io/gallery/ring.asy,,.asy}}, and @code{@uref{https://asymptote.sourceforge.io/gallery/shadestroke.pdf,,shadestroke}@uref{https://asymptote.sourceforge.io/gallery/shadestroke.asy,,.asy}}.
+@code{@uref{https://asymptote.sourceforge.io/gallery/shade.svg,,shade}@uref{https://asymptote.sourceforge.io/gallery/shade.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/ring.pdf,,ring}@uref{https://asymptote.sourceforge.io/gallery/PDFs/ring.asy,,.asy}}, and @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/shadestroke.pdf,,shadestroke}@uref{https://asymptote.sourceforge.io/gallery/PDFs/shadestroke.asy,,.asy}}.
 
 @cindex @code{gouraudshade}
 Gouraud shading using fill rule @code{fillrule} and the vertex colors in the
@@ -1402,7 +1402,7 @@ void gouraudshade(picture pic=currentpicture, path g, bool stroke=false,
 In the second form, the elements of @code{z} are taken to be successive
 nodes of path @code{g}. The pens in @code{p} must belong to the same
 color space. Illustrations of Gouraud shading are provided in the example file
-@code{@uref{https://asymptote.sourceforge.io/gallery/Gouraud.pdf,,Gouraud}@uref{https://asymptote.sourceforge.io/gallery/Gouraud.asy,,.asy}}.
+@code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/Gouraud.pdf,,Gouraud}@uref{https://asymptote.sourceforge.io/gallery/PDFs/Gouraud.asy,,.asy}}.
 The edge flags used in Gouraud shading are documented here:
 @quotation
 @url{https://www.adobe.com/content/dam/acom/en/devnet/postscript/pdfs/TN5600.SmoothShading.pdf}
@@ -1440,8 +1440,8 @@ void draw(picture pic=currentpicture, pen fillrule=currentpen, path[] g,
 @end verbatim
 @noindent
 Illustrations of tensor product and Coons shading are provided in the
-example files @code{@uref{https://asymptote.sourceforge.io/gallery/tensor.pdf,,tensor}@uref{https://asymptote.sourceforge.io/gallery/tensor.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/Coons.pdf,,Coons}@uref{https://asymptote.sourceforge.io/gallery/Coons.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/3Dwebgl/BezierPatch.pdf,,BezierPatch}@uref{https://asymptote.sourceforge.io/gallery/3Dwebgl/BezierPatch.asy,,.asy}},
-and @code{@uref{https://asymptote.sourceforge.io/gallery/rainbow.pdf,,rainbow}@uref{https://asymptote.sourceforge.io/gallery/rainbow.asy,,.asy}}.
+example files @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/tensor.pdf,,tensor}@uref{https://asymptote.sourceforge.io/gallery/PDFs/tensor.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/Coons.pdf,,Coons}@uref{https://asymptote.sourceforge.io/gallery/PDFs/Coons.asy,,.asy}}, @code{@uref{https://asymptote.sourceforge.io/gallery/3Dwebgl/BezierPatch.html,,BezierPatch}@uref{https://asymptote.sourceforge.io/gallery/3Dwebgl/BezierPatch.asy,,.asy}},
+and @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/rainbow.pdf,,rainbow}@uref{https://asymptote.sourceforge.io/gallery/PDFs/rainbow.asy,,.asy}}.
 
 @cindex Function shading
 @cindex function shading
@@ -1457,7 +1457,7 @@ shades on picture @code{pic} the interior of path @code{g} according
 to fill rule @code{fillrule} using the @code{PostScript} calculator routine
 specified by the string @code{shader}; this routine takes 2 arguments,
 each in [0,1], and returns @code{colors(fillrule).length} color components.
-Function shading is illustrated in the example @code{@uref{https://asymptote.sourceforge.io/gallery/functionshading.pdf,,functionshading}@uref{https://asymptote.sourceforge.io/gallery/functionshading.asy,,.asy}}.
+Function shading is illustrated in the example @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/functionshading.pdf,,functionshading}@uref{https://asymptote.sourceforge.io/gallery/PDFs/functionshading.asy,,.asy}}.
 
 @cindex unfill
 The following routine uses @code{evenodd} clipping together with the
@@ -6849,7 +6849,7 @@ void annotate(picture pic=currentpicture, string title, string text,
               pair position);
 @end verbatim
 @noindent
-Annotations are illustrated in the example file @code{@uref{https://asymptote.sourceforge.io/gallery/annotation.pdf,,annotation}@uref{https://asymptote.sourceforge.io/gallery/annotation.asy,,.asy}}.
+Annotations are illustrated in the example file @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/annotation.pdf,,annotation}@uref{https://asymptote.sourceforge.io/gallery/PDFs/annotation.asy,,.asy}}.
 Currently, annotations are only implemented for the @code{latex}
 (default) and @code{tex} @TeX{} engines.
 
@@ -7728,14 +7728,17 @@ a function @code{f}(@math{x},@math{y}) and added to a picture @code{pic}:
 @verbatim
 bounds image(picture pic=currentpicture, real f(real, real),
              range range=Full, pair initial, pair final,
-             int nx=ngraph, int ny=nx, pen[] palette, bool antialias=false)
+             int nx=ngraph, int ny=nx, pen[] palette, int divs=0,
+             bool antialias=false)
 @end verbatim
 The function @code{f} will be sampled at @code{nx} and @code{ny}
 evenly spaced points over a rectangle defined by the points
 @code{initial} and @code{final}, respecting the current graphical
 scaling of @code{pic}. The color space is scaled according to the
-@math{z} axis scaling (@pxref{automatic scaling}). A bounds structure
+@math{z} axis scaling (@pxref{automatic scaling}). If @math{@code{divs} > 1},
+the palette is quantized to @math{@code{divs}-1} values. A @code{bounds} structure
 for the function values is returned:
+@cindex @code{bounds}
 @verbatim
 struct bounds {
   real min;
@@ -7752,15 +7755,19 @@ or an explicit range @code{Range(real min, real max)}.
 Here @code{Full} specifies a range varying from the
 minimum to maximum values of the function over the sampling interval,
 while @code{Automatic} selects "nice" limits.
-The example @code{@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/imagecontour.svg,,imagecontour}@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/imagecontour.asy,,.asy}} illustrates how level sets
-(contour lines) can be drawn on a color density plot (@pxref{contour}).
+The examples
+@code{@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/fillcontour.svg,,fillcontour}@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/fillcontour.asy,,.asy}}
+and
+@code{@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/imagecontour.svg,,imagecontour}@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/imagecontour.asy,,.asy}}
+illustrate how level sets (contour lines) can be drawn on a color
+density plot (@pxref{contour}).
 
 A color density plot can also be generated from an explicit real[][]
 array @code{data}:
 @cindex @code{image}
 @verbatim
 bounds image(picture pic=currentpicture, real[][] f, range range=Full,
-             pair initial, pair final, pen[] palette,
+             pair initial, pair final, pen[] palette, int divs=0,
              bool transpose=(initial.x < final.x && initial.y < final.y),
              bool copy=true, bool antialias=false);
 @end verbatim
@@ -8175,7 +8182,7 @@ output with the the command-line option and @code{-f html}
 3D @acronym{HTML} file can then be viewed directly in any modern desktop or
 mobile browser, or even embedded within another web page:
 @verbatim
-<iframe src="logo3.html" width="210" height="140" frameborder="0">
+<iframe src="logo3.html" width="561" height="321" frameborder="0">
 </iframe>
 @end verbatim
 
@@ -9299,8 +9306,12 @@ pen for negative contours and a solid pen for positive (and zero) contours:
 @sp 1
 @center @image{./multicontour}
 
-The next example illustrates how contour lines can be drawn on color
-density images:
+The next examples illustrates how contour lines can be drawn on color
+density images, with and without palette quantization:
+@verbatiminclude fillcontour.asy
+@sp 1
+@center @image{./fillcontour}
+
 @verbatiminclude imagecontour.asy
 @sp 1
 @center @image{./imagecontour}
@@ -9323,7 +9334,7 @@ int[][] triangulate(pair[] z);
 @sp 1
 @center @image{./triangulate}
 
-The example @code{@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/Gouraudcontour.pdf,,Gouraudcontour}@uref{https://asymptote.sourceforge.io/gallery/2Dgraphs/Gouraudcontour.asy,,.asy}} illustrates how to produce color
+The example @code{@uref{https://asymptote.sourceforge.io/gallery/PDFs/Gouraudcontour.pdf,,Gouraudcontour}@uref{https://asymptote.sourceforge.io/gallery/PDFs/Gouraudcontour.asy,,.asy}} illustrates how to produce color
 density images over such irregular triangular meshes.
 @code{Asymptote} uses a robust version of Paul Bourke's Delaunay triangulation
 algorithm based on the public-domain exact arithmetic predicates written by

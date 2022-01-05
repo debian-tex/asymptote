@@ -1,3 +1,94 @@
+commit b2ae0111b8184e26ca0ff990d9d55a13753e6a1b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jan 2 07:44:55 2022 +1100
+
+    Add linecap and linejoin enums to source code for clarity.
+
+commit 1589f4e8733bcd2f3696d6471ebe7bdd08e9f16c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 1 13:08:01 2022 -0700
+
+    Fix lsp crash on save.
+
+commit 9fe2167d3fa875d2ac08f60850bab183a25cf58b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 1 10:41:29 2022 -0700
+
+    Update examples.
+
+commit 7b76b04637598965f166e77f3948aaa9ae80c803
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 1 17:28:24 2022 +1100
+
+    Fix bug #231.
+
+commit 6e359f24dff133f66478179bd2b51ca400cf7937
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 31 15:24:13 2021 -0700
+
+    Fix bug #263.
+
+commit d29fbefaab57f095f41f6851dc5ffe4ce5b4bbcb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Dec 30 15:27:12 2021 -0700
+
+    Fix issue #287.
+
+commit e13e777a81379c846a83f3daa7ba5c117b1af797
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 29 22:58:45 2021 -0700
+
+    Workaround issue #206 by abandoning color.sty package for all TeX engines,
+    in favour of low-level specials.
+
+commit f10c7fd9f54e5e84a7b5287579dbb29ce45aabd3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 29 17:55:09 2021 -0700
+
+    Fix bug #241.
+
+commit c5edc7fba45c5a1c9cc46aee1c3078b84e1096c7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 29 17:36:35 2021 -0700
+
+    Use byteinv in writefromRGB.
+
+commit 445ba2486c29b69724ad24dba4699631f39903dd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 29 14:22:23 2021 -0700
+
+    Fix bug #286 by implementing better fix to bug #68.
+
+commit 10abb84a02abb2aad19704b56a797b46ac41f96d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 29 10:20:51 2021 -0700
+
+    Update links to gallery.
+
+commit 3154b07e46fc0eb637acf65f17d4d08a991580a2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Dec 28 15:26:08 2021 -0700
+
+    Disable erase for svg and html output.
+
+commit 19d0bce77ac7772d341577ccb26519708caff7e1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Dec 27 23:16:05 2021 -0700
+
+    Disable order-independent transparency if SSBO support is unavailable.
+
+commit f5f62621c96f76f684dcda7ce8949a5285fa5bec
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Dec 27 21:00:48 2021 -0700
+
+    Fix issue #285.
+
+commit 190ccf2773a599625c45ec3fc3a4fd709d63a555
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Dec 27 18:23:47 2021 -0700
+
+    Increment version to 2.74.
+
 commit f28852ba9da596dd61f3755e67bc2a52d76c1fef
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Mon Dec 27 17:40:27 2021 -0700

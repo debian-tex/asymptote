@@ -1,3 +1,15 @@
+Release Notes for Version 2.74
+
+Order-independent transparency is disabled if SSBO support is unavailable.
+Embedded 3D renderings now work in inline TeX mode. The tiling pen was fixed. 
+Support was added for filling contour plots by quantizing color density images.
+Unwanted shifting in PDF output when using non-letter size paper was fixed.
+Due to its limitations, the color.sty package was abandoned in favour of
+low-level specials. The bounding box contributions of the linejoin and
+linecap qualifiers are now correctly taken into account. The erase command
+is inhibited for svg and html output. A crash on save in the lsp server
+was fixed. Links to the gallery were fixed in the documentation.
+
 Release Notes for Version 2.73
 
 The asygl library was updated to support embedding of WebGL and WebGL2 scenes
