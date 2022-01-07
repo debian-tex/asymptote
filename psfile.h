@@ -133,18 +133,17 @@ public:
   }
 
 protected:
+  pen lastpen;
   std::ostream *out;
 
 public:
-  pen lastpen;
-
   bool pdftex() {return settings::pdf(settings::getSetting<string>("tex"));}
 
   psfile(const string& filename, bool pdfformat);
 
   psfile() {pdf=pdftex();}
 
-  bool istargetfmt(string outputformat);
+  bool transparentFormat(string outputformat);
 
   virtual ~psfile();
 

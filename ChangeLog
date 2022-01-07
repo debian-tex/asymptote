@@ -1,3 +1,224 @@
+commit 587b26dca79cad5a31100a30bee9cc4a9dcd93e8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 6 14:15:06 2022 -0700
+
+    Use png16m driver by default (override with -pngdriver) and force pdflatex
+    mode to work around issues with pngalpha driver.
+
+commit eab735a13a12be5e9b1af44c1764b8e6d8721795
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 6 13:12:58 2022 -0700
+
+    Implement better fix to bug #241.
+    This reverts commit f10c7fd9f54e5e84a7b5287579dbb29ce45aabd3.
+
+commit 2defc18699b61f9247d3042f6a504e0ae6871596
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 6 12:55:08 2022 -0700
+
+    Revert "Fix commit 1ce26e54a3fb7e35389b3e9ecf7399cd1c535b66."
+    
+    This reverts commit 166efc83f399a795d2fa221477034e63e8ebb235.
+
+commit af52c7800ecef8fda895f604fd9c42d9fbb3ae18
+Merge: d7f097c1 123a7300
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 6 11:08:00 2022 -0700
+
+    Merge pull request #293 from tifv/patch-1
+    
+    Fix documentation typo in geometry.asy
+
+commit 123a7300e7c8c36c7e0718f4c8ef50b404e8e2bb
+Author: July Tikhonov <july.tikh@gmail.com>
+Date:   Thu Jan 6 20:13:48 2022 +0300
+
+    Fix documentation typo in geometry.asy
+
+commit d7f097c15e6431bd42dc9670215e6916be31f8f1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:50:34 2022 -0700
+
+    Disable primitives for colored surfaces.
+
+commit 74a26c9d627a1b9632fb033e086ed5e76e88b79e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:49:43 2022 -0700
+
+    Add missing currentlight.
+
+commit 509b3e8952a44b043ff58e5355113dee6efbe05a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:44:57 2022 -0700
+
+    V3D: Fix explicitNI and explicitCI flags.
+
+commit c802fe27c172c323280607b6b600ed616711d06f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:43:18 2022 -0700
+
+    Support specifying v3d files on the Asymptote command line.
+
+commit b30b6a88d8c1cd93838bc4c15c0611ab595ebccb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:42:36 2022 -0700
+
+    Disable png transparency until ghostscript pngalpha supports it again.
+
+commit 166efc83f399a795d2fa221477034e63e8ebb235
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 23:42:06 2022 -0700
+
+    Fix commit 1ce26e54a3fb7e35389b3e9ecf7399cd1c535b66.
+
+commit f2cce72ee4ca799512904137ddf79ba5a585b261
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 14:51:08 2022 -0700
+
+    Revert "Merge pull request #157 from ivankokan: Inversion fixes and improvements."
+    
+    This reverts commit 7f8a9987174d1136826541389148caa7a074e242.
+
+commit 7f8a9987174d1136826541389148caa7a074e242
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 14:36:49 2022 -0700
+
+    Merge pull request #157 from ivankokan: Inversion fixes and improvements.
+
+commit c808070eeb7bc1737b1e314c698e92d6c2889145
+Merge: 1ce26e54 9c770c62
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 13:46:17 2022 -0700
+
+    Merge pull request #291 from cagprado/improve_vim_syntax
+    
+    Improve vim syntax.
+
+commit 1ce26e54a3fb7e35389b3e9ecf7399cd1c535b66
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 5 13:17:10 2022 -0700
+
+    Fix transparency issue in commit f10c7fd9f54e5e84a7b5287579dbb29ce45aabd3.
+
+commit 9c770c628c3d8138e1038d172fe3736a59d66a30
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 17:04:16 2022 +0800
+
+    Limit column width of source file
+
+commit 571b6aaf5607360f309ea66def8743be8eb6687c
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 16:36:04 2022 +0800
+
+    Review delimiter matching rules
+    
+    Unmatched ), ], and } will highlight themselves as errors.
+    Unmatched (, and [ causes highlighted errors later on the next ;,
+    which should be close enough to the source of the error.
+    Unmatched { nested within other delimiters will end up highlighting the
+    extra ) or ].  However, top level unmatched { will not be marked.
+
+commit 3cc5ae13cd9325daa14eeccfbfc9e02de215c9fb
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 16:34:04 2022 +0800
+
+    Simplify comments highlighting
+    
+     - We don't need asyCommentGroup since it contains only one member
+     - asyCommentStart's only purpose is to avoide further matching on the
+       delimiters, we don't need it as we can use asyComment for that.
+     - asyComment*String don't start with L
+
+commit 0b03cdab123063b00955f80713df745be660100d
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 10:35:07 2022 +0800
+
+    Review asyNumber highlight
+    
+    Asymptote is simpler than C/C++, we should be able to use a single
+    regexp.  However, implicit multiplication may lead to some problems:
+    Constants like
+        0.1.1
+    are considered as
+        0.1 * .1
+    and compile with a warning about implicit scaling.  Since this is
+    potentially dangerous, we add a highlight error when this happens.
+
+commit 6b0f27155ae97326483029140c61021bc451856c
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 10:33:55 2022 +0800
+
+    Make two flavors of comment strings
+    
+    Since asymptote allows for "string" and 'string', make both of them also
+    allowed inside comments.
+
+commit 57ca7624641fa0691bda95a90c1df19d0969310c
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Jan 5 10:30:25 2022 +0800
+
+    Fix regexp of special characters for asyString
+    
+    asyString (double quoted string) will only highlight line breaks and the
+    special \".  This fix matching \" without requiring a character before
+    it.
+
+commit 456d1815b3d43a6ad80dcdaf945ea3e56d18a8f9
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Tue Jan 4 17:22:57 2022 +0800
+
+    Cleanup unused highlights (inherited from C syntax file)
+
+commit 3e5f7c063bb19fb272b59ce285bcb52d1da3d0b2
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Tue Jan 4 16:49:27 2022 +0800
+
+    Reorder file sections
+    
+    Order from simple to complex:
+     - keywords
+     - string constants
+     - number constants
+     - comments and comment strings
+     - delimiter errors
+
+commit 9ee06a701ba8dc87df56b5bcb859b4dbde0beeff
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Tue Jan 4 16:38:11 2022 +0800
+
+    Rename a few variables
+    
+    Try to be consistent with some naming:
+      asyString  for normal strings
+      asyCString for strings that maps C-like escapes (single quoted)
+      asyComment2Strings renamed to asyCommentLStrings following asyCommentL
+
+commit d5f765315b44970835874f7305822e1d0afad4bf
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Tue Jan 4 16:31:25 2022 +0800
+
+    Add more keywords for plain, three and color modules
+
+commit db3e1c343d8a5dfd69021968e443693982e24097
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jan 3 17:33:44 2022 -0700
+
+    Enable billboard labels, even when compiled with LIBOSMESA, to support WebGL.
+    Remove subdivision crack work around for obsolete PRC format.
+
+commit 827f4188c785a80199c9499122b04256667880bb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jan 2 11:15:20 2022 -0700
+
+    Support compilation again without tirpc library (not recommended,
+    as this will disable both XDR and V3D support).
+
+commit 6e6bf4a083c94d475fa2111967d260c8b623ea2d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jan 2 09:15:31 2022 +1100
+
+    Increment version to 2.75.
+
 commit b2ae0111b8184e26ca0ff990d9d55a13753e6a1b
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sun Jan 2 07:44:55 2022 +1100
@@ -27,6 +248,14 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Fri Dec 31 15:24:13 2021 -0700
 
     Fix bug #263.
+
+commit 2ee4ca9267d5c2b7415080bd7b074f76e99cc70a
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Fri Dec 31 16:30:04 2021 +0800
+
+    Remove trailing spaces highlighting
+    
+    There are several plugins and alternatives to highlight trailing spaces
 
 commit d29fbefaab57f095f41f6851dc5ffe4ce5b4bbcb
 Author: John Bowman <bowman@ualberta.ca>
@@ -64,6 +293,39 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Wed Dec 29 10:20:51 2021 -0700
 
     Update links to gallery.
+
+commit fd26b0d813c06c92cdab5b2573d33bc4530f722a
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Dec 29 15:40:45 2021 +0800
+
+    Add Dotted to list of constants
+
+commit 2c90bff859f9948d20065ae7fd7b048f57e93e89
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Dec 29 15:33:16 2021 +0800
+
+    Realign code
+
+commit 176572fc125d726f2ec9f61ff4a059a5dd9d01d7
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Dec 29 15:32:07 2021 +0800
+
+    Fix string highlighting
+    
+    Asymptote has two flavors of strings, single and double quoted, each
+    with different escape mapping.
+
+commit b02a07991a9c01eba86775fd4680f667dffd4b79
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Dec 29 11:02:13 2021 +0800
+
+    Add a few missing keywords
+
+commit 435700d9ae05e4ec36ab5423401c2d0ea04448ec
+Author: Caio Prado <cagprado@yandex.com>
+Date:   Wed Dec 29 10:14:38 2021 +0800
+
+    Remove tabs and realign the source
 
 commit 3154b07e46fc0eb637acf65f17d4d08a991580a2
 Author: John Bowman <bowman@ualberta.ca>
