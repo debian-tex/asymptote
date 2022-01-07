@@ -1,3 +1,13 @@
+Release Notes for Version 2.75
+
+A 2D transparency bug was fixed. Vim support was improved.
+To support PNG transparency, the default driver was changed from pngalpha
+to png16m and the pdflatex TeX engine is used instead of latex.
+A pngdriver option was added. To support WebGL, billboard labels are enabled
+when configured for offscreen rendering. The subdivision crack work around for
+PRC output was removed. Compilation without the tirpc library is supported
+again (but not recommended since the V3D format requires XDR support).
+
 Release Notes for Version 2.74
 
 Order-independent transparency is disabled if SSBO support is unavailable.
