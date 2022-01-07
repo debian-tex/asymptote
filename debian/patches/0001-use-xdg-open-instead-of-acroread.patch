@@ -8,9 +8,9 @@ Last-Update: 20131112
  settings.cc |    6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/settings.cc
-+++ b/settings.cc
-@@ -101,9 +101,9 @@ string defaultPSViewer="open";
+--- asymptote.orig/settings.cc
++++ asymptote/settings.cc
+@@ -102,9 +102,9 @@
  string defaultPDFViewer="open";
  string defaultHTMLViewer="open";
  #else
