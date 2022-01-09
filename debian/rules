@@ -6,13 +6,17 @@ DEB_BUILD_MAINT_OPTIONS := hardening=+all
 include /usr/share/dpkg/buildflags.mk
 include /usr/share/dpkg/pkg-info.mk
 
+ifeq ($(DEB_HOST_ARCH), hurd-i386)
+  LSPSERVER=--disable-lsp
+endif
+
 %:
 	dh $@ --with python3
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-gc=system	\
-		--with-latex=/usr/share/texmf/tex/latex		\
-		--with-context=/usr/share/texmf/tex/context/third \
+		--with-latex=/usr/share/texmf/tex/latex	\
+		--with-context=/usr/share/texmf/tex/context/third $(LSPSERVER)\
 		$(foreach v,CFLAGS CPPFLAGS CXXFLAGS LDFLAGS,'$(v)=$($(v))')
 
 # Avoid a warning every time asy is run if HOME is unset.
