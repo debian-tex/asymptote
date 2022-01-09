@@ -6,9 +6,9 @@ DEB_BUILD_MAINT_OPTIONS := hardening=+all
 include /usr/share/dpkg/buildflags.mk
 include /usr/share/dpkg/pkg-info.mk
 
-ifeq ($(DEB_HOST_ARCH), hurd-i386)
-  LSPSERVER=--disable-lsp
-endif
+#ifeq ($(DEB_HOST_ARCH), hurd-i386)
+#  LSPSERVER=--disable-lsp
+#endif
 
 %:
 	dh $@ --with python3
