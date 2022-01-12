@@ -26,7 +26,8 @@ $(ASYMPTOTE_HOME):
 	mkdir $(ASYMPTOTE_HOME)
 
 override_dh_auto_build:
-	make asy man
+	make -j4 asy
+	make man
 	make all html
 	# fix location of images in info document
 	sed -e 's!image src="\([^"]*\)"!image src="/usr/share/doc/asymptote/html/\1"!g' < doc/png/asymptote.info > doc/png/asymptote.info.fixed
