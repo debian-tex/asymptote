@@ -1,11 +1,11 @@
-asymptote (2.77+ds-1) UNRELEASED; urgency=medium
+asymptote (2.77+ds-1) unstable; urgency=medium
 
   * New upstream release, refresh / disable patches.
   * Remove/Override more lintian complains.
   * d/rules: run "make asy" build target with -j4
   * Remove "install-info" from Depends field of asymptote.
 
- -- Hilmar Preusse <hille42@web.de>  Sun, 09 Jan 2022 23:46:17 +0100
+ -- Hilmar Preusse <hille42@web.de>  Mon, 24 Jan 2022 15:42:47 +0100
 
 asymptote (2.75+ds-1) unstable; urgency=medium
 
