@@ -153,7 +153,6 @@ extern void exitHandler(int);
 namespace gl {
 
 GLint processors;
-GLint steps;
 
 bool outlinemode=false;
 bool ibl=false;
@@ -202,12 +201,13 @@ int maxTileHeight;
 double Angle;
 bool orthographic;
 double H;
+
 double xmin,xmax;
 double ymin,ymax;
-double zmin,zmax;
 
 double Xmin,Xmax;
 double Ymin,Ymax;
+double Zmin,Zmax;
 
 pair Shift;
 pair Margin;
@@ -291,7 +291,7 @@ void setDimensions(int Width, int Height, double X, double Y)
   double Aspect=((double) Width)/Height;
   double xshift=(X/Width+Shift.getx()*Xfactor)*Zoom;
   double yshift=(Y/Height+Shift.gety()*Yfactor)*Zoom;
-  double Zoominv=1.0/lastzoom;
+  double Zoominv=1.0/Zoom;
   if(orthographic) {
     double xsize=Xmax-Xmin;
     double ysize=Ymax-Ymin;
@@ -304,7 +304,7 @@ void setDimensions(int Width, int Height, double X, double Y)
       ymin=Ymin*Zoominv-Y0;
       ymax=Ymax*Zoominv-Y0;
     } else {
-      double r=0.5*xsize/(Aspect*Zoom);
+      double r=0.5*xsize*Zoominv/Aspect;
       double X0=(Xmax-Xmin)*Zoominv*xshift;
       double Y0=2.0*r*yshift;
       xmin=Xmin*Zoominv-X0;
@@ -348,8 +348,8 @@ void ortho(GLdouble left, GLdouble right, GLdouble bottom,
 void setProjection()
 {
   setDimensions(Width,Height,X,Y);
-  if(orthographic) ortho(xmin,xmax,ymin,ymax,-zmax,-zmin);
-  else frustum(xmin,xmax,ymin,ymax,-zmax,-zmin);
+  if(orthographic) ortho(xmin,xmax,ymin,ymax,-Zmax,-Zmin);
+  else frustum(xmin,xmax,ymin,ymax,-Zmax,-Zmin);
 }
 
 void updateModelViewData()
@@ -401,9 +401,9 @@ void home(bool webgl=false)
   framecount=0;
 }
 
-#ifdef HAVE_GL
-
 double T[16];
+
+#ifdef HAVE_GL
 
 #ifdef HAVE_LIBGLUT
 timeval lasttime;
@@ -516,6 +516,12 @@ void noShaders()
   exit(-1);
 }
 
+// Return ceil(log2(n)) where n is a 32 bit unsigned integer.
+uint32_t ceillog2(uint32_t n)
+{
+  return 32-CLZ(n-1);
+}
+
 void initShaders()
 {
   Nlights=nlights == 0 ? 0 : max(Nlights,nlights);
@@ -555,12 +561,16 @@ void initShaders()
     } else {
       camp::preSumShader=rc;
 
-      ostringstream s;
+      ostringstream s,S;
       s << "PROCESSORS " << processors << "u" << endl;
       shaderParams.push_back(s.str().c_str());
+
+      S << "STEPSM1 " << ceillog2(processors)-1 << "u" << endl;
+      shaderParams.push_back(S.str().c_str());
       shaders[0]=ShaderfileModePair(partial.c_str(),GL_COMPUTE_SHADER);
       camp::partialSumShader=compileAndLinkShader(shaders,shaderParams,
                                                   true,true);
+      shaderParams.pop_back();
       shaderParams.pop_back();
 
       shaders[0]=ShaderfileModePair(post.c_str(),GL_COMPUTE_SHADER);
@@ -703,9 +713,9 @@ void drawscene(int Width, int Height)
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  triple m(xmin,ymin,zmin);
-  triple M(xmax,ymax,zmax);
-  double perspective=orthographic ? 0.0 : 1.0/zmax;
+  triple m(xmin,ymin,Zmin);
+  triple M(xmax,ymax,Zmax);
+  double perspective=orthographic ? 0.0 : 1.0/Zmax;
 
   double size2=hypot(Width,Height);
 
@@ -753,7 +763,7 @@ void Export()
       trImageBuffer(tr,GL_RGB,GL_UNSIGNED_BYTE,data);
 
       setDimensions(fullWidth,fullHeight,X/Width*fullWidth,Y/Width*fullWidth);
-      (orthographic ? trOrtho : trFrustum)(tr,xmin,xmax,ymin,ymax,-zmax,-zmin);
+      (orthographic ? trOrtho : trFrustum)(tr,xmin,xmax,ymin,ymax,-Zmax,-Zmin);
 
       size_t count=0;
       do {
@@ -1109,9 +1119,8 @@ void update()
   Animate=getSetting<bool>("autoplay");
   glutShowWindow();
   if(Zoom != lastzoom) remesh=true;
-
   lastzoom=Zoom;
-  double cz=0.5*(zmin+zmax);
+  double cz=0.5*(Zmin+Zmax);
 
   dviewMat=translate(translate(dmat4(1.0),dvec3(cx,cy,cz))*drotateMat,
                      dvec3(0,0,-cz));
@@ -1268,7 +1277,7 @@ void rotate(int x, int y)
   if(x != x0 || y != y0) {
     arcball A(glx(x0),gly(y0),glx(x),gly(y));
     triple v=A.axis;
-    drotateMat=glm::rotate<double>(2*A.angle/lastzoom*ArcballFactor,
+    drotateMat=glm::rotate<double>(2*A.angle/Zoom*ArcballFactor,
                                    glm::dvec3(v.getx(),v.gety(),v.getz()))*
       drotateMat;
     x0=x; y0=y;
@@ -1634,7 +1643,7 @@ projection camera(bool user)
 
   camp::Triple vCamera,vUp,vTarget;
 
-  double cz=0.5*(zmin+zmax);
+  double cz=0.5*(Zmin+Zmax);
 
   double *Rotate=value_ptr(drotateMat);
 
@@ -1757,12 +1766,6 @@ void init_osmesa()
 
 #endif /* HAVE_GL */
 
-// Return ceil(log2(n)) where n is a 32 bit unsigned integer.
-uint32_t ceillog2(uint32_t n)
-{
-  return 32-CLZ(n-1);
-}
-
 // angle=0 means orthographic.
 void glrender(const string& prefix, const picture *pic, const string& format,
               double width, double height, double angle, double zoom,
@@ -1803,11 +1806,11 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   Xmax=M.getx();
   Ymin=m.gety();
   Ymax=M.gety();
-  zmin=m.getz();
-  zmax=M.getz();
+  Zmin=m.getz();
+  Zmax=M.getz();
 
   orthographic=Angle == 0.0;
-  H=orthographic ? 0.0 : -tan(0.5*Angle)*zmax;
+  H=orthographic ? 0.0 : -tan(0.5*Angle)*Zmax;
 
   ignorezoom=false;
   Xfactor=Yfactor=1.0;
@@ -1849,6 +1852,9 @@ void glrender(const string& prefix, const picture *pic, const string& format,
   }
 #endif
 #endif
+
+  for(int i=0; i < 16; ++i)
+    T[i]=t[i];
 
   static bool initialized=false;
 
@@ -1913,9 +1919,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     ArcballFactor=1+8.0*hypot(Margin.getx(),Margin.gety())/hypot(Width,Height);
 
 #ifdef HAVE_GL
-    for(int i=0; i < 16; ++i)
-      T[i]=t[i];
-
     Aspect=((double) Width)/Height;
 
     if(maxTileWidth <= 0) maxTileWidth=screenWidth;
@@ -2036,8 +2039,6 @@ void glrender(const string& prefix, const picture *pic, const string& format,
     glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS,&processors);
     if(processors <= 1)
       GPUindexing=false;
-    else
-      steps=ceillog2(processors);
   }
 
   Maxmaterials=val/sizeof(Material);
@@ -2197,7 +2198,7 @@ void refreshBuffers()
 
   if(initSSBO) {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER,camp::offsetBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER,(1+pixels)*sizeof(GLuint),NULL,
+    glBufferData(GL_SHADER_STORAGE_BUFFER,pixels*sizeof(GLuint),NULL,
                  GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER,1,camp::offsetBuffer);
     glClearBufferData(GL_SHADER_STORAGE_BUFFER,GL_R8UI,GL_RED_INTEGER,
@@ -2250,7 +2251,6 @@ void refreshBuffers()
 
     glUseProgram(partialSumShader);
     glUniform1ui(glGetUniformLocation(partialSumShader,"elements"),pixels);
-    glUniform1ui(glGetUniformLocation(partialSumShader,"steps"),gl::steps);
 
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     glDispatchCompute(1,1,1);
