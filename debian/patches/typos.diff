@@ -6,9 +6,20 @@ Forwarded: Refused by upstream, ChangeLog is generated from "git log".
  ChangeLog |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- asymptote.orig/ChangeLog
-+++ asymptote/ChangeLog
-@@ -27604,7 +27604,7 @@
+Index: asymptote/ChangeLog
+===================================================================
+--- asymptote.orig/ChangeLog	2022-01-24 14:55:28.092784306 +0100
++++ asymptote/ChangeLog	2022-01-24 14:55:54.468783595 +0100
+@@ -14,7 +14,7 @@
+ Author: John Bowman <bowman@ualberta.ca>
+ Date:   Fri Jan 21 16:50:46 2022 -0700
+ 
+-    Fix buffer overflow in partialsum.glsl; improve workload distibution.
++    Fix buffer overflow in partialsum.glsl; improve workload distribution.
+ 
+ commit 868ff0b61fb439d4ce6334aec4b4ea49a32ad9bf
+ Author: John Bowman <bowman@ualberta.ca>
+@@ -27890,7 +27890,7 @@
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -17,7 +28,7 @@ Forwarded: Refused by upstream, ChangeLog is generated from "git log".
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -27634,7 +27634,7 @@
+@@ -27920,7 +27920,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  
