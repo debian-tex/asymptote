@@ -10,7 +10,6 @@ Priority: optional
 Build-Depends: bison,
                debhelper-compat (= 13),
                dh-python,
-               dpkg-dev (>= 1.16.1),
                flex,
                freeglut3-dev,
                libosmesa6-dev,
