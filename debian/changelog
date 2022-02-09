@@ -1,4 +1,4 @@
-asymptote (2.78+ds-1) UNRELEASED; urgency=medium
+asymptote (2.78+ds-1) unstable; urgency=medium
 
   [ Debian Janitor ]
   * Remove constraints unnecessary since buster:
@@ -8,7 +8,7 @@ asymptote (2.78+ds-1) UNRELEASED; urgency=medium
   * New upstream release, refresh patches.
     - Add more needed BD's: cmake, libboost-program-options1.74-dev
 
- -- Hilmar Preusse <hille42@web.de>  Wed, 09 Feb 2022 10:50:15 +0100
+ -- Hilmar Preusse <hille42@web.de>  Wed, 09 Feb 2022 13:12:17 +0100
 
 asymptote (2.77+ds-1) unstable; urgency=medium
 
