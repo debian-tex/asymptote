@@ -9,11 +9,9 @@ Last-Update: 20190808
  configure.ac |    2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-Index: asymptote/Makefile.in
-===================================================================
---- asymptote.orig/Makefile.in	2022-01-24 14:56:29.360782655 +0100
-+++ asymptote/Makefile.in	2022-01-24 14:56:29.360782655 +0100
-@@ -125,7 +125,7 @@
+--- asymptote.orig/Makefile.in
++++ asymptote/Makefile.in
+@@ -126,7 +126,7 @@
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
  
@@ -22,10 +20,8 @@ Index: asymptote/Makefile.in
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
-Index: asymptote/configure.ac
-===================================================================
---- asymptote.orig/configure.ac	2022-01-24 14:56:29.360782655 +0100
-+++ asymptote/configure.ac	2022-01-24 14:56:29.360782655 +0100
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
 @@ -476,7 +476,7 @@
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
