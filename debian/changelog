@@ -1,3 +1,9 @@
+asymptote (2.78+ds-2) unstable; urgency=medium
+
+  * New BD's need to be added to autopkg test suite too. :-(
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 09 Feb 2022 15:14:18 +0100
+
 asymptote (2.78+ds-1) unstable; urgency=medium
 
   [ Debian Janitor ]
