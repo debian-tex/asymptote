@@ -1,8 +1,8 @@
-asymptote (2.79+ds-1) UNRELEASED; urgency=medium
+asymptote (2.79+ds-1) unstable; urgency=medium
 
   * New upstream release, refresh patches.
 
- -- Hilmar Preusse <hille42@web.de>  Wed, 09 Mar 2022 10:21:12 +0100
+ -- Hilmar Preusse <hille42@web.de>  Wed, 09 Mar 2022 11:04:16 +0100
 
 asymptote (2.78+ds-2) unstable; urgency=medium
 
