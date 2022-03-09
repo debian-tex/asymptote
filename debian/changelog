@@ -1,3 +1,9 @@
+asymptote (2.79+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream release, refresh patches.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 09 Mar 2022 10:21:12 +0100
+
 asymptote (2.78+ds-2) unstable; urgency=medium
 
   * New BD's need to be added to autopkg test suite too. :-(
