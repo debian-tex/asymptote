@@ -3,7 +3,4 @@
 honour-source-date-epoch
 typos.diff
 dyn_link_GLEW.patch
-#local_charset.patch
 fix_date_in_doc.patch
-#spelling_error_in_binary
-#48f313effd296591c3c44155736ba98f03a68535.diff
