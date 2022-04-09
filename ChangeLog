@@ -1,3 +1,255 @@
+commit 52f5c99018d24883f6e115ae72beaa88a15d0669
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Apr 5 11:32:10 2022 -0600
+
+    Fix last revision.
+
+commit 6992734bf38c28328ba829944596fa43d3d40512
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 4 23:00:20 2022 -0600
+
+    TRANSPARENCY: Restrict number and size of workgroups as needed.
+
+commit 561986f58f96e407e92979207d66d4bc864b9556
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 3 21:56:20 2022 -0600
+
+    TRANSPARENCY: Optimize global summation on CPU.
+
+commit e80e073ca6e2bfdc06c277ba17544e71533cecf7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 29 23:04:53 2022 -0600
+
+    TRANSPARENCY: Fix export.
+
+commit 0fb93b6435910d57594ab4fc5542efd9e0543103
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 28 09:44:08 2022 -0600
+
+    TRANSPARENCY: Check for empty pixels with -noGPUCOMPRESS.
+
+commit 6d3df54aa7801a97ce35824dfa6ffc9109b1a4eb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 28 09:29:58 2022 -0600
+
+    TRANSPARENCY: Fix buffer allocation.
+
+commit 36c947e404b55985d949c7d2313e2f94334762f3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 28 08:22:31 2022 -0600
+
+    TRANSPARENCY: Use no more than 8 SSBOs.
+
+commit 5e1c855ab8287c60a278d3ed3eb93e7eca644418
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 27 13:21:14 2022 -0600
+
+    Implement GPUcompress=false option for non-NVIDIA GPU cards.
+
+commit 554a81c8898bc97d0d4841178e92f5ee3d2a5f22
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 26 12:33:24 2022 -0600
+
+    Fix commit 56df79e03bb18523f47be46620b7be5e62d92eac.
+
+commit 9d0c1b6afea89eeba8c90b54c1f3ee73fd8094a1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 26 11:24:03 2022 -0600
+
+    TRANSPARENCY: Fix floating point exception.
+
+commit 56df79e03bb18523f47be46620b7be5e62d92eac
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 26 10:23:23 2022 -0600
+
+    TRANSPARENCY: Fix export when GPUindexing=false.
+
+commit 25650a26253bfcc81b4a7d4448f352e41236d392
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 26 09:52:06 2022 -0600
+
+    TRANSPARENCY: Fix segmentation fault.
+
+commit 5649ac09e2deb90d4929b34e47677395bac20b48
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 25 22:17:45 2022 -0600
+
+    TRANSPARENCY: Fix atomic counter initialization.
+
+commit f88c7598b4b01a1d4c0c0bd5412a48d1a0eb5160
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 25 00:56:59 2022 -0600
+
+    TRANSPARENCY: Transmit maxSize in global sum array.
+
+commit 3e0cd170f6fe57e38265fff7547d2374ae05bee6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Mar 23 23:29:14 2022 -0600
+
+    TRANSPARENCY: Discard empty counts.
+
+commit afe3b3291af5d8f02ebb2e286612d90fa96cf7c1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 21 09:50:25 2022 -0600
+
+    TRANSPARENCY: Fix data format.
+
+commit d962523e868ae3240b4196cdaf498337dde34ff3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 20 10:43:27 2022 -0600
+
+    TRANSPARENCY: Transfer maxSize via globalSum buffer.
+
+commit a0c83db864e01587c64c47c96004e62455682ecc
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 22:52:32 2022 -0600
+
+    TRANSPARENCY: Check ARRAYSIZE on every frame.
+
+commit 50aaba78229e7401a1d3863ab3c4184dfc432585
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 22:10:22 2022 -0600
+
+    TRANSPARENCY: Don't zero offset buffer.
+
+commit 6ac4803bd0c0af840dcf8609087d521883fe46ca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 18:28:38 2022 -0600
+
+    TRANSPARENCY: Improve last revision.
+
+commit bd35596b24cde31b551ae4c6a3ea02e97ce1f0b1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 15:13:35 2022 -0600
+
+    TRANSPARENCY: Optimize case of one transparent fragment.
+
+commit 8b061a48bdf27b5e142bf48869087c73562169fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 14:46:06 2022 -0600
+
+    TRANSPARENCY: Simplify code.
+
+commit 9946580b30f18817b09a46ab62fd9e20d113b303
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 19 14:06:40 2022 -0600
+
+    TRANSPARENCY: Fix depth lookup.
+
+commit 4c6980c4001d493e83d8ba5d11ba56d9f21c38c9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 18 22:50:54 2022 -0600
+
+    TRANSPARENCY: Conditionally define uniform.
+
+commit 638bb757747216fae868e8a6e152b6eb690c30ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 14 12:25:40 2022 -0600
+
+    Implement weighted least-squares fit.
+
+commit 6afedcba8989cac33ce677387160528d828ea269
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 13 19:28:03 2022 -0600
+
+    TRANSPARENCY: Combine local index and depth into structure.
+
+commit fd3d794762fd6e532b916318625d4361f54467bb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 13 17:15:29 2022 -0600
+
+    Remove unused code.
+
+commit dbafbb86b583bc1671f6111c7518219efb74de18
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 13 17:01:26 2022 -0600
+
+    Merge conditionals.
+
+commit a6e12dda261cad07593c988952b2fe62cf317600
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 13 14:19:01 2022 -0600
+
+    Avoid unnecessary writes to OpaqueDepth SSBO.
+
+commit 115e01faf97e2b1cc6b9ba9c8928d80bc0b00aa0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Mar 10 12:01:47 2022 -0700
+
+    Use UNIX line terminators.
+
+commit b007afcc67cf18fd431492f9f2cf449daac10b95
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Mar 10 11:56:22 2022 -0700
+
+    git subrepo commit (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "a311aa1d"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "19411f6c"
+    git-subrepo:
+      version:  "0.4.3"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "2f68596"
+
+commit 0ce8a977de9a3f01ac63c895d56da4f3848d2035
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 8 23:56:24 2022 -0700
+
+    git subrepo commit (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "574c2530"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "95cf6780"
+    git-subrepo:
+      version:  "0.4.1"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "a04d8c2"
+
+commit d12b2dd06788452e0a4fe68b10cc181c6747e42d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 8 23:36:37 2022 -0700
+
+    Remove all invisible files from release.
+
+commit 1cc029d5b9f573282f0e36daa12c28366130fce8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 7 21:09:49 2022 -0700
+
+    LSP: Clean up generated files; fix permissions.
+
+commit c7e039c39c71323575a1c80ffc2405ab244339b0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 7 20:04:26 2022 -0700
+
+    git subrepo commit (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "05c9d022"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "b1e44c8f"
+    git-subrepo:
+      version:  "0.4.1"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "a04d8c2"
+
+commit 94fe097db546f1de9e5b43e6b31fe1d2d4e4edaf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Mar 7 14:23:48 2022 -0700
+
+    Increment version to 2.80.
+
 commit 70dcf303c069ce3669f5f589aa3642650665278b
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Mon Mar 7 11:40:50 2022 -0700

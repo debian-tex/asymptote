@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-e5f4026c3d400b5fed231bfbb8cf282f third_party/uri/CMakeFiles/doc

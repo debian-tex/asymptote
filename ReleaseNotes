@@ -1,3 +1,7 @@
+Release Notes for Version 2.80
+Compression of empty transparent pixel counts and other optimizations were
+implemented in the transparency shader. A weighted least-squares fit was added.
+
 Release Notes for Version 2.79
 
 The transparency shader was further optimized. The tensorshade fillrule was

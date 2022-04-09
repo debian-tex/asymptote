@@ -1,6 +1,6 @@
 // Enum class for v3dheadertypes
 // AUTO-GENERATED from v3dheadertypes.csv
-// Generated at 2022-03-07 12:04:07.350990
+// Generated at 2022-04-05 20:50:57.435742
 
 namespace camp
 {
