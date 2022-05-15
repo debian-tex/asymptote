@@ -1,8 +1,9 @@
-asymptote (2.81+ds-1) UNRELEASED; urgency=medium
+asymptote (2.81+ds-1) unstable; urgency=medium
 
   * New upstream version, refresh patches.
+    - Add doxygen & graphviz to BD and Dep of test suite.
 
- -- Hilmar Preusse <hille42@web.de>  Sun, 15 May 2022 21:37:28 +0200
+ -- Hilmar Preusse <hille42@web.de>  Sun, 15 May 2022 23:25:48 +0200
 
 asymptote (2.80+ds-1) unstable; urgency=medium
 
