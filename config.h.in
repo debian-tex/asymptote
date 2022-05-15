@@ -21,6 +21,9 @@
 /* Define to 1 if you have the <editline/readline.h> header file. */
 #undef HAVE_EDITLINE_READLINE_H
 
+/* Define to 1 if you have the <Eigen/Dense> header file. */
+#undef HAVE_EIGEN_DENSE
+
 /* Define to 1 if you have the `feenableexcept' function. */
 #undef HAVE_FEENABLEEXCEPT
 

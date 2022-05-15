@@ -1,3 +1,130 @@
+commit 920c0886c23e20db270d04337e59c4d9e069dc63
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 13 23:17:54 2022 -0600
+
+    Fix CYGWIN warning.
+
+commit c895e09915302ae276740f1cc91afd834658ae37
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 13 22:31:19 2022 -0600
+
+    Fix bug #313: opaque rendering on platforms lacking GL_ARB_fragment_shader_interlock.
+
+commit fc7dac6887136289035eaa4f7f60fcbee1dc3967
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 11 18:29:56 2022 -0600
+
+    Update documentation.
+
+commit d54736762baaf6b675311c0e5791f6aa5792ae57
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 11 16:40:43 2022 -0600
+
+    Document surface constructor for solids of revolution.
+
+commit f910ea19eee9f240045594bf049f363cc8181ac4
+Merge: de70a958 72b0fe36
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 10 22:20:00 2022 -0600
+
+    Merge branch 'Qt'.
+
+commit de70a958b3844210142a9066b20bfce2a62bde4f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 10 21:38:21 2022 -0600
+
+    Zero offset buffer when required.
+
+commit 72b0fe3685729e059337082dcd5585ae7fa20f50
+Author: chaumont-arch <chaumont@ualberta.ca>
+Date:   Sun May 8 22:38:36 2022 -0600
+
+    XASY: Fix crashes from opening xasy files.
+
+commit a14f4a75cd8f6d0f9cf6c4217e70baa690e4a1ad
+Author: chaumont-arch <chaumont@ualberta.ca>
+Date:   Thu May 5 23:11:47 2022 -0600
+
+    XASY: Fix bounding box drawing issue.
+
+commit 27d52fa7a6356cda473eb24acac77e822c6fb09d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 3 12:20:43 2022 -0600
+
+    Port to MacOS.
+
+commit e23a5527b710aa3cbf83d1d0a682aa5c6a49b62c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 24 10:24:46 2022 -0600
+
+    Fix bug #310: Missing slash in temporary file path.
+
+commit 365df5651ce0728fa3607d05ae1396668f374197
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 10 09:35:38 2022 -0600
+
+    Rename example.
+
+commit 253349484d7d76aeb639428f02e5c08779fbe094
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 10 00:31:20 2022 -0600
+
+    Add missing typedef.
+
+commit 29967ac62cb69bf3e3196b8cdf5e714007eabce2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 10 00:20:20 2022 -0600
+
+    Fix last commit.
+
+commit 6f10abaa6611c52cb8040b5715218287202b5510
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 10 00:18:32 2022 -0600
+
+    Consult pkg-config for readline library.
+
+commit 5af8022000bd9d3ab21e7c3548e92e9d59dd3c07
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Apr 10 00:11:15 2022 -0600
+
+    Fix issue #40: Consult pkg-config.
+
+commit 4bd54e14498523c06a2e4cecf20e7c4c6851299d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Apr 8 23:23:37 2022 -0600
+
+    Fix issue #309.
+
+commit 2ffee49a7e3fe5180a96332d529eae8bfe7a8316
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Apr 9 14:49:43 2022 +1000
+
+    Move global typedef within namespace.
+
+commit 8f2ce216a6f5537d74a6b691fcd416a344570007
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Apr 8 17:03:24 2022 -0600
+
+    Implement real Schur decomposition.
+
+commit 0f2ad99bcd3b7cb85ba66d4576ada8438da9c288
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Apr 8 16:23:26 2022 -0600
+
+    Implement Schur decomposition.
+
+commit 5b705e7dece21fb809a43e25b4e97c1707a21152
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Apr 5 23:28:53 2022 -0600
+
+    Add example; remove empty directories.
+
+commit b00f9fc3c2bf1b3b3cb311faf7098c149088e3cb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Apr 5 21:48:56 2022 -0600
+
+    Increment version to 2.81.
+
 commit 52f5c99018d24883f6e115ae72beaa88a15d0669
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Tue Apr 5 11:32:10 2022 -0600
