@@ -1,3 +1,561 @@
+commit 94c770a177aae2dc11e19f70cc9f22ff649d7cea
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 6 22:17:24 2022 +0200
+
+    Update asygl.
+
+commit 9893d408fec128d76b50e3bef24ef6181beef0bc
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 6 22:12:33 2022 +0200
+
+    Use floating point WebGL colors.
+
+commit 89dac594687cd2892851a685c52a092e86db85a7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Aug 6 06:52:30 2022 +1000
+
+    Avoid global variables in AsyGL library.
+
+commit 0ab3eae561e21fcf5a906becf75483291db032d3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 3 22:14:33 2022 +0200
+
+    Preserve the terminal environment under MSDOS by ignoring the wait flag.
+
+commit 87f76fb7e5f3387643491fa123c18cf2be987006
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 1 23:36:30 2022 +0200
+
+    Enforce a unique normal and pen for each vertex in a PRC triangle group.
+
+commit 8e28af4e33a62630f82652552988c02267821578
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 29 21:10:05 2022 +0200
+
+    Revert "Simplify code."
+    
+    This reverts commit 587a21490bf6d3892ddeab36dc8d8acdd3cec32c.
+
+commit 52170aac260c33ead0eddef60c527bcde782348c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 29 19:19:55 2022 +0200
+
+    Fix patch mode.
+
+commit b401886d804f4c5e870c69339c50dd76a97f0ea5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 29 19:08:18 2022 +0200
+
+    Revert "Simplify code."
+    
+    This reverts commit dc9d231185c9b01bd8d32c2bbbc87001caa1f4d8.
+
+commit c53b2c5fd4cc2d4bbf4afb071534786c09e70542
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 29 12:53:45 2022 +0200
+
+    Fix segmentation fault.
+
+commit 0703107b953e0610a96776d059904af1cfb1c83e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 29 12:13:03 2022 +0200
+
+    Fix segmentation fault.
+
+commit 3433888b9a26fa85995617bfdc1e51137b198692
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 28 05:55:22 2022 +1000
+
+    Fix defaultfilename for v3d files.
+
+commit 12740e6ff703bbab76629f065dd574f6242d130d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 28 05:45:36 2022 +1000
+
+    Revert commented diagnostic.
+
+commit ec217a2261828eed41835da88c9bfa97af5ec2bc
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 20:47:12 2022 +0200
+
+    Move v3d specification back to GitHub now that LaTeX markdown is supported.
+
+commit cb6aeda7ff3c1ed42bb04ed45ba26ce5061797f1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 15:18:10 2022 +0200
+
+    List ambiguous functions.
+
+commit 60df18eea453855571ee4a2cc3f45878a4fe52d9
+Merge: fa284421 4fe6f9fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 04:17:33 2022 -0600
+
+    Merge pull request #327 from jamadagni/master
+    
+    Additions to geometry.asy
+
+commit fa28442195bd99b9bac87e3ff752953ac57ee172
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 12:05:54 2022 +0200
+
+    Remove extraneous include.
+
+commit 3514430ddbdbf89e21b560202c06801c42ab590f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 12:05:24 2022 +0200
+
+    Optimize dvisvgm output.
+
+commit a7588cad36589cc3df2b1bc66123e8c94b681a39
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 26 11:57:05 2022 +0200
+
+    Make dvisvgmMultipleFiles true by default.
+
+commit 8f18ae72e3f12db006aabb23a5045c149a9a821a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 25 14:21:16 2022 -0600
+
+    Fix BUG #329: Fraction bars in labels are always black with PDF texengines.
+
+commit 4fe6f9fb1633ebcfff637bf2140f042b7d802245
+Author: Shriramana Sharma <samjnaa@gmail.com>
+Date:   Thu Jul 14 22:34:15 2022 +0530
+
+    add fill and filldraw for circle,ellipse,triangle,triangle[]
+
+commit 8b8ad63d73e25bc098840c61b16a869184a6cdb2
+Author: Shriramana Sharma <samjnaa@gmail.com>
+Date:   Thu Jul 14 20:19:38 2022 +0530
+
+    add path operator ecast(segment)
+
+commit 006cb4c48cae38fdd710a885df0d38fa172ed640
+Author: Shriramana Sharma <samjnaa@gmail.com>
+Date:   Thu Jul 14 19:57:20 2022 +0530
+
+    add path operator cast(triangle), fix points order
+
+commit dc9d231185c9b01bd8d32c2bbbc87001caa1f4d8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 14 09:22:08 2022 -0600
+
+    Simplify code.
+
+commit b7db8911e3b2cbcc3c6330312b49acb0e06213b9
+Author: Shriramana Sharma <samjnaa@gmail.com>
+Date:   Thu Jul 14 19:47:02 2022 +0530
+
+    rename geometry.orthocentercenter to geometry.orthocenter
+
+commit 587a21490bf6d3892ddeab36dc8d8acdd3cec32c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jul 13 16:56:14 2022 -0600
+
+    Simplify code.
+
+commit 3961ec5be64d394e86e89d4ca30b176d4b5ecf62
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 10 10:52:38 2022 -0600
+
+    Fix issue #320.
+
+commit 694902944ba06f3c77dad9bc0bcc4e465fa7e1d4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jul 9 20:12:27 2022 -0600
+
+    Address issue #320.
+
+commit 33bf1141c1bb787bd5518dcfa9f73a4f48d37dfa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jul 6 23:05:40 2022 -0600
+
+    Output mean color only for PRC.
+
+commit 7cbd28939b01da0f96980864698d7d704c9c1a9c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 5 00:45:07 2022 -0600
+
+    Delete troublesome style file.
+
+commit 534d1361a7343dfc653a8b129d3392c0baba68f3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 5 00:41:00 2022 -0600
+
+    Update asygl.
+
+commit 6cea12dfe927edec9aa784ab4b133f9b12ebde1d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 5 00:36:47 2022 -0600
+
+    WebGL: Support backwards compatibility.
+
+commit 323eb79327cf179491107d4ec3e3d6e994b324aa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 4 23:56:02 2022 -0600
+
+    WebGL: Compute Bezier curve bounds.
+
+commit 482d04bdad8a25d274d1719f6653ff4d4c7b3250
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 4 17:05:47 2022 -0600
+
+    WEBGL: Compute triangle group bounds.
+
+commit 00cd7219a9794f21ecd3209411889b25523322e0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 4 00:04:25 2022 -0600
+
+    WEBGL: Compute Bezier triangle bounds in WebGL. Remove Min and Max.
+
+commit 42bc4a3b4e0f187e265c353fc9e7766cf8165b95
+Merge: a45aaa1e 30ad132f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 3 22:09:06 2022 -0600
+
+    Merge branch 'master' into webglbounds.
+
+commit 30ad132f3a7dd182792d24a150aaa45de332ee8b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 3 19:34:37 2022 -0600
+
+    Simplify workflow.
+
+commit e15ba5b1e764cff6b75520d41c8fb96a03730d4e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 3 18:56:08 2022 -0600
+
+    Fix BUG #319: Rename NOCACHE to NoOutputFonts to address yet another Ghostscript backwards incompatibility (in Ghostscript version 9.56).
+
+commit 12a778be453f9319faeac99edfa25c0498bf2024
+Merge: d393a76b 48625bd2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 29 13:06:59 2022 -0600
+
+    Merge branch 'compute3'.
+
+commit 48625bd2b66ca904af42e308c5bf8d0b5571de39
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 29 13:03:58 2022 -0600
+
+    Fix typo.
+
+commit d393a76b3960455b4285806771e705faa54c20d8
+Merge: 0669e4fb d8cacc97
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jun 21 15:44:12 2022 -0600
+
+    Merge pull request #317 from vectorgraphics/dependabot/pip/GUI/numpy-1.22.0
+    
+    Bump numpy from 1.21.0 to 1.22.0 in /GUI
+
+commit d8cacc97b70f35914ba89baf8c564af93af42edc
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   Tue Jun 21 21:32:47 2022 +0000
+
+    Bump numpy from 1.21.0 to 1.22.0 in /GUI
+    
+    Bumps [numpy](https://github.com/numpy/numpy) from 1.21.0 to 1.22.0.
+    - [Release notes](https://github.com/numpy/numpy/releases)
+    - [Changelog](https://github.com/numpy/numpy/blob/main/doc/HOWTO_RELEASE.rst)
+    - [Commits](https://github.com/numpy/numpy/compare/v1.21.0...v1.22.0)
+    
+    ---
+    updated-dependencies:
+    - dependency-name: numpy
+      dependency-type: direct:production
+    ...
+    
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit 8677a0f1a2571f1b38fc1589cf12f6341f69b659
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 12 10:32:22 2022 -0600
+
+    TRANSPARENCY: Save 4 bytes in shuffle array.
+
+commit a45aaa1e948343e6a6d86391f26f4f132e17e6bd
+Merge: 5f676ec6 0669e4fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 9 19:01:27 2022 -0600
+
+    Merge branch 'master' into webglbounds.
+
+commit 0669e4fb0fc358ae9555d3db375f3568365b740b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 9 19:00:57 2022 -0600
+
+    Compute tight bounds of Bezier patches and triangles.
+
+commit 5f676ec6a4cc13ce7e382f8b5204df700e97e2b4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 9 17:35:45 2022 -0600
+
+    Compute Bezier patch bounds in WebGL.
+
+commit 4f51b82701aea7a9c14b89aa833fa10152f2d8c1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 9 17:26:50 2022 -0600
+
+    Fix formatting.
+
+commit 2879110f7a1ebb3c03cfbb01d68bfc4edbce466a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 6 21:45:14 2022 -0600
+
+    Derive size from offset in blend shader.
+
+commit 597d08b0ae468babf8c9a7b956d14c11415c1946
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 5 13:06:39 2022 -0600
+
+    Update to latest prefixsum shader.
+
+commit 75baa00f90034b6de5ccb2dc57b10d723effb4e3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 4 21:02:02 2022 -0600
+
+    Restore zero shader.
+
+commit a95c328913df1d0b6ec0ecdb89dae48577556525
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 3 00:45:00 2022 -0600
+
+    Automatically choose optimal sum2 shader.
+
+commit ba6fcdce8f4e90da7944a9ddec6fbd0ab617181e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 2 16:05:07 2022 -0600
+
+    Optimize sum shaders.
+
+commit 5db78fbb79c6711d250748e47a08381eff4f9a04
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 2 09:26:49 2022 -0600
+
+    Generalize sum2 shader.
+
+commit 70a7c559bbac4e1939552b4228704bdf60a753df
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 1 16:10:04 2022 -0600
+
+    Use optimized binomial tree reduce in sum1 shader.
+
+commit 9b853eead5d61728663ed5c457b4764800a70f17
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 31 13:33:33 2022 -0600
+
+    Optimize sum1 shader.
+
+commit aa4700c2d91fcd17fd1768bd7df45ccd788c20d7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 31 11:58:45 2022 -0600
+
+    Revert cd7092db3a5f297df6b735c91b4989caf8e60609.
+
+commit be2310a8affc0abf3e8d330489e2ff1f491c3df9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 31 11:20:20 2022 -0600
+
+    Fix memory barriers.
+
+commit 7df45601fd0e38a252e4c68929ed54d9c286e971
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 31 10:45:45 2022 -0600
+
+    Fix memory barriers; optimize Hillis-Steele algorithm.
+
+commit 64ca0f99828ac592896b524aa79b043101210e24
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 30 23:05:02 2022 -0600
+
+    Add missing shader.
+
+commit 411ffcbc0b0cf626a36ab66bb342656a1e1da2e4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 30 19:00:48 2022 -0600
+
+    Finish partial sums.
+
+commit 8519ee922db934d05f0945b93ef17e4b24fe6ea2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 30 10:58:37 2022 -0600
+
+    Implement bezier(real a, real b, real c, real d, real t).
+
+commit a728266f13a123f772294b50e2a58b50c28091ef
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 23:24:34 2022 -0600
+
+    Avoid unnecessary differential computations.
+
+commit c5ff5bd2628c05dcf52acd6502a851d78cce3510
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 23:18:15 2022 -0600
+
+    Defer fragment buffer resizing as long as possible.
+
+commit 952e340b05bbd3b6ad5f191f74e0669a5055c2ac
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 23:06:37 2022 -0600
+
+    Fix noGPUindexing.
+
+commit 044dc63915cb19f8106f2e8ebb5df91cf15cdf4f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 22:59:22 2022 -0600
+
+    Disable subdivision crack adjustments for transparent patches.
+
+commit 8bd698940d42574cbe6c7a3c7170039157b43196
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 22:46:26 2022 -0600
+
+    Fix commit f57b4f8b9ead42f092cb706960bf10b6b8d55e30.
+
+commit 8931b432b64b6b90e934bc502c62fffe47a4a8cb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 22:11:32 2022 -0600
+
+    Standardize names.
+
+commit bf9e1ee6c40f9de385992ecef5ca0b8c46f3f63b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 21:55:36 2022 -0600
+
+    Improve performance.
+
+commit 77d25cd8a9151b5a32ecb6169b5973284a28a955
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 19:13:12 2022 -0600
+
+    Fix maximum depth detection.
+
+commit cd7092db3a5f297df6b735c91b4989caf8e60609
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 15:49:18 2022 -0600
+
+    Use atomicCounterExchange to reset compression counter.
+
+commit e407a7c34129589fcbb0a86d42925592e7d3f8b0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 14:42:47 2022 -0600
+
+    Finish implementing feedback to CPU.
+
+commit f57b4f8b9ead42f092cb706960bf10b6b8d55e30
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 10:51:02 2022 -0600
+
+    Send feedback to CPU.
+
+commit 5801785e5729fda77f88fabdd7ddbd0e53a48851
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 00:57:57 2022 -0600
+
+    Revert "Store opaqueDepth in alpha channel of opaqueColor."
+    
+    This reverts commit 431d19384d090f11daeed3dc449dc61d2ed5e309.
+
+commit 431d19384d090f11daeed3dc449dc61d2ed5e309
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 29 00:04:35 2022 -0600
+
+    Store opaqueDepth in alpha channel of opaqueColor.
+
+commit a35d30b911d256832fe067f638aec75fdad79814
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 28 23:28:28 2022 -0600
+
+    Test 2-stage algorithm.
+
+commit 64942510ac5d30470cdd22e777cd0b1a38a6ff69
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 28 23:00:33 2022 -0600
+
+    Test 3-stage algorithm.
+
+commit e84bf41ae59bb60cdff9357fc0c7f7faf8933174
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 28 11:19:37 2022 -0600
+
+    Add const qualifier.
+
+commit 0f0a04b64cccd21c656ec7a69565f43cf8e6a7b7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 27 23:26:36 2022 -0600
+
+    Implement GPUblockSize.
+
+commit 58ddb9f87dcee756366d82b48424c3fe1bac19d9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 27 23:02:11 2022 -0600
+
+    Disable GPUcompression by default.
+
+commit 7dae0ee579ba48d52d4687b79e87506e989a8ce2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 27 22:48:47 2022 -0600
+
+    Use a single improved shader to avoid bank conflicts.
+
+commit 4712edd628e9742417b7d83b4d38d2721bae370e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 25 09:32:56 2022 -0600
+
+    Simplify code.
+
+commit 1bfbb8215540524f4182744d836031d2223915ed
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 25 09:27:17 2022 -0600
+
+    Revert "Perform all sums on the GPU."
+    
+    This reverts commit 574eb027cf53064cfb27e8ab09333a7775b2e094.
+
+commit 574eb027cf53064cfb27e8ab09333a7775b2e094
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 23 22:59:08 2022 -0600
+
+    Perform all sums on the GPU.
+
+commit d270aa2012843aa592d2ada3b390ded7c1c3c35f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 23 19:28:39 2022 -0600
+
+    Implement Hillis-Steele algorithm in second stage.
+
+commit b182742a8ac29f1fbf1f37228492a09236c0e0ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 23 17:35:04 2022 -0600
+
+    Add another compute shader stage to reduce bandwidth to CPU.
+
+commit 85e78f59600fde0f6214212012c80ff539474a13
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 23 16:10:44 2022 -0600
+
+    Avoid use of localSumBuffer.
+
+commit 4d4159b5ec2eafa2bb3ba0837d863690af66ce4e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 23 15:30:10 2022 -0600
+
+    Use a single compute shader.
+
+commit 13aa6344ac37b2303deb1e4e6d6a24d9b260762f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 19 20:57:45 2022 -0600
+
+    Improve documentation of rotate(real, triple).
+
+commit c1ec3a89279d567cf4a910557546137aac2c0ee3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 14 12:27:51 2022 -0600
+
+    Increment version to 2.82.
+
 commit 920c0886c23e20db270d04337e59c4d9e069dc63
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Fri May 13 23:17:54 2022 -0600
