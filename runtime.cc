@@ -1828,6 +1828,21 @@ void gen_runtime146(stack *Stack)
   {Stack->push<bool>(t.isIsometry()); return;}
 }
 
+#line 1217 "runtime.in"
+// real bezier(real a, real b, real c, real d, real t);
+void gen_runtime147(stack *Stack)
+{
+  real t=vm::pop<real>(Stack);
+  real d=vm::pop<real>(Stack);
+  real c=vm::pop<real>(Stack);
+  real b=vm::pop<real>(Stack);
+  real a=vm::pop<real>(Stack);
+#line 1218 "runtime.in"
+  real onemt=1-t;
+  real onemt2=onemt*onemt;
+  {Stack->push<real>(onemt2*onemt*a+t*(3.0*(onemt2*b+t*onemt*c)+t*t*d)); return;}
+}
+
 } // namespace run
 
 namespace trans {
@@ -2128,6 +2143,8 @@ void gen_runtime_venv(venv &ve)
   addFunc(ve, run::gen_runtime145, primTransform(), SYM(reflect), formal(primPair(), SYM(a), false, false), formal(primPair(), SYM(b), false, false));
 #line 1212 "runtime.in"
   addFunc(ve, run::gen_runtime146, primBoolean(), SYM(isometry), formal(primTransform(), SYM(t), false, false));
+#line 1217 "runtime.in"
+  addFunc(ve, run::gen_runtime147, primReal(), SYM(bezier), formal(primReal(), SYM(a), false, false), formal(primReal(), SYM(b), false, false), formal(primReal(), SYM(c), false, false), formal(primReal(), SYM(d), false, false), formal(primReal(), SYM(t), false, false));
 }
 
 } // namespace trans
