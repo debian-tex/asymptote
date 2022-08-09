@@ -1,12 +1,12 @@
 # the one is the source of the other
 # the second line length is based on a long matrix multiplication written in one line
-asymptote source: source-is-missing base/webgl/asygl.js
-asymptote source: source-is-missing gl-matrix-2.4.0-pruned/dist/gl-matrix.js
-asymptote source: very-long-line-length-in-source-file base/webgl/asygl.js *
-asymptote source: very-long-line-length-in-source-file gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
-asymptote source: source-contains-prebuilt-javascript-object base/webgl/asygl.js
-asymptote source: source-contains-prebuilt-javascript-object gl-matrix-2.4.0-pruned/dist/gl-matrix.js
-asymptote source: source-contains-browserified-javascript gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
+#asymptote source: source-is-missing base/webgl/asygl.js
+#asymptote source: source-is-missing gl-matrix-2.4.0-pruned/dist/gl-matrix.js
+#asymptote source: very-long-line-length-in-source-file base/webgl/asygl.js *
+#asymptote source: very-long-line-length-in-source-file gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
+#asymptote source: source-contains-prebuilt-javascript-object base/webgl/asygl.js
+#asymptote source: source-contains-prebuilt-javascript-object gl-matrix-2.4.0-pruned/dist/gl-matrix.js
+#asymptote source: source-contains-browserified-javascript gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
 asymptote source: debian-watch-does-not-check-gpg-signature
 # Will contact upstream for this: https://wiki.debian.org/qa.debian.org/jsonevil
 asymptote source: license-problem-json-evil
