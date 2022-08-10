@@ -1,4 +1,4 @@
-asymptote (2.82+ds-1) unstable; urgency=medium
+asymptote (2.82+ds-1) UNRELEASED; urgency=medium
 
   * New upstream version, refresh patches.
   * Add "pkg-config" & "libeigen3-dev" to B-D to get rid of some
