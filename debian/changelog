@@ -1,6 +1,8 @@
 asymptote (2.82+ds-1) UNRELEASED; urgency=medium
 
   * New upstream version, refresh patches.
+  * Lintian E: source-is-missing. Add cropped / broken modification
+    of asygl.js & gl-matrix.js to debian/missing-sources.
   * Add "pkg-config" & "libeigen3-dev" to B-D to get rid of some
     "./configure ... not found" messages.
 
