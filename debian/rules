@@ -10,9 +10,6 @@ include /usr/share/dpkg/pkg-info.mk
 #  LSPSERVER=--disable-lsp
 #endif
 
-# Disable LSP, so rapidjson can be removed.
-LSPSERVER=--disable-lsp
-
 %:
 	dh $@ --with python3
 
