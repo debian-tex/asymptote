@@ -8,7 +8,7 @@ Forwarded: Refused by upstream, ChangeLog is generated from "git log".
 
 --- asymptote.orig/ChangeLog
 +++ asymptote/ChangeLog
-@@ -1529,7 +1529,7 @@
+@@ -2180,7 +2180,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Fri Jan 21 16:50:46 2022 -0700
  
@@ -17,7 +17,7 @@ Forwarded: Refused by upstream, ChangeLog is generated from "git log".
  
  commit 868ff0b61fb439d4ce6334aec4b4ea49a32ad9bf
  Author: John Bowman <bowman@ualberta.ca>
-@@ -29405,7 +29405,7 @@
+@@ -30056,7 +30056,7 @@
  Date:   Mon Feb 9 00:00:12 2009 -0600
  
      Implement a pen rgb(string s) routine that returns a pen corresponding to a
@@ -26,7 +26,7 @@ Forwarded: Refused by upstream, ChangeLog is generated from "git log".
  
  commit a68637e6c82f5ce5171931a5c1a5359bb329e86d
  Author: John Bowman <bowman@ualberta.ca>
-@@ -29435,7 +29435,7 @@
+@@ -30086,7 +30086,7 @@
  Author: John Bowman <bowman@ualberta.ca>
  Date:   Sat Feb 7 00:41:46 2009 -0600
  

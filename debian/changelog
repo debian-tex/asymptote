@@ -1,3 +1,9 @@
+asymptote (2.83+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream version, refresh patches.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 21 Sep 2022 10:35:48 +0200
+
 asymptote (2.82+ds-2) unstable; urgency=medium
 
   * Remove lesss file from upstream code (due to evil clause).
