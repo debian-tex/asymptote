@@ -8,5 +8,5 @@
 #asymptote source: source-contains-prebuilt-javascript-object gl-matrix-2.4.0-pruned/dist/gl-matrix.js
 #asymptote source: source-contains-browserified-javascript gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
 asymptote source: debian-watch-does-not-check-openpgp-signature
-# Will contact upstream for this: https://wiki.debian.org/qa.debian.org/jsonevil
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1020405
 asymptote source: license-problem-json-evil
