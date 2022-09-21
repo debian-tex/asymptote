@@ -1,4 +1,13 @@
+Release Notes for Version 2.83
+
+WebGL triangle groups were fixed. Context menus were added to Xasy objects
+to allow one to edit the fill type, line type, color, line cap, and
+optionally add arrowheads. Support for begingroup() and endgroup() was
+added to Xasy. Scaling in the vectorfield function was fixed.
+A quotient(x,y) bug when -1 < x/y < 0, introduced in version 2.42, was fixed.
+
 Release Notes for Version 2.82
+
 Support for Ghostscript 9.56 was added.
 Ambiguous functions are listed.
 The dvisvgmMultipleFiles option is now enabled by default. 
