@@ -46,7 +46,7 @@ Build-Depends: bison,
                libglew-dev
 Standards-Version: 4.6.0
 Rules-Requires-Root: no
-Homepage: http://asymptote.sourceforge.net/
+Homepage: https://asymptote.sourceforge.net/
 Vcs-Git: https://github.com/debian-tex/asymptote.git
 Vcs-Browser: https://github.com/debian-tex/asymptote
 
