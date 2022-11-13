@@ -4,3 +4,4 @@ honour-source-date-epoch
 typos.diff
 dyn_link_GLEW.patch
 fix_date_in_doc.patch
+354.patch
