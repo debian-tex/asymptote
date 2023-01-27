@@ -1,3 +1,230 @@
+commit 430c7a661c060568720f6d65e611a2087ea1dde6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 22:48:26 2023 -0700
+
+    Fix Makefile dependencies.
+
+commit 1e0c04c25ddb2dfc9a4f3423628d39ff494e4b32
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 18:05:11 2023 -0700
+
+    Revert "Fix Makefile dependency."
+    
+    This reverts commit 826581af2fb2882ab82804e0593217da85ae58bd.
+
+commit 826581af2fb2882ab82804e0593217da85ae58bd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 18:01:07 2023 -0700
+
+    Fix Makefile dependency.
+
+commit 2255877e2ee304c38dee5b7b52d113255c0622fd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 17:48:00 2023 -0700
+
+    Revert "Improve last revision."
+    
+    This reverts commit e7d475fa66c429851bbc45bcc0017a3ac5eef02a.
+
+commit 4dafd8313cda0aad2a05abfdc91fc30ce88d7385
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 15:12:28 2023 -0700
+
+    Add high-resolution clock; update FFT support.
+
+commit 56c39a80704b2bb93e808ad74591a8834c3ccca5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 21 12:03:49 2023 -0700
+
+    Account for linewidth in labelmargin.
+
+commit 37f564040bec2ff6059f5c4872950be17586b885
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jan 3 20:37:17 2023 -0700
+
+    Add option to show summary of environment settings.
+
+commit 76f2f4d727261e4e2b466e2ea9d32bb4baf6c466
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Dec 12 22:19:03 2022 -0700
+
+    Avoid division by zero.
+
+commit 46d6ea7351699bbed0418ec6d7f2195011178e5a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Nov 28 20:20:35 2022 -0700
+
+    Improve example of multiple shipout.
+
+commit dce2e0d3b94b59dddcca6bb95c38548e2021821a
+Merge: ee0d1a4a a42e056e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 13 00:10:12 2022 -0700
+
+    Merge pull request #341 from yarusome/master
+    
+    Fixing `inversion inversion(circle, circle)`
+
+commit ee0d1a4a80ff0b30383f297f3ab64bebafd1c07c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Nov 13 00:00:45 2022 -0700
+
+    Fix issue #308: runtime error when drawing degenerate path with TexHead arrow.
+
+commit 0ff56f1ecaff0f5e6da0acd0e7ff6f152cd52c56
+Merge: eb89fd60 1834e488
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 12 23:06:21 2022 -0700
+
+    Merge pull request #354 from vectorgraphics/fix-debian-bug-1023920-xasy
+    
+    XASY: Round numpy.float64 to int for Qt compatibiltiy.
+
+commit eb89fd60d71a5836b05ae0ed17f7525b2723714d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Nov 12 22:50:04 2022 -0700
+
+    Fix bug in XDR reads due to uninitialized variable.
+
+commit 1834e4883a0781944b5eb3e459a35984ad24d14d
+Author: Supakorn Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Nov 12 12:22:45 2022 -0700
+
+    XASY: Round numpy.float64 to int for Qt compatibiltiy.
+    
+    This fixes Debian bug #1023920 (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1023920).
+
+commit a64162166a3b2146902971d87ba2da3af53ebd5e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Nov 1 21:22:49 2022 -0600
+
+    Use Bland's rule even on artificial variables.
+
+commit 4f326abc01934c83380ca6e0d399dc5f33819e76
+Merge: e7d475fa 38d018f6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 31 15:03:46 2022 -0600
+
+    Merge pull request #351 from bmwiedemann/date
+    
+    Allow to override build date with SOURCE_DATE_EPOCH
+
+commit 38d018f6bc6d2341718a67193c4cbb99a07be698
+Author: Bernhard M. Wiedemann <bwiedemann@suse.de>
+Date:   Mon Oct 31 21:46:54 2022 +0100
+
+    Allow to override build date with SOURCE_DATE_EPOCH
+    
+    in order to make builds reproducible.
+    See https://reproducible-builds.org/ for why this is good
+    and https://reproducible-builds.org/specs/source-date-epoch/
+    for the definition of this variable.
+    
+    Signed-off-by: Bernhard M. Wiedemann <bwiedemann@suse.de>
+
+commit e7d475fa66c429851bbc45bcc0017a3ac5eef02a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 27 00:21:20 2022 -0600
+
+    Improve last revision.
+
+commit b5ac744cb044c42a9d2f79a58d37b46444e24caa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Oct 26 23:57:50 2022 -0600
+
+    Fix Makefile dependency.
+
+commit 8afff2c11b36ea54edf01b32452550bf12843a93
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 23 01:15:48 2022 -0600
+
+    Terminate phase1 of simplex method once a zero-cost solution is found.
+
+commit e7b5c30816f5db7b243222c1c4c10d087294eece
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Oct 22 22:33:15 2022 -0600
+
+    Make evince the default UNIX PDF viewer.
+
+commit 8bc175d31f77312baea3660e5f29dbc35ab2cbdf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Oct 21 22:33:36 2022 -0600
+
+    Remove spurious tests in glew.c.
+
+commit 0d49a356d0ee1d0f579cb224856f0947a3e1cdc3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Oct 21 22:20:12 2022 -0600
+
+    Check for bison and flex but not libm.
+
+commit f495186f075bc3b686aa53bc80def7fbd91edb97
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Oct 18 00:32:09 2022 -0600
+
+    Add diagostic control to rationalSimplex.asy.
+
+commit d1a336cd3caaea8cae7bd1cc5a9f98175ba18979
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 13 17:08:53 2022 -0600
+
+    Improve diagnostic in rationalSimplex.
+
+commit 20a79dbf5f005bacf3fb55fceb1c33cc8b79c4b8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 13 17:04:50 2022 -0600
+
+    Update example.
+
+commit 0e13fdc3d0226f153d1859db3ec43eb3d2fb2007
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 9 13:45:34 2022 -0600
+
+    Remove obsolete code.
+
+commit ea5bb5e69ecdc26a576205825c62c5ede14622cb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Oct 9 10:55:22 2022 -0600
+
+    Change default UNIX postscript viewer to evince; remove remaining references to gsview.
+
+commit 6d556b7a78d1680702abcdc0972ecf6c458ced88
+Merge: 681daee0 7696801a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Sep 30 17:10:52 2022 -0600
+
+    Merge branch 'Qt'.
+
+commit 681daee01c6832a5d86e79e17018806b433e1805
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Sep 30 14:44:03 2022 -0600
+
+    Remove unused code.
+
+commit 7696801ae99fe0654030ccdb805df8ba506907cf
+Author: chaumont-arch <chaumont@ualberta.ca>
+Date:   Sat Sep 24 21:39:03 2022 -0600
+
+    XASY: Fix arrowhead changing bug.
+
+commit 7201430c829e273e4ad3ff13391a87ff9f83b373
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Sep 21 21:32:07 2022 -0600
+
+    Disable PDF image compression for non-pdf output.
+
+commit 78662d51f5b9b1b5038cc0e1a41527552f49d181
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Sep 17 15:31:23 2022 -0600
+
+    Clean up more asy-latex files.
+
+commit 2c15485d146a43fbf6234d3fa0cec191a1a768b8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Sep 17 14:01:30 2022 -0600
+
+    Increment version to 2.84.
+
 commit 2ac4c5f85acd6b0a04865be937279dc29fadb76e
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sat Sep 17 11:27:55 2022 -0600
@@ -174,6 +401,12 @@ Author: chaumont-arch <chaumont@ualberta.ca>
 Date:   Thu Aug 25 01:29:14 2022 -0600
 
     XASY: Fix noncommutativity with arrows and fills.
+
+commit a42e056e27e7737695b18fd84842eb481893e531
+Author: yarusome <97945148+yarusome@users.noreply.github.com>
+Date:   Wed Aug 24 22:55:15 2022 +0800
+
+    Fixed `inversion inversion(circle, circle)`
 
 commit 03b46aa391c31f809eae74524ef73b777c1dcc68
 Author: John Bowman <bowman@ualberta.ca>
