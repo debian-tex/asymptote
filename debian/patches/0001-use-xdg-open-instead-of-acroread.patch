@@ -2,7 +2,7 @@ Description: Replace specific commands by Debian commands.
 Origin: Norbert Preining <preining@debian.org>
 Forwarded: No. Patch is specific to Debian.
 Author: Norbert Preining <preining@debian.org>
-Last-Update: 20131112
+Last-Update: 20230128
 
 ---
  settings.cc |    6 +++---
@@ -14,8 +14,8 @@ Last-Update: 20131112
  string defaultPDFViewer="open";
  string defaultHTMLViewer="open";
  #else
--string defaultPSViewer="gv";
--string defaultPDFViewer="acroread";
+-string defaultPSViewer="evince";
+-string defaultPDFViewer="evince";
 -string defaultHTMLViewer="google-chrome";
 +string defaultPSViewer="xdg-open";
 +string defaultPDFViewer="xdg-open";

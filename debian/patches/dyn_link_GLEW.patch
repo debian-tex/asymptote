@@ -2,7 +2,7 @@ Description: We link dynamically w/ libglew2.1.
 Origin: Hilmar Preusse <hille42@web.de>
 Forwarded: Refused by upstream.
 Author: Hilmar Preusse <hille42@web.de>
-Last-Update: 20190808
+Last-Update: 20230128
 
 ---
  Makefile.in  |    2 +-
@@ -15,14 +15,14 @@ Last-Update: 20190808
  
  export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
  
--asy:	version glew.o @LSPLIB@
-+asy:	version @LSPLIB@
+-asy:	version $(FILES:=.o) glew.o @LSPLIB@
++asy:	version $(FILES:=.o) @LSPLIB@
  	if test -n "$(MSDOS)"; then \
            $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
  	else \
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
-@@ -495,7 +495,7 @@
+@@ -502,7 +502,7 @@
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "

@@ -1,8 +1,8 @@
-From: =?UTF-8?q?Picca=20Fr=C3=A9d=C3=A9ric-Emmanuel?=
- <picca@synchrotron-soleil.fr>
+From: Frédéric-Emmanuel Picca <picca@synchrotron-soleil.fr>
 Date: Sat, 2 Jul 2011 23:17:05 +0200
 Subject: update documentation for debian specific parts
 Forwarded: not needed.
+Last-Update: 20230128
 
 ---
  doc/asymptote.texi |   34 +++++++++++++---------------------
@@ -30,20 +30,20 @@ Forwarded: not needed.
  @end direntry
  
  @titlepage
-@@ -449,9 +450,9 @@
+@@ -441,9 +442,9 @@
  @noindent
  @verbatim
  import settings;
 -pdfviewer="acroread";
 -htmlviewer="google-chrome";
--psviewer="gv";
+-psviewer="evince";
 +pdfviewer="xdg-open";
 +htmlviewer="xdg-open";
 +psviewer="xdg-open";
  display="display";
  animate="animate";
  gs="gs";
-@@ -706,20 +707,9 @@
+@@ -698,20 +699,9 @@
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -66,7 +66,7 @@ Forwarded: not needed.
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -743,8 +733,10 @@
+@@ -735,8 +725,10 @@
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  
