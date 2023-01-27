@@ -1,4 +1,8 @@
-asymptote (2.84+ds-1) UNRELEASED; urgency=medium
+asymptote (2.84+ds-1) unstable; urgency=medium
+
+  New upstream version.
+  * Contains fix for "xasy crashed when clicking on the grid button"
+    (Closes: #1023920).
 
   [ Debian Janitor ]
   * Use secure URI in Homepage field.
@@ -6,12 +10,9 @@ asymptote (2.84+ds-1) UNRELEASED; urgency=medium
 
   [ Hilmar Preusse ]
   * Replace BD on freeglut3-dev by libglut-dev.
-  * Add patch from upstream to fix "xasy crashed when clicking
-    on the grid button" (Closes: #1023920).
-  * Add patch from upstream "Allow to override build date
-    with SOURCE_DATE_EPOCH".
+  * Bump Standards Version, no changes needed.
 
- -- Hilmar Preusse <hille42@web.de>  Sat, 12 Nov 2022 23:52:00 +0100
+ -- Hilmar Preusse <hille42@web.de>  Fri, 27 Jan 2023 13:01:08 +0100
 
 asymptote (2.83+ds-1) unstable; urgency=medium
 
@@ -376,7 +377,7 @@ asymptote (2.41-4) unstable; urgency=medium
   * Provide ASYMPTOTE_HOME, avoiding lots of warning when HOME is unset.
   * Fix more incompatibilities with python3.
   * Use dh-python helper.
-  * Allow -doc package to satisfy Multi-Arch foreign dependencies.
+  * Set -doc package to Multi-Arch "foreign".
   * Remove Replaces dependency between main and -doc package.
   * Switch to python3 interpreter.
   (Closes: #880422) (Big thanks to Nicolas for his excellent work!)
