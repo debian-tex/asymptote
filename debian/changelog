@@ -1,10 +1,10 @@
-asymptote (2.84+ds-2) UNRELEASED; urgency=medium
+asymptote (2.84+ds-2) unstable; urgency=medium
 
   * Don't specify boost version in B-D and in dep of test suite to
     make boost transition possible.
   * Lintian: W: executable-not-elf-or-script
 
- -- Hilmar Preusse <hille42@web.de>  Fri, 27 Jan 2023 22:02:20 +0100
+ -- Hilmar Preusse <hille42@web.de>  Sun, 29 Jan 2023 20:29:34 +0100
 
 asymptote (2.84+ds-1) unstable; urgency=medium
 
