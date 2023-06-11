@@ -310,7 +310,6 @@ bbox3 picture::bounds3()
     b3=bbox3();
 
   matrixstack ms;
-  size_t i=0;
   for(nodelist::const_iterator p=nodes.begin(); p != nodes.end(); ++p) {
     assert(*p);
     if((*p)->begingroup3())
@@ -319,7 +318,6 @@ bbox3 picture::bounds3()
       ms.pop();
     else
       (*p)->bounds(ms.T(),b3);
-    i++;
   }
 
   lastnumber3=n;
@@ -657,6 +655,7 @@ int picture::epstopdf(const string& epsname, const string& pdfname)
   cmd.push_back("-dEncodeColorImages="+compress);
   cmd.push_back("-dEncodeGrayImages="+compress);
   cmd.push_back("-dCompatibilityLevel=1.4");
+  cmd.push_back("-dTransferFunctionInfo=/Apply");
   if(!getSetting<bool>("autorotate"))
     cmd.push_back("-dAutoRotatePages=/None");
   cmd.push_back("-g"+String(max(ceil(getSetting<double>("paperwidth")),1.0))

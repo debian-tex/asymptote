@@ -1525,8 +1525,8 @@ void gen_runtime115(stack *Stack)
 
   ::times(&buf);
   array *t=new array(5);
-  (*t)[0]=cpuTime.seconds();
-  (*t)[1]=((real) buf.tms_stime)*ticktime;
+  (*t)[0]=cpuTime.seconds(); // Includes system time
+  (*t)[1]=0.0;
   (*t)[2]=((real) buf.tms_cutime)*ticktime;
   (*t)[3]=((real) buf.tms_cstime)*ticktime;
   (*t)[4]=wallClock.seconds();

@@ -1,3 +1,347 @@
+commit 4d5224cf59d75f08c7360382bf7e7c12167ce35f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 6 19:59:30 2023 -0600
+
+    Update build script.
+
+commit 3c359d89cc4bfba685d5c29794af934e08c5329f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 6 17:15:36 2023 -0600
+
+    Fix type.
+
+commit 0104aea26bf8f76dc15f717a5ea78e0ff46b659f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 6 16:26:53 2023 -0600
+
+    Fix compilation under MSDOS.
+
+commit 13fac7197d9f62f890f3c78d40eda8f5b819c99c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 6 00:17:26 2023 -0600
+
+    Fix boost issues.
+
+commit fbe3f431adc74ff6ac307fd4868da8f8b363efaa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 6 00:00:47 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "9b0d99d1"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "9b0d99d1"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit 728e00fa9dcc9d13f9fa5da82c2f901420485c61
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 5 22:47:35 2023 -0600
+
+    Fix std::optional compilation issues.
+
+commit c18c01677cfbeb3d956633df86a79e984a8f8255
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 5 22:47:05 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "1a04514e"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "1a04514e"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit b24fba5df113d4a5e7af41d01011b912916b2a06
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 5 01:36:17 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "97ccf8e9"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "97ccf8e9"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit 346ec934bd279beaf1d1605d657fd8e15378022b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 5 01:10:41 2023 -0600
+
+    Work around unavailable clock_gettime under old versions of MacOS.
+
+commit 1d7caee225a5fe892c9ba2f7ffff1e63335352fa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 5 01:10:06 2023 -0600
+
+    Fix portability issue with GLSL_VERSION.
+
+commit e49ed605f0e13ff75ae21f5b653f3c4b319a33f6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 22:49:48 2023 -0600
+
+    Initialize spin counter; remove remaining gettimeofday calls.
+
+commit 59bb7930b9a08c530f66957c5c60f64b07a59374
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 15:53:40 2023 -0600
+
+    Update Boehm GC to 8.2.4.
+
+commit 4080bee015b099acd933bf40a89d2933c1edbdc2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 11:58:51 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "018aaca5"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "018aaca5"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit 267922a9d8d7f9077d6d5bd7260e176cf200d010
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 11:36:51 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "6874d444"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "6874d444"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit 2d541360013d7357be3258c1ba6ea7ed98ae1e45
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 11:35:18 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "530bd22e"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "530bd22e"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit bd3813ca7592cc3dba43fa4007ff4f129d668f24
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 10:52:31 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "6c723f47"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "6c723f47"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit a3f45abc54caf855167b662ffd3717e2ab733289
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 4 10:51:34 2023 -0600
+
+    Revert "Revert "Change boost::optional to std::optional"."
+    
+    This reverts commit d6ddd54262b7bf61830572988e2f4bd953802a28.
+
+commit 6cb475a540d695b3fcee20252e2ffac2c8f1adb5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 15:06:24 2023 -0600
+
+    git subrepo pull (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "acde1180"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "936b427d"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit d6ddd54262b7bf61830572988e2f4bd953802a28
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 14:55:20 2023 -0600
+
+    Revert "Change boost::optional to std::optional".
+    
+    This reverts commit 0de3cfdb930d53d9ea2c03674e8ab228bf31b0d1.
+
+commit 5a4f72184e494aafaf5298b0b51f7338d7fb97f0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 14:42:17 2023 -0600
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "f96a1ac0"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "f96a1ac0"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit b3345619ab5aad88fcf229591c5a20f0d0864eaa
+Merge: 5c40136f 7366fe26
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 12:21:01 2023 -0600
+
+    Merge pull request #356 from yarusome/master
+    
+    Fixing bugs in the inversion section of the `geometry` module
+
+commit 5c40136f60cbeab6924626085c68cc161d0dae45
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 12:11:23 2023 -0600
+
+    Reformat code.
+
+commit 4709f6e6956d3f455c127fa5d44debf6f70d027e
+Merge: 456ae992 7f5cdf0b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 3 11:59:50 2023 -0600
+
+    Merge pull request #377 from LemonBoy/fix-io-read
+    
+    io: Fix reading of NaN and inf values
+
+commit 456ae99203a291f9c50128ec55965ad948e11971
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 2 21:42:12 2023 -0600
+
+    Remove lsp option when disabled.
+
+commit 214b8969a66af0dde0168ac17e2a343debb7d047
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 29 10:33:28 2023 -0600
+
+    Remove unused cast.
+
+commit 7f5cdf0b2c6aed2e26ff7310aa3d181419a6eea8
+Author: LemonBoy <thatlemon@gmail.com>
+Date:   Sun May 28 19:09:57 2023 +0200
+
+    io: Fix reading of NaN and inf values
+    
+    Previously asymptote would silently stop while trying to read a textual
+    dataset containing inf or nan values, while the language itself is
+    perfectly capable of handling such values.
+
+commit 43cf506b5bce0957205650246c8616b97e143133
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 14 13:54:15 2023 -0600
+
+    Remove unused variables.
+
+commit 494e8120ee967aa9c71ae26e2476b5632211b6e2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 17 21:23:57 2023 -0600
+
+    Fix compilation when configured with --disable-gl.
+
+commit 4715fea108852e25cd38a6a74079985f5fe91e7f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Apr 15 16:31:59 2023 -0600
+
+    Suppress .setblendmode for EPS output.
+
+commit 700aaec3a6d1fd3a78f04537a61bad82a5f07057
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 12 00:03:46 2023 -0700
+
+    Fix portability issues.
+
+commit fffdb62031f4f68007b2721bdd8ef86ef37d8e3d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 11 23:42:20 2023 -0700
+
+    Fix boolean operator.
+
+commit da81bd59f89ba8be1131243f680f06ed57fee571
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 11 23:33:28 2023 -0700
+
+    Update config.guess.
+
+commit 65165fe1528692980fd52c7f1c3735c7ac5bd2c0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 5 20:48:00 2023 -0700
+
+    Fix bug #370: automatically apply PDF transfer functions.
+
+commit 11c8cc57a4b66e5f04f3ab2f1cfd6f33d2c8d43d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 20 13:41:10 2023 -0700
+
+    Clear initial index buffer.
+
+commit 7623f325b1a370851db9559a5a058e552b71a2f6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 19 01:32:10 2023 -0700
+
+    Fix last revision.
+
+commit 0a248a219e44d2945bcc31c5424153ec1ace41bb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 19 01:28:30 2023 -0700
+
+    Only output unscaled primitives.
+
+commit e8e88fb4412ce92acf222ceafe18e3be26984b90
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Feb 8 23:39:44 2023 -0700
+
+    Increment version to 2.86.
+
 commit 9e242d4e7d6d79656c09d4f6c7c385dd7ea61bb3
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Wed Feb 8 21:30:27 2023 -0700
@@ -166,6 +510,12 @@ Date:   Sun Jan 22 22:06:10 2023 -0700
 
     Increment version to 2.85.
 
+commit 7366fe26314370241c949921389492a4cb862f33
+Author: yarusome <97945148+yarusome@users.noreply.github.com>
+Date:   Mon Jan 23 12:15:54 2023 +0800
+
+    Fixing the use of `inverse()`
+
 commit 430c7a661c060568720f6d65e611a2087ea1dde6
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sat Jan 21 22:48:26 2023 -0700
@@ -217,6 +567,22 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Mon Dec 12 22:19:03 2022 -0700
 
     Avoid division by zero.
+
+commit 58af9b461ff373ec32e6d1db869c80cf3b6dd137
+Author: yarusome <97945148+yarusome@users.noreply.github.com>
+Date:   Sun Dec 11 13:59:36 2022 +0800
+
+    Simplifying the internal use of `inversion`
+    
+    This commit replaces `(real, point, ...)` with `(inversion, ...)` in the parameter list of internally-used functions in the inversion section, and simplifies the initializer definitions of `inversion` using `operator init`.
+
+commit 1fcc742a8e372b8280e92573a31542ed3cdc9117
+Author: yarusome <97945148+yarusome@users.noreply.github.com>
+Date:   Sun Dec 11 13:19:55 2022 +0800
+
+    Fixing the inversion section of the `geometry` module
+    
+    This commit fixes bugs related to coordinate systems in the inversion section, and all the returned `point`s are in `currentcoordsys` now.
 
 commit 46d6ea7351699bbed0418ec6d7f2195011178e5a
 Author: John Bowman <bowman@ualberta.ca>
