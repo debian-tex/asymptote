@@ -1,6 +1,6 @@
 Description: fix various typos detected by lintian.
 Author: Nicolas Boulenguez <nicolas@debian.org>
-Forwarded: Refused by upstream, ChangeLog is generated from "git log".
+Forwarded: not-needed
 
 ---
  ChangeLog |    4 ++--

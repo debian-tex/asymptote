@@ -4,6 +4,4 @@ honour-source-date-epoch
 typos.diff
 dyn_link_GLEW.patch
 fix_date_in_doc.patch
-#354.patch
 #38d018f6bc6d2341718a67193c4cbb99a07be698.patch
-#executable-not-elf-or-script.patch
