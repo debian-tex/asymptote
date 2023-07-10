@@ -5,6 +5,7 @@ Source: http://asymptote.sourceforge.net
 Files-Excluded:
  asy.list
  LspCpp/third_party/rapidjson/bin/jsonchecker
+ GUI/icons_rc.py
 
 Files: *
 Copyright: Copyright (C) 2004-2021 Andy Hammerlindl, John Bowman, Tom Prince
