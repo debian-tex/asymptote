@@ -3,7 +3,7 @@
 # this file.
 
 AC_PREREQ(2)
-AC_INIT([Asymptote],[2.86],[https://github.com/vectorgraphics/asymptote/issues])
+AC_INIT([Asymptote],[2.87],[https://github.com/vectorgraphics/asymptote/issues])
 VERSION=$PACKAGE_VERSION
 AC_SUBST(VERSION)
 m4_include([ax_pthread.m4])
@@ -182,7 +182,7 @@ GCPPLIB=
 INCL="-I."
 GCNAME="Boehm Garbage Collector"
 if test "x$ac_cv_use_gc" != "xno" ; then
-   OPTIONS=$OPTIONS"-DUSEGC "
+   OPTIONS=$OPTIONS"-DUSEGC -DLSPCPP_USEGC "
    case _$ac_cv_use_gc in
    _|_system|_*[[\\/]]*)
       if test "x$ac_cv_use_gc" = "xsystem" ; then
