@@ -11,13 +11,14 @@
 #include "LibLsp/JsonRpc/Context.h"
 #include "rapidjson/error/en.h"
 #include "LibLsp/JsonRpc/json.h"
-#include "LibLsp/JsonRpc/GCThreadContext.h"
 #include "LibLsp/JsonRpc/ScopeExit.h"
 #include "LibLsp/JsonRpc/stream.h"
 #include <atomic>
 #include <optional>
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/post.hpp>
+
+#include "LibLsp/JsonRpc/GCThreadContext.h"
 
 namespace lsp {
 
@@ -144,14 +145,18 @@ PendingRequestInfo::PendingRequestInfo(const std::string& md) : method(md)
 }
 struct RemoteEndPoint::Data
 {
-        explicit Data(uint8_t workers,lsp::Log& _log , RemoteEndPoint* owner)
-          : max_workers(workers), m_id(0),next_request_cookie(0), message_producer(new StreamMessageProducer(*owner)), log(_log)
+        explicit Data(lsp::JSONStreamStyle style,uint8_t workers,lsp::Log& _log , RemoteEndPoint* owner)
+          : max_workers(workers), m_id(0),next_request_cookie(0), log(_log)
         {
-
+            if(style == lsp::JSONStreamStyle::Standard )
+                message_producer = (new LSPStreamMessageProducer(*owner)) ;
+            else{
+                message_producer = (new DelimitedStreamMessageProducer(*owner)) ;
+            }
         }
         ~Data()
         {
-           delete       message_producer;
+           delete  message_producer;
         }
     uint8_t max_workers;
         std::atomic<int> m_id;
@@ -333,8 +338,9 @@ CancelMonitor RemoteEndPoint::getCancelMonitor(const lsRequestId& id)
 }
 
 RemoteEndPoint::RemoteEndPoint(
-        const std::shared_ptr < MessageJsonHandler >& json_handler,const std::shared_ptr < Endpoint>& localEndPoint, lsp::Log& _log, uint8_t max_workers):
-    d_ptr(new Data(max_workers,_log,this)),jsonHandler(json_handler), local_endpoint(localEndPoint)
+        const std::shared_ptr < MessageJsonHandler >& json_handler,const std::shared_ptr < Endpoint>& localEndPoint,
+        lsp::Log& _log,  lsp::JSONStreamStyle style, uint8_t max_workers):
+       d_ptr(new Data(style,max_workers,_log,this)),jsonHandler(json_handler), local_endpoint(localEndPoint)
 {
         jsonHandler->method2notification[Notify_Cancellation::notify::kMethodInfo] = [](Reader& visitor)
         {
@@ -342,7 +348,6 @@ RemoteEndPoint::RemoteEndPoint(
         };
 
         d_ptr->quit.store(false, std::memory_order_relaxed);
-
 }
 
 RemoteEndPoint::~RemoteEndPoint()
@@ -608,7 +613,7 @@ void RemoteEndPoint::startProcessingMessages(std::shared_ptr<lsp::istream> r,
                         const auto temp = std::make_shared<std::string>(std::move(content));
             boost::asio::post(*d_ptr->tp,
                         [this, temp]{
-#ifdef USEGC
+#ifdef LSPCPP_USEGC
                         GCThreadContext gcContext;
 #endif
 

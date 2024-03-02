@@ -1,3 +1,20 @@
+Release Notes for Version 2.87
+
+Templated imports were implemented.
+An incorrect dvisvgm optimization is avoided.
+SVG gradient shading offsets were fixed.
+Integer are now implicitly formatted with full precision.
+Inferred assignment of void type is prohibited.
+An LSP segmentation fault was fixed.
+Repeated stripping of file extensions is avoided.
+The --output-directory option of latexmk is supported.
+The OSMesa compatibility profile is used for offscreen rendering.
+The fitscreen toggle is fixed. 
+The context menu in Xasy is now only opened for GUI-drawn items.
+A -v3d option allows embedding V3D content within a PDF file.
+A workaround was implemented for a MacOS libc++ parsing bug.
+The documentation was updated.
+
 Release Notes for Version 2.86
 
 PDF transfer functions are automatically applied;
