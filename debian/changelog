@@ -1,4 +1,4 @@
-asymptote (2.87+ds-1) UNRELEASED; urgency=medium
+asymptote (2.87+ds-1) unstable; urgency=medium
 
   * New upstream release, refresh patches.
   * Replace freeglut3-dev by libglut-dev in control file of test suite.
@@ -7,7 +7,7 @@ asymptote (2.87+ds-1) UNRELEASED; urgency=medium
   * Add libtirpc-dev to build depends of asymptote and test suite
     (Closes: #1065212).
 
- -- Hilmar Preusse <hille42@web.de>  Tue, 23 Jan 2024 23:26:55 +0100
+ -- Hilmar Preusse <hille42@web.de>  Sat, 02 Mar 2024 23:29:20 +0100
 
 asymptote (2.86+ds1-1) unstable; urgency=medium
 
