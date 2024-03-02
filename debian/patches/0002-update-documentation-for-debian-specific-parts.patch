@@ -30,7 +30,7 @@ Last-Update: 20230128
  @end direntry
  
  @titlepage
-@@ -441,9 +442,9 @@
+@@ -445,9 +446,9 @@
  @noindent
  @verbatim
  import settings;
@@ -43,7 +43,7 @@ Last-Update: 20230128
  display="display";
  animate="animate";
  gs="gs";
-@@ -698,20 +699,9 @@
+@@ -702,20 +703,9 @@
  @cindex @code{asy-mode}
  @cindex @code{lasy-mode}
  Users of @code{emacs} can edit @code{Asymptote} code with the mode
@@ -66,7 +66,7 @@ Last-Update: 20230128
  Particularly useful key bindings in this mode are @code{C-c C-c}, which compiles
  and displays the current buffer, and the key binding @code{C-c ?}, which
  shows the available function prototypes for the command at the cursor.
-@@ -735,8 +725,10 @@
+@@ -739,8 +729,10 @@
  @cindex @code{asy.vim}
  Fans of @code{vim} can customize @code{vim} for @code{Asymptote} with
  
