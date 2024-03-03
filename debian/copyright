@@ -144,7 +144,7 @@ License: otherlmfit
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-Files: install-sh doc/install-sh doc/FAQ/install-sh
+Files: doc/install-sh doc/FAQ/install-sh
 Copyright: Copyright (C) 1994 X Consortium
 License: otherx
   Permission is hereby granted, free of charge, to any person obtaining a copy
