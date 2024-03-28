@@ -1,3 +1,9 @@
+Release Notes for Version 2.89
+
+Portability fixes were made to allow static builds with or without pkg-config.
+Static linking of the GSL library is now supported.
+Redundant templated imports are avoided.
+
 Release Notes for Version 2.88
 
 Building against specific static libraries is supported again.

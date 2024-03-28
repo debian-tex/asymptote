@@ -75,14 +75,11 @@
 /* Define to 1 if you have the `glut' library (-lglut). */
 #undef HAVE_LIBGLUT
 
-/* Define to 1 if you have the `' library (-l). gsl */
+/* Define to 1 if you have the `gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
-
-/* Define to 1 if you have the `ncurses' library (-lncurses). */
-#undef HAVE_LIBNCURSES
 
 /* Define to 1 if you have the `OpenImageIO' library (-lOpenImageIO). */
 #undef HAVE_LIBOPENIMAGEIO

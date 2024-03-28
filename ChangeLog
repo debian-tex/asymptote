@@ -1,3 +1,127 @@
+commit 92e96dde395fdb9707bd1bb9960e83146411ffa1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 23 14:12:38 2024 -0700
+
+    git subrepo pull (merge) --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "87a67d162"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "87a67d162"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit a45d527a2a81bb8662b4ca8a25ed287a739ccfed
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 23 13:58:31 2024 -0700
+
+    git subrepo pull --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "b978a914b"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "b978a914b"
+    git-subrepo:
+      version:  "0.4.6"
+      origin:   "???"
+      commit:   "???"
+
+commit 315ca8cbe34cee0b5079bd669060b568da7b342a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Mar 21 22:23:47 2024 -0700
+
+    Revert "Initialize structs declared within templated imports."
+    
+    This reverts commit 12baa706a2162acd5a555af922105a4061fbd0f8.
+
+commit 033715655b4165ba2d00aaf9640bfb9b505d593a
+Merge: 2bc14502 de239a50
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Mar 19 20:49:33 2024 -0700
+
+    Merge branch 'template' of https://github.com/vectorgraphics/asymptote into template
+
+commit de239a50c0681502d6405038e649997f49e2d27d
+Merge: 3429cdc7 337b9f37
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 19 20:44:00 2024 -0700
+
+    Merge branch 'master' into template.
+
+commit 337b9f3786c808e746aa0446784821813e5b0f4c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 19 20:31:40 2024 -0700
+
+    Remove spurious parenthesis.
+
+commit 2bc1450213574aa01a3c415c3b36f7ffc556cc13
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Mon Mar 18 10:35:45 2024 -0700
+
+    Reformat too-long line.
+
+commit 3429cdc71e39e53a08f1784137bcbf4fc7599fde
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 16 22:46:10 2024 -0700
+
+    Suppress redundant templated imports.
+
+commit 459e6267d41a0524c92d4ec1db4d5a0a67fc1080
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 16 00:10:17 2024 -0700
+
+    Enable static builds even if pkg-config is missing; support static linking of gsl library.
+
+commit 12baa706a2162acd5a555af922105a4061fbd0f8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 15 21:36:36 2024 -0700
+
+    Initialize structs declared within templated imports.
+
+commit a7e3c81f52eec7044a4a5c0eec492973ede513ab
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 15 20:14:38 2024 -0700
+
+    Rename virtual function to v to avoid confusion.
+
+commit a8c142c2e21e80f0bfdcb944dccc64787345b029
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Mar 13 20:30:32 2024 -0700
+
+    Slight improvement: `new T` now seems to work.
+
+commit 7e17096b22d18d133d1bc5916b6e32c0cb24ad10
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Mar 12 22:48:47 2024 -0700
+
+    Restore LDFLAGS; don't look for tirpc under MacOS.
+
+commit 90cdfac04e3946638cf790d39e3e163833c1fe18
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 10 12:00:14 2024 -0700
+
+    Define correct preprocessor symbol if static library is unavailable.
+
+commit 62bbff376a55116c118b36f54c251992fd75a99b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Mar 9 16:11:25 2024 -0800
+
+    Don't require pkg-config.
+
+commit c3d0888ca2b3e15fc2774ef1486cf41cf9f63cf4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Mar 8 08:06:31 2024 -0800
+
+    Increment version to 2.89.
+
 commit 710f205a8f251c206c0204492fb54255f17feaf9
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Fri Mar 8 00:13:46 2024 -0800
