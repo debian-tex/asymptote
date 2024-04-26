@@ -4,6 +4,7 @@ asymptote (2.89+ds-1) UNRELEASED; urgency=medium
   * Lintian:
     - W: build-depends-on-obsolete-package
     - W: superfluous-file-pattern
+  * Bump Standards version, no changes needed.
 
  -- Hilmar Preusse <hille42@web.de>  Sun, 03 Mar 2024 19:39:20 +0100
 
