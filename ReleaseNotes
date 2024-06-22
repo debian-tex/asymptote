@@ -1,3 +1,19 @@
+Release Notes for Version 2.90
+A bug in the approximate transparency rendering code for GPUs
+without SSBO support was fixed.
+Support was added for templated accesses involving imported types,
+top-level structure types, and static fields.
+ImageMagick magick convert is now used instead of convert. 
+The add(picture dest, picture src, pair position) function now respects
+size specifications (backwards incompatible; the previous behaviour can
+be obtained with add(dest,src.fit(identity()),position).
+The terminal is now reset upon exit. The erase command was fixed.
+Picture scalings in different dimensions are decoupled again.
+Flycheck syntax checking support for Emacs was added.
+Portability issues were addressed.
+Improvements were made to the documentation, including an introduction
+to deferred drawing.
+
 Release Notes for Version 2.89
 
 Portability fixes were made to allow static builds with or without pkg-config.

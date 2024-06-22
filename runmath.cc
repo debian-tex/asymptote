@@ -81,7 +81,7 @@ using types::realArray;
 using types::pairArray;
 
 using run::integeroverflow;
-using vm::frame;
+using vm::vmFrame;
 
 const char *invalidargument="invalid argument";
 
@@ -558,8 +558,8 @@ void gen_runmath28(stack *Stack)
 #line 367 "runmath.in"
 void boolMemEq(stack *Stack)
 {
-  frame * b=vm::pop<frame *>(Stack);
-  frame * a=vm::pop<frame *>(Stack);
+  vmFrame * b=vm::pop<vmFrame *>(Stack);
+  vmFrame * a=vm::pop<vmFrame *>(Stack);
 #line 368 "runmath.in"
   {Stack->push<bool>(a == b); return;}
 }
@@ -567,8 +567,8 @@ void boolMemEq(stack *Stack)
 #line 372 "runmath.in"
 void boolMemNeq(stack *Stack)
 {
-  frame * b=vm::pop<frame *>(Stack);
-  frame * a=vm::pop<frame *>(Stack);
+  vmFrame * b=vm::pop<vmFrame *>(Stack);
+  vmFrame * a=vm::pop<vmFrame *>(Stack);
 #line 373 "runmath.in"
   {Stack->push<bool>(a != b); return;}
 }
