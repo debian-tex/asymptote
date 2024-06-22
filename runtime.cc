@@ -126,7 +126,7 @@ using namespace utils;
 namespace run {
 using camp::pair;
 using vm::array;
-using vm::frame;
+using vm::vmFrame;
 using vm::stack;
 using camp::transform;
 using absyntax::runnable;
@@ -216,7 +216,7 @@ void writestring(stack *s)
   string S=pop<string>(s);
   vm::item it=pop(s);
   bool defaultfile=isdefault(it);
-  camp::ofile *f=defaultfile ? &camp::Stdout : vm::get<camp::ofile*>(it);
+  camp::file *f=defaultfile ? &camp::Stdout : vm::get<camp::file*>(it);
   if(!f->isOpen() || !f->enabled()) return;
   if(S != "") f->write(S);
   if(f->text()) {
@@ -298,7 +298,7 @@ void pushNullArray(stack *Stack)
 void pushNullRecord(stack *Stack)
 {
 #line 256 "runtime.in"
-  {Stack->push<frame*>(0); return;}
+  {Stack->push<vmFrame*>(0); return;}
 }
 
 #line 260 "runtime.in"
@@ -1135,9 +1135,8 @@ void gen_runtime86(stack *Stack)
 void loadModule(stack *Stack)
 {
   string * index=vm::pop<string *>(Stack);
-  string * filename=vm::pop<string *>(Stack);
 #line 766 "runtime.in"
-  Stack->load(*filename,*index);
+  Stack->load(*index);
 }
 
 #line 770 "runtime.in"

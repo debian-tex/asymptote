@@ -1,3 +1,440 @@
+commit 58246991e2474ffbd1bfe012d5d0a11407da7795
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 21 10:33:58 2024 -0700
+
+    Support latest osmesa.h (issue #433).
+
+commit 25eee09b986b2bf373a5bab21be4b0406bc2568a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 21 00:09:15 2024 -0700
+
+    Install shaders without executable bit.
+
+commit 74af1955622ae40bbe4edc74cd197049a04684a9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 21 00:08:00 2024 -0700
+
+    Avoid use of deprecated datetime.utcfromtimestamp function.
+
+commit 9cd341a78049695722a25d54be507ffd18cacb15
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 20 23:30:08 2024 -0700
+
+    Update documentation.
+
+commit 8455927794379406ea28be52adc7cc65262f9ea7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 20 23:21:48 2024 -0700
+
+    Omit teapot regularization.
+
+commit 5099d297e6a950c8917a21be9bf15d75e7855e6a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 20 19:04:49 2024 -0700
+
+    Fix discussion of deferred drawing.
+
+commit b0cba406177a0bbee1428ac2e36f886cccdc5b94
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 23:59:31 2024 -0700
+
+    Replace ImageMagick convert by magick convert.
+
+commit 4d15930f3a4aa8ca4f4616276678e9b1537c27a4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 19:00:15 2024 -0700
+
+    Fix documentation.
+
+commit b2dba448eb7e579f9f1e382c3c22c3e1be439e1c
+Merge: eca567a5 154a9d93
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 18:43:30 2024 -0700
+
+    Merge pull request #439 from jkseppan/flycheck
+    
+    Integrate with flycheck
+
+commit eca567a539a7bf2b1beb5a3e1871c9c3db276e94
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 18:37:05 2024 -0700
+
+    Apply pull request #452, with a few modifications.
+
+commit e36ea98c063075bd48a44410c8de1fc173d354c7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 17:28:47 2024 -0700
+
+    Update documentation.
+
+commit 7d063bebcf040ab417c770941676df92b669e13e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 15:11:17 2024 -0700
+
+    Replace tabs in error messages by 2 spaces (issue #444).
+
+commit 39dff901f9c36de254710b57381dc4b83a636f63
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 13:50:40 2024 -0700
+
+    Fix approximate transparency rendering for GPUs without SSBO support (issue #462).
+
+commit 99bd09380ddd649d3d6060dda12320e2dc8ed10b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 10:35:08 2024 -0700
+
+    Pass PKG_FLAGS to AC_CHECK_LIB (issue # 461).
+
+commit 216e2ef85fe61c959d2163f8c7c5f4faca87d840
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 09:41:16 2024 -0700
+
+    Change add(picture dest, picture src, pair position) to respect a size specification for src (see issue #450).
+    This change is backwards incompatible only in cases where src is given a size specification; the previous behaviour can then be obtained with
+    
+    add(dest,src.fit(identity()),position).
+
+commit 4cbd256f23a940f60b54c1ea4df1fe2febe101dd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 19 09:40:04 2024 -0700
+
+    Fix example.
+
+commit c7f016286dffc4cd1805d7541d50e17d05805527
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 16 23:46:09 2024 -0700
+
+    Avoid duplicate code.
+
+commit d3ad8b5fd85a0ba900c4933acb013e501e473bb1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 16 20:23:45 2024 -0700
+
+    Qualify call to glutSetOption.
+
+commit 9a776cfe4d3bf6b01c7c5340745aa5b0fc9bd707
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 16 15:48:31 2024 -0700
+
+    Update URL.
+
+commit 9cf74052039f62dc4f4c810cd0a0b133d977433d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 13 17:44:57 2024 -0700
+
+    Reset terminal on exit.
+
+commit af44b79a8b008c6e2bcc3a422cdc28adb78d25d0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 13 08:29:49 2024 -0700
+
+    Exit glut gracefully.
+
+commit c7250761093ba84f3db1c948d3fc4effcfb8d32a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 13 08:02:34 2024 -0700
+
+    Don't show target for empty pictures.
+
+commit 1d4dfcae1950fcfce44ed109260b39f0e6dbb45f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 12 23:46:42 2024 -0700
+
+    Fix erase.
+
+commit 237a30626c2167f1269dd2ec8b6910569f569e5f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 11 23:29:34 2024 -0700
+
+    Don't warn if there are no constraints.
+
+commit 45912ba5dc3aa458ce25fc04d569fbe430238c13
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 11 23:29:11 2024 -0700
+
+    Only output a 3D picture when not up to date.
+
+commit 590b89237b2b2d61d310380313e9e61d2329d22e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 11 20:09:50 2024 -0700
+
+     Decouple scaling of each dimension with a fixed version of the original 2-variable simplex method (see commit 401cf60f89dcddfb6993f7bd25a86b144ec5f3ad and issue #72).
+
+commit 8b307db4402ec7ad1bf1d1f3559140acaa4863e2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 9 08:15:36 2024 -0700
+
+    Fix DEBUG_FRAME warning.
+
+commit 1c16640576c9b96926f9f76e06b81f0f68fd1714
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 9 08:10:30 2024 -0700
+
+    Remove unused argument to stack::load.
+
+commit 786fc0fb3da2fb0e3f4b1dd94aa3548b4a06ad56
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 8 23:07:21 2024 -0700
+
+    Update documentation of templated imports.
+
+commit f153c484aca2ead08683cbfb2a5afbcafef1c703
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Jun 8 19:40:39 2024 -0700
+
+    Test template for nested imports.
+
+commit 61c6d2be12bfad7239ff4f6733ba1a66b84f4d26
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 8 19:23:03 2024 -0700
+
+    Support templated imports for parameter types defined in imported modules.
+
+commit 575ef4298a22e175dc2201b4c91f1cf6f8511a0e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 4 21:07:41 2024 -0700
+
+    Partially revert commit 45b84def56e7c4af6a9f0e9546bf92f90c9a22af.
+
+commit 12e20a7be326f05d5e5d7a555a0f9ceb29becce1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Jun 2 21:27:29 2024 -0700
+
+    Add more thorough test of struct template.
+
+commit 772a3e4d0efa95367f547159bb86dd9f436abd18
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 2 17:39:49 2024 -0700
+
+    Remove automatic recordInitializer for imported templates; add test.
+
+commit 3f6f4361af778517867837b79cc56db28e791935
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Jun 2 13:28:17 2024 -0700
+
+    Add import de-duplication tests.
+
+commit 600c54f7669d23bf57beaee991773f1b301720ef
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Jun 2 12:52:08 2024 -0700
+
+    Minor readability improvements.
+
+commit d22b41fb0e7eaf2290951409abf2f867aa317850
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 23:39:39 2024 -0700
+
+    Defer pushing qualified tyEntries until actually loading a templated module.
+
+commit 70346afc6d421c5b102a35f7b9bde8109082ef71
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 21:00:12 2024 -0700
+
+    Remove unused code.
+
+commit 8c9e05a2f239390a3ce0fa9fc236027ac3d8bfb1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 20:50:57 2024 -0700
+
+    Revert "Revert "Initialize structs declared within templated imports.""
+    
+    This reverts commit 315ca8cbe34cee0b5079bd669060b568da7b342a.
+
+commit e5590f72c74f43840ae87d411f4791b200a7a3e3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 20:37:57 2024 -0700
+
+    Support templated access with types containing static fields.
+
+commit a697a52388f0e07797ac5eaa8d00c419337d0c7b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 19:30:28 2024 -0700
+
+    Simplify code.
+
+commit 57539e7ae5f20414d936730e57120106a8ef3f44
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 19:28:25 2024 -0700
+
+    Simplify code.
+
+commit 1e51fe661e819f13446288f2cdb47b7688f499e7
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Jun 1 15:40:15 2024 -0700
+
+    Only pop qualifiers for records.
+
+commit 45b84def56e7c4af6a9f0e9546bf92f90c9a22af
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 1 13:24:36 2024 -0700
+
+    Support templated access with imported and top-level structure types.
+
+commit db67e9101801809cc15e4e34de72c8c41a60b18b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 30 20:55:20 2024 -0700
+
+    Simplify code.
+
+commit 6faf168867f0a7dd3930b6cf0d74fc4e3333ddd0
+Merge: 7dfdaf3c be47ce98
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu May 30 19:50:04 2024 -0700
+
+    Merge branch 'rename' into template
+
+commit be47ce9838e0a92dd026fbb1df0532edca5a2e1a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 22:43:42 2024 -0700
+
+    Rename types::tyTy back to types::ty.
+
+commit 79f526207906986ac2a86414bdece4dffeb12781
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 22:36:20 2024 -0700
+
+    Rename absyntax::ty to absyntax::astType.
+
+commit 092fc985e8be1cfd88f2045fe39e981bd110f0be
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 22:19:31 2024 -0700
+
+    Change some macro-gated ty to tyTy.
+
+commit 94451536b4a372c4fb5f15b928377174c8e17311
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 22:13:06 2024 -0700
+
+    Change `#if SIMPLE_FRAME` to `#ifdef SIMPLE_FRAME` for consistency.
+
+commit 7dfdaf3c418ddb0d2471cea99eb0bcaeaec8c6a7
+Merge: ecb912d9 122092fa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 29 21:02:20 2024 -0700
+
+    Merge branch 'master' into template.
+
+commit 122092fa8a238ac101e9b7dcd6316be919e069ea
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 29 20:53:21 2024 -0700
+
+    Work around missing pkg-config files.
+
+commit 2d3fc31c89786cf7edfb8ee85e02fce60b483570
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 14:51:49 2024 -0700
+
+    Rename vm::frame to vm::vmFrame to avoid confusion with trans::frame.
+
+commit c2cd04a91d1bc7e1fb8e45737d7d45a22344ca1f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 14:51:13 2024 -0700
+
+    Output linebreak in testLib to improve error message readability.
+
+commit 3bc8e52d1eedf0956785e6214a462172f5820656
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed May 29 12:57:35 2024 -0700
+
+    Rename types::ty to types::tyTy to distinguish it from absyntax::ty.
+
+commit ecb912d95d3cb9c9595e82f8de8bfaf1dfa9e8ba
+Merge: 193c933f 684570c8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 28 10:15:51 2024 -0700
+
+    Merge branch 'master' into template.
+
+commit 193c933fed79c9d12527ee32f249e7c70812af35
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue May 28 10:02:01 2024 -0700
+
+    WIP: Correctly qualify tyEntries for template parameters.
+
+commit 684570c8872a2e93ef86a6ef456a0599a934bf12
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 27 19:50:24 2024 -0700
+
+    Ship with pkg.m4 to support pkg-config.
+
+commit de439f6d57b43871dbb3d23f5a9ab8c9af9c4ef2
+Merge: 518077fd e369a22f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 23 22:52:55 2024 -0700
+
+    Merge branch 'master' into template.
+
+commit e369a22fd851e63c2f1e75b098a572778f932d86
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 23 22:52:21 2024 -0700
+
+    Support COMPACT=0 again.
+
+commit 518077fd67809c0b847982708e7695405d51ea03
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 23 21:17:55 2024 -0700
+
+    Improve 32 bit integer detection macro.
+
+commit c451de132d783606f8aee2c8bd6214f1a972de3e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 22 22:04:30 2024 -0700
+
+    Remove obsolete code.
+
+commit eee7be909c837074d690f5377324940c1c22556b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 22 21:57:45 2024 -0700
+
+    Revert "Remove obsolete code."
+    
+    This reverts commit 82da5932f7dfa59337840abfec723de14edaee98.
+
+commit 82da5932f7dfa59337840abfec723de14edaee98
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 21 23:31:34 2024 -0700
+
+    Remove obsolete code.
+
+commit 652038f70d54f8fce993312063897b7d67e26649
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 21 23:21:00 2024 -0700
+
+    Avoid particular compile error if Int=int.
+
+commit 03916a9cd8a2cab8c6b8ebd48c4b9aa2be03a339
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 21 23:12:58 2024 -0700
+
+    Revert "Avoid particular compile error if Int=int."
+    
+    This reverts commit 6e8222e13ad71b03376c84f259bf126944beb303.
+
+commit 8fbeeaa6bb7a84be36942b0622294391e46783de
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 17 16:03:19 2024 -0700
+
+    Fix documentation.
+
+commit 154a9d938d5c97aa75e83a88ef3de22444d422a5
+Author: Jouni K. Seppänen <jks@iki.fi>
+Date:   Fri Apr 5 15:21:57 2024 +0300
+
+    Integrate with flycheck
+    
+    Flycheck is the modern way to do on-the-fly syntax checking
+    and linting in Emacs: https://www.flycheck.org/en/latest/index.html
+    
+    This adds a checker if flycheck is loaded. The checker uses the
+    user-defined asy command, with -noV to avoid creating a new viewer,
+    and a temporary file as the output target.
+
+commit 8371bce0828789ba8d991a3e57b5314fd9278bf6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Mar 24 20:30:32 2024 -0700
+
+    Increment version to 2.90.
+
 commit 92e96dde395fdb9707bd1bb9960e83146411ffa1
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sat Mar 23 14:12:38 2024 -0700
@@ -34,6 +471,19 @@ Date:   Sat Mar 23 13:58:31 2024 -0700
       origin:   "???"
       commit:   "???"
 
+commit 6e8222e13ad71b03376c84f259bf126944beb303
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Mar 22 18:45:11 2024 -0700
+
+    Avoid particular compile error if Int=int.
+
+commit 63359273ebbd562fcd5f269eb08e5ce2d59bd1bf
+Merge: 4e0d0dcb d3f67352
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Mar 22 09:26:47 2024 -0700
+
+    Merge branch 'template' of https://github.com/vectorgraphics/asymptote into template
+
 commit 315ca8cbe34cee0b5079bd669060b568da7b342a
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Thu Mar 21 22:23:47 2024 -0700
@@ -41,6 +491,44 @@ Date:   Thu Mar 21 22:23:47 2024 -0700
     Revert "Initialize structs declared within templated imports."
     
     This reverts commit 12baa706a2162acd5a555af922105a4061fbd0f8.
+
+commit d3f67352cda9f7ad6cb52eb15b925ec594a923af
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Mar 21 22:21:43 2024 -0700
+
+    Update last revision.
+
+commit 719c11747ff45acd7f0cf4b8810b4170f74c3b90
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Mar 21 22:05:05 2024 -0700
+
+    Add templated import initialization test.
+
+commit 4e0d0dcb17b53f9a427154b0ac6775ed2ba8e2d7
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Mar 21 20:12:38 2024 -0700
+
+    Mostly cosmetic changes.
+
+commit 84eceac38b494271aaf4063a8c568a3e9f46f20a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Mar 20 14:20:35 2024 -0700
+
+    Remove no-longer-needed workaround.
+
+commit a2f2984eeed93a70a148f49f1d5ce9ff4be9ddea
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Mar 20 14:02:16 2024 -0700
+
+    Revert "Initialize structs declared within templated imports."
+    
+    This reverts commit 12baa706a2162acd5a555af922105a4061fbd0f8.
+
+commit ce9a9ce520cebbc6ea508e12b53542a0d14a92ea
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Mar 20 14:01:37 2024 -0700
+
+    Add additional tests from datastructures branch.
 
 commit 033715655b4165ba2d00aaf9640bfb9b505d593a
 Merge: 2bc14502 de239a50
