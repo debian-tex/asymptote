@@ -3,4 +3,5 @@
 set -e
 
 export ASYMPTOTE_HOME=$(mktemp -d)
+eval "$(dpkg-buildflags --export=sh)"
 make test
