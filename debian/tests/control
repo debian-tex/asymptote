@@ -1,5 +1,6 @@
 Tests: test-suite
 Depends: bison,
+	asymptote (= ${binary:Version}),
 	dh-python,
 	dpkg-dev (>= 1.16.1),
 	build-essential,
@@ -31,4 +32,4 @@ Depends: bison,
 	libglm-dev,
 	libglew-dev,
 	texlive-latex-base
-Restrictions: build-needed, allow-stderr
+Restrictions: allow-stderr

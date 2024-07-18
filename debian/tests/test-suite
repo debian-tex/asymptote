@@ -2,6 +2,10 @@
 
 set -e
 
+cp -a tests "$AUTOPKGTEST_TMP"
+ln -s /usr/share/asymptote "$AUTOPKGTEST_TMP"/base
+ln -s /usr/bin/asy "$AUTOPKGTEST_TMP"/asy
+
 export ASYMPTOTE_HOME=$(mktemp -d)
 eval "$(dpkg-buildflags --export=sh)"
-make test
+make -C "$AUTOPKGTEST_TMP"/tests all
