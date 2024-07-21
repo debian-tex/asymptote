@@ -1,11 +1,3 @@
 Tests: test-suite
-Depends: bison,
-	asymptote,
-	dh-python,
-	dpkg-dev (>= 1.16.1),
-	build-essential,
-	ghostscript,
-	imagemagick,
-	python3,
-	pyqt5-dev-tools
+Depends: asymptote
 Restrictions: allow-stderr
