@@ -4,7 +4,7 @@ Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Ruben Molina <rmolina@udea.edu.co>,
            Picca Frédéric-Emmanuel <picca@debian.org>,
            Norbert Preining <norbert@preining.info>,
-           Hilmar Preusse <hille42@web.de>
+           Hilmar Preuße <hille42@debian.org>
 Section: tex
 Priority: optional
 Build-Depends: bison,
