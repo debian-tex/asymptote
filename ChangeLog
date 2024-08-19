@@ -1,3 +1,352 @@
+commit 344bbd8514fff4a25cede6be202cee6fdde35988
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 22:43:21 2024 -0700
+
+    Fix warning messages in example.
+
+commit c4b0cfe1156e53d1d49b2d74a9e90729bf5d6fd7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 22:04:42 2024 -0700
+
+    Remove legacy defaultrender settings from examples.
+
+commit 15d31f395333b0bc6fe78b671843a936473a6b9f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 22:01:48 2024 -0700
+
+    Update to use magick convert and magick animate.
+
+commit a5f800a1f5e183cf36e398e5d934ec4ceb758edf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Aug 14 21:58:18 2024 -0700
+
+    Update introductory talk.
+
+commit a058c4b32712c63169cabbe8ea4a9b2e4b887203
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Aug 13 00:45:39 2024 -0700
+
+    Improve camera centering when keepAspect=true.
+
+commit 46c6537c637a7fcde78d7fd4f5f0ad1f49012642
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 21:59:57 2024 -0700
+
+    Simplify projection centering code.
+
+commit af6bcf2dc75c11c90822de683e73821d458e6167
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 20:10:54 2024 -0700
+
+    Update camera specification in examples.
+
+commit 6dc3a2fff039c90742c5656d463fa3b1465e667b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 17:37:55 2024 -0700
+
+    Update grid3 module.
+
+commit 54b06839c165a8cdbe5179008decf424a385f1ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 15:53:45 2024 -0700
+
+    Document render argument of surface drawing routines.
+
+commit 6a1c5d7c138f8908ef96d52c30f354132ddfa813
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 15:53:22 2024 -0700
+
+    Add missing projection.
+
+commit e572be209f94aaaf7ecba5d1e5128d89bf759080
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 14:59:16 2024 -0700
+
+    Use final projection.
+
+commit 6dd9e271c37e1dc0f5b2d941e0a3c5d556099e98
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 14:57:59 2024 -0700
+
+    Require explicit projection in internal routine autoscale3.
+
+commit 6cba1f1da5facb823b86724cb35e9e01314fdd54
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 14:28:24 2024 -0700
+
+    Only recenter camera on nontrivial scenes.
+
+commit b730244a19a1b686138491a0c3c4fd9ea3e7ce00
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 13:43:30 2024 -0700
+
+    Update URL.
+
+commit 0e5bd5ed9c35c6871b68a08b4909a5d66c1b40f1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 09:42:40 2024 -0700
+
+    Use general projections in graph3.asy.
+
+commit 97af20d196b35e7627ae0e8b1f14462b551a7b61
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Aug 12 04:13:42 2024 -0700
+
+    Fix last revision.
+
+commit 560ffb6e408ad5301f26e318594274e7aa08ed3f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 23:34:20 2024 -0700
+
+    Make -debug report traceback only on error.
+
+commit 2307614f006498aeb73c2db22fbf3ecced03869f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 18:33:03 2024 -0700
+
+    Add srand example to documentation.
+
+commit a39b6e33590e8e0e8afa2192a905d0389d1ca1e6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 15:33:25 2024 -0700
+
+    Fix reported camera up vector.
+
+commit 4f02db56c1e6330db61345e6b12298e882b4e553
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Aug 11 14:31:56 2024 -0700
+
+    Automatically center camera and target within scene by default;
+    change default value of center for orthographics projections to true.
+
+commit 9b49913a7b294c322b57b453ad0e5753c18a1cb7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 9 12:28:26 2024 -0700
+
+    Add url option to figure function in slide.asy.
+
+commit 1a683cb01c6bec7948befe5bfc941a2b1d9de788
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jul 31 04:59:54 2024 -0700
+
+    Improve camera autoadjust when keepAspect=false.
+
+commit e4ef069ed7e8586c3d6eedd4989eeb91b3ac44bd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 25 12:18:34 2024 -0700
+
+    Improve internal documentation links.
+
+commit a8b99a80e307976e30cdeb88543262f82b0559ed
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 25 11:52:41 2024 -0700
+
+    Update module map and example to use templated imports (issue #470).
+
+commit e51f6aa11fb03151217790643048f3fb3012a6cb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 23 23:24:30 2024 -0700
+
+    Compute normals for tessellated surfaces after transformation.
+    Don't tessellate when settings.render=0.
+
+commit abcc187e719a34a490fe67b5bb0391b577821479
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 23 23:23:22 2024 -0700
+
+    Fix settings.render=0.
+
+commit 853e24d9bc8e287c273f02438fe809bc2fdd09d0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 22 13:45:42 2024 -0700
+
+    Enable GLSL error reporting again.
+
+commit 0a28468d010da5159b1d3cdb921e50b469f629e9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 21 20:32:17 2024 -0700
+
+    Output triangle group for indexed surfaces given render option tessellate=true.
+    Fix triangle group normals.
+
+commit 1f8626d9996fa61ae3be3b1d9469bcb09d15b2f8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 21 18:42:08 2024 -0700
+
+    Update comment.
+
+commit cefa9d615389e34183f0830527ede4318c1cb5d8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 21 18:41:41 2024 -0700
+
+    Simplify code.
+
+commit a2206f5bab482a023144a6ce919096100b851026
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 19 09:46:24 2024 -0700
+
+    Use triangle group array assignments.
+
+commit 57c25038f9e1051d7f5c9ca51a59560aa67d317d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 19 09:40:42 2024 -0700
+
+    Update asygl.
+
+commit 9399282cf9e1a24fd1ba3f00dcfdc6a790838722
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 19 09:31:26 2024 -0700
+
+    WebGL: Allow triangle data array assignments.
+
+commit f80311ae7f35f98ecbfcaa4763305fdd0d95a052
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 15 23:26:12 2024 -0700
+
+    WebGL: Condense triangle groups data.
+
+commit 9523b77d98921e13fb958f78b57d57721df30922
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 15 18:40:18 2024 -0700
+
+    Fix issue #467 (arising from backward incompatibility #450): Missing labels in flattened 3D scene (using settings.render=0) after update to version 2.90.
+
+commit a65d33455949562694765a5384918da1741f89b4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 15 17:40:44 2024 -0700
+
+    Update asygl.
+
+commit 42b211180d7df8ca08a7d331373a650a74917f5d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 15 17:37:18 2024 -0700
+
+    Fix color normalization.
+
+commit 7a9f9ad90a87a26d2814607e96a53ee5a23c13b2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 15 17:34:09 2024 -0700
+
+    Revert "Fix offscreen triangle groups."
+    
+    This reverts commit 5841f00d6613e9a32aef986520172738e7bb25a8.
+
+commit 40f83910cdf2961adaace41a30450ea5b71c7ad9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 14 10:50:38 2024 -0700
+
+    Update asygl.
+
+commit 9eb6b146226d1d3a3aee39918b528017acfb8793
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 14 10:49:28 2024 -0700
+
+    Fix flatness calculation.
+
+commit 5841f00d6613e9a32aef986520172738e7bb25a8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jul 14 08:54:21 2024 -0700
+
+    Fix offscreen triangle groups.
+
+commit 472d8ceb641a7f6fd6e2246b064b81185485195c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jul 6 22:05:06 2024 -0700
+
+    Fix triangle constructor.
+
+commit 9b25d1d94322fe382087823363dd7833cbdb40ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 2 10:46:36 2024 -0700
+
+    Fix teapot regularization.
+
+commit 2da7afc8b7a5b0406c3b6cd507ce7b21489509c8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jul 1 21:41:32 2024 -0700
+
+    Make -d option output call traceback (issue #451).
+
+commit 5dc7992891de07af146317ad053ee56d9ffd938d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 21:13:23 2024 -0700
+
+    Update asygl.
+
+commit 4d50ea9cf4c76e7489b5d6c49f84f0267aa28ecb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 21:12:37 2024 -0700
+
+    AsyGL: Fix stack overflow.
+
+commit c7e3109ecc4f6f4b193dca1fb80f8cb3c006c9f6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 20:58:00 2024 -0700
+
+    Revert "Update asygl."
+    
+    This reverts commit 8ef173f593d960e79ca79f916acea149e648c6ce.
+
+commit 8ef173f593d960e79ca79f916acea149e648c6ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 20:21:56 2024 -0700
+
+    Update asygl.
+
+commit 60d6605333f928420dccdac765925685d81bedab
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 20:19:54 2024 -0700
+
+    AsyGL: Travel home on initialization.
+
+commit da4cf28d54a98253de71615fc4f2dec07aaa8707
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jun 29 00:00:53 2024 -0700
+
+    Update asygl.
+
+commit fb9be22ade7e0ea59d9e4d6ef4485ece2777d95c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 28 23:53:18 2024 -0700
+
+    AsyGL: Initialize all vertices in triangle arrays, even if they are offscreen.
+
+commit 9b3c6cafd09457e3e575b770df36003c3ccbbc60
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 28 22:52:00 2024 -0700
+
+    Fix typo.
+
+commit efc15f4d3cf0f2891ac944d9d0fa3f57a8966fdb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jun 26 14:58:12 2024 -0700
+
+    Fix slide margin and landscape mode.
+
+commit 7d206b8a70e8c985a67cfe5dddcc455163bde2b7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 25 17:56:40 2024 -0700
+
+    XASY: Fix SyntaxWarning (issue #464).
+
+commit 6e02744a6b93d376e3abe41561d7b0039a8c8d80
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 25 17:50:36 2024 -0700
+
+    Replace each tab in error messages by 1 space (issue #444).
+
+commit b016b84079c777364eaa40c20ce5a3d80805980c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 25 09:29:42 2024 -0700
+
+    Fix number of colors for prerendering bezier triangles.
+
+commit c1eb726af8eb4afc6c4872fedef0d05b0cd650bd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 21 13:56:37 2024 -0700
+
+    Increment version to 2.91.
+
 commit 58246991e2474ffbd1bfe012d5d0a11407da7795
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Fri Jun 21 10:33:58 2024 -0700

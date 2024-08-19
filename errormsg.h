@@ -174,6 +174,9 @@ class errorstream {
 public:
   static bool interrupt; // Is there a pending interrupt?
 
+  using traceback_t = mem::list<position> ;
+  traceback_t traceback;
+
   errorstream(ostream& out = cerr)
     : out(out), anyErrors(false), anyWarnings(false), floating(false),
       anyStatusErrors(false) {}
@@ -222,7 +225,7 @@ public:
 
   // Reporting errors to the stream may be incomplete.  This draws the
   // appropriate newlines or file excerpts that may be needed at the end.
-  void sync();
+  void sync(bool reportTraceback=false);
 
   void cont();
 
