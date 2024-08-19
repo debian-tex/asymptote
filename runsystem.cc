@@ -304,51 +304,55 @@ void gen_runsystem14(stack *Stack)
   if(settings::warn(s)) {
     em.warning(position ? getPos() : nullPos,s);
     em << t;
+    em.sync(true);
   }
 }
 
 // Strip directory from string
-#line 191 "runsystem.in"
+#line 192 "runsystem.in"
 // string stripdirectory(string *s);
 void gen_runsystem15(stack *Stack)
 {
   string * s=vm::pop<string *>(Stack);
-#line 192 "runsystem.in"
+#line 193 "runsystem.in"
   {Stack->push<string>(stripDir(*s)); return;}
 }
 
 // Strip directory from string
-#line 197 "runsystem.in"
+#line 198 "runsystem.in"
 // string stripfile(string *s);
 void gen_runsystem16(stack *Stack)
 {
   string * s=vm::pop<string *>(Stack);
-#line 198 "runsystem.in"
+#line 199 "runsystem.in"
   {Stack->push<string>(stripFile(*s)); return;}
 }
 
 // Strip file extension from string
-#line 203 "runsystem.in"
+#line 204 "runsystem.in"
 // string stripextension(string *s);
 void gen_runsystem17(stack *Stack)
 {
   string * s=vm::pop<string *>(Stack);
-#line 204 "runsystem.in"
+#line 205 "runsystem.in"
   {Stack->push<string>(stripExt(*s)); return;}
 }
 
 // Call ImageMagick convert.
-#line 209 "runsystem.in"
+#line 210 "runsystem.in"
 // Int convert(string args=emptystring, string file=emptystring,            string format=emptystring);
 void gen_runsystem18(stack *Stack)
 {
   string format=vm::pop<string>(Stack,emptystring);
   string file=vm::pop<string>(Stack,emptystring);
   string args=vm::pop<string>(Stack,emptystring);
-#line 211 "runsystem.in"
+#line 212 "runsystem.in"
   string name=convertname(file,format);
   mem::vector<string> cmd;
-  cmd.push_back(getSetting<string>("convert"));
+  string s=getSetting<string>("convert");
+  cmd.push_back(s);
+    if(s == "magick")
+      cmd.push_back("convert");
   push_split(cmd,args);
   cmd.push_back(name);
   bool quiet=verbose <= 1;
@@ -371,33 +375,34 @@ void gen_runsystem18(stack *Stack)
 }
 
 // Call ImageMagick animate.
-#line 237 "runsystem.in"
+#line 241 "runsystem.in"
 // Int animate(string args=emptystring, string file=emptystring,            string format=emptystring);
 void gen_runsystem19(stack *Stack)
 {
   string format=vm::pop<string>(Stack,emptystring);
   string file=vm::pop<string>(Stack,emptystring);
   string args=vm::pop<string>(Stack,emptystring);
-#line 239 "runsystem.in"
-#ifndef __MSDOS__
+#line 243 "runsystem.in"
   string name=convertname(file,format);
   if(view()) {
     mem::vector<string> cmd;
-    cmd.push_back(getSetting<string>("animate"));
+    string s=getSetting<string>("animate");
+    cmd.push_back(s);
+    if(s == "magick")
+      cmd.push_back("animate");
     push_split(cmd,args);
     cmd.push_back(name);
     {Stack->push<Int>(System(cmd,0,false,"animate","your animated GIF viewer")); return;}
   }
-#endif
   {Stack->push<Int>(0); return;}
 }
 
-#line 253 "runsystem.in"
+#line 258 "runsystem.in"
 // void purge(Int divisor=0);
 void gen_runsystem20(stack *Stack)
 {
   Int divisor=vm::pop<Int>(Stack,0);
-#line 254 "runsystem.in"
+#line 259 "runsystem.in"
   purge(divisor);
 }
 
@@ -437,17 +442,17 @@ void gen_runsystem_venv(venv &ve)
   addFunc(ve, run::gen_runsystem13, primVoid(), SYM(nowarn), formal(primString(), SYM(s), false, false));
 #line 182 "runsystem.in"
   addFunc(ve, run::gen_runsystem14, primVoid(), SYM(warning), formal(primString(), SYM(s), false, false), formal(primString(), SYM(t), false, false), formal(primBoolean(), SYM(position), true, false));
-#line 190 "runsystem.in"
+#line 191 "runsystem.in"
   addFunc(ve, run::gen_runsystem15, primString(), SYM(stripdirectory), formal(primString(), SYM(s), false, false));
-#line 196 "runsystem.in"
+#line 197 "runsystem.in"
   addFunc(ve, run::gen_runsystem16, primString(), SYM(stripfile), formal(primString(), SYM(s), false, false));
-#line 202 "runsystem.in"
+#line 203 "runsystem.in"
   addFunc(ve, run::gen_runsystem17, primString(), SYM(stripextension), formal(primString(), SYM(s), false, false));
-#line 208 "runsystem.in"
+#line 209 "runsystem.in"
   addFunc(ve, run::gen_runsystem18, primInt(), SYM(convert), formal(primString(), SYM(args), true, false), formal(primString(), SYM(file), true, false), formal(primString(), SYM(format), true, false));
-#line 236 "runsystem.in"
+#line 240 "runsystem.in"
   addFunc(ve, run::gen_runsystem19, primInt(), SYM(animate), formal(primString(), SYM(args), true, false), formal(primString(), SYM(file), true, false), formal(primString(), SYM(format), true, false));
-#line 253 "runsystem.in"
+#line 258 "runsystem.in"
   addFunc(ve, run::gen_runsystem20, primVoid(), SYM(purge), formal(primInt(), SYM(divisor), true, false));
 }
 
