@@ -33,7 +33,7 @@ License: GPL-3+
 
 Files: LspCpp/*
 Copyright: Copyright (C) 2020 kuafuwang
-License: MIT
+License: Expat
 
 Files: LspCpp/third_party/uri/deps/googlemock/* LspCpp/third_party/uri/deps/googletest/*
 Copyright: Copyright (C) 2008, Google Inc.
@@ -266,7 +266,7 @@ License: LGPL-3+
  On Debian systems, the complete text of the GNU Lesser General Public
  License version 3 can be found in `/usr/share/common-licenses/LGPL-3'.
 
-License: MIT
+License: Expat
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
