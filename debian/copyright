@@ -35,8 +35,12 @@ Files: LspCpp/*
 Copyright: Copyright (C) 2020 kuafuwang
 License: Expat
 
-Files: LspCpp/third_party/uri/deps/googlemock/* LspCpp/third_party/uri/deps/googletest/*
+Files: LspCpp/third_party/uri/deps/googlemock/* LspCpp/third_party/uri/deps/googletest/* LspCpp/third_party/uri/deps/BUILD.bazel LspCpp/third_party/uri/deps/ci/*
 Copyright: Copyright (C) 2008, Google Inc.
+License: BSD-3-clause
+
+Files: LspCpp/third_party/rapidjson/include/rapidjson/msinttypes/*
+Copyright: Copyright (c) 2006-2013 Alexander Chemeris
 License: BSD-3-clause
 
 Files: LspCpp/third_party/uri/include/* LspCpp/third_party/uri/src/* LspCpp/third_party/uri/test/* LspCpp/third_party/utfcpp/source/*
@@ -48,6 +52,10 @@ License: BSL-1.0
 Files: LspCpp/include/LibLsp/JsonRpc/* LspCpp/src/jsonrpc/* LspCpp/src/lsp/*
 Copyright: Copyright 2019 Google LLC
 License: Apache-2.0
+
+Files: base/webgl/asygl.js
+Copyright: Copyright 2019-2024: John C. Bowman and Supakorn "Jamie" Rassameemasmuang
+License: Expat and/or LGPL-3+
 
 Files: cudareflect/tinyexr/*
 Copyright: Copyright (C) 2014 - 2021, Syoyo Fujita and many contributors.
@@ -88,7 +96,7 @@ License: refcardlicense
  or without modifications, provided the copyright notice and this
  permission notice are preserved on all copies.
 
-Files: camp.tab.cc camp.tab.h
+Files: camp.tab.*
 Copyright: 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
 License: GPL-3+
 
@@ -100,7 +108,7 @@ License: GPL-2+
 
 Files: getopt*.*
 Copyright: Copyright (C) 1987-2001 Free Software Foundation, Inc.
-License: LGPL-2+
+License: LGPL-2.1+
 
 Files: rounding.*
 Copyright: Copyright (C) 1999 Stéphane Popinet
@@ -108,11 +116,11 @@ License: LGPL-2+
 
 Files: tr.*
 Copyright: Copyright (C) 1997-1998 Brian Paul
-License: LGPL-2+
+License: LGPL-2
 
 Files: examples/cpkcolors.asy
 Copyright: Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
-License: LGPL-2+
+License: LGPL-2.1+
 
 Files: prc/*
 Copyright: Copyright (C) 2008 Orest Shardt
@@ -235,6 +243,24 @@ License: GPL-3+
   On Debian systems, the complete text of the GNU General Public License
   version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
+License: LGPL-2
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; version
+ 2 of the License.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this package; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 2 can be found in `/usr/share/common-licenses/LGPL-2'.
+
 License: LGPL-2+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -252,6 +278,24 @@ License: LGPL-2+
  .
  On Debian systems, the complete text of the GNU Lesser General Public
  License version 2 can be found in `/usr/share/common-licenses/LGPL-2'.
+
+License: LGPL-2.1+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this package; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 2.1 can be found in `/usr/share/common-licenses/LGPL-2.1'.
 
 License: LGPL-3+
  This program is free software; you can redistribute it and/or
