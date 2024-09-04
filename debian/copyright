@@ -55,7 +55,7 @@ License: Apache-2.0
 
 Files: base/webgl/asygl.js
 Copyright: Copyright 2019-2024: John C. Bowman and Supakorn "Jamie" Rassameemasmuang
-License: Expat and/or LGPL-3+
+License: Expat or LGPL-3+
 
 Files: cudareflect/tinyexr/*
 Copyright: Copyright (C) 2014 - 2021, Syoyo Fujita and many contributors.
