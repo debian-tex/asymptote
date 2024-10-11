@@ -351,8 +351,6 @@ void gen_runsystem18(stack *Stack)
   mem::vector<string> cmd;
   string s=getSetting<string>("convert");
   cmd.push_back(s);
-    if(s == "magick")
-      cmd.push_back("convert");
   push_split(cmd,args);
   cmd.push_back(name);
   bool quiet=verbose <= 1;
@@ -375,14 +373,14 @@ void gen_runsystem18(stack *Stack)
 }
 
 // Call ImageMagick animate.
-#line 241 "runsystem.in"
+#line 239 "runsystem.in"
 // Int animate(string args=emptystring, string file=emptystring,            string format=emptystring);
 void gen_runsystem19(stack *Stack)
 {
   string format=vm::pop<string>(Stack,emptystring);
   string file=vm::pop<string>(Stack,emptystring);
   string args=vm::pop<string>(Stack,emptystring);
-#line 243 "runsystem.in"
+#line 241 "runsystem.in"
   string name=convertname(file,format);
   if(view()) {
     mem::vector<string> cmd;
@@ -397,12 +395,12 @@ void gen_runsystem19(stack *Stack)
   {Stack->push<Int>(0); return;}
 }
 
-#line 258 "runsystem.in"
+#line 256 "runsystem.in"
 // void purge(Int divisor=0);
 void gen_runsystem20(stack *Stack)
 {
   Int divisor=vm::pop<Int>(Stack,0);
-#line 259 "runsystem.in"
+#line 257 "runsystem.in"
   purge(divisor);
 }
 
@@ -450,9 +448,9 @@ void gen_runsystem_venv(venv &ve)
   addFunc(ve, run::gen_runsystem17, primString(), SYM(stripextension), formal(primString(), SYM(s), false, false));
 #line 209 "runsystem.in"
   addFunc(ve, run::gen_runsystem18, primInt(), SYM(convert), formal(primString(), SYM(args), true, false), formal(primString(), SYM(file), true, false), formal(primString(), SYM(format), true, false));
-#line 240 "runsystem.in"
+#line 238 "runsystem.in"
   addFunc(ve, run::gen_runsystem19, primInt(), SYM(animate), formal(primString(), SYM(args), true, false), formal(primString(), SYM(file), true, false), formal(primString(), SYM(format), true, false));
-#line 258 "runsystem.in"
+#line 256 "runsystem.in"
   addFunc(ve, run::gen_runsystem20, primVoid(), SYM(purge), formal(primInt(), SYM(divisor), true, false));
 }
 

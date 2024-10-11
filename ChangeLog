@@ -1,3 +1,100 @@
+commit d773ca31bd669e51263748c9e08324f985b31f95
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Oct 7 10:43:36 2024 -0700
+
+    Improve build-asymptote paths.
+
+commit be6cde3282da117e7dee66f2f6ed269fe66fec91
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Oct 3 20:46:04 2024 -0700
+
+    Prebuild pdf and info files for all source releases.
+
+commit 82c919fb26d44f80ddf13b1b9b5f19f023ca4fd7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Sep 22 20:58:05 2024 -0700
+
+    Fix revision efc15f4d3cf0f2891ac944d9d0fa3f57a8966fdb.
+
+commit 88a0a7bd733c84a496257c4b0d4cdb2065798345
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Sep 18 09:24:29 2024 -0700
+
+    Exit gracefully with "qualifier is not a record" instead of aborting.
+
+commit c1c5f7613f02b5407a6fdb28674c2ba5edad4a01
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Sep 13 22:42:32 2024 -0700
+
+    Update documentation about ignored shipouts.
+
+commit c2422a927a23cd61268ee927767aab84b2881790
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Sep 13 22:36:38 2024 -0700
+
+    Account for format when ignoring shipouts that would duplicate implicit shipout.
+
+commit 0ce3edd07f471de6697ed9cdf1f0a9021426b2f5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Sep 7 13:37:32 2024 -0700
+
+    Compute topPos only when needed.
+
+commit 32ee049fcefa99e6ec8361435d2ed10dea139032
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Sep 7 13:34:17 2024 -0700
+
+    XASY: Fix xmap regexp.
+
+commit 93b8e40f12338ea68ae0de061d679712a7f88941
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Sep 3 19:28:50 2024 -0700
+
+    Check for valid clipping planes.
+
+commit db6d2426749080e7a5035668bb3ffee867a65ec2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Sep 1 19:42:53 2024 -0700
+
+    Reorder ImageMagick arguments.
+
+commit 604e0e09f82116b3dd8c613f8439fb2e994dcd9b
+Merge: abb6d707 442b9b6f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Aug 29 18:32:42 2024 -0700
+
+    Merge remote-tracking branch 'origin/master' into 471-cannot-unravel-static-field-from-imported-type
+
+commit abb6d7076ffd3cbd1f4a5896a2dbc207ec55e837
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Aug 29 18:25:40 2024 -0700
+
+    Add tests for #471 fix.
+
+commit 442b9b6f214c4ccbb59b823e1285da8f24bf0466
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 29 18:11:40 2024 -0700
+
+    Add test for issue #471.
+
+commit 21bbaa75e735918046b36aa75af8e700728b5a0c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 29 17:23:55 2024 -0700
+
+    Apply Andy's fix for issue #471: Cannot unravel static field from imported type.
+
+commit 6557661e59511ca9fa65d7b43e9944f5c8b883bf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Aug 23 20:01:28 2024 -0700
+
+    Remove redundant code.
+
+commit c2e57e121a47f9f44d80a2012eec05e949c95d99
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Aug 15 01:16:14 2024 -0700
+
+    Increment version to 2.92.
+
 commit 344bbd8514fff4a25cede6be202cee6fdde35988
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Wed Aug 14 22:43:21 2024 -0700
