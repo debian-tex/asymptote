@@ -4,7 +4,7 @@ Description: Honour SOURCE_DATE_EPOCH.
  This makes the build reproducible.
  See https://reproducible-builds.org/specs/source-date-epoch/.
 Author: Alexis Bienvenüe <pado@passoire.fr>
-Forwarded: not done. Could be done.
+Forwarded: no
 
 ---
  doc/FAQ/bfnnconv.pl |    2 ++
