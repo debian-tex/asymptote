@@ -1,3 +1,10 @@
+Release Notes for Version 2.92
+
+A bug in unravelling static fields was fixed. ImageMagick arguments were reordered.
+An Xasy regex bug was fixed. The bytecode interpreter was optimized.
+The code to ignore duplicate implicit shipouts now accounts for the format.
+The slide paperwidth and paperheight are now properly updated.
+
 Release Notes for Version 2.91
 
 By default, orthographic projections now use center=true;
