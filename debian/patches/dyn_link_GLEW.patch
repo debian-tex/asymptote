@@ -1,32 +1,47 @@
 Description: We link dynamically w/ libglew2.1.
-Origin: Hilmar Preusse <hille42@web.de>
-Forwarded: not-needed
 Author: Hilmar Preusse <hille42@web.de>
-Last-Update: 20230128
-
----
- Makefile.in  |    2 +-
- configure.ac |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Forwarded: not-needed
+Last-Update: 2024-11-27
 
 --- asymptote.orig/Makefile.in
 +++ asymptote/Makefile.in
-@@ -126,7 +126,7 @@
+@@ -165,7 +165,7 @@
+ 	echo @set Datadir @datadir@ >> $@
+ 	echo @set Docdir @docdir@ >> $@
  
- export prefix docdir exampledir mandir infodir INSTALL MAKE DESTDIR TEXI2DVI
+-asymptote.so: $(COREFILES:=.pic.o) glew.o
++asymptote.so: $(COREFILES:=.pic.o) -lGLEW
+ 	$(CXX) $(OPTS) -shared -o asymptote.so revision.o $(COREFILES:=.pic.o) $(SHAREDLIBS)
  
--asy:	version $(FILES:=.o) glew.o @LSPLIB@
-+asy:	version $(FILES:=.o) @LSPLIB@
- 	if test -n "$(MSDOS)"; then \
-           $(CXX) $(OPTS) -o $(NAME) $(FILES:=.o) revision.o asy.o $(DOSLIBS); \
- 	else \
+ $(LSP_BUILD_ROOT)/liblspcpp.a:
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
-@@ -517,7 +517,7 @@
+@@ -702,8 +702,7 @@
+    AC_DEFINE(HAVE_GL,1,[OpenGL is enabled])
+    AC_DEFINE(FREEGLUT,1,[Freeglut is enabled])
+    AC_DEFINE(HAVE_LIBGLUT,1,[Freeglut library is available])
+-   INCL=$INCL" -Ibackports/glew/include "
+-   GLEW="glew.o "
++   GLEW="-lGLEW "
+    ADD_VCPKG_LIB_FOR_PKGCONFIG(glut)
+ else  # managed by the system
+    AC_CHECK_HEADERS([ncurses/curses.h ncurses.h curses.h],[break])
+@@ -718,8 +717,7 @@
+               AC_CHECK_HEADER(GLUT/glut.h, [AC_DEFINE(HAVE_LIBGLUT,1,
+                    DEFINE_LIB[GLUT])
+                            LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa "
+-                           INCL=$INCL" -Ibackports/glew/include "
+-                           GLEW="glew.o "],
++                           GLEW="-lGLEW "],
+                                  AC_MSG_NOTICE([*** Could not find GLUT: will compile without OpenGLLUT support ***]))
+         ;;
+      *)
+@@ -730,8 +728,7 @@
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "
 -                             GLEW="glew.o "
+-                             INCL=$INCL" -Ibackports/glew/include "
 +                             GLEW="-lGLEW "
                               AC_CHECK_LIB([GLX],[glXGetProcAddressARB],
                               GLEW=$GLEW"-lGLX ")],
