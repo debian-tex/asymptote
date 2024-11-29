@@ -62,24 +62,13 @@ Files: base/webgl/asygl.js
 Copyright: Copyright 2019-2024: John C. Bowman and Supakorn "Jamie" Rassameemasmuang
 License: Expat or LGPL-3+
 
-Files: cudareflect/tinyexr/*
+Files: tinyexr/*
 Copyright: Copyright (C) 2014 - 2021, Syoyo Fujita and many contributors.
 License: Syoyo_Fujita
 
-Files: cudareflect/tinyexr/cmake/sanitizers/*
+Files: tinyexr/cmake/sanitizers/*
 Copyright: Copyright (C) 2013 Matthew Arsenault
            Copyright (C) 2015-2016 RWTH Aachen University, Federal Republic of Germany
-License: Expat
-
-Files: cudareflect/tinyexr/examples/exrview/OpenGLWindow/*
-Copyright: Copyright (c) 2012 Advanced Micro Devices, Inc.
-License: Zlib
-
-Files: cudareflect/tinyexr/examples/exrview/ThirdPartyLibs/Glew/CustomGL/* GL/*
-Copyright: Copyright (C) 2008-2017, Nigel Stewart <nigels@users.sourceforge.net>
-           Copyright (C) 2002-2008, Milan Ikits <milan.ikits@ieee.org>
-           Copyright (C) 2002-2008, Marcelo E. Magallon <mmagallo@debian.org>
-           Copyright (C) 2002, Lev Povalahev
 License: Expat
 
 Files: debian/*
@@ -110,10 +99,6 @@ Copyright: Copyright (C) 2003 Tom Prince
            Copyright (C) 2003-2021 John Bowman
            Copyright (C) 2010 Will Robertson
 License: GPL-2+
-
-Files: getopt*.*
-Copyright: Copyright (C) 1987-2001 Free Software Foundation, Inc.
-License: LGPL-2.1+
 
 Files: rounding.*
 Copyright: Copyright (C) 1999 Stéphane Popinet
@@ -204,7 +189,7 @@ Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
            2011 Daniel Richard G. <skunk@iSKUNK.ORG>
 License: GPL-3+
 
-Files: opcodes.h profiler.h aspy.py policy.h
+Files: opcodes.h profiler.h policy.h
 Copyright: Copyright (C) 2010 Andy Hammerlindl
 License: GPL-3+
 
