@@ -19,6 +19,7 @@ Files-Excluded:
  LspCpp/third_party/uri/src/CMakeFiles/network-uri.dir/link.txt
  LspCpp/third_party/uri/src/Makefile
  LspCpp/third_party/uri/src/cmake_install.cmake
+ LspCpp/third_party/uri/src/libnetwork-uri.a
  LspCpp/third_party/uri/src/CMakeFiles/network-uri.dir/detail/*.cpp.o
  LspCpp/third_party/uri/src/CMakeFiles/network-uri.dir/*.cpp.o
  GUI/icons_rc.py
