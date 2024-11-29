@@ -1,8 +1,7 @@
 Description: Fix date in documentation file.
-Origin: Hilmar Preusse <hille42@web.de>
-Forwarded: no
 Author: Hilmar Preusse <hille42@web.de>
-Last-Update: 20220102
+Forwarded: no
+Last-Update: 2022-01-02
 
 --- asymptote.orig/doc/TeXShopAndAsymptote.tex
 +++ asymptote/doc/TeXShopAndAsymptote.tex

@@ -1,8 +1,7 @@
 Description: Replace specific commands by Debian commands.
-Origin: Norbert Preining <preining@debian.org>
-Forwarded: not-needed
 Author: Norbert Preining <preining@debian.org>
-Last-Update: 20230128
+Forwarded: not-needed
+Last-Update: 2023-01-28
 
 ---
  settings.cc |    6 +++---
