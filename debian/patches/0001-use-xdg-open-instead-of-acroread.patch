@@ -10,7 +10,7 @@ Last-Update: 20230128
 
 --- asymptote.orig/settings.cc
 +++ asymptote/settings.cc
-@@ -101,9 +101,9 @@
+@@ -119,9 +119,9 @@
  string defaultPDFViewer="open";
  string defaultHTMLViewer="open";
  #else
