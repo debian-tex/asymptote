@@ -1,9 +1,9 @@
-asymptote (2.95+ds-1) UNRELEASED; urgency=medium
+asymptote (2.95+ds-1) unstable; urgency=medium
 
   * New upstream release, refresh patches.
     - d/copyright: upstream restructured repo, update exclude pattern.
 
- -- Hilmar Preuße <hille42@debian.org>  Fri, 29 Nov 2024 10:38:10 +0100
+ -- Hilmar Preuße <hille42@debian.org>  Sat, 30 Nov 2024 00:12:57 +0100
 
 asymptote (2.92+ds-1) unstable; urgency=medium
 
