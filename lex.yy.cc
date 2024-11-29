@@ -823,7 +823,7 @@ Int tokPos;
 Int charPos;
 //int commentDepth = 0;
 
-bool eof;
+bool isEof;
 string eofMessage;
 
 extern errorstream em;
@@ -846,7 +846,7 @@ void setlexer(input_f input, string filename)
   yy_input = input;
   tokPos = charPos = 1;
 
-  eof=false;
+  isEof=false;
   eofMessage="<no eof>";
 }
 
@@ -935,7 +935,7 @@ void error(void)
 // the error message that should be reported, and may differ if, say the input
 // ends in the middle of a string or comment.
 void setEOF(string message) {
-  eof=true;
+  isEof=true;
   eofMessage=message;
 }
 
@@ -943,13 +943,13 @@ void setEOF(string message) {
 // running out of input.
 bool lexerEOF()
 {
-  return eof;
+  return isEof;
 }
 
 // Called by code outside of the lexer when it wants to report the unexpected
 // eof as an error (instead of looking for more input).
 void reportEOF() {
-  assert(eof);
+  assert(isEof);
   error();
   em << eofMessage;
   em.sync(true);
@@ -1940,7 +1940,7 @@ YY_RULE_SETUP
 case 103:
 YY_RULE_SETUP
 #line 378 "camp.l"
-{adjust(); return THIS; }
+{adjust(); return THIS_TOK; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP

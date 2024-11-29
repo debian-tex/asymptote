@@ -1,7 +1,7 @@
 This is asymptote.info, produced by makeinfo version 7.1 from
 asymptote.texi.
 
-This file documents ‘Asymptote’, version 2.92.
+This file documents ‘Asymptote’, version 2.95.
 
    <https://asymptote.sourceforge.io>
 
@@ -22,7 +22,7 @@ File: asymptote.info,  Node: Top,  Next: Description,  Prev: (dir),  Up: (dir)
 Asymptote
 *********
 
-This file documents ‘Asymptote’, version 2.92.
+This file documents ‘Asymptote’, version 2.95.
 
    <https://asymptote.sourceforge.io>
 
@@ -3288,7 +3288,7 @@ newline and flush), ‘DOSnewl’ (terminate with a DOS newline), ‘tab’
 some simple examples of data output:
 file fout=output("test.txt");
 write(fout,1);                  // Writes "1"
-write(fout);                    // Writes a new line
+write(fout, endl);              // Writes a new line
 write(fout,"List: ",1,2,3);     // Writes "List: 1     2     3"
 
    A file may be opened with ‘mode="xdr"’, to read or write double
@@ -8886,6 +8886,10 @@ available as
 
    <https://sourceforge.net/projects/tumagcc/files/rsvg-convert-2.40.20.7z>
 
+   Ensure that ‘rsvg-convert’ is available in ‘PATH’, or specify the
+location of ‘rsvg-convert’ in ‘rsvgConverterPath’ option within ‘xasy’'s
+settings.
+
    Deconstruction of a picture into its components is fastest when using
 the ‘LaTeX’ TeX engine.  The default setting ‘dvisvgmMultipleFiles=true’
 speeds up deconstruction under PDF TeX engines.
@@ -9654,7 +9658,7 @@ Index
 * dvipsOptions:                          Options.            (line  174)
 * dvisvgm:                               Configuring.        (line   69)
 * dvisvgm <1>:                           Options.            (line  193)
-* dvisvgmMultipleFiles:                  GUI installation.   (line   20)
+* dvisvgmMultipleFiles:                  GUI installation.   (line   24)
 * dvisvgmOptions:                        Options.            (line  174)
 * E:                                     Labels.             (line   18)
 * E <1>:                                 Mathematical functions.
@@ -10944,14 +10948,14 @@ Node: Interactive mode364312
 Ref: history366541
 Node: GUI367912
 Node: GUI installation368482
-Node: GUI usage369478
-Node: Command-Line Interface370545
-Node: Language server protocol372033
-Node: PostScript to Asymptote373514
-Node: Help374341
-Node: Debugger376071
-Node: Credits377919
-Node: Index379176
+Node: GUI usage369651
+Node: Command-Line Interface370718
+Node: Language server protocol372206
+Node: PostScript to Asymptote373687
+Node: Help374514
+Node: Debugger376244
+Node: Credits378092
+Node: Index379349
 
 End Tag Table
 

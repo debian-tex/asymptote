@@ -100,7 +100,7 @@ extern int yydebug;
     BREAK = 301,                   /* BREAK  */
     CONTINUE = 302,                /* CONTINUE  */
     RETURN_ = 303,                 /* RETURN_  */
-    THIS = 304,                    /* THIS  */
+    THIS_TOK = 304,                /* THIS_TOK  */
     EXPLICIT = 305,                /* EXPLICIT  */
     GARBAGE = 306,                 /* GARBAGE  */
     LIT = 307,                     /* LIT  */

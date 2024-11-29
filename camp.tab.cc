@@ -126,7 +126,7 @@ using namespace absyntax;
 using sym::symbol;
 using mem::string;
 
-#line 130 "camp.tab.c"
+#line 130 "camp.tab.cc"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -221,7 +221,7 @@ enum yysymbol_kind_t
   YYSYMBOL_BREAK = 64,                     /* BREAK  */
   YYSYMBOL_CONTINUE = 65,                  /* CONTINUE  */
   YYSYMBOL_RETURN_ = 66,                   /* RETURN_  */
-  YYSYMBOL_THIS = 67,                      /* THIS  */
+  YYSYMBOL_THIS_TOK = 67,                  /* THIS_TOK  */
   YYSYMBOL_EXPLICIT = 68,                  /* EXPLICIT  */
   YYSYMBOL_GARBAGE = 69,                   /* GARBAGE  */
   YYSYMBOL_LIT = 70,                       /* LIT  */
@@ -720,9 +720,9 @@ static const char *const yytname[] =
   "AND", "'{'", "'}'", "'('", "')'", "'.'", "','", "'['", "']'", "';'",
   "ELLIPSIS", "ACCESS", "UNRAVEL", "IMPORT", "INCLUDE", "FROM", "QUOTE",
   "STRUCT", "TYPEDEF", "NEW", "IF", "ELSE", "WHILE", "DO", "FOR", "BREAK",
-  "CONTINUE", "RETURN_", "THIS", "EXPLICIT", "GARBAGE", "LIT", "STRING",
-  "PERM", "MODIFIER", "UNARY", "EXP_IN_PARENS_RULE", "$accept", "file",
-  "fileblock", "bareblock", "name", "runnable", "modifiers", "dec",
+  "CONTINUE", "RETURN_", "THIS_TOK", "EXPLICIT", "GARBAGE", "LIT",
+  "STRING", "PERM", "MODIFIER", "UNARY", "EXP_IN_PARENS_RULE", "$accept",
+  "file", "fileblock", "bareblock", "name", "runnable", "modifiers", "dec",
   "decdec", "decdeclist", "typeparam", "typeparamlist", "idpair",
   "idpairlist", "strid", "stridpair", "stridpairlist", "vardec",
   "barevardec", "type", "celltype", "dims", "dimexps", "decidlist",
@@ -1845,176 +1845,176 @@ yyreduce:
   case 2: /* file: fileblock  */
 #line 195 "camp.y"
                    { absyntax::root = (yyvsp[0].b); }
-#line 1849 "camp.tab.c"
+#line 1849 "camp.tab.cc"
     break;
 
   case 3: /* fileblock: %empty  */
 #line 199 "camp.y"
                    { (yyval.b) = new file(lexerPos(), false); }
-#line 1855 "camp.tab.c"
+#line 1855 "camp.tab.cc"
     break;
 
   case 4: /* fileblock: fileblock runnable  */
 #line 201 "camp.y"
                    { (yyval.b) = (yyvsp[-1].b); (yyval.b)->add((yyvsp[0].run)); }
-#line 1861 "camp.tab.c"
+#line 1861 "camp.tab.cc"
     break;
 
   case 5: /* bareblock: %empty  */
 #line 205 "camp.y"
                    { (yyval.b) = new block(lexerPos(), true); }
-#line 1867 "camp.tab.c"
+#line 1867 "camp.tab.cc"
     break;
 
   case 6: /* bareblock: bareblock runnable  */
 #line 207 "camp.y"
                    { (yyval.b) = (yyvsp[-1].b); (yyval.b)->add((yyvsp[0].run)); }
-#line 1873 "camp.tab.c"
+#line 1873 "camp.tab.cc"
     break;
 
   case 7: /* name: ID  */
 #line 211 "camp.y"
                    { (yyval.n) = new simpleName((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 1879 "camp.tab.c"
+#line 1879 "camp.tab.cc"
     break;
 
   case 8: /* name: name '.' ID  */
 #line 212 "camp.y"
                    { (yyval.n) = new qualifiedName((yyvsp[-1].pos), (yyvsp[-2].n), (yyvsp[0].ps).sym); }
-#line 1885 "camp.tab.c"
+#line 1885 "camp.tab.cc"
     break;
 
   case 9: /* name: '%'  */
 #line 213 "camp.y"
                    { (yyval.n) = new simpleName((yyvsp[0].ps).pos,
                                   symbol::trans("operator answer")); }
-#line 1892 "camp.tab.c"
+#line 1892 "camp.tab.cc"
     break;
 
   case 10: /* runnable: dec  */
 #line 218 "camp.y"
                    { (yyval.run) = (yyvsp[0].d); }
-#line 1898 "camp.tab.c"
+#line 1898 "camp.tab.cc"
     break;
 
   case 11: /* runnable: stm  */
 #line 219 "camp.y"
                    { (yyval.run) = (yyvsp[0].s); }
-#line 1904 "camp.tab.c"
+#line 1904 "camp.tab.cc"
     break;
 
   case 12: /* runnable: modifiers dec  */
 #line 221 "camp.y"
                    { (yyval.run) = new modifiedRunnable((yyvsp[-1].ml)->getPos(), (yyvsp[-1].ml), (yyvsp[0].d)); }
-#line 1910 "camp.tab.c"
+#line 1910 "camp.tab.cc"
     break;
 
   case 13: /* runnable: modifiers stm  */
 #line 223 "camp.y"
                    { (yyval.run) = new modifiedRunnable((yyvsp[-1].ml)->getPos(), (yyvsp[-1].ml), (yyvsp[0].s)); }
-#line 1916 "camp.tab.c"
+#line 1916 "camp.tab.cc"
     break;
 
   case 14: /* modifiers: MODIFIER  */
 #line 227 "camp.y"
                    { (yyval.ml) = new modifierList((yyvsp[0].mod).pos); (yyval.ml)->add((yyvsp[0].mod).val); }
-#line 1922 "camp.tab.c"
+#line 1922 "camp.tab.cc"
     break;
 
   case 15: /* modifiers: PERM  */
 #line 228 "camp.y"
                    { (yyval.ml) = new modifierList((yyvsp[0].perm).pos); (yyval.ml)->add((yyvsp[0].perm).val); }
-#line 1928 "camp.tab.c"
+#line 1928 "camp.tab.cc"
     break;
 
   case 16: /* modifiers: modifiers MODIFIER  */
 #line 230 "camp.y"
                    { (yyval.ml) = (yyvsp[-1].ml); (yyval.ml)->add((yyvsp[0].mod).val); }
-#line 1934 "camp.tab.c"
+#line 1934 "camp.tab.cc"
     break;
 
   case 17: /* modifiers: modifiers PERM  */
 #line 232 "camp.y"
                    { (yyval.ml) = (yyvsp[-1].ml); (yyval.ml)->add((yyvsp[0].perm).val); }
-#line 1940 "camp.tab.c"
+#line 1940 "camp.tab.cc"
     break;
 
   case 18: /* dec: vardec  */
 #line 236 "camp.y"
                    { (yyval.d) = (yyvsp[0].vd); }
-#line 1946 "camp.tab.c"
+#line 1946 "camp.tab.cc"
     break;
 
   case 19: /* dec: fundec  */
 #line 237 "camp.y"
                    { (yyval.d) = (yyvsp[0].d); }
-#line 1952 "camp.tab.c"
+#line 1952 "camp.tab.cc"
     break;
 
   case 20: /* dec: typedec  */
 #line 238 "camp.y"
                    { (yyval.d) = (yyvsp[0].d); }
-#line 1958 "camp.tab.c"
+#line 1958 "camp.tab.cc"
     break;
 
   case 21: /* dec: ACCESS stridpairlist ';'  */
 #line 240 "camp.y"
                    { (yyval.d) = new accessdec((yyvsp[-2].pos), (yyvsp[-1].ipl)); }
-#line 1964 "camp.tab.c"
+#line 1964 "camp.tab.cc"
     break;
 
   case 22: /* dec: FROM name UNRAVEL idpairlist ';'  */
 #line 242 "camp.y"
                    { (yyval.d) = new unraveldec((yyvsp[-4].pos), (yyvsp[-3].n), (yyvsp[-1].ipl)); }
-#line 1970 "camp.tab.c"
+#line 1970 "camp.tab.cc"
     break;
 
   case 23: /* dec: FROM name UNRAVEL '*' ';'  */
 #line 244 "camp.y"
                    { (yyval.d) = new unraveldec((yyvsp[-4].pos), (yyvsp[-3].n), WILDCARD); }
-#line 1976 "camp.tab.c"
+#line 1976 "camp.tab.cc"
     break;
 
   case 24: /* dec: UNRAVEL name ';'  */
 #line 245 "camp.y"
                    { (yyval.d) = new unraveldec((yyvsp[-2].pos), (yyvsp[-1].n), WILDCARD); }
-#line 1982 "camp.tab.c"
+#line 1982 "camp.tab.cc"
     break;
 
   case 25: /* dec: FROM strid ACCESS idpairlist ';'  */
 #line 247 "camp.y"
                    { (yyval.d) = new fromaccessdec((yyvsp[-4].pos), (yyvsp[-3].ps).sym, (yyvsp[-1].ipl)); }
-#line 1988 "camp.tab.c"
+#line 1988 "camp.tab.cc"
     break;
 
   case 26: /* dec: FROM strid ACCESS '*' ';'  */
 #line 249 "camp.y"
                    { (yyval.d) = new fromaccessdec((yyvsp[-4].pos), (yyvsp[-3].ps).sym, WILDCARD); }
-#line 1994 "camp.tab.c"
+#line 1994 "camp.tab.cc"
     break;
 
   case 27: /* dec: IMPORT stridpair ';'  */
 #line 251 "camp.y"
                    { (yyval.d) = new importdec((yyvsp[-2].pos), (yyvsp[-1].ip)); }
-#line 2000 "camp.tab.c"
+#line 2000 "camp.tab.cc"
     break;
 
   case 28: /* dec: INCLUDE ID ';'  */
 #line 252 "camp.y"
                    { (yyval.d) = new includedec((yyvsp[-2].pos), (yyvsp[-1].ps).sym); }
-#line 2006 "camp.tab.c"
+#line 2006 "camp.tab.cc"
     break;
 
   case 29: /* dec: INCLUDE STRING ';'  */
 #line 254 "camp.y"
                    { (yyval.d) = new includedec((yyvsp[-2].pos), (yyvsp[-1].stre)->getString()); }
-#line 2012 "camp.tab.c"
+#line 2012 "camp.tab.cc"
     break;
 
   case 30: /* dec: TYPEDEF IMPORT '(' typeparamlist ')' ';'  */
 #line 258 "camp.y"
                    { (yyval.d) = new receiveTypedefDec((yyvsp[-5].pos), (yyvsp[-2].tps)); }
-#line 2018 "camp.tab.c"
+#line 2018 "camp.tab.cc"
     break;
 
   case 31: /* dec: IMPORT TYPEDEF '(' typeparamlist ')' ';'  */
@@ -2022,7 +2022,7 @@ yyreduce:
                    { (yyval.d) = new badDec((yyvsp[-5].pos), (yyvsp[-5].pos),
                      "Expected 'typedef import(<types>);'");
                    }
-#line 2026 "camp.tab.c"
+#line 2026 "camp.tab.cc"
     break;
 
   case 32: /* dec: ACCESS strid '(' decdeclist ')' ID ID ';'  */
@@ -2030,13 +2030,13 @@ yyreduce:
                    { (yyval.d) = new templateAccessDec(
                         (yyvsp[-7].pos), (yyvsp[-6].ps).sym, (yyvsp[-4].fls), (yyvsp[-2].ps).sym, (yyvsp[-1].ps).sym, (yyvsp[-2].ps).pos
                       ); }
-#line 2034 "camp.tab.c"
+#line 2034 "camp.tab.cc"
     break;
 
   case 33: /* dec: ACCESS strid '(' decdeclist ')' ';'  */
 #line 269 "camp.y"
                    { (yyval.d) = new badDec((yyvsp[-5].pos), (yyvsp[0].pos), "expected 'as'"); }
-#line 2040 "camp.tab.c"
+#line 2040 "camp.tab.cc"
     break;
 
   case 34: /* dec: IMPORT strid '(' decdeclist ')' ';'  */
@@ -2046,13 +2046,13 @@ yyreduce:
                         "conflicts. Try "
                         "'access <module>(<type parameters>) as <newname>;'."
                      ); }
-#line 2050 "camp.tab.c"
+#line 2050 "camp.tab.cc"
     break;
 
   case 35: /* dec: FROM strid '(' decdeclist ')' ACCESS idpairlist ';'  */
 #line 277 "camp.y"
                    { (yyval.d) = new fromaccessdec((yyvsp[-7].pos), (yyvsp[-6].ps).sym, (yyvsp[-1].ipl), (yyvsp[-4].fls)); }
-#line 2056 "camp.tab.c"
+#line 2056 "camp.tab.cc"
     break;
 
   case 36: /* decdec: ID ASSIGN type  */
@@ -2060,428 +2060,428 @@ yyreduce:
                    { (yyval.fl) = new formal(
                         (yyvsp[-2].ps).pos, (yyvsp[0].t), new decidstart((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym)
                       ); }
-#line 2064 "camp.tab.c"
+#line 2064 "camp.tab.cc"
     break;
 
   case 37: /* decdec: type  */
 #line 286 "camp.y"
        { (yyval.fl) = new formal((yyvsp[0].t)->getPos(), (yyvsp[0].t), nullptr); }
-#line 2070 "camp.tab.c"
+#line 2070 "camp.tab.cc"
     break;
 
   case 38: /* decdeclist: decdec  */
 #line 291 "camp.y"
                    { (yyval.fls) = new formals((yyvsp[0].fl)->getPos()); (yyval.fls)->add((yyvsp[0].fl)); }
-#line 2076 "camp.tab.c"
+#line 2076 "camp.tab.cc"
     break;
 
   case 39: /* decdeclist: decdeclist ',' decdec  */
 #line 293 "camp.y"
                    { (yyval.fls) = (yyvsp[-2].fls); (yyval.fls)->add((yyvsp[0].fl)); }
-#line 2082 "camp.tab.c"
+#line 2082 "camp.tab.cc"
     break;
 
   case 40: /* typeparam: ID  */
 #line 297 "camp.y"
        { (yyval.tp) = new typeParam((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2088 "camp.tab.c"
+#line 2088 "camp.tab.cc"
     break;
 
   case 41: /* typeparamlist: typeparam  */
 #line 302 "camp.y"
                    { (yyval.tps) = new typeParamList((yyvsp[0].tp)->getPos()); (yyval.tps)->add((yyvsp[0].tp)); }
-#line 2094 "camp.tab.c"
+#line 2094 "camp.tab.cc"
     break;
 
   case 42: /* typeparamlist: typeparamlist ',' typeparam  */
 #line 304 "camp.y"
                    { (yyval.tps) = (yyvsp[-2].tps); (yyval.tps)->add((yyvsp[0].tp)); }
-#line 2100 "camp.tab.c"
+#line 2100 "camp.tab.cc"
     break;
 
   case 43: /* idpair: ID  */
 #line 308 "camp.y"
                    { (yyval.ip) = new idpair((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2106 "camp.tab.c"
+#line 2106 "camp.tab.cc"
     break;
 
   case 44: /* idpair: ID ID ID  */
 #line 310 "camp.y"
                    { (yyval.ip) = new idpair((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym, (yyvsp[-1].ps).sym , (yyvsp[0].ps).sym); }
-#line 2112 "camp.tab.c"
+#line 2112 "camp.tab.cc"
     break;
 
   case 45: /* idpairlist: idpair  */
 #line 314 "camp.y"
                    { (yyval.ipl) = new idpairlist(); (yyval.ipl)->add((yyvsp[0].ip)); }
-#line 2118 "camp.tab.c"
+#line 2118 "camp.tab.cc"
     break;
 
   case 46: /* idpairlist: idpairlist ',' idpair  */
 #line 316 "camp.y"
                    { (yyval.ipl) = (yyvsp[-2].ipl); (yyval.ipl)->add((yyvsp[0].ip)); }
-#line 2124 "camp.tab.c"
+#line 2124 "camp.tab.cc"
     break;
 
   case 47: /* strid: ID  */
 #line 320 "camp.y"
                    { (yyval.ps) = (yyvsp[0].ps); }
-#line 2130 "camp.tab.c"
+#line 2130 "camp.tab.cc"
     break;
 
   case 48: /* strid: STRING  */
 #line 321 "camp.y"
                    { (yyval.ps).pos = (yyvsp[0].stre)->getPos();
                      (yyval.ps).sym = symbol::literalTrans((yyvsp[0].stre)->getString()); }
-#line 2137 "camp.tab.c"
+#line 2137 "camp.tab.cc"
     break;
 
   case 49: /* stridpair: ID  */
 #line 326 "camp.y"
                    { (yyval.ip) = new idpair((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2143 "camp.tab.c"
+#line 2143 "camp.tab.cc"
     break;
 
   case 50: /* stridpair: strid ID ID  */
 #line 328 "camp.y"
                    { (yyval.ip) = new idpair((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym, (yyvsp[-1].ps).sym , (yyvsp[0].ps).sym); }
-#line 2149 "camp.tab.c"
+#line 2149 "camp.tab.cc"
     break;
 
   case 51: /* stridpairlist: stridpair  */
 #line 332 "camp.y"
                    { (yyval.ipl) = new idpairlist(); (yyval.ipl)->add((yyvsp[0].ip)); }
-#line 2155 "camp.tab.c"
+#line 2155 "camp.tab.cc"
     break;
 
   case 52: /* stridpairlist: stridpairlist ',' stridpair  */
 #line 334 "camp.y"
                    { (yyval.ipl) = (yyvsp[-2].ipl); (yyval.ipl)->add((yyvsp[0].ip)); }
-#line 2161 "camp.tab.c"
+#line 2161 "camp.tab.cc"
     break;
 
   case 53: /* vardec: barevardec ';'  */
 #line 338 "camp.y"
                    { (yyval.vd) = (yyvsp[-1].vd); }
-#line 2167 "camp.tab.c"
+#line 2167 "camp.tab.cc"
     break;
 
   case 54: /* barevardec: type decidlist  */
 #line 342 "camp.y"
                    { (yyval.vd) = new vardec((yyvsp[-1].t)->getPos(), (yyvsp[-1].t), (yyvsp[0].dil)); }
-#line 2173 "camp.tab.c"
+#line 2173 "camp.tab.cc"
     break;
 
   case 55: /* type: celltype  */
 #line 346 "camp.y"
                    { (yyval.t) = (yyvsp[0].t); }
-#line 2179 "camp.tab.c"
+#line 2179 "camp.tab.cc"
     break;
 
   case 56: /* type: name dims  */
 #line 347 "camp.y"
                    { (yyval.t) = new arrayTy((yyvsp[-1].n), (yyvsp[0].dim)); }
-#line 2185 "camp.tab.c"
+#line 2185 "camp.tab.cc"
     break;
 
   case 57: /* celltype: name  */
 #line 351 "camp.y"
                    { (yyval.t) = new nameTy((yyvsp[0].n)); }
-#line 2191 "camp.tab.c"
+#line 2191 "camp.tab.cc"
     break;
 
   case 58: /* dims: '[' ']'  */
 #line 355 "camp.y"
                    { (yyval.dim) = new dimensions((yyvsp[-1].pos)); }
-#line 2197 "camp.tab.c"
+#line 2197 "camp.tab.cc"
     break;
 
   case 59: /* dims: dims '[' ']'  */
 #line 356 "camp.y"
                    { (yyval.dim) = (yyvsp[-2].dim); (yyval.dim)->increase(); }
-#line 2203 "camp.tab.c"
+#line 2203 "camp.tab.cc"
     break;
 
   case 60: /* dimexps: '[' exp ']'  */
 #line 360 "camp.y"
                    { (yyval.elist) = new explist((yyvsp[-2].pos)); (yyval.elist)->add((yyvsp[-1].e)); }
-#line 2209 "camp.tab.c"
+#line 2209 "camp.tab.cc"
     break;
 
   case 61: /* dimexps: dimexps '[' exp ']'  */
 #line 362 "camp.y"
                    { (yyval.elist) = (yyvsp[-3].elist); (yyval.elist)->add((yyvsp[-1].e)); }
-#line 2215 "camp.tab.c"
+#line 2215 "camp.tab.cc"
     break;
 
   case 62: /* decidlist: decid  */
 #line 366 "camp.y"
                    { (yyval.dil) = new decidlist((yyvsp[0].di)->getPos()); (yyval.dil)->add((yyvsp[0].di)); }
-#line 2221 "camp.tab.c"
+#line 2221 "camp.tab.cc"
     break;
 
   case 63: /* decidlist: decidlist ',' decid  */
 #line 368 "camp.y"
                    { (yyval.dil) = (yyvsp[-2].dil); (yyval.dil)->add((yyvsp[0].di)); }
-#line 2227 "camp.tab.c"
+#line 2227 "camp.tab.cc"
     break;
 
   case 64: /* decid: decidstart  */
 #line 372 "camp.y"
                    { (yyval.di) = new decid((yyvsp[0].dis)->getPos(), (yyvsp[0].dis)); }
-#line 2233 "camp.tab.c"
+#line 2233 "camp.tab.cc"
     break;
 
   case 65: /* decid: decidstart ASSIGN varinit  */
 #line 374 "camp.y"
                    { (yyval.di) = new decid((yyvsp[-2].dis)->getPos(), (yyvsp[-2].dis), (yyvsp[0].vi)); }
-#line 2239 "camp.tab.c"
+#line 2239 "camp.tab.cc"
     break;
 
   case 66: /* decidstart: ID  */
 #line 378 "camp.y"
                    { (yyval.dis) = new decidstart((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2245 "camp.tab.c"
+#line 2245 "camp.tab.cc"
     break;
 
   case 67: /* decidstart: ID dims  */
 #line 379 "camp.y"
                    { (yyval.dis) = new decidstart((yyvsp[-1].ps).pos, (yyvsp[-1].ps).sym, (yyvsp[0].dim)); }
-#line 2251 "camp.tab.c"
+#line 2251 "camp.tab.cc"
     break;
 
   case 68: /* decidstart: ID '(' ')'  */
 #line 380 "camp.y"
                    { (yyval.dis) = new fundecidstart((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym, 0,
                                             new formals((yyvsp[-1].pos))); }
-#line 2258 "camp.tab.c"
+#line 2258 "camp.tab.cc"
     break;
 
   case 69: /* decidstart: ID '(' formals ')'  */
 #line 383 "camp.y"
                    { (yyval.dis) = new fundecidstart((yyvsp[-3].ps).pos, (yyvsp[-3].ps).sym, 0, (yyvsp[-1].fls)); }
-#line 2264 "camp.tab.c"
+#line 2264 "camp.tab.cc"
     break;
 
   case 70: /* varinit: exp  */
 #line 387 "camp.y"
                    { (yyval.vi) = (yyvsp[0].e); }
-#line 2270 "camp.tab.c"
+#line 2270 "camp.tab.cc"
     break;
 
   case 71: /* varinit: arrayinit  */
 #line 388 "camp.y"
                    { (yyval.vi) = (yyvsp[0].ai); }
-#line 2276 "camp.tab.c"
+#line 2276 "camp.tab.cc"
     break;
 
   case 72: /* block: '{' bareblock '}'  */
 #line 393 "camp.y"
                    { (yyval.b) = (yyvsp[-1].b); }
-#line 2282 "camp.tab.c"
+#line 2282 "camp.tab.cc"
     break;
 
   case 73: /* arrayinit: '{' '}'  */
 #line 397 "camp.y"
                    { (yyval.ai) = new arrayinit((yyvsp[-1].pos)); }
-#line 2288 "camp.tab.c"
+#line 2288 "camp.tab.cc"
     break;
 
   case 74: /* arrayinit: '{' ELLIPSIS varinit '}'  */
 #line 399 "camp.y"
                    { (yyval.ai) = new arrayinit((yyvsp[-3].pos)); (yyval.ai)->addRest((yyvsp[-1].vi)); }
-#line 2294 "camp.tab.c"
+#line 2294 "camp.tab.cc"
     break;
 
   case 75: /* arrayinit: '{' basearrayinit '}'  */
 #line 401 "camp.y"
                    { (yyval.ai) = (yyvsp[-1].ai); }
-#line 2300 "camp.tab.c"
+#line 2300 "camp.tab.cc"
     break;
 
   case 76: /* arrayinit: '{' basearrayinit ELLIPSIS varinit '}'  */
 #line 403 "camp.y"
                    { (yyval.ai) = (yyvsp[-3].ai); (yyval.ai)->addRest((yyvsp[-1].vi)); }
-#line 2306 "camp.tab.c"
+#line 2306 "camp.tab.cc"
     break;
 
   case 77: /* basearrayinit: ','  */
 #line 407 "camp.y"
                    { (yyval.ai) = new arrayinit((yyvsp[0].pos)); }
-#line 2312 "camp.tab.c"
+#line 2312 "camp.tab.cc"
     break;
 
   case 78: /* basearrayinit: varinits  */
 #line 408 "camp.y"
                    { (yyval.ai) = (yyvsp[0].ai); }
-#line 2318 "camp.tab.c"
+#line 2318 "camp.tab.cc"
     break;
 
   case 79: /* basearrayinit: varinits ','  */
 #line 409 "camp.y"
                    { (yyval.ai) = (yyvsp[-1].ai); }
-#line 2324 "camp.tab.c"
+#line 2324 "camp.tab.cc"
     break;
 
   case 80: /* varinits: varinit  */
 #line 413 "camp.y"
                    { (yyval.ai) = new arrayinit((yyvsp[0].vi)->getPos());
 		     (yyval.ai)->add((yyvsp[0].vi));}
-#line 2331 "camp.tab.c"
+#line 2331 "camp.tab.cc"
     break;
 
   case 81: /* varinits: varinits ',' varinit  */
 #line 416 "camp.y"
                    { (yyval.ai) = (yyvsp[-2].ai); (yyval.ai)->add((yyvsp[0].vi)); }
-#line 2337 "camp.tab.c"
+#line 2337 "camp.tab.cc"
     break;
 
   case 82: /* formals: formal  */
 #line 420 "camp.y"
                    { (yyval.fls) = new formals((yyvsp[0].fl)->getPos()); (yyval.fls)->add((yyvsp[0].fl)); }
-#line 2343 "camp.tab.c"
+#line 2343 "camp.tab.cc"
     break;
 
   case 83: /* formals: ELLIPSIS formal  */
 #line 421 "camp.y"
                    { (yyval.fls) = new formals((yyvsp[-1].pos)); (yyval.fls)->addRest((yyvsp[0].fl)); }
-#line 2349 "camp.tab.c"
+#line 2349 "camp.tab.cc"
     break;
 
   case 84: /* formals: formals ',' formal  */
 #line 423 "camp.y"
                    { (yyval.fls) = (yyvsp[-2].fls); (yyval.fls)->add((yyvsp[0].fl)); }
-#line 2355 "camp.tab.c"
+#line 2355 "camp.tab.cc"
     break;
 
   case 85: /* formals: formals ELLIPSIS formal  */
 #line 425 "camp.y"
                    { (yyval.fls) = (yyvsp[-2].fls); (yyval.fls)->addRest((yyvsp[0].fl)); }
-#line 2361 "camp.tab.c"
+#line 2361 "camp.tab.cc"
     break;
 
   case 86: /* explicitornot: EXPLICIT  */
 #line 429 "camp.y"
                    { (yyval.boo) = true; }
-#line 2367 "camp.tab.c"
+#line 2367 "camp.tab.cc"
     break;
 
   case 87: /* explicitornot: %empty  */
 #line 430 "camp.y"
                    { (yyval.boo) = false; }
-#line 2373 "camp.tab.c"
+#line 2373 "camp.tab.cc"
     break;
 
   case 88: /* formal: explicitornot type  */
 #line 435 "camp.y"
                    { (yyval.fl) = new formal((yyvsp[0].t)->getPos(), (yyvsp[0].t), 0, 0, (yyvsp[-1].boo), 0); }
-#line 2379 "camp.tab.c"
+#line 2379 "camp.tab.cc"
     break;
 
   case 89: /* formal: explicitornot type decidstart  */
 #line 437 "camp.y"
                    { (yyval.fl) = new formal((yyvsp[-1].t)->getPos(), (yyvsp[-1].t), (yyvsp[0].dis), 0, (yyvsp[-2].boo), 0); }
-#line 2385 "camp.tab.c"
+#line 2385 "camp.tab.cc"
     break;
 
   case 90: /* formal: explicitornot type decidstart ASSIGN varinit  */
 #line 439 "camp.y"
                    { (yyval.fl) = new formal((yyvsp[-3].t)->getPos(), (yyvsp[-3].t), (yyvsp[-2].dis), (yyvsp[0].vi), (yyvsp[-4].boo), 0); }
-#line 2391 "camp.tab.c"
+#line 2391 "camp.tab.cc"
     break;
 
   case 91: /* formal: explicitornot type ID decidstart  */
 #line 442 "camp.y"
                    { bool k = checkKeyword((yyvsp[-1].ps).pos, (yyvsp[-1].ps).sym);
                      (yyval.fl) = new formal((yyvsp[-2].t)->getPos(), (yyvsp[-2].t), (yyvsp[0].dis), 0, (yyvsp[-3].boo), k); }
-#line 2398 "camp.tab.c"
+#line 2398 "camp.tab.cc"
     break;
 
   case 92: /* formal: explicitornot type ID decidstart ASSIGN varinit  */
 #line 445 "camp.y"
                    { bool k = checkKeyword((yyvsp[-3].ps).pos, (yyvsp[-3].ps).sym);
                      (yyval.fl) = new formal((yyvsp[-4].t)->getPos(), (yyvsp[-4].t), (yyvsp[-2].dis), (yyvsp[0].vi), (yyvsp[-5].boo), k); }
-#line 2405 "camp.tab.c"
+#line 2405 "camp.tab.cc"
     break;
 
   case 93: /* fundec: type ID '(' ')' blockstm  */
 #line 451 "camp.y"
                    { (yyval.d) = new fundec((yyvsp[-2].pos), (yyvsp[-4].t), (yyvsp[-3].ps).sym, new formals((yyvsp[-2].pos)), (yyvsp[0].s)); }
-#line 2411 "camp.tab.c"
+#line 2411 "camp.tab.cc"
     break;
 
   case 94: /* fundec: type ID '(' formals ')' blockstm  */
 #line 453 "camp.y"
                    { (yyval.d) = new fundec((yyvsp[-3].pos), (yyvsp[-5].t), (yyvsp[-4].ps).sym, (yyvsp[-2].fls), (yyvsp[0].s)); }
-#line 2417 "camp.tab.c"
+#line 2417 "camp.tab.cc"
     break;
 
   case 95: /* typedec: STRUCT ID block  */
 #line 457 "camp.y"
                    { (yyval.d) = new recorddec((yyvsp[-2].pos), (yyvsp[-1].ps).sym, (yyvsp[0].b)); }
-#line 2423 "camp.tab.c"
+#line 2423 "camp.tab.cc"
     break;
 
   case 96: /* typedec: TYPEDEF vardec  */
 #line 458 "camp.y"
                    { (yyval.d) = new typedec((yyvsp[-1].pos), (yyvsp[0].vd)); }
-#line 2429 "camp.tab.c"
+#line 2429 "camp.tab.cc"
     break;
 
   case 97: /* slice: ':'  */
 #line 462 "camp.y"
                    { (yyval.slice) = new slice((yyvsp[0].pos), 0, 0); }
-#line 2435 "camp.tab.c"
+#line 2435 "camp.tab.cc"
     break;
 
   case 98: /* slice: exp ':'  */
 #line 463 "camp.y"
                    { (yyval.slice) = new slice((yyvsp[0].pos), (yyvsp[-1].e), 0); }
-#line 2441 "camp.tab.c"
+#line 2441 "camp.tab.cc"
     break;
 
   case 99: /* slice: ':' exp  */
 #line 464 "camp.y"
                    { (yyval.slice) = new slice((yyvsp[-1].pos), 0, (yyvsp[0].e)); }
-#line 2447 "camp.tab.c"
+#line 2447 "camp.tab.cc"
     break;
 
   case 100: /* slice: exp ':' exp  */
 #line 465 "camp.y"
                    { (yyval.slice) = new slice((yyvsp[-1].pos), (yyvsp[-2].e), (yyvsp[0].e)); }
-#line 2453 "camp.tab.c"
+#line 2453 "camp.tab.cc"
     break;
 
   case 101: /* value: value '.' ID  */
 #line 469 "camp.y"
                    { (yyval.e) = new fieldExp((yyvsp[-1].pos), (yyvsp[-2].e), (yyvsp[0].ps).sym); }
-#line 2459 "camp.tab.c"
+#line 2459 "camp.tab.cc"
     break;
 
   case 102: /* value: name '[' exp ']'  */
 #line 470 "camp.y"
                    { (yyval.e) = new subscriptExp((yyvsp[-2].pos),
                               new nameExp((yyvsp[-3].n)->getPos(), (yyvsp[-3].n)), (yyvsp[-1].e)); }
-#line 2466 "camp.tab.c"
+#line 2466 "camp.tab.cc"
     break;
 
   case 103: /* value: value '[' exp ']'  */
 #line 472 "camp.y"
                    { (yyval.e) = new subscriptExp((yyvsp[-2].pos), (yyvsp[-3].e), (yyvsp[-1].e)); }
-#line 2472 "camp.tab.c"
+#line 2472 "camp.tab.cc"
     break;
 
   case 104: /* value: name '[' slice ']'  */
 #line 473 "camp.y"
                      { (yyval.e) = new sliceExp((yyvsp[-2].pos),
                               new nameExp((yyvsp[-3].n)->getPos(), (yyvsp[-3].n)), (yyvsp[-1].slice)); }
-#line 2479 "camp.tab.c"
+#line 2479 "camp.tab.cc"
     break;
 
   case 105: /* value: value '[' slice ']'  */
 #line 475 "camp.y"
                      { (yyval.e) = new sliceExp((yyvsp[-2].pos), (yyvsp[-3].e), (yyvsp[-1].slice)); }
-#line 2485 "camp.tab.c"
+#line 2485 "camp.tab.cc"
     break;
 
   case 106: /* value: name '(' ')'  */
@@ -2489,7 +2489,7 @@ yyreduce:
                    { (yyval.e) = new callExp((yyvsp[-1].pos),
                                       new nameExp((yyvsp[-2].n)->getPos(), (yyvsp[-2].n)),
                                       new arglist()); }
-#line 2493 "camp.tab.c"
+#line 2493 "camp.tab.cc"
     break;
 
   case 107: /* value: name '(' arglist ')'  */
@@ -2497,301 +2497,301 @@ yyreduce:
                    { (yyval.e) = new callExp((yyvsp[-2].pos),
                                       new nameExp((yyvsp[-3].n)->getPos(), (yyvsp[-3].n)),
                                       (yyvsp[-1].alist)); }
-#line 2501 "camp.tab.c"
+#line 2501 "camp.tab.cc"
     break;
 
   case 108: /* value: value '(' ')'  */
 #line 483 "camp.y"
                    { (yyval.e) = new callExp((yyvsp[-1].pos), (yyvsp[-2].e), new arglist()); }
-#line 2507 "camp.tab.c"
+#line 2507 "camp.tab.cc"
     break;
 
   case 109: /* value: value '(' arglist ')'  */
 #line 485 "camp.y"
                    { (yyval.e) = new callExp((yyvsp[-2].pos), (yyvsp[-3].e), (yyvsp[-1].alist)); }
-#line 2513 "camp.tab.c"
+#line 2513 "camp.tab.cc"
     break;
 
   case 110: /* value: '(' exp ')'  */
 #line 487 "camp.y"
                    { (yyval.e) = (yyvsp[-1].e); }
-#line 2519 "camp.tab.c"
+#line 2519 "camp.tab.cc"
     break;
 
   case 111: /* value: '(' name ')'  */
 #line 489 "camp.y"
                    { (yyval.e) = new nameExp((yyvsp[-1].n)->getPos(), (yyvsp[-1].n)); }
-#line 2525 "camp.tab.c"
+#line 2525 "camp.tab.cc"
     break;
 
-  case 112: /* value: THIS  */
+  case 112: /* value: THIS_TOK  */
 #line 490 "camp.y"
                    { (yyval.e) = new thisExp((yyvsp[0].pos)); }
-#line 2531 "camp.tab.c"
+#line 2531 "camp.tab.cc"
     break;
 
   case 113: /* argument: exp  */
 #line 494 "camp.y"
                    { (yyval.arg).name = symbol::nullsym; (yyval.arg).val=(yyvsp[0].e); }
-#line 2537 "camp.tab.c"
+#line 2537 "camp.tab.cc"
     break;
 
   case 114: /* argument: ID ASSIGN exp  */
 #line 495 "camp.y"
                    { (yyval.arg).name = (yyvsp[-2].ps).sym; (yyval.arg).val=(yyvsp[0].e); }
-#line 2543 "camp.tab.c"
+#line 2543 "camp.tab.cc"
     break;
 
   case 115: /* arglist: argument  */
 #line 499 "camp.y"
                    { (yyval.alist) = new arglist(); (yyval.alist)->add((yyvsp[0].arg)); }
-#line 2549 "camp.tab.c"
+#line 2549 "camp.tab.cc"
     break;
 
   case 116: /* arglist: ELLIPSIS argument  */
 #line 501 "camp.y"
                    { (yyval.alist) = new arglist(); (yyval.alist)->addRest((yyvsp[0].arg)); }
-#line 2555 "camp.tab.c"
+#line 2555 "camp.tab.cc"
     break;
 
   case 117: /* arglist: arglist ',' argument  */
 #line 503 "camp.y"
                    { (yyval.alist) = (yyvsp[-2].alist); (yyval.alist)->add((yyvsp[0].arg)); }
-#line 2561 "camp.tab.c"
+#line 2561 "camp.tab.cc"
     break;
 
   case 118: /* arglist: arglist ELLIPSIS argument  */
 #line 505 "camp.y"
                    { (yyval.alist) = (yyvsp[-2].alist); (yyval.alist)->addRest((yyvsp[0].arg)); }
-#line 2567 "camp.tab.c"
+#line 2567 "camp.tab.cc"
     break;
 
   case 119: /* tuple: exp ',' exp  */
 #line 510 "camp.y"
                    { (yyval.alist) = new arglist(); (yyval.alist)->add((yyvsp[-2].e)); (yyval.alist)->add((yyvsp[0].e)); }
-#line 2573 "camp.tab.c"
+#line 2573 "camp.tab.cc"
     break;
 
   case 120: /* tuple: tuple ',' exp  */
 #line 511 "camp.y"
                    { (yyval.alist) = (yyvsp[-2].alist); (yyval.alist)->add((yyvsp[0].e)); }
-#line 2579 "camp.tab.c"
+#line 2579 "camp.tab.cc"
     break;
 
   case 121: /* exp: name  */
 #line 515 "camp.y"
                    { (yyval.e) = new nameExp((yyvsp[0].n)->getPos(), (yyvsp[0].n)); }
-#line 2585 "camp.tab.c"
+#line 2585 "camp.tab.cc"
     break;
 
   case 122: /* exp: value  */
 #line 516 "camp.y"
                    { (yyval.e) = (yyvsp[0].e); }
-#line 2591 "camp.tab.c"
+#line 2591 "camp.tab.cc"
     break;
 
   case 123: /* exp: LIT  */
 #line 517 "camp.y"
                    { (yyval.e) = (yyvsp[0].e); }
-#line 2597 "camp.tab.c"
+#line 2597 "camp.tab.cc"
     break;
 
   case 124: /* exp: STRING  */
 #line 518 "camp.y"
                    { (yyval.e) = (yyvsp[0].stre); }
-#line 2603 "camp.tab.c"
+#line 2603 "camp.tab.cc"
     break;
 
   case 125: /* exp: LIT exp  */
 #line 520 "camp.y"
                    { (yyval.e) = new scaleExp((yyvsp[-1].e)->getPos(), (yyvsp[-1].e), (yyvsp[0].e)); }
-#line 2609 "camp.tab.c"
+#line 2609 "camp.tab.cc"
     break;
 
   case 126: /* exp: '(' name ')' exp  */
 #line 522 "camp.y"
                    { (yyval.e) = new castExp((yyvsp[-2].n)->getPos(), new nameTy((yyvsp[-2].n)), (yyvsp[0].e)); }
-#line 2615 "camp.tab.c"
+#line 2615 "camp.tab.cc"
     break;
 
   case 127: /* exp: '(' name dims ')' exp  */
 #line 524 "camp.y"
                    { (yyval.e) = new castExp((yyvsp[-3].n)->getPos(), new arrayTy((yyvsp[-3].n), (yyvsp[-2].dim)), (yyvsp[0].e)); }
-#line 2621 "camp.tab.c"
+#line 2621 "camp.tab.cc"
     break;
 
   case 128: /* exp: '+' exp  */
 #line 526 "camp.y"
                    { (yyval.e) = new unaryExp((yyvsp[-1].ps).pos, (yyvsp[0].e), (yyvsp[-1].ps).sym); }
-#line 2627 "camp.tab.c"
+#line 2627 "camp.tab.cc"
     break;
 
   case 129: /* exp: '-' exp  */
 #line 528 "camp.y"
                    { (yyval.e) = new unaryExp((yyvsp[-1].ps).pos, (yyvsp[0].e), (yyvsp[-1].ps).sym); }
-#line 2633 "camp.tab.c"
+#line 2633 "camp.tab.cc"
     break;
 
   case 130: /* exp: OPERATOR exp  */
 #line 529 "camp.y"
                    { (yyval.e) = new unaryExp((yyvsp[-1].ps).pos, (yyvsp[0].e), (yyvsp[-1].ps).sym); }
-#line 2639 "camp.tab.c"
+#line 2639 "camp.tab.cc"
     break;
 
   case 131: /* exp: exp '+' exp  */
 #line 530 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2645 "camp.tab.c"
+#line 2645 "camp.tab.cc"
     break;
 
   case 132: /* exp: exp '-' exp  */
 #line 531 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2651 "camp.tab.c"
+#line 2651 "camp.tab.cc"
     break;
 
   case 133: /* exp: exp '*' exp  */
 #line 532 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2657 "camp.tab.c"
+#line 2657 "camp.tab.cc"
     break;
 
   case 134: /* exp: exp '/' exp  */
 #line 533 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2663 "camp.tab.c"
+#line 2663 "camp.tab.cc"
     break;
 
   case 135: /* exp: exp '%' exp  */
 #line 534 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2669 "camp.tab.c"
+#line 2669 "camp.tab.cc"
     break;
 
   case 136: /* exp: exp '#' exp  */
 #line 535 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2675 "camp.tab.c"
+#line 2675 "camp.tab.cc"
     break;
 
   case 137: /* exp: exp '^' exp  */
 #line 536 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2681 "camp.tab.c"
+#line 2681 "camp.tab.cc"
     break;
 
   case 138: /* exp: exp LT exp  */
 #line 537 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2687 "camp.tab.c"
+#line 2687 "camp.tab.cc"
     break;
 
   case 139: /* exp: exp LE exp  */
 #line 538 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2693 "camp.tab.c"
+#line 2693 "camp.tab.cc"
     break;
 
   case 140: /* exp: exp GT exp  */
 #line 539 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2699 "camp.tab.c"
+#line 2699 "camp.tab.cc"
     break;
 
   case 141: /* exp: exp GE exp  */
 #line 540 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2705 "camp.tab.c"
+#line 2705 "camp.tab.cc"
     break;
 
   case 142: /* exp: exp EQ exp  */
 #line 541 "camp.y"
                    { (yyval.e) = new equalityExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2711 "camp.tab.c"
+#line 2711 "camp.tab.cc"
     break;
 
   case 143: /* exp: exp NEQ exp  */
 #line 542 "camp.y"
                    { (yyval.e) = new equalityExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2717 "camp.tab.c"
+#line 2717 "camp.tab.cc"
     break;
 
   case 144: /* exp: exp CAND exp  */
 #line 543 "camp.y"
                    { (yyval.e) = new andExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2723 "camp.tab.c"
+#line 2723 "camp.tab.cc"
     break;
 
   case 145: /* exp: exp COR exp  */
 #line 544 "camp.y"
                    { (yyval.e) = new orExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2729 "camp.tab.c"
+#line 2729 "camp.tab.cc"
     break;
 
   case 146: /* exp: exp CARETS exp  */
 #line 545 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2735 "camp.tab.c"
+#line 2735 "camp.tab.cc"
     break;
 
   case 147: /* exp: exp AMPERSAND exp  */
 #line 546 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2741 "camp.tab.c"
+#line 2741 "camp.tab.cc"
     break;
 
   case 148: /* exp: exp BAR exp  */
 #line 547 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2747 "camp.tab.c"
+#line 2747 "camp.tab.cc"
     break;
 
   case 149: /* exp: exp OPERATOR exp  */
 #line 548 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2753 "camp.tab.c"
+#line 2753 "camp.tab.cc"
     break;
 
   case 150: /* exp: exp INCR exp  */
 #line 549 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2759 "camp.tab.c"
+#line 2759 "camp.tab.cc"
     break;
 
   case 151: /* exp: NEW celltype  */
 #line 551 "camp.y"
                    { (yyval.e) = new newRecordExp((yyvsp[-1].pos), (yyvsp[0].t)); }
-#line 2765 "camp.tab.c"
+#line 2765 "camp.tab.cc"
     break;
 
   case 152: /* exp: NEW celltype dimexps  */
 #line 553 "camp.y"
                    { (yyval.e) = new newArrayExp((yyvsp[-2].pos), (yyvsp[-1].t), (yyvsp[0].elist), 0, 0); }
-#line 2771 "camp.tab.c"
+#line 2771 "camp.tab.cc"
     break;
 
   case 153: /* exp: NEW celltype dimexps dims  */
 #line 555 "camp.y"
                    { (yyval.e) = new newArrayExp((yyvsp[-3].pos), (yyvsp[-2].t), (yyvsp[-1].elist), (yyvsp[0].dim), 0); }
-#line 2777 "camp.tab.c"
+#line 2777 "camp.tab.cc"
     break;
 
   case 154: /* exp: NEW celltype dims  */
 #line 557 "camp.y"
                    { (yyval.e) = new newArrayExp((yyvsp[-2].pos), (yyvsp[-1].t), 0, (yyvsp[0].dim), 0); }
-#line 2783 "camp.tab.c"
+#line 2783 "camp.tab.cc"
     break;
 
   case 155: /* exp: NEW celltype dims arrayinit  */
 #line 559 "camp.y"
                    { (yyval.e) = new newArrayExp((yyvsp[-3].pos), (yyvsp[-2].t), 0, (yyvsp[-1].dim), (yyvsp[0].ai)); }
-#line 2789 "camp.tab.c"
+#line 2789 "camp.tab.cc"
     break;
 
   case 156: /* exp: NEW celltype '(' ')' blockstm  */
 #line 561 "camp.y"
                    { (yyval.e) = new newFunctionExp((yyvsp[-4].pos), (yyvsp[-3].t), new formals((yyvsp[-2].pos)), (yyvsp[0].s)); }
-#line 2795 "camp.tab.c"
+#line 2795 "camp.tab.cc"
     break;
 
   case 157: /* exp: NEW celltype dims '(' ')' blockstm  */
@@ -2800,13 +2800,13 @@ yyreduce:
                                              new arrayTy((yyvsp[-4].t)->getPos(), (yyvsp[-4].t), (yyvsp[-3].dim)),
                                              new formals((yyvsp[-2].pos)),
                                              (yyvsp[0].s)); }
-#line 2804 "camp.tab.c"
+#line 2804 "camp.tab.cc"
     break;
 
   case 158: /* exp: NEW celltype '(' formals ')' blockstm  */
 #line 568 "camp.y"
                    { (yyval.e) = new newFunctionExp((yyvsp[-5].pos), (yyvsp[-4].t), (yyvsp[-2].fls), (yyvsp[0].s)); }
-#line 2810 "camp.tab.c"
+#line 2810 "camp.tab.cc"
     break;
 
   case 159: /* exp: NEW celltype dims '(' formals ')' blockstm  */
@@ -2815,31 +2815,31 @@ yyreduce:
                                              new arrayTy((yyvsp[-5].t)->getPos(), (yyvsp[-5].t), (yyvsp[-4].dim)),
                                              (yyvsp[-2].fls),
                                              (yyvsp[0].s)); }
-#line 2819 "camp.tab.c"
+#line 2819 "camp.tab.cc"
     break;
 
   case 160: /* exp: exp '?' exp ':' exp  */
 #line 575 "camp.y"
                    { (yyval.e) = new conditionalExp((yyvsp[-3].pos), (yyvsp[-4].e), (yyvsp[-2].e), (yyvsp[0].e)); }
-#line 2825 "camp.tab.c"
+#line 2825 "camp.tab.cc"
     break;
 
   case 161: /* exp: exp ASSIGN exp  */
 #line 576 "camp.y"
                    { (yyval.e) = new assignExp((yyvsp[-1].pos), (yyvsp[-2].e), (yyvsp[0].e)); }
-#line 2831 "camp.tab.c"
+#line 2831 "camp.tab.cc"
     break;
 
   case 162: /* exp: '(' tuple ')'  */
 #line 577 "camp.y"
                    { (yyval.e) = new callExp((yyvsp[-2].pos), new nameExp((yyvsp[-2].pos), SYM_TUPLE), (yyvsp[-1].alist)); }
-#line 2837 "camp.tab.c"
+#line 2837 "camp.tab.cc"
     break;
 
   case 163: /* exp: exp join exp  */
 #line 579 "camp.y"
                    { (yyvsp[-1].j)->pushFront((yyvsp[-2].e)); (yyvsp[-1].j)->pushBack((yyvsp[0].e)); (yyval.e) = (yyvsp[-1].j); }
-#line 2843 "camp.tab.c"
+#line 2843 "camp.tab.cc"
     break;
 
   case 164: /* exp: exp dir  */
@@ -2849,314 +2849,314 @@ yyreduce:
                          new joinExp((yyvsp[0].se)->getPos(), SYM_DOTS);
                      (yyval.e)=jexp;
                      jexp->pushBack((yyvsp[-1].e)); jexp->pushBack((yyvsp[0].se)); }
-#line 2853 "camp.tab.c"
+#line 2853 "camp.tab.cc"
     break;
 
   case 165: /* exp: INCR exp  */
 #line 587 "camp.y"
                    { (yyval.e) = new prefixExp((yyvsp[-1].ps).pos, (yyvsp[0].e), SYM_PLUS); }
-#line 2859 "camp.tab.c"
+#line 2859 "camp.tab.cc"
     break;
 
   case 166: /* exp: DASHES exp  */
 #line 589 "camp.y"
                    { (yyval.e) = new prefixExp((yyvsp[-1].ps).pos, (yyvsp[0].e), SYM_MINUS); }
-#line 2865 "camp.tab.c"
+#line 2865 "camp.tab.cc"
     break;
 
   case 167: /* exp: exp INCR  */
 #line 592 "camp.y"
                    { (yyval.e) = new postfixExp((yyvsp[0].ps).pos, (yyvsp[-1].e), SYM_PLUS); }
-#line 2871 "camp.tab.c"
+#line 2871 "camp.tab.cc"
     break;
 
   case 168: /* exp: exp SELFOP exp  */
 #line 593 "camp.y"
                    { (yyval.e) = new selfExp((yyvsp[-1].ps).pos, (yyvsp[-2].e), (yyvsp[-1].ps).sym, (yyvsp[0].e)); }
-#line 2877 "camp.tab.c"
+#line 2877 "camp.tab.cc"
     break;
 
   case 169: /* exp: QUOTE '{' fileblock '}'  */
 #line 595 "camp.y"
                    { (yyval.e) = new quoteExp((yyvsp[-3].pos), (yyvsp[-1].b)); }
-#line 2883 "camp.tab.c"
+#line 2883 "camp.tab.cc"
     break;
 
   case 170: /* join: DASHES  */
 #line 601 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[0].ps).pos,(yyvsp[0].ps).sym); }
-#line 2889 "camp.tab.c"
+#line 2889 "camp.tab.cc"
     break;
 
   case 171: /* join: basicjoin  */
 #line 603 "camp.y"
                    { (yyval.j) = (yyvsp[0].j); }
-#line 2895 "camp.tab.c"
+#line 2895 "camp.tab.cc"
     break;
 
   case 172: /* join: dir basicjoin  */
 #line 605 "camp.y"
                    { (yyvsp[-1].se)->setSide(camp::OUT);
                      (yyval.j) = (yyvsp[0].j); (yyval.j)->pushFront((yyvsp[-1].se)); }
-#line 2902 "camp.tab.c"
+#line 2902 "camp.tab.cc"
     break;
 
   case 173: /* join: basicjoin dir  */
 #line 608 "camp.y"
                    { (yyvsp[0].se)->setSide(camp::IN);
                      (yyval.j) = (yyvsp[-1].j); (yyval.j)->pushBack((yyvsp[0].se)); }
-#line 2909 "camp.tab.c"
+#line 2909 "camp.tab.cc"
     break;
 
   case 174: /* join: dir basicjoin dir  */
 #line 611 "camp.y"
                    { (yyvsp[-2].se)->setSide(camp::OUT); (yyvsp[0].se)->setSide(camp::IN);
                      (yyval.j) = (yyvsp[-1].j); (yyval.j)->pushFront((yyvsp[-2].se)); (yyval.j)->pushBack((yyvsp[0].se)); }
-#line 2916 "camp.tab.c"
+#line 2916 "camp.tab.cc"
     break;
 
   case 175: /* dir: '{' CURL exp '}'  */
 #line 616 "camp.y"
                    { (yyval.se) = new specExp((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym, (yyvsp[-1].e)); }
-#line 2922 "camp.tab.c"
+#line 2922 "camp.tab.cc"
     break;
 
   case 176: /* dir: '{' exp '}'  */
 #line 617 "camp.y"
                    { (yyval.se) = new specExp((yyvsp[-2].pos), symbol::opTrans("spec"), (yyvsp[-1].e)); }
-#line 2928 "camp.tab.c"
+#line 2928 "camp.tab.cc"
     break;
 
   case 177: /* dir: '{' exp ',' exp '}'  */
 #line 619 "camp.y"
                    { (yyval.se) = new specExp((yyvsp[-4].pos), symbol::opTrans("spec"),
 				      new pairExp((yyvsp[-2].pos), (yyvsp[-3].e), (yyvsp[-1].e))); }
-#line 2935 "camp.tab.c"
+#line 2935 "camp.tab.cc"
     break;
 
   case 178: /* dir: '{' exp ',' exp ',' exp '}'  */
 #line 622 "camp.y"
                    { (yyval.se) = new specExp((yyvsp[-6].pos), symbol::opTrans("spec"),
 				      new tripleExp((yyvsp[-4].pos), (yyvsp[-5].e), (yyvsp[-3].e), (yyvsp[-1].e))); }
-#line 2942 "camp.tab.c"
+#line 2942 "camp.tab.cc"
     break;
 
   case 179: /* basicjoin: DOTS  */
 #line 627 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2948 "camp.tab.c"
+#line 2948 "camp.tab.cc"
     break;
 
   case 180: /* basicjoin: DOTS tension DOTS  */
 #line 629 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym); (yyval.j)->pushBack((yyvsp[-1].e)); }
-#line 2954 "camp.tab.c"
+#line 2954 "camp.tab.cc"
     break;
 
   case 181: /* basicjoin: DOTS controls DOTS  */
 #line 631 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[-2].ps).pos, (yyvsp[-2].ps).sym); (yyval.j)->pushBack((yyvsp[-1].e)); }
-#line 2960 "camp.tab.c"
+#line 2960 "camp.tab.cc"
     break;
 
   case 182: /* basicjoin: COLONS  */
 #line 632 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2966 "camp.tab.c"
+#line 2966 "camp.tab.cc"
     break;
 
   case 183: /* basicjoin: LONGDASH  */
 #line 633 "camp.y"
                    { (yyval.j) = new joinExp((yyvsp[0].ps).pos, (yyvsp[0].ps).sym); }
-#line 2972 "camp.tab.c"
+#line 2972 "camp.tab.cc"
     break;
 
   case 184: /* tension: TENSION exp  */
 #line 637 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-1].ps).pos, (yyvsp[0].e), (yyvsp[-1].ps).sym,
                               new booleanExp((yyvsp[-1].ps).pos, false)); }
-#line 2979 "camp.tab.c"
+#line 2979 "camp.tab.cc"
     break;
 
   case 185: /* tension: TENSION exp AND exp  */
 #line 640 "camp.y"
                    { (yyval.e) = new ternaryExp((yyvsp[-3].ps).pos, (yyvsp[-2].e), (yyvsp[-3].ps).sym, (yyvsp[0].e),
                               new booleanExp((yyvsp[-3].ps).pos, false)); }
-#line 2986 "camp.tab.c"
+#line 2986 "camp.tab.cc"
     break;
 
   case 186: /* tension: TENSION ATLEAST exp  */
 #line 643 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-2].ps).pos, (yyvsp[0].e), (yyvsp[-2].ps).sym,
                               new booleanExp((yyvsp[-1].ps).pos, true)); }
-#line 2993 "camp.tab.c"
+#line 2993 "camp.tab.cc"
     break;
 
   case 187: /* tension: TENSION ATLEAST exp AND exp  */
 #line 646 "camp.y"
                    { (yyval.e) = new ternaryExp((yyvsp[-4].ps).pos, (yyvsp[-2].e), (yyvsp[-4].ps).sym, (yyvsp[0].e),
                               new booleanExp((yyvsp[-3].ps).pos, true)); }
-#line 3000 "camp.tab.c"
+#line 3000 "camp.tab.cc"
     break;
 
   case 188: /* controls: CONTROLS exp  */
 #line 651 "camp.y"
                    { (yyval.e) = new unaryExp((yyvsp[-1].ps).pos, (yyvsp[0].e), (yyvsp[-1].ps).sym); }
-#line 3006 "camp.tab.c"
+#line 3006 "camp.tab.cc"
     break;
 
   case 189: /* controls: CONTROLS exp AND exp  */
 #line 653 "camp.y"
                    { (yyval.e) = new binaryExp((yyvsp[-3].ps).pos, (yyvsp[-2].e), (yyvsp[-3].ps).sym, (yyvsp[0].e)); }
-#line 3012 "camp.tab.c"
+#line 3012 "camp.tab.cc"
     break;
 
   case 190: /* stm: ';'  */
 #line 657 "camp.y"
                    { (yyval.s) = new emptyStm((yyvsp[0].pos)); }
-#line 3018 "camp.tab.c"
+#line 3018 "camp.tab.cc"
     break;
 
   case 191: /* stm: blockstm  */
 #line 658 "camp.y"
                    { (yyval.s) = (yyvsp[0].s); }
-#line 3024 "camp.tab.c"
+#line 3024 "camp.tab.cc"
     break;
 
   case 192: /* stm: stmexp ';'  */
 #line 659 "camp.y"
                    { (yyval.s) = (yyvsp[-1].s); }
-#line 3030 "camp.tab.c"
+#line 3030 "camp.tab.cc"
     break;
 
   case 193: /* stm: IF '(' exp ')' stm  */
 #line 661 "camp.y"
                    { (yyval.s) = new ifStm((yyvsp[-4].pos), (yyvsp[-2].e), (yyvsp[0].s)); }
-#line 3036 "camp.tab.c"
+#line 3036 "camp.tab.cc"
     break;
 
   case 194: /* stm: IF '(' exp ')' stm ELSE stm  */
 #line 663 "camp.y"
                    { (yyval.s) = new ifStm((yyvsp[-6].pos), (yyvsp[-4].e), (yyvsp[-2].s), (yyvsp[0].s)); }
-#line 3042 "camp.tab.c"
+#line 3042 "camp.tab.cc"
     break;
 
   case 195: /* stm: WHILE '(' exp ')' stm  */
 #line 665 "camp.y"
                    { (yyval.s) = new whileStm((yyvsp[-4].pos), (yyvsp[-2].e), (yyvsp[0].s)); }
-#line 3048 "camp.tab.c"
+#line 3048 "camp.tab.cc"
     break;
 
   case 196: /* stm: DO stm WHILE '(' exp ')' ';'  */
 #line 667 "camp.y"
                    { (yyval.s) = new doStm((yyvsp[-6].pos), (yyvsp[-5].s), (yyvsp[-2].e)); }
-#line 3054 "camp.tab.c"
+#line 3054 "camp.tab.cc"
     break;
 
   case 197: /* stm: FOR '(' forinit ';' fortest ';' forupdate ')' stm  */
 #line 669 "camp.y"
                    { (yyval.s) = new forStm((yyvsp[-8].pos), (yyvsp[-6].run), (yyvsp[-4].e), (yyvsp[-2].sel), (yyvsp[0].s)); }
-#line 3060 "camp.tab.c"
+#line 3060 "camp.tab.cc"
     break;
 
   case 198: /* stm: FOR '(' type ID ':' exp ')' stm  */
 #line 671 "camp.y"
                    { (yyval.s) = new extendedForStm((yyvsp[-7].pos), (yyvsp[-5].t), (yyvsp[-4].ps).sym, (yyvsp[-2].e), (yyvsp[0].s)); }
-#line 3066 "camp.tab.c"
+#line 3066 "camp.tab.cc"
     break;
 
   case 199: /* stm: BREAK ';'  */
 #line 672 "camp.y"
                    { (yyval.s) = new breakStm((yyvsp[-1].pos)); }
-#line 3072 "camp.tab.c"
+#line 3072 "camp.tab.cc"
     break;
 
   case 200: /* stm: CONTINUE ';'  */
 #line 673 "camp.y"
                    { (yyval.s) = new continueStm((yyvsp[-1].pos)); }
-#line 3078 "camp.tab.c"
+#line 3078 "camp.tab.cc"
     break;
 
   case 201: /* stm: RETURN_ ';'  */
 #line 674 "camp.y"
                     { (yyval.s) = new returnStm((yyvsp[-1].pos)); }
-#line 3084 "camp.tab.c"
+#line 3084 "camp.tab.cc"
     break;
 
   case 202: /* stm: RETURN_ exp ';'  */
 #line 675 "camp.y"
                     { (yyval.s) = new returnStm((yyvsp[-2].pos), (yyvsp[-1].e)); }
-#line 3090 "camp.tab.c"
+#line 3090 "camp.tab.cc"
     break;
 
   case 203: /* stmexp: exp  */
 #line 679 "camp.y"
                    { (yyval.s) = new expStm((yyvsp[0].e)->getPos(), (yyvsp[0].e)); }
-#line 3096 "camp.tab.c"
+#line 3096 "camp.tab.cc"
     break;
 
   case 204: /* blockstm: block  */
 #line 683 "camp.y"
                    { (yyval.s) = new blockStm((yyvsp[0].b)->getPos(), (yyvsp[0].b)); }
-#line 3102 "camp.tab.c"
+#line 3102 "camp.tab.cc"
     break;
 
   case 205: /* forinit: %empty  */
 #line 687 "camp.y"
                    { (yyval.run) = 0; }
-#line 3108 "camp.tab.c"
+#line 3108 "camp.tab.cc"
     break;
 
   case 206: /* forinit: stmexplist  */
 #line 688 "camp.y"
                    { (yyval.run) = (yyvsp[0].sel); }
-#line 3114 "camp.tab.c"
+#line 3114 "camp.tab.cc"
     break;
 
   case 207: /* forinit: barevardec  */
 #line 689 "camp.y"
                    { (yyval.run) = (yyvsp[0].vd); }
-#line 3120 "camp.tab.c"
+#line 3120 "camp.tab.cc"
     break;
 
   case 208: /* fortest: %empty  */
 #line 693 "camp.y"
                    { (yyval.e) = 0; }
-#line 3126 "camp.tab.c"
+#line 3126 "camp.tab.cc"
     break;
 
   case 209: /* fortest: exp  */
 #line 694 "camp.y"
                    { (yyval.e) = (yyvsp[0].e); }
-#line 3132 "camp.tab.c"
+#line 3132 "camp.tab.cc"
     break;
 
   case 210: /* forupdate: %empty  */
 #line 698 "camp.y"
                    { (yyval.sel) = 0; }
-#line 3138 "camp.tab.c"
+#line 3138 "camp.tab.cc"
     break;
 
   case 211: /* forupdate: stmexplist  */
 #line 699 "camp.y"
                    { (yyval.sel) = (yyvsp[0].sel); }
-#line 3144 "camp.tab.c"
+#line 3144 "camp.tab.cc"
     break;
 
   case 212: /* stmexplist: stmexp  */
 #line 703 "camp.y"
                    { (yyval.sel) = new stmExpList((yyvsp[0].s)->getPos()); (yyval.sel)->add((yyvsp[0].s)); }
-#line 3150 "camp.tab.c"
+#line 3150 "camp.tab.cc"
     break;
 
   case 213: /* stmexplist: stmexplist ',' stmexp  */
 #line 705 "camp.y"
                    { (yyval.sel) = (yyvsp[-2].sel); (yyval.sel)->add((yyvsp[0].s)); }
-#line 3156 "camp.tab.c"
+#line 3156 "camp.tab.cc"
     break;
 
 
-#line 3160 "camp.tab.c"
+#line 3160 "camp.tab.cc"
 
       default: break;
     }
