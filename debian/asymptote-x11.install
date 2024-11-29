@@ -1,5 +1,7 @@
 usr/bin/xasy
 usr/share/asymptote/GUI/*.py
-usr/share/asymptote/GUI/pyUIClass/*.py
+usr/share/asymptote/GUI/xasyicons/*.py
+usr/share/asymptote/GUI/xasyqtui/*.py
+usr/share/asymptote/GUI/xasyversion/*.py
 usr/share/asymptote/GUI/configs
 usr/share/asymptote/GUI/res
