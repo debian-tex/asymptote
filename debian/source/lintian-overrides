@@ -11,6 +11,7 @@ asymptote source: debian-watch-does-not-check-openpgp-signature
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1020405
 asymptote source: license-problem-json-evil
 # v 2.94
+asymptote source: source-ships-excluded-file
 asymptote source: very-long-line-length-in-source-file 1391 > 512 [gl-matrix-2.4.0-pruned/dist/gl-matrix.js:2890]
 asymptote source: very-long-line-length-in-source-file 17277 > 512 [examples/animations/dice.u3d:7]
 asymptote source: very-long-line-length-in-source-file 2135 > 512 [LspCpp/third_party/rapidjson/doc/misc/doxygenextra.css:273]
