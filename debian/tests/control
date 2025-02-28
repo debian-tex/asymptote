@@ -1,3 +1,4 @@
 Tests: test-suite
+Architecture: amd64, arm64, ppc64el, riscv64, s390x
 Depends: asymptote
 Restrictions: allow-stderr

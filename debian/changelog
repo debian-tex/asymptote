@@ -1,3 +1,10 @@
+asymptote (2.95+ds-2) unstable; urgency=medium
+
+  * Stop building on armel & armhf until a fixed ghostscript is
+    available (see #1085120). This closes: #1091292.
+
+ -- Hilmar Preuße <hille42@debian.org>  Sat, 01 Mar 2025 00:01:01 +0100
+
 asymptote (2.95+ds-1) unstable; urgency=medium
 
   * New upstream release, refresh patches.
