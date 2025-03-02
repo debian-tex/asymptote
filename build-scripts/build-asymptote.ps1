@@ -13,6 +13,9 @@ param(
     [Parameter()]
     [string]$Version
 )
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 $usageString="Usage: $PSCommandPath -Version <version>"
 
 $asymptoteRoot="$(Split-Path -Parent $PSCommandPath)/.."
@@ -42,6 +45,7 @@ $requiredDocumentationFiles=@(
     "CAD.pdf"
     "TeXShopAndAsymptote.pdf"
     "asyRefCard.pdf"
+    "asy-keywords.el"
 )
 
 $hasDocFiles=$true
@@ -60,9 +64,32 @@ if (-Not $hasDocFiles) {
 
 # ----------------------------------------------------
 # copy documentation files to asymptote directory
+$localAsyDocRoot="$asymptoteRoot/asydoc"
 
-New-Item -ItemType Directory -Path "$asymptoteRoot/extfiles" -Force
-Copy-Item -Force -Recurse "$extfilesRoot/*" -Destination "$asymptoteRoot/extfiles"
+if (-Not (Test-Path -Type Container $localAsyDocRoot))
+{
+    New-Item -ItemType Directory -Path $localAsyDocRoot -Force
+}
+
+foreach ($requiredDocFile in $requiredDocumentationFiles)
+{
+    $sourceDocFile="$extfilesRoot/$requiredDocFile"
+    $destDocFile="$localAsyDocRoot/$requiredDocFile"
+
+    $docFileHash=Get-FileHash -Algorithm SHA256 -Path $sourceDocFile
+    if (Test-Path -Type Leaf "$destDocFile")
+    {
+        $asyDocFilehash=Get-FileHash -Algorithm SHA256 -Path $destDocFile
+        if ($docFileHash.Hash -eq $asyDocFilehash.Hash)
+        {
+            Write-Host "File $requiredDocFile exists in asydoc directory; not copying"
+            continue
+        }
+    }
+
+    Write-Host "Copying $sourceDocFile to $destDocFile"
+    Copy-Item -Force $sourceDocFile -Destination $destDocFile
+}
 
 # ----------------------------------------------------
 # tools cache
@@ -72,7 +99,7 @@ New-Item -ItemType Directory -Path $toolscacheRoot -Force
 $useToolsCacheVcpkg=$false
 
 # tools cache variables
-$vcpkgSha256="e590c2b30c08caf1dd8d612ec602a003f9784b7d"
+$vcpkgSha256="5e5d0e1cd7785623065e77eff011afdeec1a3574"
 
 # vcpkg
 if (-Not $env:VCPKG_ROOT)
@@ -168,7 +195,7 @@ $pyVenvLocation="$toolscacheRoot/pyxasy"
 $pyXasyActivateScript="$pyVenvLocation/Scripts/activate.ps1"
 if (-Not (Test-Path -PathType leaf $pyXasyActivateScript))
 {
-    python -m virtualenv $pyVenvLocation
+    python -m virtualenv -p C:\\Users\\jamievl\\AppData\\Local\\Programs\\Python\\Python39\\python.exe $pyVenvLocation
 }
 
 # ----------------------------------------------------
@@ -230,7 +257,7 @@ function buildAsy($preset, $cfgDir) {
     # install to pre-installation root
 }
 
-buildAsy msvc/release-with-external-doc-files cmake-build-msvc/release
+buildAsy msvc/release/with-external-doc-files cmake-build-msvc/release
 cmake --install $asymptoteRoot/cmake-build-msvc/release --component asy-pre-nsis
 
 # ------------------------------------------------------
@@ -267,7 +294,7 @@ else
 # ------------------------------------------------------
 # building for CTAN
 
-buildAsy msvc/release-with-external-doc-file-ctan cmake-build-msvc/release
+buildAsy msvc/release/with-external-doc-files/with-ctan cmake-build-msvc/release
 
 if ($env:ASYMPTOTE_BUILD_SHARED_DIRECTORY)
 {
@@ -283,7 +310,8 @@ else
 New-Item -ItemType Directory -Path "$ctanOutputDir" -Force
 New-Item -ItemType Directory -Path "$ctanOutputDir/dll" -Force
 Get-ChildItem "$asymptoteRoot/cmake-install-w32-nsis-release/build-$Version/" `
-    -Filter "*.dll" | Copy-Item -Destination "$ctanOutputDir/dll"
-Copy-Item $asymptoteRoot/cmake-build-msvc/release/asy.exe -Destination "$ctanOutputDir/asy.exe"
+    -Filter "*.dll" | Copy-Item -Force -Destination "$ctanOutputDir/dll"
+Copy-Item $asymptoteRoot/cmake-build-msvc/release/asy.exe -Force -Destination "$ctanOutputDir/asy.exe"
 
 Pop-Location  # asymptote
+deactivate  # pyxasy build environment

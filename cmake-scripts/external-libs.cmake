@@ -1,33 +1,6 @@
 include(FindPkgConfig)
 include(FetchContent)
 
-FetchContent_Declare(
-        lspcpp
-        GIT_REPOSITORY https://github.com/vectorgraphics/LspCpp
-        GIT_TAG master
-)
-
-if (ENABLE_LSP)
-
-    message(STATUS "LSP Enabled.")
-    # disable New Boost version warning
-    set(Boost_NO_WARN_NEW_VERSIONS 1)
-    set(USE_SYSTEM_RAPIDJSON ON CACHE INTERNAL "Use system rapidjson")
-    set(LSPCPP_USE_CPP17 ON CACHE INTERNAL "C++17 mode")
-    set(LSPCPP_SUPPORT_BOEHM_GC ON CACHE INTERNAL "Use boehm GC")
-    # For transitive URI dependency
-    set(Uri_BUILD_DOCS OFF CACHE INTERNAL "build docs for uri")
-    set(Uri_BUILD_TESTS OFF CACHE INTERNAL "build tests for uri")
-    FetchContent_MakeAvailable(lspcpp)
-    list(APPEND ASY_STATIC_LIBARIES lspcpp)
-    list(APPEND ASY_MACROS HAVE_LSP=1)
-else()
-    FetchContent_Populate(lspcpp)
-    # only include lsp libraries
-    message(STATUS "LSP Disabled. Will not have language server protocol support.")
-    list(APPEND ASYMPTOTE_INCLUDES ${lspcpp_SOURCE_DIR}/include)
-endif()
-
 # zlib
 find_package(ZLIB REQUIRED)
 list(APPEND ASY_STATIC_LIBARIES ZLIB::ZLIB)
@@ -86,40 +59,6 @@ if (glm_FOUND)
 else()
     message(FATAL_ERROR "glm not found; will not use glm")
 endif()
-
-# -------- not required, but highly recommend if your system can build it ---------
-# these options are (mostly) on by default
-
-# boehm gc
-
-if (ENABLE_GC)
-    find_package(BDWgc CONFIG)
-    if (BDWgc_FOUND)
-        list(APPEND ASY_STATIC_LIBARIES BDWgc::gc BDWgc::gccpp)
-
-        # We use #include <gc.h> as opposed to <gc/gc.h> (and also for other gc include files) to allow
-        # linking directly to the compiled source for testing different GC versions.
-
-        # In GC tarballs downloaded from https://www.hboehm.info/gc/, the header files are in include/gc.h, and not
-        # include/gc/gc.h, hence we need a way to allow inclusion of "gc.h". In vcpkg gc distributions, the include
-        # files are provided in include/gc/gc.h (and other files). Hence we append "/gc" to the include directories.
-	    list(APPEND
-                ASYMPTOTE_INCLUDES
-                $<LIST:TRANSFORM,$<TARGET_PROPERTY:BDWgc::gc,INTERFACE_INCLUDE_DIRECTORIES>,APPEND,/gc>
-                $<LIST:TRANSFORM,$<TARGET_PROPERTY:BDWgc::gccpp,INTERFACE_INCLUDE_DIRECTORIES>,APPEND,/gc>
-        )
-
-        if (WIN32)
-            list(APPEND ASY_STATIC_LIBARIES BDWgc::gctba)
-        endif()
-        list(APPEND ASY_MACROS USEGC)
-    else()
-        message(FATAL_ERROR "BDWgc not found")
-    endif()
-else()
-    message(STATUS "Disabling gc support")
-endif()
-
 
 if (ENABLE_READLINE)
 # curses
@@ -250,7 +189,7 @@ if (ENABLE_OPENGL)
     endif()
 
     if (OPENGL_GLU_FOUND)
-        list(APPEND ASY_MACROS HAVE_GL)
+        list(APPEND ASY_MACROS HAVE_LIBGL)
     else()
         message(FATAL_ERROR "GL components incomplete; will not use OpenGL")
     endif()
@@ -293,7 +232,7 @@ if (ENABLE_RPC_FEATURES)
         FetchContent_Declare(
                 fmem
                 GIT_REPOSITORY https://github.com/Kreijstal/fmem.git
-                GIT_TAG 6274a441380a8fcfd4e1a6e47b3d1f0b28b3c48a
+                GIT_TAG 5f79fef3606be5dac54d62c7d0e2123363afabd7
         )
         FetchContent_MakeAvailable(fmem)
         set(BUILD_TESTING ${OLD_BUILD_TESTING} CACHE INTERNAL "build testing")

@@ -19,7 +19,7 @@
  *
  *****/
 
-#line 1 "./runtimebase.in"
+#line 23 "./runtimebase.in"
 #include "stack.h"
 #include "types.h"
 #include "builtin.h"

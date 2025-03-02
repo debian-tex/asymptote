@@ -1,3 +1,36 @@
+Release Notes for Version 3.01
+
+A workaround was implemented to fix a segmentation fault under MacOS Monterey.
+Specifying make SILENT_MAKE= yields more verbose build diagnostics.
+A floating point exception was fixed.
+Configuration and compilation issues were addressed.
+
+Release Notes for Version 3.00
+
+Configuration issues were addressed.
+
+Release Notes for Version 2.99
+
+The libtool dependence of configure was removed.
+Dependencies of gc builds are no longer tracked.
+The latest boost library is supported.
+Further build issues were fixed.
+
+Release Notes for Version 2.98
+
+Prebuilt Xasy support files are distributed again.
+
+Release Notes for Version 2.97
+
+Build issues were fixed.
+
+Release Notes for Version 2.96
+
+New keywords autounravel and using were added.
+Issues with templated imports were fixed.
+Asymptote now ships with the Boehm garbage collector.
+Portability fixes were implemented.
+
 Release Notes for Version 2.95
 
 Portability fixes were implemented.

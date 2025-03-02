@@ -30,7 +30,7 @@
 // Use Void f() instead of void f() to force an explicit Stack argument.
 
 
-#line 1 "./runtimebase.in"
+#line 23 "./runtimebase.in"
 #include "stack.h"
 #include "types.h"
 #include "builtin.h"
@@ -1136,13 +1136,14 @@ void gen_runtime86(stack *Stack)
   {Stack->push<string>(buf.str()); return;}
 }
 
-// Wrapper for the stack::load() method.
+// Wrapper for the stack::loadModule() method.
 #line 771 "./runtime.in"
 void loadModule(stack *Stack)
 {
+  Int numPushedParents=vm::pop<Int>(Stack);
   string * index=vm::pop<string *>(Stack);
 #line 772 "./runtime.in"
-  Stack->load(*index);
+  Stack->loadModule(*index, numPushedParents);
 }
 
 #line 776 "./runtime.in"
