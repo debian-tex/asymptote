@@ -325,8 +325,10 @@ void queryRegistry()
 // The name of the program (as called).  Used when displaying help info.
 char *argv0;
 
-// The verbosity setting, a global variable.
 Int verbose;
+bool debug;
+bool xasy;
+
 bool quiet=false;
 
 // Conserve memory at the expense of speed.
@@ -388,7 +390,7 @@ void Warn(const string& s)
 
 bool warn(const string& s)
 {
-  if(getSetting<bool>("debug")) return true;
+  if(debug) return true;
   array *Warn=getSetting<array *>("suppress");
   size_t size=checkArray(Warn);
   for(size_t i=0; i < size; i++)
@@ -1159,7 +1161,7 @@ struct versionOption : public option {
     feature("LSP      Language Server Protocol",lsp);
     feature("Readline Interactive history and editing",readline);
     if(!readline)
-      feature("Editline interactive editing (if Readline is unavailable)",editline);
+      feature("Editline interactive editing (Readline is unavailable)",editline);
     feature("Sigsegv  Distinguish stack overflows from segmentation faults",
             sigsegv);
     feature("GC       Boehm garbage collector",usegc);
@@ -1430,7 +1432,7 @@ void initSettings() {
                              "Center, Bottom, Top, or Zero page alignment",
                              "C"));
 
-  addOption(new boolSetting("debug", 'd', "Enable debugging messages and traceback"));
+  addOption(new boolrefSetting("debug", 'd', "Enable debugging messages and traceback",&debug));
   addOption(new incrementSetting("verbose", 'v',
                                  "Increase verbosity level (can specify multiple times)", &verbose));
   // Resolve ambiguity with --version
@@ -1502,13 +1504,11 @@ void initSettings() {
   addOption(new stringOption("cd", 0, "directory", "Set current directory",
                              &startpath));
 
-#ifdef USEGC
   addOption(new compactSetting("compact", 0,
                                "Conserve memory at the expense of speed",
                                &compact));
   addOption(new divisorOption("divisor", 0, "n",
                               "Garbage collect using purge(divisor=n) [2]"));
-#endif
 
   addOption(new stringSetting("prompt", 0,"str","Prompt","> "));
   addOption(new stringSetting("prompt2", 0,"str",
@@ -1516,13 +1516,12 @@ void initSettings() {
                               ".."));
   addOption(new boolSetting("multiline", 0,
                             "Input code over multiple lines at the prompt"));
-  addOption(new boolSetting("xasy", 0,
-                            "Interactive mode for xasy"));
-#ifdef HAVE_LSP
+  addOption(new boolrefSetting("xasy", 0,
+                            "Interactive mode for xasy",&xasy));
+
   addOption(new boolSetting("lsp", 0, "Interactive mode for the Language Server Protocol"));
   addOption(new envSetting("lspport", ""));
   addOption(new envSetting("lsphost", "127.0.0.1"));
-#endif
 
   addOption(new boolSetting("wsl", 0, "Run asy under the Windows Subsystem for Linux"));
 
@@ -1640,17 +1639,12 @@ char *getArg(int n) { return argList[n]; }
 
 void setInteractive()
 {
-  bool xasy=getSetting<bool>("xasy");
   if(xasy && getSetting<Int>("outpipe") < 0) {
     cerr << "Missing outpipe." << endl;
     exit(-1);
   }
 
-#if defined(HAVE_LSP)
-  bool lspmode=getSetting<Int>("lsp");
-#else
-  bool lspmode=false;
-#endif
+  bool lspmode=getSetting<bool>("lsp");
 
   if(numArgs() == 0 && !getSetting<bool>("listvariables") &&
      getSetting<string>("command").empty() &&
@@ -2017,10 +2011,10 @@ void setOptions(int argc, char *argv[])
     docdir=getSetting<string>("dir");
 
 #ifdef USEGC
-  if(verbose == 0 && !getSetting<bool>("debug")) GC_set_warn_proc(no_GCwarn);
+  if(verbose == 0 && !debug) GC_set_warn_proc(no_GCwarn);
 #endif
 
-  if(setlocale (LC_ALL, "") == NULL && getSetting<bool>("debug"))
+  if(setlocale (LC_ALL, "") == NULL && debug)
     perror("setlocale");
 
   // Set variables for the file arguments.

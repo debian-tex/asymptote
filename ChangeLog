@@ -1,3 +1,2110 @@
+commit 0af1f12b4e50e9662b47254a8241b062442a228f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 23 12:17:49 2025 -0800
+
+    Fix #526: Trying to multiply large integers results in floating-point exception and crash.
+
+commit 4c611fa3b2bcae51415a2ab83b1903bac7c5100b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 23 10:57:43 2025 -0800
+
+    Update autogen.sh.
+
+commit 79f844e73815505bdfcc3fc2757ae406063d509a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 23 10:46:35 2025 -0800
+
+    Update install-sh.
+
+commit 3b759b4b90a09af806ef3c453ab8ccf2f9ac6ba8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 23 09:28:42 2025 -0800
+
+    git subrepo pull (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "1aa7ff654"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "9a46924e7"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "b9b059a"
+
+commit d929a3c08aba1158d37f3d17243241dbc28a7c8d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 22 21:23:13 2025 -0700
+
+    Fix segmentation fault under MacOS.
+
+commit cefbbaddaeeab925441b002d97b731476f93d808
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 22 19:46:25 2025 -0800
+
+    Remove unused code.
+
+commit 63089568927a5fd68efa6dd25e9e8a10fb4ce72e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 18 11:48:42 2025 -0800
+
+    Fix maintainer-clean; update scripts.
+
+commit e483a80faaba046f39c2ad8fe32e0dec99ed1c35
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 18 11:10:16 2025 -0800
+
+    Add SILENT_MAKE option (set to @ by default).
+
+commit 5e1c3d9a41ab5dc5f72b9947d9ec79555b6caea6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 18 10:46:07 2025 -0800
+
+    Fix typo in Makefile.in.
+
+commit eae8589a8ba557354bf627e6807d73c1c7ab39b7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 17 00:04:44 2025 -0800
+
+    Increment version to 3.01.
+
+commit 6d4b620bfe8895c4e1d1fce7c81e61d499bf765f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Feb 16 21:45:13 2025 -0800
+
+    Fix CPPFLAGS.
+
+commit edf66a773d0aaf7086e68bc4bcad6409e672e4ba
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 15 11:29:57 2025 -0800
+
+    Simplify code.
+
+commit fe941345cf1f44a690c16f370d3b4c8db4cdd5c3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 14 20:25:08 2025 -0800
+
+    Search for glm in current directory; don't require tirpc under FreeBSD.
+
+commit a399a7dd6e9784d5d18696e66fd148c453e17ec6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 14 14:38:18 2025 -0800
+
+    Always look for includes in current directory first.
+
+commit 76d289e234c752336333ed9367366059ac978dbd
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 14 10:54:22 2025 -0800
+
+    Update asymptote.spec.
+
+commit 38e5328c1595d187da029c83d61a18061d55800f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 14 10:43:37 2025 -0800
+
+    Update ax_pthread.m4.
+
+commit 8fb038c69868ee0205f8b3852a98167e21fbffe0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 14 10:38:18 2025 -0800
+
+    Prebuilt missing gc automake files.
+
+commit a0c2ea71ef180d391a769d6e78b049571edf0f55
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 16:15:41 2025 -0800
+
+    Increment version to 3.00.
+
+commit cf4243cb97f7d700a320cb93a0e7a47328c32b35
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 14:44:17 2025 -0800
+
+    Fix make maintainer-clean.
+
+commit 2f0a7cfb60a6a3475ee52990154ba28244832d17
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 14:24:29 2025 -0800
+
+    Update config scripts.
+
+commit 214552f58197224a5b3a7efd4a15a6757c90813b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 13:35:08 2025 -0800
+
+    Remove libtool dependence from configure.
+
+commit 7fe989a89945c93c85e1e3cbb3cec4ce7460e170
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 11:33:00 2025 -0800
+
+    git subrepo pull (merge) LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "84c9831f2"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "aa2d67051"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "b9b059a"
+
+commit d31fd43aad1be82b57517fb4f9bab41a8e9575f7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 10 01:26:47 2025 -0800
+
+    Update install-sh.
+
+commit 947c860f9430ef249407d2a051ed2b7e263c29e6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 9 13:51:32 2025 -0800
+
+    Disable dependency tracking for one-time gc builds.
+
+commit cc35f7e78d0dec53c50b8c34f1318500c3e13187
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 9 11:32:32 2025 -0800
+
+    Increment version to 2.99.
+
+commit 83de5cbc8268d689b52c07c87927cae3ab94e245
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Feb 9 10:01:51 2025 -0800
+
+    Distribute prebuilt GUI files.
+
+commit 23b2d7e2391f1b4a180778d6c1c98f6703fca10e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 22:13:41 2025 -0800
+
+    Increment version to 2.98.
+
+commit ab5e4e770bd96978ae5b211b752eab81433874c8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 22:13:00 2025 -0700
+
+    Revert "Move -std=c++17 to Makefile."
+    
+    This reverts commit 71b86dfe8d509eceb5ab4adce66b273135c0b4ca.
+
+commit 10be59fbd725216c3221c62fa64cac251dcd7131
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 22:11:39 2025 -0700
+
+    Revert "Apply -std=c++17 only to C++ compilation."
+    
+    This reverts commit dcc187b1f97b317fc0aa11aac27606dc5aa3ba86.
+
+commit 6a0277facfaefa82a001b02e38b074cf1267b431
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 20:57:47 2025 -0800
+
+    Fix clang warning.
+
+commit dcc187b1f97b317fc0aa11aac27606dc5aa3ba86
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 20:50:39 2025 -0800
+
+    Apply -std=c++17 only to C++ compilation.
+
+commit 8df48262a3e2a149774f8fdbe0a1a0b315052d51
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 20:41:03 2025 -0800
+
+    Fix runtime.pl warnings.
+
+commit 71b86dfe8d509eceb5ab4adce66b273135c0b4ca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 19:41:04 2025 -0800
+
+    Move -std=c++17 to Makefile.
+
+commit 3e1e10f75af1d549c40320c57763690c08b22c62
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 17:30:38 2025 -0800
+
+    Allow compilation without libtirpc-devel (not recommended though as this would disable XDR and V3D support).
+
+commit 5736020c97ce62282e25d0c94c8bb2793f27c381
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 17:00:20 2025 -0800
+
+    Fix symbolic link.
+
+commit 46532008179a304c517e0d467d3d1d23d88c8153
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 12:28:25 2025 -0800
+
+    Qualify nullptr.
+
+commit 0ab6a0d09fac84efbe8d443d782d06f518f1aea2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 11:26:24 2025 -0800
+
+    Fix last revision.
+
+commit fd7ae5be14a71d6080a5b7f497551c8c369693b1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 11:03:46 2025 -0800
+
+    Clean up symbolic link and hidden directories.
+
+commit 071af187de37bef85987ad4af9e75f31d117cf5b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Feb 8 10:14:25 2025 -0800
+
+    Clean up Python caches.
+
+commit ea26e0d22416de4510b6cc5b5f929c3d5a480c57
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Feb 7 09:24:41 2025 -0800
+
+    Remove empty and temporary files and directories.
+
+commit e2917d5092263d49f7cb9bbe34dbbb7b74a6ac34
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Feb 6 22:44:25 2025 -0800
+
+    Increment version to 2.97.
+
+commit a867372f32b18d9943a5b21430d2652f69e6854b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Feb 6 23:04:45 2025 -0700
+
+    Fix last revision.
+
+commit 317e04545e5bbb1cdad3169600e592b40780966d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Feb 6 20:38:39 2025 -0800
+
+    Enforce C++17 standard.
+
+commit 9e7a68caf7cdd75c5c29d6845b20abab9f7738e1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Feb 6 20:35:19 2025 -0800
+
+    Fix #513: libGLX not found.
+
+commit 72e4a21c0939cef70b79cda7d3b04066ffa40a25
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Feb 6 19:59:11 2025 -0800
+
+    Add DoubleLineMidArrow to feynman.asy.
+
+commit 53693b8deabae750395dacdd6416c1ac2a6b3411
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Feb 5 19:08:01 2025 -0800
+
+    Fix #514: fix erase() when settings.render=0.
+
+commit 63137b558638788b0f12fa479629f5e7a5a9a55c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 20:56:31 2025 -0800
+
+    Fix listvariables segmentation fault.
+
+commit bf45fb80c3ab62d657a0bd1bab15ac8669ed143c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 20:24:58 2025 -0800
+
+    Standardize settings.
+
+commit 2c49492af03fa38c24b29e493d9d4e69c21ea2e2
+Merge: abe03f77 47c76b58
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 19:59:52 2025 -0800
+
+    Merge pull request #519 from vectorgraphics/unify-lsp-ast-files.
+    
+    Move LSP-related absyntax::* functions into lsp*.cc files
+
+commit 47c76b5830c9fd55e5fee68a0fbcb71b540f6e08
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 19:47:06 2025 -0800
+
+    Standardize auxillary errortest files.
+
+commit 8e52525d791a5b771702f7705a2d9fe9c4179527
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Feb 4 18:56:19 2025 -0700
+
+    WCE: Use a dedicated errorsNonTempalate.asy for testing templated imports on a non-template files.
+
+commit 7e5edf6ff1071f057cbe8282e7e8e537cbc67ee8
+Merge: f943e556 abe03f77
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 17:29:35 2025 -0800
+
+    Merge branch 'master' into unify-lsp-ast-files.
+
+commit abe03f77f33a30509dee9e8f6d3d73e96657aad3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 17:28:55 2025 -0800
+
+    Update errors.
+
+commit 45c2d3a11cf42267d75f7c1350cb53787b2fd975
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Feb 4 17:26:27 2025 -0800
+
+    Qualify path to version.asy.
+
+commit f943e55620049390cba424f504efd66d30b20d84
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Feb 4 17:22:22 2025 -0700
+
+    LSP: Fix lspstm.cc.
+
+commit bb46f22145a3528b82684a24bcdbc883b10cab70
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Feb 4 17:21:47 2025 -0700
+
+    LSP: Fix lspfundec.cc.
+
+commit 77764a0581c0d7c9e065a185aedf6c09fd033051
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 3 22:39:16 2025 -0800
+
+    Fix include.
+
+commit aefbccad0e33bf613f26d70fe1097c0d8138c7d4
+Merge: b068bad9 efad9f67
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 3 22:30:39 2025 -0800
+
+    Merge branch 'master' into unify-lsp-ast-files.
+
+commit eca17db9487edc1d7299bf0685b400c9b5398b09
+Merge: efad9f67 f0de5475
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 3 22:24:51 2025 -0800
+
+    Merge pull request #518 from vectorgraphics/external-asy-keywords-el
+    
+    Use external asy-keywords.el in windows build.
+
+commit efad9f676bb2ed0bc67898f0fa834dc40751b0e1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 3 22:17:39 2025 -0800
+
+    Fix generation of asy-keywords.el.
+
+commit 166fdf1f954e4050465f59b319e96f6f3b71435a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Feb 3 17:15:52 2025 -0800
+
+    Improve templated import errors.
+
+commit 2643b3266bcf097515bb3aa3d8c375f6a55171e2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 30 14:15:03 2025 -0800
+
+    Fix compilation warning under -O3; add file read tests.
+
+commit b068bad9707830c649584ef0bf4c2994d99a7a2d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 02:55:29 2025 -0700
+
+    MAKE: Add lspstm to Makefile.in.
+
+commit e01df50b38766f17feb13782e9f3d8689eca591a
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 02:55:12 2025 -0700
+
+    LSP: Move HAVE_LSP functions in stm.cc to lspstm.cc.
+
+commit aa559e19d5a3e57a3aa2cf23e2e1b35a0637a31e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 02:31:13 2025 -0700
+
+    MAKE: Add lspfundec to Makefile.in.
+
+commit 704eb42721ae4cafb0fa8fd7e5d849d0207a69d1
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 02:29:12 2025 -0700
+
+    LSP: Move HAVE_LSP functions in fundec.cc to lspfundec.cc.
+
+commit bee996462a61d68ef046b5d9e455af179ea3dd61
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 01:46:37 2025 -0700
+
+    MAKE: Add lspexp to Makefile.in.
+
+commit a5220020df7677e7a1e0f25fdcfce649795ead91
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 01:42:25 2025 -0700
+
+    LSP: Move HAVE_LSP functions in exp.cc to lspexp.cc.
+
+commit c90620f69c785c976963aeb9e93f64298ed7f53f
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 01:12:56 2025 -0700
+
+    MAKE: Add lspdec to Makefile.in.
+
+commit f86bc3b41e0b311cc9a88d0a63ca77fb59d25873
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 01:01:40 2025 -0700
+
+    LSP: Move HAVE_LSP functions in dec.cc to lspdec.cc.
+
+commit c4d16b8facf9a8053e9c1984d2b3853ea7a3709d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Feb 2 00:09:25 2025 -0700
+
+    LSP: Fix header include issues on LSP.
+
+commit 598ca098060ad4f4acde7fa8fc32b8f4fd29c9ba
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Feb 1 23:49:09 2025 -0700
+
+    git subrepo pull (merge) --branch=master LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "4011f7d77"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "4011f7d77"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit 17110bda961f0145250c3847c31f82b8d97478b0
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Feb 1 23:44:53 2025 -0700
+
+    git subrepo pull --branch=master LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "d5ff0b01b"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "d5ff0b01b"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit f0de5475d0492fa39917493a72b09fa7e82852ed
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Feb 1 23:21:35 2025 -0700
+
+    BUILD: Add asy-keywords.el to the list of requried documentation files for windows build script.
+
+commit 420d4b358c9e36f21726d69031269bdd0d76fa21
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Feb 1 23:10:05 2025 -0700
+
+    CMAKE: Disable miscfiles generation in msvc/release/with-external-doc-files preset.
+
+commit 14e8d64a27c2f37b4eca9c14df44adfa886f6f3b
+Merge: 184c6cf4 f7cd5ba0
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Wed Jan 29 22:12:28 2025 -0700
+
+    Merge pull request #516 from vectorgraphics/unix-install-cmake
+    
+    Add install targets to cmake build for linux & additional tests to asy
+
+commit 184c6cf4fb3f8f88b457741e030ad8f1bfcdd631
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 29 10:14:32 2025 -0800
+
+    Fix error message.
+
+commit bfcc7e11e4b4d314e787046cf56a0cd0d80424ab
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 29 10:10:40 2025 -0800
+
+    Fix compilation flags.
+
+commit f7cd5ba0d874e83d06d54a22bfa623e259a72660
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 23:07:20 2025 -0700
+
+    CI: Simply asy test arguments.
+
+commit 82a7653b9f43f33becd4dce3f5aa144f623830fe
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 23:01:19 2025 -0700
+
+    CMAKE: Add check labels to asymptote tests.
+
+commit 9b2f8c0641f5bf251f6ffbea4630abd6f039de0b
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 17:58:13 2025 -0700
+
+    CMAKE: Add additional asy tests.
+
+commit cee7ccb9f8b1a4a5f20e6601b6ac7936c791183d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 17:43:41 2025 -0700
+
+    CMAKE: Add manpage to linux-install.
+
+commit 96b55da7800b8c0c31dab92e5126c1e18a275ad6
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 17:39:42 2025 -0700
+
+    CMAKE: Add manpage generation to cmake build process.
+
+commit 4aad4e7ab798b2d8ac4d44baec2af40f4aa4e533
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 17:39:33 2025 -0700
+
+    PY: Add script for creating manpage.
+
+commit cf9f84b0efa108629c359d1174d32f8ddaf9c02f
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 03:25:33 2025 -0700
+
+    CMAKE: Add basic unix install cmake file.
+
+commit 18faad766dac7f0fed0438c41eaa31135522b326
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 03:51:59 2025 -0700
+
+    CMAKE: Fix dab7080c37b0bf79fe67e2ca1ea22e5db716a66d.
+
+commit dab7080c37b0bf79fe67e2ca1ea22e5db716a66d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jan 28 00:36:29 2025 -0700
+
+    CMAKE: Fix CTAN build on linux with cmake.
+
+commit 621dbbeb2be8d2fa5e124051a8e5c5f7291746df
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 25 17:07:50 2025 -0800
+
+    Fix #497: Install xasy.py with executable permission.
+
+commit 37fb5cfd12162d950445c957d9cd3359d4406d90
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 25 10:09:07 2025 -0800
+
+    Remove trailing whitespace.
+
+commit 8d42b82c8d4a175fdb87f2d1996b30f14de26bc3
+Merge: ae949e77 03973ef5
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 25 10:03:53 2025 -0800
+
+    Merge branch 'master' into privacy.
+
+commit ae949e77f75e63cfa70d56e89c2d37b8e86eaf09
+Merge: 56e144cd 3683c526
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Jan 25 10:02:54 2025 -0800
+
+    Combine loops.
+
+commit 56e144cd81715e52d4168fb96c90905c2fa6a9c1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 21:03:18 2025 -0800
+
+    Make received template parameters private.
+
+commit 36ca3b801fb7f8d72865f2440a47e9b4f751003b
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 20:30:20 2025 -0800
+
+    Make fields autounraveled from private types private.
+
+commit 290c589c9326a56923a8e164b4ff867aed060cb0
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 19:20:52 2025 -0800
+
+    Correct private wildcard unraveling.
+
+commit 541d889757f5e212c959478e3f7e533b0c7eed86
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 18:21:11 2025 -0800
+
+    Correct behavior when privately unraveling type.
+
+commit 21ca3f0e4ad420a6d59b4d6d12b4d8a0946ef7a9
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 18:01:46 2025 -0800
+
+    Fix privacy issue with overloaded unravel.
+
+commit 6f2eba307373334156e1050fb164a88db692ef50
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 17:59:35 2025 -0800
+
+    Return to using record in entry rather than frame for permissions.
+
+commit ce2ba4f37d75089f5360c956373bd27fc7334517
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 15:50:45 2025 -0800
+
+    Correct one case of privacy enforcement.
+
+commit 3acc7765b3042032ea52acfdd699aed3de69ead1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 23 14:58:01 2025 -0800
+
+    WIP: Working on privacy commit.
+
+commit 462446dfa70dceae148d9b5df8bd2313fabc7d70
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 21 21:14:35 2025 -0800
+
+    Minor comment improvements.
+
+commit 6e0dc363d5db817ce7096fd87ecf5adf2703b370
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 21 16:54:58 2025 -0800
+
+    Add errorFreeTestTemplate.asy.
+
+commit da7c299309da72c42d7411de67538ad36c8e46da
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:19:33 2025 -0700
+
+    CI: Rearrange tests so that all tests except gc is run in linux-sanity.
+
+commit 104743ca4d7904c74ef0a5e42819211d852e87e2
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:07:38 2025 -0700
+
+    CI: Split latex initializtion into a separate action.
+
+commit a0809e0a94a88c439737a69c5c0775e161cc9f3e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:01:37 2025 -0700
+
+    CI: Add linux-sanity step to CI.
+
+commit bd5ae35a18ea072ce41adeb6253c8054649114f2
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:39:02 2025 -0700
+
+    CMAKE: Remove display names from presets not meant for user.
+
+commit 695fa716bee24b2c928bbe36499c8a82dacbbfc9
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:34:44 2025 -0700
+
+    CMAKE: Add compact-zero mode to preset.
+
+commit 96984d3fe20b1c77b17ecbca832ab364f737c8a7
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:29:00 2025 -0700
+
+    CMAKE: Rename some profiles for consistency.
+
+commit 296f466543646b1ec6a79405a8fee3b17db681cf
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:27:01 2025 -0700
+
+    CMAKE: Add linux-only flags to presets.
+
+commit 3fdbcd35de0721a268a765522aacb04e3242e427
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:25:17 2025 -0700
+
+    CMAKE: Remove ReleaseWithDebugInfo preset since it's not used often.
+
+commit ec91c4a4bc7ae97041c115a8ea8742f3dd8cbb8a
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:58:18 2025 -0700
+
+    CMAKE: Split cmake build presets.
+
+commit 271575796bab091866fa0ed27ac03860abc0dcf3
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:45:43 2025 -0700
+
+    CMAKE: Bump minimum version in json.
+
+commit 26fcedc1e26f3dc469ad30b9e8089d8f3afc2235
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:35:06 2025 -0700
+
+    CMAKE: Add support for COMPACT=0 build mode.
+
+commit b465a9a249e1d370650ac899512d74238661f301
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:32:13 2025 -0700
+
+    CMAKE: Add SET_COMPACT_ZERO option.
+
+commit 52a05a2319ff12d3340391c27cdfbbbcc757796e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:28:47 2025 -0700
+
+    MAKE: Remove additional files from Lsp build process during clean.
+
+commit 3605ff0b93bd80c3989ce8d066badb31918f6074
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:24:43 2025 -0700
+
+    AC: Add in LSPCPP_SUPPORT_BOEHM_GC=OFF explicitly to LSP_CMAKE_OPTIONS if gc is off.
+
+commit 67f066bde5004643c4c608242a1f7ec3108825a5
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:24:24 2025 -0700
+
+    AC: Change ac_cv_use_gc to enable_gc in lsp configuration.
+
+commit 07e207a72c56d15e2805bb09360ec4046f5c24ce
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 16 20:41:34 2025 -0800
+
+    Format plain*.asy files.
+
+commit cf55d140aa2821eb0b941dc9dcb1a0646d728843
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jan 24 21:35:48 2025 -0800
+
+    Update documentation.
+
+commit 414d57d6d61a69d6345c84d30909a37dc69207b1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 19:53:36 2025 -0800
+
+    Improve comment.
+
+commit 0db6b3b5962697aeaa3e4741e1d143cbb9cf0366
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 19:37:36 2025 -0800
+
+    Delete unnecessary comment.
+
+commit efcdb3ea715bc9826bb2cb119eb330d61f6487d9
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 16:21:12 2024 -0700
+
+    Apply type rename after merge.
+
+commit ee927accd425e097d48c214f627ba0b61b15efbd
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 11:26:32 2024 -0700
+
+    Switch some modules from `typedef` to `using`.
+
+commit 09a787c5e18e2c96b339edecd55da48fa4800084
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 11:24:38 2024 -0700
+
+    Add comments to justify "using" syntax.
+
+commit 99aa297b02e0846132fe14b41c4282c99343be21
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 21:08:01 2016 -0700
+
+    More formatting fixes.
+
+commit e6741efb5ac373172bd3c5c51e43e37ae7a2085c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 21:02:19 2016 -0700
+
+    Improve formatting of new lines in camp.y
+
+commit 2c5a2cb6946112cfd81be0b7512f9ba888dd5b6c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 20:52:13 2016 -0700
+
+    Add using keyword as typedef alternative.
+
+commit d02b1d9df8608646850ae5c98fc6c70759c8e29a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 16:33:54 2024 -0800
+
+    Unify spellings of two perl variables that should be one.
+
+commit 890e39407221ae267f297b612eacc66a2d5b7ccd
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 21 16:39:41 2025 -0800
+
+    Show error if module is re-imported with wrong param names after correct import.
+
+commit c31e102ec19c312a5cceaf6fcd401586daef724b
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 21 15:24:58 2025 -0800
+
+    Remove unused function from dec.cc.
+
+commit 6f69e9a28ea8543bad606e7469a7dd84dc9bd68d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 21 14:55:15 2025 -0800
+
+    Change some "0"s to "nullptr".
+
+commit 858723a17fdc4026ac975d548313bbdd4c1aa8d2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Jan 19 20:37:01 2025 -0800
+
+    Omit unneeded getLocation() before encode().
+
+commit 5e82af8e66841645356569334795d40cb2c508e3
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jan 17 17:01:29 2025 -0800
+
+    Non-statically nested types cannot be used in templates.
+
+commit 34b0f710cd2dbf0cf11c448f7f1431ca6c65a708
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jan 17 16:32:07 2025 -0800
+
+    Move encodeParent into trans::coder class.
+
+commit eddd420c2dc06d03b87670e36263364cd308afb8
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 15:24:24 2025 -0800
+
+    Improve error message.
+
+commit 426840a26e67dd50a8061e67b85242752a39b9e8
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 15:19:43 2025 -0800
+
+    Add comment.
+
+commit 5f1775da15b1c49d9b9563cdcfa44c5b6808da0a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 15:14:00 2025 -0800
+
+    Remove transAsTemplatedRecordBody.
+
+commit 201c1404dc24053092ab0fac65b48114b0b507c1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 14:58:31 2025 -0800
+
+    Remove `transAsRecordBody` which did very little.
+
+commit 27a534dd30390f963fa17490f60976a3d624e50a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 14:25:42 2025 -0800
+
+    Simplify loadModuleExp class.
+
+commit 96e19d4e23be968452fef8851f355caeea4f3739
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 15 22:23:19 2025 -0800
+
+    Clean up and document push/pop parents.
+
+commit 2693b6d11f8644947368cdf18af64eaeeca59efa
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 15 20:29:35 2025 -0800
+
+    Clean up code a bit.
+
+commit e0e505f6a81fe2cdb48975809540e77800090604
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 15 20:10:38 2025 -0800
+
+    Guard boost stacktrace by DEBUG_CSTACKTRACE macro and add comment.
+
+commit 57bc300eec90f51f35577cb19a9118211b4b73d1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 15 16:59:30 2025 -0800
+
+    Add test for passing parameters through multiple templated imports.
+
+commit aba0a3376f1d3e58a709e049131ddba48380961c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 15 16:53:03 2025 -0800
+
+    Apparently working solution (needs refactor).
+
+commit 871bfc95ef6a10975ff6c17993b937addd8688c2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 14 14:23:05 2025 -0800
+
+    Add comment.
+
+commit eabdd863bc322d2228ba00691b2309862f99a8a5
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 9 20:57:10 2025 -0800
+
+    Switch to namedTy from namedTyEntry.
+
+commit 6315977004ca2d2495a16be214ddb7907b29fd37
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 8 14:51:51 2025 -0800
+
+    Minor improvements to usableInTemplate function.
+
+commit 1ce0f05b73e7a43af56609dcf193f97884ff8d79
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 8 10:31:28 2025 -0800
+
+    Debugging: Print out translation-time info about specified type.
+
+commit 34ed26cf65b08a0b5c40d69d81c6f5f7c2e68c03
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jan 7 21:32:33 2025 -0800
+
+    Untested function `usableInTemplate` added to dec.cc.
+
+commit a0b0ce0846244b655776b611b30cff242d39606d
+Author: Andy Hammerlindl <ahammerlindl@gmail.com>
+Date:   Fri Jan 3 11:33:43 2025 +1100
+
+    Being better implementation of templated imports.
+
+commit 03973ef58ffb4814f30b5a691bb58f4ecce29059
+Merge: 3683c526 253e9014
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jan 19 15:19:19 2025 -0800
+
+    Merge pull request #515 from vectorgraphics/fix-build-issues-jan2025
+    
+    Fix build issues.
+
+commit 253e90142bfa7073308b94cbd516fa059f3edf53
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:19:33 2025 -0700
+
+    CI: Rearrange tests so that all tests except gc is run in linux-sanity.
+
+commit 7c504ee74a43ad5d53c73c0bc1c5ace12dbbf1df
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:07:38 2025 -0700
+
+    CI: Split latex initializtion into a separate action.
+
+commit 20bf8d91347e26bd6f4a0c65e7618776563a7b09
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 02:01:37 2025 -0700
+
+    CI: Add linux-sanity step to CI.
+
+commit 907048c255c55cd0e4d87116cc419b70b27b8e67
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:39:02 2025 -0700
+
+    CMAKE: Remove display names from presets not meant for user.
+
+commit cad6d929e21cc2ecc6e0be158a38190fc39ba484
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:34:44 2025 -0700
+
+    CMAKE: Add compact-zero mode to preset.
+
+commit 63d5c152e58f913892091e6b868f550a24181b16
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:29:00 2025 -0700
+
+    CMAKE: Rename some profiles for consistency.
+
+commit f4008e156f0689dd882c11f896fb1abac4ef40e3
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:27:01 2025 -0700
+
+    CMAKE: Add linux-only flags to presets.
+
+commit 906d2c4857b815ac4efa8f8dca118ed60ca17463
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 01:25:17 2025 -0700
+
+    CMAKE: Remove ReleaseWithDebugInfo preset since it's not used often.
+
+commit 0807361df886367420a3d01e6ff066119b7c4ece
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:58:18 2025 -0700
+
+    CMAKE: Split cmake build presets.
+
+commit 41be8a2445554f01f0e97d0c87ee62444901d3cc
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:45:43 2025 -0700
+
+    CMAKE: Bump minimum version in json.
+
+commit f129628dc98dceb9309e6d3a467679d1f5a220c4
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:35:06 2025 -0700
+
+    CMAKE: Add support for COMPACT=0 build mode.
+
+commit 94d86829818ce8d49d86909051d9ec5362880610
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Jan 19 00:32:13 2025 -0700
+
+    CMAKE: Add SET_COMPACT_ZERO option.
+
+commit 89e55870b08c6ab108d30aaa58669d25afc342c6
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:28:47 2025 -0700
+
+    MAKE: Remove additional files from Lsp build process during clean.
+
+commit 2c978af1f69a9b09d8a9d621a47802b6a0dd0b1c
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:24:43 2025 -0700
+
+    AC: Add in LSPCPP_SUPPORT_BOEHM_GC=OFF explicitly to LSP_CMAKE_OPTIONS if gc is off.
+
+commit 00e0ccfd2bebdf50ed8bcb831e154a557339c546
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Jan 18 13:24:24 2025 -0700
+
+    AC: Change ac_cv_use_gc to enable_gc in lsp configuration.
+
+commit 3683c52606fd53adc4b49d3c8645429e16435040
+Merge: 4aa41ce8 5b2096a2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 16 20:43:06 2025 -0800
+
+    Merge branch 'using_typedef'.
+
+commit 5b2096a2ae80641b76264b2df2037c3b95824bca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 16 20:41:34 2025 -0800
+
+    Format plain*.asy files.
+
+commit b66679ead880464224dd7512547cd1be4206da88
+Merge: 129ddc0f ef2fd57f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 20:18:19 2025 -0800
+
+    Merge branch 'using_typedef' of https://github.com/vectorgraphics/asymptote into using_typedef
+
+commit ef2fd57f781bb37f7f42bebf9d15213510078e7a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 16 20:18:00 2025 -0800
+
+    Update documentation.
+
+commit 129ddc0f825a4c0e32c42c6eeec984a63999e727
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 19:53:36 2025 -0800
+
+    Improve comment.
+
+commit 7a3818e937aebee80f271917904503b1a9d3c32d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 19:37:36 2025 -0800
+
+    Delete unnecessary comment.
+
+commit 4aa41ce8300046efa473ef8f1ebe5ea68212fb10
+Merge: ed93f99b 76635560
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jan 16 19:26:33 2025 -0800
+
+    Merge pull request #510 from vectorgraphics/509-perl-script-has-misspelled-variable-name
+    
+    Unify spellings of two perl variables that should be one.
+
+commit e4be79c7500fae335c95b82e042b9297ece1f547
+Merge: 7c60d7be ed93f99b
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 18:13:14 2025 -0800
+
+    Merge branch 'master' into using_typedef
+
+commit 766355606b9d8753216674461a2aef83bda351d0
+Merge: c62a29c8 ed93f99b
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 16 18:08:26 2025 -0800
+
+    Merge branch 'master' into 509-perl-script-has-misspelled-variable-name
+
+commit 1c881a27c2637b5b47864f19a6debfcf9e7e5cfc
+Author: Andy Hammerlindl <ahammerlindl@gmail.com>
+Date:   Fri Jan 3 10:55:17 2025 +1100
+
+    Assert type in encodeLevel is a record.
+
+commit 4c062b25a506218b94b3bedb2d5b2e9c083cdf66
+Merge: 65e47202 5ea9cb32
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Jan 2 15:12:31 2025 -0800
+
+    Merge branch '508-error-compiling-nested-template-imports' of https://github.com/vectorgraphics/asymptote into 508-error-compiling-nested-template-imports
+
+commit 65e4720283baab39cc365ec82203b26ecc472014
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Jan 1 18:41:19 2025 -0800
+
+    Debugging WIP
+
+commit 5ea9cb326a92fb62654e348783a3b8352bc663c9
+Merge: 65e0876f ed93f99b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 1 15:50:22 2025 -0800
+
+    Merge branch 'master' into 508-error-compiling-nested-template-imports.
+
+commit ed93f99b6649e20afd4fd4c2d80e364b98785c93
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jan 1 15:47:31 2025 -0800
+
+    Fix settings type.
+
+commit 65e0876ffc323cb721580c6dcc60f8856a1c5493
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Dec 29 20:24:06 2024 -0800
+
+    Avoid redefining preprocessor macro.
+
+commit 429fd699bcc24d099206ca7dd896d96e6be71dda
+Merge: 4bfd6b75 0c384938
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Dec 29 20:18:34 2024 -0800
+
+    Merge branch 'autounravel' into 508-error-compiling-nested-template-imports
+
+commit 0c3849387bb668d258a2f71a13528d1cf70d3e04
+Merge: 23e17701 5d8454c6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Dec 29 20:04:12 2024 -0800
+
+    Merge branch 'master' into autounravel.
+
+commit c62a29c8a5dc572ad29362cb2596804bdaa934ac
+Merge: ef211932 bb5b8780
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Dec 29 09:36:13 2024 -0800
+
+    Merge branch 'master' into 509-perl-script-has-misspelled-variable-name
+
+commit 5d8454c61df9e4fee383e028061581cd02c0220c
+Merge: 06d4a678 7561c251
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 23:12:06 2024 -0700
+
+    Merge pull request #512 from vectorgraphics/fix-lsp-warnings-dec2024
+    
+    Fix LSP warnings for December 2024
+
+commit 7561c251e5e3cb522844c43728c8fe81f10b3804
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 22:44:13 2024 -0700
+
+    CMAKE: Pass in _WIN32_WINNT to LSP project.
+
+commit 70d15e77c0d056f6fa76dc527fa36f50b56e8a3b
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 22:44:01 2024 -0700
+
+    CMAKE: Fix _WIN32_WINNT macro.
+
+commit af76da3f3dde90fa5d76b5f393df5672c18a21e6
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 22:41:15 2024 -0700
+
+    git subrepo pull --branch=build-enhancements-dec-2024 LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "1c3beeedd"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "build-enhancements-dec-2024"
+      commit:   "1c3beeedd"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit 97ae331d540258840daccda4376261b787aa4696
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 22:40:41 2024 -0700
+
+    git subrepo pull (merge) --branch=master LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "d81801194"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "d81801194"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit c7d09099a0b2782aa0d1ce1a312abd35e2a68c31
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 22:38:26 2024 -0700
+
+    REPO: Fix subrepo parent.
+
+commit 06d4a678c7d1a3dcd1afde1c53e2010631ecf3fe
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 28 21:09:52 2024 -0700
+
+    PY: Change ascii encoding to utf-8.
+
+commit bb5b8780f31fed2bd1e7eac5cf3a17027714445e
+Merge: fc5766d2 e2a02980
+Author: charlesstaats <charlesstaats@users.noreply.github.com>
+Date:   Sat Dec 28 22:38:24 2024 -0500
+
+    Merge pull request #511 from vectorgraphics/perl2py
+    
+    Convert several perl scripts to python
+
+commit e2a029805d2f24cabd1c1e62420bdc7c2dbbec4d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 19:18:15 2024 -0800
+
+    Delete extra blank line.
+
+commit ae69112ed1c9f693fa86199c0cefd33c41df43a9
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 19:09:59 2024 -0800
+
+    Port long options to asy-list.py.
+
+commit 885630517831a2653b9d385e4a38a679a878146c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 18:24:41 2024 -0800
+
+    Fix alignment of generated C++ comment blocks.
+
+commit 354432ac6bf3b45a957b2723af92a4c348f6c796
+Merge: 55b8760a fc5766d2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 18:09:59 2024 -0800
+
+    Merge branch 'master' into perl2py
+
+commit 55b8760a538b707bfb60291babd226d391a9bee8
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:56:50 2024 -0800
+
+    Fix a python shebang to python3.
+
+commit 56e807a02864a1c3b22168d7e514f2c590c9b0d2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:56:04 2024 -0800
+
+    Update asy-misc-files.cmake to use keywords.py rather than keywords.pl.
+
+commit e74e82bb5bb290e2f8a256a1baec03ff3232dbc1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:47:51 2024 -0800
+
+    Fix pylint errors.
+
+commit 7e52fa705bd0affad93e4e464cb83882e4679b64
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:28:30 2024 -0800
+
+    Sort imports in findsym.py.
+
+commit 1628b9f409ac05e271028e40edb187ce00828cfb
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:26:26 2024 -0800
+
+    Reformat opsymbols.py with slightly different settings.
+
+commit 0a3e0cb123dc969056de146ef6d1e5119cd1d6ff
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 17:17:35 2024 -0800
+
+    Format new python files.
+
+commit 0efe596d63da9d372dbe31163b62566f5e20e24f
+Merge: be5d58e3 5cf1ed44
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 16:50:42 2024 -0800
+
+    Merge branch 'master' into perl2py
+
+commit ef211932bb0907bf7e5c4c82d614f8109cc40585
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 28 16:33:54 2024 -0800
+
+    Unify spellings of two perl variables that should be one.
+
+commit fc5766d273295067dfdea39ada5cc95dd7ee3584
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Dec 28 13:13:29 2024 -0800
+
+    Add to last revision.
+
+commit e54cb453002258c46aa376850a73f4070fe89d88
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Dec 28 11:15:53 2024 -0800
+
+    Access xasy and debug settings as variables.
+
+commit 8703e2a6316862dc6dcd6d247c7faf0a91b9fc2f
+Merge: 5cf1ed44 94ccb43d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 27 22:48:11 2024 -0800
+
+    Merge pull request #507 from vectorgraphics/addr-build-improvements-dec2024
+    
+    Additional build improvements for december 2024
+
+commit 94ccb43dfd7618d047eeb0d6bc9261a9f4ad25ca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 27 22:38:21 2024 -0800
+
+    Run gc/autogen.sh.
+
+commit 492d88321e4c693f57f716c1b481c9316cc4ea6b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 27 22:25:57 2024 -0800
+
+    Update build-asymptote.
+
+commit 9a22de4ac344b69fd8e8ccfe1462db662d3b2f52
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 27 20:30:18 2024 -0800
+
+    Remove extra spaces; fix gc compilation; require libtool instead of libtoolize.
+
+commit 4bfd6b754a8e5dc810bce84510201bed578c4778
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 27 17:32:51 2024 -0800
+
+    Debugging #508: print stack trace.
+
+commit 7fbc53c5807e6836260e6cc0a73a73f5227e7cc6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Dec 26 20:54:22 2024 -0800
+
+    Check for libtoolize.
+
+commit 637ba8f6cf939e1367e577108409c6cd3a85ae5e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 25 22:22:45 2024 -0800
+
+    Quote ENABLE_LSP_MACRO.
+
+commit 3bcf5fdd5788000ff1c86cdb671afce5037fb376
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 25 19:36:48 2024 -0800
+
+    GC: Update configure.ac.
+
+commit 468f63ac40e191951d23523b040a5f5b9f3b3cf0
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 25 16:17:47 2024 -0800
+
+    Remove obsolete code.
+
+commit 91d4d8d76f919d9729ff7cb9ef80be42b58c7f2d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 25 16:00:34 2024 -0800
+
+    Update autoconf version.
+
+commit 0916cfcb4fb4c3dc8a6a902898b4fb8be2e9b269
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 25 15:35:18 2024 -0800
+
+    Remove obsolete configuration code.
+
+commit 23e177013d8d2ee12cbcc16e4ff584c4dfaa6139
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Dec 24 19:15:48 2024 -0800
+
+    Fix issue with autounravel overrides of builtin record ops.
+
+commit 8405b6616b07cbe856bd409e2d8389581b590b71
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Dec 24 09:39:09 2024 -0800
+
+    GC: Update GC to latest stable release.
+
+commit 814739609d95ac1475fc86f0db3161045491ae1a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Dec 24 09:35:38 2024 -0800
+
+    git subrepo clone --force --branch=v8.2.8 https://github.com/ivmai/bdwgc gc
+    
+    subrepo:
+      subdir:   "gc"
+      merged:   "ee59af372"
+    upstream:
+      origin:   "https://github.com/ivmai/bdwgc"
+      branch:   "v8.2.8"
+      commit:   "ee59af372"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit e2af319e39aeb939b67edd0c81c9bab80d8276c2
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 23 22:05:54 2024 -0700
+
+    CMAKE: Change HAVE_GL to HAVE_LIBGL during configuration.
+
+commit 3c5828d9b66f487b13f6f96dd71e9203a7b0565e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 23 19:38:53 2024 -0700
+
+    GC: Set +x on autogen.sh.
+
+commit 54253b0425e88d3ea2b8cb9bdeac2b5831e21f98
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 23 18:14:03 2024 -0700
+
+    MAKE: Support local gc in build process.
+
+commit 889ba00a5ab95526c1ee44fa614bc6e640b255fa
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 14:52:37 2024 -0700
+
+    GUI: Remove click from dev dependency list.
+
+commit 2b0f0c33f127b9cdea7d496cf6cf7b720e727607
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 14:52:27 2024 -0700
+
+    GUI: Remove click from buildtool.
+
+commit 203ea75d0c9a7b460309f54296aba105cced8f27
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 02:50:59 2024 -0700
+
+    git subrepo pull LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "80e204a4f"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "80e204a4f"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "cce3d93"
+
+commit a02ebe837ea4977b7b56f05a6c955e02438c7c12
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 02:09:55 2024 -0700
+
+    CMAKE: Use subrepo-cloned libatomic_ops and bdwgc for asymptote.
+
+commit 92a60fbc9190e8bbdf3c4129f3da9baeaaf39205
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 02:09:39 2024 -0700
+
+    VCPKG: Remove gc from vcpkg install list.
+
+commit b5a6fd02a63debff8830884154f8ea7a8b26ef59
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 02:09:25 2024 -0700
+
+    REPO: Remove libatomic_ops from ignore list.
+
+commit 15cc98d1576ac69a5407b1c465acc6f89514860d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 22 01:15:03 2024 -0700
+
+    git subrepo clone --branch=v7.8.2 https://github.com/ivmai/libatomic_ops
+    
+    subrepo:
+      subdir:   "libatomic_ops"
+      merged:   "4c00f978c"
+    upstream:
+      origin:   "https://github.com/ivmai/libatomic_ops"
+      branch:   "v7.8.2"
+      commit:   "4c00f978c"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "cce3d93"
+
+commit 535935c7b9cd0e193281c74916485c1dff4cf867
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 23 03:05:25 2024 -0700
+
+    REPO: Unignore gc files.
+
+commit e9e4d3359c8288b90439db8d19c0c76246c37a9d
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 23 03:05:09 2024 -0700
+
+    REPO: Rename bdwgc to gc.
+
+commit daf3d0972286f43d706be64b6929cbbf288f964a
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 21 23:36:41 2024 -0700
+
+    git subrepo clone --branch=d1ff06cc503a74dca0150d5e988f2c93158b0cdf https://github.com/ivmai/bdwgc
+    
+    subrepo:
+      subdir:   "bdwgc"
+      merged:   "d1ff06cc5"
+    upstream:
+      origin:   "https://github.com/ivmai/bdwgc"
+      branch:   "d1ff06cc503a74dca0150d5e988f2c93158b0cdf"
+      commit:   "d1ff06cc5"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "https://github.com/ingydotnet/git-subrepo"
+      commit:   "cce3d93"
+
+commit 5cf1ed4457f398b1d0c71d6b4b7b12599b685f86
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Dec 19 11:43:37 2024 -0800
+
+    Remove diagnostic.
+
+commit be5d58e36fd848f29f8f8f2a07b86a70b995d8fb
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 18:49:35 2024 -0800
+
+    Translate keywords.pl to python.
+
+commit 1b157a79685433a9676bd3a6c155e9c6560adbfe
+Merge: 2735aad2 77ba9cd2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 17:51:30 2024 -0800
+
+    Merge branch 'autounravel' of https://github.com/vectorgraphics/asymptote into autounravel
+
+commit 2735aad2347a99630560d6833e0de36abf005255
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 17:49:52 2024 -0800
+
+    Change applyAutoUnravel bool parameter to enum for readability.
+
+commit 772e8cb7e41edb38077b3a725a0ecaa188e8bdbf
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 17:25:10 2024 -0800
+
+    More uniform code in addRecordOps function.
+
+commit 77ba9cd2bc0746c72caa891f7281be7bee23c2e4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Dec 14 11:48:06 2024 -0800
+
+    Improve documentation of autounravel.
+
+commit b4b9d6e56221d8a35b10adc430f6a7a8402b580a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Dec 14 11:41:57 2024 -0800
+
+    Improve documentation of autounravel.
+
+commit d94cb9643d60f3beb77d8d466c5dfacd028cea7f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 09:47:55 2024 -0800
+
+    Make rational.asy use autounravel.
+
+commit 4601cc946d130cc66b3ad8d003061cf994d15502
+Merge: a526dfc9 0c3610e0
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Dec 14 09:11:24 2024 -0800
+
+    Merge branch 'autounravel' of https://github.com/vectorgraphics/asymptote into autounravel
+
+commit 77f85b7ac80908e5d8471a2e6c83fa79318533a6
+Merge: 607b655e 6e5a08cb
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 14 01:05:32 2024 -0700
+
+    Merge pull request #504 from vectorgraphics/bump-vcpkg-version
+    
+    VCPKG: Bump vcpkg baseline version.
+
+commit 6e5a08cb3388130ff82f403a9da464cf69a50935
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat Dec 14 00:07:47 2024 -0700
+
+    git subrepo pull LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "d12eab466"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "d12eab466"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit 0c3610e039c3380127014197f83c1c2330f71172
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 13 23:01:49 2024 -0800
+
+    Simplify documentation of autounravel.
+
+commit bbd32434aaf4e60dcdd574e6d0f0d34557804206
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 13 18:57:50 2024 -0800
+
+    Update documentation.
+
+commit a526dfc9ae21a91304f50dddece178ac88dfa240
+Merge: fe4aae51 2686dcaa
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 13 16:25:42 2024 -0800
+
+    Merge branch 'master' into autounravel.
+
+commit f99492aa23fa11459d7f347d12cc6fcb3e8101f2
+Merge: fe4aae51 607b655e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Dec 13 16:19:53 2024 -0800
+
+    Merge branch 'master' into autounravel.
+
+commit fe4aae5163c8584a9995357b33721df9c159c69e
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 13 16:11:13 2024 -0800
+
+    Remove .vscode/c_cpp_properties.json
+
+commit 2c34fbcaf9d487f6fd7a9299649dbc9f76860e83
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Dec 12 23:27:22 2024 -0700
+
+    VCPKG: Bump vcpkg baseline version.
+
+commit 607b655e99a4c7e18a90fc175108cc3b7ea55890
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 11 11:37:00 2024 -0800
+
+    Optimize integer mod.
+
+commit 5d546e33962e18cabebc274649bfa02d7ea9ef8f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Dec 11 11:26:15 2024 -0800
+
+    Fix typos in manual.
+
+commit 4cc5c30100c16bfc28be5a77302b3e2b81ce266b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Dec 9 15:40:23 2024 -0800
+
+    Add 1D rational array ops.
+
+commit 2686dcaa7c72b9cf53065f331b66697c9b308158
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Dec 10 00:23:24 2024 -0700
+
+    BUILD: Remove asy-keywords.el from the list of required files in build-asymptote.ps1.
+
+commit 329c0d13295f6bafa7599d0144c60f64d564d26f
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 9 21:18:15 2024 -0700
+
+    CMAKE: Re-enable generation of misc files in msvc/release-with-external-doc-files preset.
+
+commit 57a934a9323fb2b67cb417eacf08d41a0bcfde0b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat Dec 7 12:02:29 2024 -0800
+
+    Fix last revision.
+
+commit 893121595d45be4ef40f2c0d1509587f7fffa680
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Dec 5 08:49:02 2024 -0800
+
+    Use mask to mod against non-negative powers of two.
+
+commit 875384fae1f19cce4f91a66a56ffc9b687408173
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 6 17:45:44 2024 -0800
+
+    Translate opsymbols.pl to python.
+
+commit 0e4e1916478201f9e720a0e4b09c097fefa59785
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 6 16:22:01 2024 -0800
+
+    Migrate findsym.pl to findsym.py.
+    
+    Tested: I used a logging statement in the original `findsym.pl` to check
+    that all of the files written by `findsym.pl` followed the pattern
+    `*symbols.h`. I then checked that after the change, the resulting files
+    differed from the originals by a single character (since the comment now
+    cites `findsym.py` rather than `findsym.pl` as the source). The sole
+    exception was `opsymbols.h`, which had no changes at all since it is
+    generated by a different script.
+
+commit 5f99d1f2944e784ca295ba75055c3f50f5bc2d59
+Merge: 96e6e392 d3003d15
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Wed Dec 4 22:31:03 2024 -0700
+
+    Merge pull request #502 from vectorgraphics/add-el-files-to-asy-win-setup
+    
+    Add asy-{init,mode,keywords}.el, and other build enhancements
+
+commit aa2caec3d96bfd7de9d4b62d8fc04a74d33b256a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Dec 4 17:49:07 2024 -0800
+
+    minor improvements to findsym.py
+
+commit 5ab20779f4e92121bc4a9d6c389336c427866297
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Dec 4 17:07:56 2024 -0800
+
+    minor code improvements
+
+commit ae7db8a3e5e023470bc69b5916f42154377d127c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Dec 4 15:44:04 2024 -0800
+
+    Remove the empty addFunctionOps functions.
+
+commit f5109f1f8320501563c8683e1045be937321c1d7
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Dec 4 15:00:15 2024 -0800
+
+    Draft of findsym.py.
+
+commit d3003d1596199bbce6bcc3c237964496aae36730
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Dec 3 21:47:30 2024 -0700
+
+    CI: Add misc files to linux asymptote package.
+
+commit ec649e1c20cd59afe7eb25111fdb175ac71e9e45
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Dec 3 16:34:17 2024 -0800
+
+    Convert asy-list.pl to a python script.
+    
+    The comments and python code were originally generated by AI based on
+    the original asy-list.pl code; however, both were subsequently checked
+    and modified by a human to improve both Python coding style and accuracy
+    to the original script.
+    
+    The change was tested by comparing the output of `make asy-keywords.el`
+    before and after the change. The resulting files are identical except
+    for the comment naming the generating script, which was originally
+    asy-list.pl but is now asy-list.py. Thus, the two output files differ by
+    a single character.
+
+commit 5818d9f7e360461ffb55e503d72a94512eb5b44c
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 03:56:35 2024 -0700
+
+    CI: Download built misc files during asy installer packaging step.
+
+commit ffa285470d210fb0f5f28b28477970670bfe3a33
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 03:56:13 2024 -0700
+
+    CI: Add building of misc files to build-asy-windows workflow.
+
+commit dfbe364cb41f544f1b6675ce517bfc831797b427
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 03:53:50 2024 -0700
+
+    CI: Add building of misc files to build-asy-linux workflow.
+
+commit 032fb674b1c4bcb7dca918c7ce4977cb2a7f00dc
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 03:13:09 2024 -0700
+
+    BUILD: Add asy-keywords.el to required external documentation files in build-asymptote.ps1.
+
+commit 5869d017c3b3405537f6004a37ff0ee2be3dbe66
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 03:11:55 2024 -0700
+
+    CMAKE: Add ENABLE_MISCFILES_GEN variable to CMakePresets.json.
+
+commit 3ced15a05ad2e6ae76285131ad9c97bf6b74bf08
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 02:51:34 2024 -0700
+
+    MAKE: Update asy-keywords.el generation to use asy-list.pl's arguments.
+
+commit b41ccb0ff2240eed1b0d1f48c5c5a9afecff935a
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 02:46:00 2024 -0700
+
+    CMAKE: Add misc files to win32 install target.
+
+commit 13981466588ab32c849bb7ae44cb9a3d36c230a0
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 02:45:46 2024 -0700
+
+    CMAKE: Add build scripts for asy misc files.
+
+commit b79ad0b67393e8133de59284430c389512b418a0
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 02:45:20 2024 -0700
+
+    BUILD: Add long options to asy-list.pl.
+
+commit c356d4b62e9e22b1b0a3444bb7426fb7ecce5a07
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 02:44:34 2024 -0700
+
+    BUILD: Add script to generate asy.list.
+
+commit 49e1b645e4bdeddbbbf39568b8556faf39368318
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 01:09:51 2024 -0700
+
+    BUILD: Modify build script to use asydoc directory as destination.
+
+commit 7571acfb3b797be4656c81b8c8ca03029d86ec2f
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 00:39:07 2024 -0700
+
+    DOCS: Update install documentation to use asydoc.
+
+commit e45c3fca19b73996ca49128b727a2544b6673cea
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 00:38:56 2024 -0700
+
+    CI: Change download path for asymptote.pdf to asydoc.
+
+commit 74fb29f0cdd9ee515da3b3ce5fa4336d5a23e7bc
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 00:37:41 2024 -0700
+
+    CMAKE: Change external documentation dir to asydoc.
+
+commit b7d068d67ae0e5ae2b6af143942771bb8c445e43
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Dec 2 00:34:35 2024 -0700
+
+    CMAKE: Add base/asy-{init,mode}.el to windows setup file.
+
+commit 96e6e392693227cce3afd1077d7db8de822c790c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Dec 1 20:16:14 2024 -0800
+
+    Share asy-keywords.el with MSWindows build.
+
+commit e81d98429fd814b7e20f659c6d6215aca446d4ef
+Merge: 8a21f0a9 be02adf7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Dec 1 20:00:50 2024 -0800
+
+    Merge pull request #500 from vectorgraphics/initPosition
+    
+    Initialize positions to nullPos.
+
+commit 8a21f0a96f53c7fa16b56e9a9433e48f56eb697a
+Merge: 327038c6 ce74561f
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 1 01:25:25 2024 -0700
+
+    Merge pull request #501 from vectorgraphics/fix-py-linter-dec-2024
+    
+    CI: Fix non-GUI python linter CI workflow.
+
+commit ce74561ffec3089afc132d730acae7cf1e836b89
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 1 01:10:35 2024 -0700
+
+    CI: Add remarks to check-if-non-gui-py-files-changed step.
+
+commit 62ebc749f667c6e637d9266feb0883d11c807efe
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sun Dec 1 00:36:29 2024 -0700
+
+    CI: Fix non-GUI python linter CI workflow.
+
+commit be02adf7f2b42a22ead3351e748a2d7b7e45d6f5
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 30 13:01:21 2024 -0800
+
+    Initialize positions to nullPos.
+
+commit bbd0a7eded35877813b3e820ee707a141d876ce2
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 30 09:14:49 2024 -0800
+
+    Use C++17 for static analysis tools in vscode.
+
+commit 327038c6f3df340087bd78951d594cba442d7f27
+Merge: cb9b4c58 1dfce308
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Fri Nov 29 03:03:00 2024 -0700
+
+    Merge pull request #499 from vectorgraphics/additional-ci-linter
+    
+    Add linting of non-GUI python files to precheck.
+
+commit 1dfce3088bebd74a56620fb8f8726aef57bfc661
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Fri Nov 29 02:42:19 2024 -0700
+
+    PY: Add documentation for CompileOptions.
+
+commit def2504af370f822c1ac2aa752b5f9c74eba9c91
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Fri Nov 29 02:03:51 2024 -0700
+
+    CI: Add linting of non-GUI python files to PR precheck workflow.
+
+commit 7a5c5a2a00cd27bce7d8b4b77806eaa7a1ff0906
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Fri Nov 29 02:01:32 2024 -0700
+
+    CI: Add workflow files for linting non-gui py files.
+
+commit 33c5a8b5f928ca8df3ed4428a79b808ac919a2a7
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 23:13:35 2024 -0700
+
+    SH: Add linting scripts for UNIX.
+
+commit 9912d518e3bbf9e3dd54391037baaa6ead23a230
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 23:11:33 2024 -0700
+
+    PY: Fix pylint issues on non-GUI python files.
+
+commit 240c57dc58aae72cd7a4d975385b4dd24539ed57
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 23:04:13 2024 -0700
+
+    PY: Run isort and black on non-GUI python files.
+
+commit f864e70cfd76b5e740aff0abf7d8335005c31114
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 22:52:51 2024 -0700
+
+    PS1: Add powershell scripts for linting python files.
+
+commit 4288d8b067fa7572d0332b2d852ba4e596687c09
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 22:49:10 2024 -0700
+
+    PY: Add script for getting lintable files.
+
+commit 671b2bb9d220b979f173a9e7cfcd56030a99d657
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 22:28:07 2024 -0700
+
+    PY: Add linter configuration files.
+
+commit 48410efdb75191c215765480a167f17b54544f73
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 21:04:06 2024 -0700
+
+    PY: Add requirements.lint.txt.
+
+commit cb9b4c5811c8f103c5dceab749441469b7f55ce3
+Merge: 595e0186 72ad028e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Nov 28 21:21:46 2024 -0800
+
+    Merge pull request #498 from vectorgraphics/use-subrepo-for-cmake
+    
+    CMAKE: Use subrepo directories for cmake builds.
+
+commit 595e018686102685fefdeaa34b2c268b021a9c0c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Nov 28 21:17:53 2024 -0800
+
+    Increment version to 2.96.
+
+commit 72ad028e110b1c743d08366f7f79f152405d5fd0
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 20:37:56 2024 -0700
+
+    CMAKE: Remove duplicates in arguments passed to gen_preprocessed_depfile.py.
+
+commit 5071e0457dc95a8956011ac460867a67a33f399b
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 20:12:42 2024 -0700
+
+    Revert "temp! Add argument view to gen_preprocessed_depfile."
+    
+    This reverts commit c22912e96803e244ed16a046e60ff49c4a7edade.
+
+commit c22912e96803e244ed16a046e60ff49c4a7edade
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 20:12:22 2024 -0700
+
+    temp! Add argument view to gen_preprocessed_depfile.
+
+commit 53ac190b36c6787a162f124279a804f2082d0c57
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Thu Nov 28 19:49:48 2024 -0700
+
+    CMAKE: Use subrepo directories for cmake builds.
+
+commit 9a07ab8822dffc63cece044327ceeb3b6e7d3ffa
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Nov 28 15:37:18 2024 -0800
+
+    Support editline again.
+
+commit 38f95276550adbadad55b1efd8353f024289dec3
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Wed Nov 27 18:24:54 2024 -0800
+
+    Less hacky handling of operator init.
+
+commit d0d8fffb8f558cb5abb1f6da73dea5d8ede06000
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Nov 26 23:30:44 2024 -0700
+
+    FMEM: Bump fmem version.
+
+commit f8f653299cdf70166ad482ba2f3667e5d2ce564c
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Nov 26 23:00:18 2024 -0700
+
+    BUILD: Deactivate python virtual env after build-asymptote.ps1 is done.
+
+commit 98c698f56e8e3936085d15d39759c12d74dfcc59
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Nov 26 16:10:44 2024 -0800
+
+    Fix type of Default in map.
+
+commit 02788a6129ec93a553919be7cb01750e78309e63
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Nov 26 14:11:18 2024 -0800
+
+    Add another test case for builtinOps.
+    
+    This test case checks for the presence of operator== for a nested struct
+    as a field that can be unraveled from the outer struct. If builtinOps
+    were not autounraveled, it would fail without the second call to
+    addRecordOps in recorddec::transAsField.
+
+commit d679251f503d405bd2877c45b0a76ba0a27e594f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Nov 26 13:54:39 2024 -0800
+
+    Autounravel modes; operator init hack.
+
+commit 75eccaccdea24d678607b9f49d29aece12bf03d4
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Mon Nov 25 19:31:21 2024 -0800
+
+    Use autounravel for operator init.
+
+commit 1b95781e8fb352875ea247d9ca7a4a5be4869850
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Nov 25 08:52:36 2024 -0800
+
+    Remove test file that violates CTAN rules.
+
+commit 9b91f6fbd2bbe96391ebb81489efee2bbc5c9059
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Nov 25 02:51:02 2024 -0700
+
+    BUILD: Force exit when build-asymptote.ps1 hits an error.
+
 commit 4608b094ab2e562924ed5c62ecdda0fe8fad6529
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Mon Nov 25 01:18:15 2024 -0800
@@ -231,6 +2338,12 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Thu Nov 21 09:30:47 2024 -0800
 
     Fix #495: glitch in Makefile.in.
+
+commit 2dd68b5960b6d58ca76feb4cccdd09dbddedd00d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Nov 21 09:28:57 2024 -0800
+
+    Add comment documenting possibly unneeded line.
 
 commit 0573715db1b57fa01bbcf4a4ad8253fdc880300d
 Author: John Bowman <bowman@ualberta.ca>
@@ -743,12 +2856,42 @@ Date:   Sat Nov 9 20:34:12 2024 -0700
 
     BUILD: Replace latexusage.pdf's inclusion with extra doc files.
 
+commit 9e3ff98ac897e5a645451c82f0993c9d62c9c26d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 9 17:39:45 2024 -0800
+
+    Test double-shadowing when only first shadow is allowed.
+    
+    An implicitly defined autounravel function like 'alias' is allowed to be
+    shadowed. However, if the (explicitly defined) replacement is itself
+    shadowed with another autounravel function, that should produce an
+    error.
+
+commit 0d5b2220bdb63583c175c3d49ec04cfe2b25b2c5
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 9 17:32:31 2024 -0800
+
+    Test compiler errors for autounravel.
+
 commit 10248a12f9c6db810da18bd2e70f33d97c20eee4
 Merge: 0c70a313 03587f0f
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
 Date:   Sat Nov 9 18:15:11 2024 -0700
 
     Merge remote-tracking branch 'origin' into msvc-support-make
+
+commit 94bac8ba470dbba54e90fbc92c4ed07aebd5f3e7
+Merge: 16d05bc2 03587f0f
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 9 17:13:48 2024 -0800
+
+    Merge branch 'master' into autounravel
+
+commit 16d05bc27f01688969e2f616c78a94dcf6ff9154
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Nov 9 17:09:30 2024 -0800
+
+    Move functions from .h to .cc file.
 
 commit 0c70a3135124788c5faa805f75e0be328be7327b
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
@@ -768,6 +2911,18 @@ Date:   Sat Nov 9 17:27:49 2024 -0700
 
     REPO: Add .python-version to GUI's ignore list.
 
+commit d3e10f087c22ad99db20c1cd8708f648c731bce6
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Nov 7 19:52:58 2024 -0800
+
+    Make alias shadowable to fix error.
+
+commit 955a0b4ed6a5c385fc9c556e6e4015fbb2ba2ef0
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Nov 7 19:46:23 2024 -0800
+
+    Error if one autounravel field cannot shadows another.
+
 commit fa4774e06f1f9f2f34af2780c38ee31c4877eb12
 Author: CC <ccworld1000@gmail.com>
 Date:   Fri Oct 25 10:31:49 2024 +0800
@@ -775,6 +2930,24 @@ Date:   Fri Oct 25 10:31:49 2024 +0800
     fix endl
     
     fix endl
+
+commit 699627ed39cb8d135a790159c74d9b6fd5461c04
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Oct 24 18:57:54 2024 -0700
+
+    Autounravel builtin operators; control autounravel order.
+
+commit c407cd81c7baf149474f6c7fb7072fe702bf3402
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Oct 24 18:15:49 2024 -0700
+
+    Add test for builtin operators.
+
+commit 05cc3ffab5340e551251f9074c12b43beb9f7548
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Oct 12 19:53:25 2024 -0700
+
+    Fix behavior when multiple fields autounraveled.
 
 commit 03587f0fbdb5b203780186a6c3410d767a4083c3
 Author: John Bowman <bowman@ualberta.ca>
@@ -856,6 +3029,25 @@ Date:   Tue Oct 1 22:03:05 2024 -0600
 
     CI: Reconfigure linux with version override information during docgen.
 
+commit 4d95214e46d2c0a4b9748727111e2311faf6b9cf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Sep 30 20:20:38 2024 -0700
+
+    Remove duplicate error messages.
+
+commit 825eeda1ddb8a58e609283359d0756d143541ab4
+Merge: 6a080594 82c919fb
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Sep 30 19:57:32 2024 -0700
+
+    Merge branch 'master' into autounravel.
+
+commit 6a0805946a28c07e7aa0a4a23b56a978d9fd56c8
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Mon Sep 30 19:30:29 2024 -0700
+
+    First draft autounravel doc.
+
 commit 99efd94d4dddf0344e8953b1783099e2850377d0
 Merge: 14cc566d 82c919fb
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
@@ -880,6 +3072,55 @@ Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
 Date:   Sun Sep 29 23:39:47 2024 -0600
 
     W32: Add helper function to validate ShellExecute/ShellExecuteEx's result.
+
+commit 5e27fa3aac41004543bd92fa0e5b7a2c5f6fe07a
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Sep 28 17:42:20 2024 -0700
+
+    Do not autounravel a type whenever a variable of that type is declared.
+
+commit 65c90bff5ee57f07f121acc3ffeb717530d5f9c1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Sep 28 17:25:34 2024 -0700
+
+    Error if autounravel used for type or at top-level.
+
+commit 38c56442f50eb5c0663410f4d8fd7b2355fd5346
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Sep 27 16:54:54 2024 -0700
+
+    Test autounravel function.
+
+commit e810b68cee2c9e207d5d8f1522ed66f67bb36737
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Sep 27 16:47:01 2024 -0700
+
+    Apply autounravel modifier to unravel declarations.
+
+commit 5dbc7395767284422e24bd0ff17fad6cff0d7cb5
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Sep 26 19:59:07 2024 -0700
+
+    Delete some commented-out code.
+
+commit 40b26820200d6308547cb999f1eb707e841ccdd1
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Sep 26 19:55:53 2024 -0700
+
+    Autounravel fields of type added via unravel.
+
+commit 28725aa82924b65d3724d13f2924c8cb7c218b48
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Sep 24 16:02:34 2024 -0700
+
+    Passing tests for autounravel parametrized type.
+
+commit 42ce1177890d9d1e4ab74d9e3152b2b172411839
+Merge: 47a6c8e5 604e0e09
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Sep 24 15:23:04 2024 -0700
+
+    Merge branch 'master' into autounravel
 
 commit 82c919fb26d44f80ddf13b1b9b5f19f023ca4fd7
 Author: John Bowman <bowman@ualberta.ca>
@@ -1264,6 +3505,12 @@ Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
 Date:   Thu Aug 22 20:55:29 2024 -0600
 
     W32: Add Ws2_32 library to static linking library.
+
+commit 47a6c8e52c3fce26ced6306018a1859c5b7e1004
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Thu Aug 22 14:20:26 2024 -0700
+
+    WIP: autounravel progress
 
 commit a5c2f091761a9145b3869116ef4fa0c78f2ff7d5
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
@@ -2082,6 +4329,50 @@ Date:   Fri Jul 26 01:01:18 2024 -0600
 
     AC: Make configure.ac work with vcpkg.
 
+commit 7c60d7bec543f6dd19086d8395df61b494e424e8
+Merge: 2e65241f e4ef069e
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sat Jul 27 13:18:58 2024 -0700
+
+    Merge branch 'master' into using_typedef
+
+commit 2e65241ff33e209c289b28a7a9763fdb541f386d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jul 26 18:56:33 2024 -0700
+
+    Remove explicit texinfo navigation.
+
+commit 35ee58184bfd49605d3867a62828e1d1524b0ae9
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 16:21:57 2024 -0700
+
+    WIP: Fix asymptote.texi.
+
+commit 89f14822ec586f29e049864aa9b6b90ac2e41c60
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 16:21:12 2024 -0700
+
+    Apply type rename after merge.
+
+commit 985175fa00617610e86e5448c9f8a06dc3b04529
+Merge: 0227e6da 472d8ceb
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 15:21:12 2024 -0700
+
+    Merge branch 'master' into using_typedef
+
+commit 0227e6da925b435121cf5498bf6fa81e8dfa8216
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 11:26:32 2024 -0700
+
+    Switch some modules from `typedef` to `using`.
+
+commit 5bbcbcc52d68306babc38c9c19dde0e06ef1b6c9
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 26 11:24:38 2024 -0700
+
+    Add comments to justify "using" syntax.
+
 commit 6c51091ad2a619d8947880ddb9c1b00dca77d7c1
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
 Date:   Fri Jul 26 00:37:05 2024 -0600
@@ -2287,6 +4578,25 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Sun Jul 14 08:54:21 2024 -0700
 
     Fix offscreen triangle groups.
+
+commit c37fca3f44690d1d90a18dd442e1aef775c206c5
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Jul 12 15:54:09 2024 -0700
+
+    Preliminary autounravel.
+
+commit b9a6e6b082c968579c605fdab8fe29e76af2b398
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jul 9 18:03:25 2024 -0700
+
+    Hardcoded autounravel structs named TestAuUn.
+
+commit 8c6c5ca0e36c298fa5767b9d7699f95f6ecef8e5
+Merge: b3278634 472d8ceb
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Jul 9 13:22:38 2024 -0700
+
+    Merge branch 'master' into autounravel
 
 commit 2d14741e5805a27f75dc76c4a616f02f6252a5f1
 Merge: 030c13a0 472d8ceb
@@ -2711,6 +5021,13 @@ Author: John Bowman <bowman@ualberta.ca>
 Date:   Sun Jun 2 17:39:49 2024 -0700
 
     Remove automatic recordInitializer for imported templates; add test.
+
+commit b327863476ffeb69000a6c0fa19d425fb664f286
+Merge: 122092fa be47ce98
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Sun Jun 2 15:28:58 2024 -0700
+
+    Merge branch 'rename' into autounravel
 
 commit c2ddde9f86e4533fc625997b8bf21791240c6b20
 Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
@@ -4286,6 +6603,13 @@ Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
 Date:   Fri Dec 22 23:19:37 2023 -0700
 
     Merge branch 'master' into msvc-support
+
+commit cf5f033cbe6fd008052b62033265e4fcc05face8
+Merge: 0b07b0db 2b4140b0
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Fri Dec 22 16:22:06 2023 -0800
+
+    Merge branch 'master' into using_typedef
 
 commit 2b4140b09ecf2df7312f93c59dff128b1a39c222
 Author: John Bowman <bowman@ualberta.ca>
@@ -23752,6 +26076,19 @@ Date:   Sat Jan 7 19:16:44 2017 -0700
 
     Add deepyellow synonym for olive color.
 
+commit 0b07b0db01be9e2bd24b1e3aeb182c7f9b57327c
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Mon Dec 26 18:19:02 2016 -0500
+
+    Document using keyword
+
+commit 96b017b1a26305700dffc52a80153c799d0f3b4e
+Merge: 9ab90951 1cc7f83d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Mon Dec 26 17:17:13 2016 -0500
+
+    Merge branch 'master' into using_typedef
+
 commit c71d3faf1bd0370b6ad3e464e2c0dbed934d15a6
 Author: Charles Staats III <charles.staats.iii@gmail.com>
 Date:   Mon Dec 26 17:15:00 2016 -0500
@@ -24083,6 +26420,24 @@ Date:   Fri May 6 16:49:41 2016 +0200
 
     Makefile.in: replace 'test ! -e' => 'test ! -s'
     for compatibility with older shell (on systems like Solaris)
+
+commit 9ab90951efb23c33f948738b24d40ee6ce14b76d
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 21:08:01 2016 -0700
+
+    More formatting fixes.
+
+commit c017602769b807f2f9dbcc59d6e355c9f978fcec
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 21:02:19 2016 -0700
+
+    Improve formatting of new lines in camp.y
+
+commit e939bc5faf36c1b6dc0d55f5ac63c1f5c235f9ab
+Author: Charles Staats III <charles.staats.iii@gmail.com>
+Date:   Tue Apr 19 20:52:13 2016 -0700
+
+    Add using keyword as typedef alternative.
 
 commit 656cf9764dc937aa12bd50fe8dc2e0354c7c5e64
 Author: John Bowman <bowman@ualberta.ca>

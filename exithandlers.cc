@@ -17,10 +17,6 @@
 #include "fftw++.h"
 #endif
 
-#if defined(HAVE_LIBCURSES) && defined(HAVE_LIBREADLINE)
-#include <readline/readline.h>
-#endif
-
 void interruptHandler(int)
 {
 #ifdef HAVE_LIBFFTW3
@@ -28,8 +24,6 @@ void interruptHandler(int)
 #endif
   em.Interrupt(true);
 }
-
-bool hangup=false;
 
 int returnCode()
 {
@@ -57,5 +51,4 @@ void signalHandler(int)
 
 void hangup_handler(int sig)
 {
-  hangup=true;
 }

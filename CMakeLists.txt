@@ -19,6 +19,7 @@ if (WIN32)
 endif()
 
 build_files_to_src(CORE_BUILD_FILES CORE_SOURCE_FILES)
+include(cmake-scripts/subrepo-projects.cmake)
 include(cmake-scripts/external-libs.cmake)
 include(cmake-scripts/thirdparty-impl.cmake)
 include(cmake-scripts/backport-libs.cmake)
@@ -70,6 +71,11 @@ include(cmake-scripts/asy-base-files.cmake)
 add_custom_target(asy-basefiles DEPENDS ${ASY_OUTPUT_BASE_FILES})
 add_custom_target(asy-with-basefiles ALL DEPENDS asy asy-basefiles)
 
+# asy misc files
+if (ENABLE_MISCFILES_GEN)
+    include(cmake-scripts/asy-misc-files.cmake)
+endif()
+
 # documentation generation
 
 if (ENABLE_DOCGEN)
@@ -86,8 +92,13 @@ if (ENABLE_ASY_CXXTEST)
     add_subdirectory(cxxtests)
 endif()
 
-
-# installation (on windows, pre-NSIS)
+# installation
 if (WIN32)
+    # on windows, pre-NSIS
     include(cmake-scripts/win32-pre-nsis-installer.cmake)
+else()
+    # on unix systems
+    if (NOT CTAN_BUILD)
+        include(cmake-scripts/linux-install.cmake)
+    endif()
 endif()

@@ -887,7 +887,7 @@ bool picture::postprocess(const string& prename, const string& outname,
         cmd.push_back("-sOutputFile="+outname);
         cmd.push_back(prename);
         status=System(cmd,0,true,"gs","Ghostscript");
-      } else if(!svg && !getSetting<bool>("xasy")) {
+      } else if(!svg && !xasy) {
         double expand=antialias;
         if(expand < 2.0) expand=1.0;
         res *= expand;
@@ -1564,6 +1564,7 @@ bool picture::shipout3(const string& prefix, const string& format,
         com.view=View;
         if(Wait)
           pthread_mutex_lock(&readyLock);
+        allowRender=true;
         wait(initSignal,initLock);
         endwait(initSignal,initLock);
         static bool initialize=true;
