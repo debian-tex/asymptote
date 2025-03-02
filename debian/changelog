@@ -3,6 +3,8 @@ asymptote (3.01+ds-1) UNRELEASED; urgency=medium
   * New upstream releaase, redo patches.
     - Exclude libgc & libtinyexr from .orig.tar.gz completely, use the
       libs from system.
+    - Update / Clean of d/copyright
+  * Lintian clean up.
 
  -- Hilmar Preuße <hille42@debian.org>  Sun, 02 Mar 2025 15:27:04 +0100
 

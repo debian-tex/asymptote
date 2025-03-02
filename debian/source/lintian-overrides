@@ -2,29 +2,17 @@
 # the second line length is based on a long matrix multiplication written in one line
 asymptote source: source-is-missing [base/webgl/asygl.js]
 asymptote source: source-is-missing [gl-matrix-2.4.0-pruned/dist/gl-matrix.js]
-#asymptote source: very-long-line-length-in-source-file [base/webgl/asygl.js]
-#asymptote source: very-long-line-length-in-source-file [gl-matrix-2.4.0-pruned/dist/gl-matrix.js]
-#asymptote source: source-contains-prebuilt-javascript-object base/webgl/asygl.js
-#asymptote source: source-contains-prebuilt-javascript-object gl-matrix-2.4.0-pruned/dist/gl-matrix.js
-#asymptote source: source-contains-browserified-javascript gl-matrix-2.4.0-pruned/dist/gl-matrix.js *
 asymptote source: debian-watch-does-not-check-openpgp-signature
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1020405
 asymptote source: license-problem-json-evil
 # v 2.94
-asymptote source: source-ships-excluded-file
 asymptote source: very-long-line-length-in-source-file 1391 > 512 [gl-matrix-2.4.0-pruned/dist/gl-matrix.js:2890]
 asymptote source: very-long-line-length-in-source-file 17277 > 512 [examples/animations/dice.u3d:7]
 asymptote source: very-long-line-length-in-source-file 2135 > 512 [LspCpp/third_party/rapidjson/doc/misc/doxygenextra.css:273]
 asymptote source: very-long-line-length-in-source-file 532 > 512 [examples/filesurface.dat:6]
-asymptote source: very-long-line-length-in-source-file 553 > 512 [LspCpp/third_party/utfcpp/README.md:6]
-asymptote source: very-long-line-length-in-source-file 60545 > 512 [tinyexr/experimental/js/tinyexr.js:1]
 asymptote source: very-long-line-length-in-source-file 617 > 512 [LspCpp/third_party/rapidjson/doc/sax.md:125]
 asymptote source: very-long-line-length-in-source-file 64674 > 512 [base/webgl/asygl.js:39]
-asymptote source: very-long-line-length-in-source-file 673 > 512 [tinyexr/deps/miniz/readme.md:3]
 asymptote source: very-long-line-length-in-source-file 690 > 512 [LspCpp/third_party/rapidjson/doc/faq.md:277]
 asymptote source: very-long-line-length-in-source-file 691 > 512 [doc/CAD.tex:147]
 asymptote source: very-long-line-length-in-source-file 740 > 512 [LspCpp/third_party/rapidjson/license.txt:24]
-asymptote source: very-long-line-length-in-source-file 774 > 512 [LspCpp/include/LibLsp/JsonRpc/macro_map.h:131]
 asymptote source: very-long-line-length-in-source-file 912 > 512 [runpicture.cc:1330]
-asymptote source: very-long-line-length-in-source-file 964 > 512 [tinyexr/deps/miniz/ChangeLog.md:143]
-asymptote source: source-is-missing [tinyexr/experimental/js/tinyexr.js]
