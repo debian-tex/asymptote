@@ -35,11 +35,6 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	make install-asy DESTDIR=$(CURDIR)/debian/tmp
-	# fix xasy absolute link
-	ln -sf ../share/asymptote/GUI/xasy.py debian/tmp/usr/bin/xasy
-	# fix permissions
-	chmod 0644 debian/tmp/usr/share/asymptote/shaders/*.glsl
-	#chmod 0644 debian/tmp/usr/share/asymptote/GUI/icons_rc.py
 	dh_installtex -pasymptote
 
 #override_dh_auto_test:
@@ -47,6 +42,9 @@ override_dh_auto_install:
 
 override_dh_compress:
 	dh_compress -X.pdf
+
+override_dh_fixperms:
+	dh_fixperms -X usr/share/asymptote/GUI/xasy.py
 
 override_dh_clean:
 	dh_clean
