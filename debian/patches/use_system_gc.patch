@@ -1,0 +1,13 @@
+--- asymptote-3.01.orig/configure.ac
++++ asymptote-3.01/configure.ac
+@@ -477,8 +477,8 @@
+ if test "x$enable_gc" != "xno" ; then
+   if test "x$with_vcpkg" == "xno"; then
+     AC_DEFINE(USEGC,1,[GC Enabled])
+-    GCLIB="\$(GC)/.libs/libgc.a"
+-    INCL=$INCL" -I\$(GC)/include"
++    GCLIB="-lgc "
++    INCL=$INCL" -I/usr/include/gc"
+     AC_MSG_NOTICE([$GCNAME is enabled])
+   fi
+ else

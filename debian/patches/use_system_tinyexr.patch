@@ -1,0 +1,15 @@
+--- asymptote-3.01.orig/configure.ac
++++ asymptote-3.01/configure.ac
+@@ -637,9 +637,9 @@
+    )
+ fi
+ 
+-TINYEXR_ROOT=tinyexr
+-INCL=$INCL" -I$TINYEXR_ROOT"
+-AC_SUBST(TINYEXR_ROOT)
++#TINYEXR_ROOT=tinyexr
++#INCL=$INCL" -I$TINYEXR_ROOT"
++#AC_SUBST(TINYEXR_ROOT)
+ 
+ if test "x$enable_gl" != "xno"; then
+ if test "x$with_vcpkg" != "xno"; then  # managed by vcpkg
