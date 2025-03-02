@@ -1,4 +1,4 @@
-asymptote (3.01+ds-1) UNRELEASED; urgency=medium
+asymptote (3.01+ds-1) unstable; urgency=medium
 
   * New upstream releaase, redo patches.
     - Exclude libgc & libtinyexr from .orig.tar.gz completely, use the
@@ -8,7 +8,7 @@ asymptote (3.01+ds-1) UNRELEASED; urgency=medium
   * Fix permissions of /usr/share/asymptote/GUI/xasy.py
     (Closes: #1095559).
 
- -- Hilmar Preuße <hille42@debian.org>  Sun, 02 Mar 2025 15:27:04 +0100
+ -- Hilmar Preuße <hille42@debian.org>  Sun, 02 Mar 2025 19:29:48 +0100
 
 asymptote (2.95+ds-2) unstable; urgency=medium
 
