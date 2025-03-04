@@ -1,0 +1,37 @@
+From 3852538e0b43aab6abab1e159651513087452994 Mon Sep 17 00:00:00 2001
+From: kuafu <731784510@qq.com>
+Date: Mon, 3 Mar 2025 23:08:15 +0800
+Subject: [PATCH] 1.fixed:add missing include "cstdint" to fix
+ https://github.com/kuafuwang/LspCpp/issues/56
+
+---
+ include/LibLsp/JsonRpc/json.h       | 2 +-
+ include/LibLsp/JsonRpc/serializer.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/LibLsp/JsonRpc/json.h b/include/LibLsp/JsonRpc/json.h
+index ff28200..b97da4a 100644
+--- a/LspCpp/include/LibLsp/JsonRpc/json.h
++++ b/LspCpp/include/LibLsp/JsonRpc/json.h
+@@ -70,7 +70,7 @@ class JsonReader : public Reader
+     }
+     uint32_t GetUint32() override
+     {
+-        return uint32_t(m_->GetUint64());
++        return static_cast<uint32_t>(m_->GetUint64());
+     }
+     int64_t GetInt64() override
+     {
+diff --git a/include/LibLsp/JsonRpc/serializer.h b/include/LibLsp/JsonRpc/serializer.h
+index 31d0b27..a558823 100644
+--- a/LspCpp/include/LibLsp/JsonRpc/serializer.h
++++ b/LspCpp/include/LibLsp/JsonRpc/serializer.h
+@@ -1,7 +1,7 @@
+ #pragma once
+ 
+ #include "macro_map.h"
+-
++#include <cstdint>
+ #include <cassert>
+ #include <memory>
+ #include <string>
