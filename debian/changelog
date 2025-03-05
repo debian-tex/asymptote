@@ -1,8 +1,8 @@
-asymptote (3.01+ds-2) UNRELEASED; urgency=medium
+asymptote (3.01+ds-2) unstable; urgency=medium
 
-  * Patch from upstream to fix FTBFS using gcc-15.
+  * Patch from upstream to fix FTBFS using gcc-15 (Closes: #1096338).
 
- -- Hilmar Preuße <hille42@debian.org>  Tue, 04 Mar 2025 00:24:58 +0100
+ -- Hilmar Preuße <hille42@debian.org>  Wed, 05 Mar 2025 19:49:43 +0100
 
 asymptote (3.01+ds-1) unstable; urgency=medium
 
