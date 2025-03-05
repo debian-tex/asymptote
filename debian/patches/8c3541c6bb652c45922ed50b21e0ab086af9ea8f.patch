@@ -1,0 +1,35 @@
+From 8c3541c6bb652c45922ed50b21e0ab086af9ea8f Mon Sep 17 00:00:00 2001
+From: kuafu <731784510@qq.com>
+Date: Wed, 5 Mar 2025 22:48:35 +0800
+Subject: [PATCH] 1.try to fixed https://github.com/kuafuwang/LspCpp/issues/57
+
+---
+ include/LibLsp/lsp/ParentProcessWatcher.h | 1 +
+ include/LibLsp/lsp/lru_cache.h            | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/LibLsp/lsp/ParentProcessWatcher.h b/include/LibLsp/lsp/ParentProcessWatcher.h
+index 96d6f67..77fb31e 100644
+--- a/LspCpp/include/LibLsp/lsp/ParentProcessWatcher.h
++++ b/LspCpp/include/LibLsp/lsp/ParentProcessWatcher.h
+@@ -2,6 +2,7 @@
+ 
+ #include "LibLsp/JsonRpc/MessageIssue.h"
+ #include <memory>
++#include <cstdint>
+ 
+ class ParentProcessWatcher
+ {
+diff --git a/include/LibLsp/lsp/lru_cache.h b/include/LibLsp/lsp/lru_cache.h
+index c942491..72b0a5a 100644
+--- a/LspCpp/include/LibLsp/lsp/lru_cache.h
++++ b/LspCpp/include/LibLsp/lsp/lru_cache.h
+@@ -5,7 +5,7 @@
+ #include <limits>
+ #include <memory>
+ #include <vector>
+-
++#include <cstdint>
+ // Cache that evicts old entries which have not been used recently. Implemented
+ // using array/linear search so this works well for small array sizes.
+ template<typename TKey, typename TValue>
