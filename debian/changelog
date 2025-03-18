@@ -1,3 +1,10 @@
+asymptote (3.01+ds-3) unstable; urgency=medium
+
+  * A fixed gs package is there, re-upload with Arch "any". Make sure
+    that gs 10.04 is not used when building the package.
+
+ -- Hilmar Preuße <hille42@debian.org>  Tue, 18 Mar 2025 22:51:29 +0100
+
 asymptote (3.01+ds-2) unstable; urgency=medium
 
   * Patch from upstream to fix FTBFS using gcc-15 (Closes: #1096338).

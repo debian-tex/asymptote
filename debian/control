@@ -15,7 +15,7 @@ Build-Depends: bison,
                pkgconf,
                libglut-dev,
                libosmesa6-dev,
-               ghostscript,
+               ghostscript (<= 10.03) | ghostscript (>= 10.05),
                imagemagick,
                libboost-program-options-dev,
                libboost-filesystem-dev,
@@ -54,7 +54,7 @@ Vcs-Git: https://github.com/debian-tex/asymptote.git
 Vcs-Browser: https://github.com/debian-tex/asymptote
 
 Package: asymptote
-Architecture: amd64 arm64 i386 mips64el ppc64el riscv64 s390x alpha hppa hurd-amd64 hurd-i386 loong64 m68k powerpc ppc64 sh4 sparc64 x32
+Architecture: any
 Depends: ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends},
