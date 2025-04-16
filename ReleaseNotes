@@ -1,3 +1,9 @@
+Release Notes for Version 3.02
+
+The documentation was updated. The MSWindows search path was fixed.
+Random number generators are now initially seeded with std::random_device.
+The rendering of 3D pixels was fixed.
+
 Release Notes for Version 3.01
 
 A workaround was implemented to fix a segmentation fault under MacOS Monterey.
