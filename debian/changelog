@@ -1,3 +1,9 @@
+asymptote (3.02+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream version, refresh patches.
+
+ -- Hilmar Preuße <hille42@debian.org>  Wed, 16 Apr 2025 09:12:48 +0200
+
 asymptote (3.01+ds-3) unstable; urgency=medium
 
   * A fixed gs package is there, re-upload with Arch "any". Make sure

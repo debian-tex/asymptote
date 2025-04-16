@@ -1,6 +1,6 @@
---- asymptote-3.01.orig/configure.ac
-+++ asymptote-3.01/configure.ac
-@@ -637,9 +637,9 @@
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
+@@ -628,9 +628,9 @@
     )
  fi
  

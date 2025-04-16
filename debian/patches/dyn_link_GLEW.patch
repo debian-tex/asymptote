@@ -1,6 +1,6 @@
---- asymptote-3.01.orig/Makefile.in
-+++ asymptote-3.01/Makefile.in
-@@ -166,7 +166,7 @@
+--- asymptote.orig/Makefile.in
++++ asymptote/Makefile.in
+@@ -165,7 +165,7 @@
  	echo @set Datadir @datadir@ >> $@
  	echo @set Docdir @docdir@ >> $@
  
@@ -8,10 +8,10 @@
 +asymptote.so: $(COREFILES:=.pic.o) -lGLEW
  	$(CXX) $(OPTS) -shared -o asymptote.so revision.o $(COREFILES:=.pic.o) $(SHAREDLIBS)
  
- $(LSP_BUILD_ROOT)/liblspcpp.a:
---- asymptote-3.01.orig/configure.ac
-+++ asymptote-3.01/configure.ac
-@@ -647,8 +647,8 @@
+ $(LSP_ROOT)/liblspcpp.a:
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
+@@ -638,8 +638,8 @@
     AC_DEFINE(HAVE_LIBGL,1,[libgl is enabled])
     AC_DEFINE(FREEGLUT,1,[Freeglut is enabled])
     AC_DEFINE(HAVE_LIBGLUT,1,[Freeglut library is available])
@@ -22,7 +22,7 @@
     ADD_VCPKG_LIB_FOR_PKGCONFIG(glut)
  else  # managed by the system
     AC_CHECK_HEADERS([ncurses/curses.h ncurses.h curses.h],[break])
-@@ -662,8 +662,8 @@
+@@ -653,8 +653,8 @@
                AC_CHECK_HEADER(GLUT/glut.h, [AC_DEFINE(HAVE_LIBGLUT,1,
                     DEFINE_LIB[GLUT])
                             LIBS=$LIBS"-framework GLUT -framework OpenGL -framework Cocoa "
@@ -33,7 +33,7 @@
                                   AC_MSG_NOTICE([*** Could not find GLUT: will compile without OpenGLLUT support ***]))
          ;;
       *)
-@@ -673,8 +673,8 @@
+@@ -664,8 +664,8 @@
                                   [AC_DEFINE(HAVE_LIBGL,1,
                               DEFINE_LIB([GL]))
                               LIBS=$LIBS"-lGL "

@@ -1,6 +1,6 @@
---- asymptote-3.01.orig/configure.ac
-+++ asymptote-3.01/configure.ac
-@@ -477,8 +477,8 @@
+--- asymptote.orig/configure.ac
++++ asymptote/configure.ac
+@@ -468,8 +468,8 @@
  if test "x$enable_gc" != "xno" ; then
    if test "x$with_vcpkg" == "xno"; then
      AC_DEFINE(USEGC,1,[GC Enabled])
