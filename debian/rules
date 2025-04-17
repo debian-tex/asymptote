@@ -3,6 +3,8 @@
 # Avoid unneeded library dependencies reported by dpkg-shlibdeps.
 DEB_LDFLAGS_MAINT_APPEND := -Wl,--as-needed
 DEB_BUILD_MAINT_OPTIONS := hardening=+all
+
+include /usr/share/dpkg/architecture.mk
 include /usr/share/dpkg/buildflags.mk
 include /usr/share/dpkg/pkg-info.mk
 
@@ -39,6 +41,10 @@ override_dh_auto_install:
 
 #override_dh_auto_test:
 #	: do nothing here, otherwise make tries to compile prc/test.cc
+
+override_dh_python3:
+	dh_python3 -Nasymptote-x11
+	dh_python3 -pasymptote-x11 /usr/share/asymptote/GUI
 
 override_dh_compress:
 	dh_compress -X.pdf

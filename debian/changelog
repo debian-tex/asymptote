@@ -2,6 +2,8 @@ asymptote (3.02+ds-1) UNRELEASED; urgency=medium
 
   * New upstream version, refresh patches.
   * Lintian:
+    E: asymptote-x11: python3-script-but-no-python3-dep python3
+    Thanks to Jeremy Sowden <azazel@debian.org> for help.
     W: old-fsf-address-in-copyright-file
 
  -- Hilmar Preuße <hille42@debian.org>  Wed, 16 Apr 2025 09:12:48 +0200
