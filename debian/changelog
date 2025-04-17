@@ -1,4 +1,4 @@
-asymptote (3.02+ds-1) UNRELEASED; urgency=medium
+asymptote (3.02+ds-1) unstable; urgency=medium
 
   * New upstream version, refresh patches.
   * Lintian:
@@ -6,7 +6,7 @@ asymptote (3.02+ds-1) UNRELEASED; urgency=medium
     Thanks to Jeremy Sowden <azazel@debian.org> for help.
     W: old-fsf-address-in-copyright-file
 
- -- Hilmar Preuße <hille42@debian.org>  Wed, 16 Apr 2025 09:12:48 +0200
+ -- Hilmar Preuße <hille42@debian.org>  Thu, 17 Apr 2025 09:07:30 +0200
 
 asymptote (3.01+ds-3) unstable; urgency=medium
 
