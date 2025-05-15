@@ -1,3 +1,8 @@
+Description: We link dynamically w/ libtinyexr.
+Author: Hilmar Preusse <hille42@web.de>
+Forwarded: not-needed
+Last-Update: 2025-03-02
+
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
 @@ -628,9 +628,9 @@

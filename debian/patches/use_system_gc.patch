@@ -1,3 +1,8 @@
+Description: We link dynamically w/ libgc.
+Author: Hilmar Preusse <hille42@web.de>
+Forwarded: not-needed
+Last-Update: 2025-03-02
+
 --- asymptote.orig/configure.ac
 +++ asymptote/configure.ac
 @@ -468,8 +468,8 @@

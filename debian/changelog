@@ -1,3 +1,10 @@
+asymptote (3.03+ds-1) unstable; urgency=low
+
+  * New upstream version, refresh patches, add DEP-3 headers to
+    two patches.
+
+ -- Hilmar Preuße <hille42@debian.org>  Thu, 15 May 2025 10:37:13 +0200
+
 asymptote (3.02+ds-1) unstable; urgency=medium
 
   * New upstream version, refresh patches.

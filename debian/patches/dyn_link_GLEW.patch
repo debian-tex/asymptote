@@ -1,3 +1,8 @@
+Description: We link dynamically w/ libglew2.1.
+Author: Hilmar Preusse <hille42@web.de>
+Forwarded: not-needed
+Last-Update: 2025-04-17
+
 --- asymptote.orig/Makefile.in
 +++ asymptote/Makefile.in
 @@ -165,7 +165,7 @@
