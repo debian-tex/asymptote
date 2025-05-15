@@ -1,3 +1,8 @@
+Release Notes for Version 3.03
+
+The xasy setting was fixed.
+The rename function and --outname setting are supported again under MSWindows.
+
 Release Notes for Version 3.02
 
 The documentation was updated. The MSWindows search path was fixed.

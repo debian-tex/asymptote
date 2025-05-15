@@ -1,3 +1,110 @@
+commit 664e2b2e90efcaf1ad0b71ff9d86589d92d0eb49
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 11 14:13:58 2025 -0700
+
+    Support --outname again in MSWindows build.
+
+commit c38d7617f1d61e850fb8ef86aa7e0ed6c6e5f420
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 10 17:01:24 2025 -0700
+
+    Simplify code.
+
+commit e8dcdee86938f21d2efe3c1a1442d4bf6678c34e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Sat May 10 17:52:28 2025 -0600
+
+    W32: Fix implementation of renameOverwrite by parsing the return value correctly.
+
+commit f70c2a83e88d01f6048bf0c031be8263abea240b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 9 14:50:39 2025 -0700
+
+    Fix last revision.
+
+commit 0054f80ebe23f35e30ab16f81ef8c11d3820f7b8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 9 14:40:27 2025 -0700
+
+    Fix last revision.
+
+commit 5d03a31162eff7271b1107d78124b1204523d9ca
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 9 14:37:54 2025 -0700
+
+    Fix last revision; update FFTW++ files.
+
+commit e2c7b2730553876180933e2b4b640902d7d03568
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 9 10:42:04 2025 -0700
+
+    Port rename to MSWindows.
+
+commit acaf12bc3a642eec8c850fd12d32f353b3c94655
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 9 10:18:54 2025 -0700
+
+    Revert "W32: Replace rename with MoveFileExA on windows to allow overwriting."
+    
+    This reverts commit 1771aa6990c74397380c31d432da7630a8547fdc.
+
+commit 177125ffcf4419952ffb8b77b438a014c7e9b315
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri May 2 23:09:50 2025 -0700
+
+    Fix xasy setting.
+
+commit ee7686077c93e75bca61da337532170f0a310548
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Apr 29 13:29:44 2025 -0700
+
+    Fix last two revisions.
+
+commit d9cbac891fde5b1706ae9f643ebd00c20e67b2f2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 28 23:22:55 2025 -0700
+
+    Add missing setenv argument.
+
+commit 219f5b43b5a6da0cc21d87128153ff4d4f40090f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 28 22:51:07 2025 -0700
+
+    Implement setenv and unsetenv for MSWindows.
+
+commit e31c4b76781606665f8a575abb7334e10a03e4d9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 28 21:56:24 2025 -0700
+
+    Remove obsolete code.
+
+commit 1767469b548e7ad293d7bfa69ddb482fde8f53b7
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Apr 28 21:44:26 2025 -0700
+
+    Remove obsolete code.
+
+commit a4cf3480b540ab6fb9b24f1864d103a9437d6f31
+Merge: 3bd2de12b 1771aa699
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Apr 22 01:01:39 2025 -0600
+
+    Merge pull request #545 from vectorgraphics/fix-windows-file-rename-override
+    
+    W32: Replace rename with MoveFileExA on windows to allow overwriting.
+
+commit 1771aa6990c74397380c31d432da7630a8547fdc
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon Apr 21 21:15:57 2025 -0600
+
+    W32: Replace rename with MoveFileExA on windows to allow overwriting.
+
+commit 3bd2de12b5d900671a18a6a57832cde9af0ce2cf
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Apr 11 22:37:47 2025 -0700
+
+    Increment version to 3.03.
+
 commit 827761cd8d204f082b0f7b4dd23804a522142c77
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Fri Apr 11 21:08:33 2025 -0700

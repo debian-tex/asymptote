@@ -16,7 +16,7 @@
 #include "drawlayer.h"
 #include "drawsurface.h"
 #include "drawpath3.h"
-#include "win32helpers.h"
+#include "seconds.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -525,15 +525,7 @@ bool picture::texprocess(const string& texname, const string& outname,
           string dvipsrc=getSetting<string>("dir");
           if(dvipsrc.empty()) dvipsrc=systemDir;
           dvipsrc += dirsep+"nopapersize.ps";
-#if !defined(_WIN32)
-          setenv("DVIPSRC",dvipsrc.c_str(),1);
-#else
-          auto setEnvResult = SetEnvironmentVariableA("DVIPSRC",dvipsrc.c_str());
-          if (!setEnvResult)
-          {
-              camp::reportError("Cannot set DVIPSRC environment variable");
-          }
-#endif
+          setenv("DVIPSRC",dvipsrc.c_str(),true);
           string papertype=getSetting<string>("papertype") == "letter" ?
             "letterSize" : "a4size";
           cmd.push_back(getSetting<string>("dvips"));
@@ -854,7 +846,7 @@ bool picture::postprocess(const string& prename, const string& outname,
   if(pdftex || !epsformat) {
     if(pdfformat) {
       if(pdftex) {
-        status=rename(prename.c_str(),outname.c_str());
+        status=renameOverwrite(prename.c_str(),outname.c_str());
         if(status != 0)
           reportError("Cannot rename "+prename+" to "+outname);
       } else status=epstopdf(prename,outname);
