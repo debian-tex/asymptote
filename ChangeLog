@@ -1,3 +1,160 @@
+commit 1cfeecfc04efb9f6457a6243b46441d911eba7f2
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 13:26:14 2025 -0700
+
+    Fix last revision.
+
+commit f21cd77f3a139d1bce048f2597d04715758cb1ed
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 13:21:55 2025 -0700
+
+    List URLs to source code for dynamically linked MSWindows libraries.
+
+commit 118dd50b48e6a0de7b80d258ac54d96c4d4bbf1d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 13:01:02 2025 -0700
+
+    Change WebGL KEYS to comments.
+
+commit 888c93cb1b2d912cd392e450779d7fcb19a0ddac
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 12:19:24 2025 -0700
+
+    Implement settings.keys: optionally add KEYS to WebGL output.
+
+commit 585e7894ea788aa467604e83db1dc3b0b544ab35
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 12:15:23 2025 -0700
+
+    Add KEY to cylinder and disk primitives.
+
+commit 2622dc2282b5484ca7d305f9ebd6583d517d2bb8
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 24 08:18:40 2025 -0700
+
+    Restore example.
+
+commit ff38310cda44d645255002a693d4c0adf4bd3f19
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 22 11:54:41 2025 -0700
+
+    Copy version.asy to top-level base directory for testing purposes.
+
+commit 201b3ebdd6e889ff252657d8e1307db4aff2afd6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu May 22 10:53:50 2025 -0700
+
+    Fix unlink issues under MSWindows.
+
+commit 552844cf477675ace123d862f3a1dffab67fdade
+Merge: d93212c85 a8d72054d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 21 23:21:57 2025 -0700
+
+    Merge branch 'master' of github.com:vectorgraphics/asymptote
+
+commit d93212c85642efdb8e34ef5f4845b3fecc706c9e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 21 23:21:31 2025 -0700
+
+    Fix CMake builds.
+
+commit a8d72054d039101b8e148e9cb477bdc8fb57ac19
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 21 23:06:21 2025 -0700
+
+    Update build-asymptote.ps1.
+
+commit c005fe1517e6d016f5319d01cbfbe1c176fa1c08
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 21 21:54:15 2025 -0700
+
+    Update build-gui.yml.
+
+commit 095847b91c669ceca06572fda35076c1ad2ffe8c
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed May 21 21:22:38 2025 -0700
+
+    Remove unused files.
+
+commit 579756ca19853a42b6d431f93bc96c3a44f76db9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 20 21:37:25 2025 -0700
+
+    Update required setuptools version.
+
+commit 66719c732100dc6b34495f6575e7a139cba0edb9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 20 21:33:50 2025 -0700
+
+    Update asygl.
+
+commit 30afe085fa08ae6c3a5e2d6244b212fd5a1f435e
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue May 20 21:32:28 2025 -0700
+
+    Remove projection-dependence of shaders for correct rendering of embedded WebGL images.
+
+commit 08c4c25ec5b8c76a06ad51c0c0a8250848f6b307
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon May 19 10:31:13 2025 -0700
+
+    Revert "Update asygl."
+    
+    This reverts commit 0d13b088207cbbd8942f2eee55287d95a135957b.
+
+commit 3c9de631d62c19697c33f1d60b41d59c146f5d77
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 18 21:58:45 2025 -0700
+
+    Revert "Fix race condition between embedded WebGL scenes."
+    
+    This reverts commit 6ea778325776f1905e96d125b658388af182eb8d.
+
+commit 0d13b088207cbbd8942f2eee55287d95a135957b
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 18 21:43:53 2025 -0700
+
+    Update asygl.
+
+commit 6ea778325776f1905e96d125b658388af182eb8d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 18 21:39:12 2025 -0700
+
+    Fix race condition between embedded WebGL scenes.
+
+commit ae4edfbd6a96a85d661178f516e183d246045e26
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 18 00:31:47 2025 -0700
+
+    git subrepo pull (merge) --force LspCpp
+    
+    subrepo:
+      subdir:   "LspCpp"
+      merged:   "273a4a224"
+    upstream:
+      origin:   "git@github.com:vectorgraphics/LspCpp"
+      branch:   "master"
+      commit:   "273a4a224"
+    git-subrepo:
+      version:  "0.4.9"
+      origin:   "???"
+      commit:   "???"
+
+commit dc093856266b7d4024c0711c1d056adec5917609
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sat May 17 22:39:12 2025 -0700
+
+    Use pngdriver=png16malpha by default.
+    Use ghostscript options "-dTextAlphaBits=4" and "-dGraphicsAlphaBits=4"
+    for pngdriver.
+
+commit 88cc6268cf2e5870920ea27aae41be58fea4b69d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 11 15:07:01 2025 -0700
+
+    Increment version to 3.04.
+
 commit 664e2b2e90efcaf1ad0b71ff9d86589d92d0eb49
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sun May 11 14:13:58 2025 -0700
