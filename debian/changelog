@@ -1,3 +1,9 @@
+asymptote (3.04+ds-1) UNRELEASED; urgency=medium
+
+  * New upstream version, refresh / disable patches.
+
+ -- Hilmar Preuße <hille42@debian.org>  Tue, 27 May 2025 23:01:13 +0200
+
 asymptote (3.03+ds-1) unstable; urgency=low
 
   * New upstream version, refresh patches, add DEP-3 headers to
