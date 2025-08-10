@@ -1,3 +1,238 @@
+commit 3c4afab991ffcfedaf7e39eab6e4055c98f56457
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 3 11:37:30 2025 -0700
+
+    Add deconstruct test.
+
+commit b9aff3a006a5d235472d2bea754926dce7ef7796
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jul 3 10:24:57 2025 -0700
+
+    Add xdr character test.
+
+commit a195e2a5d18de606c7b2242f72fe815f3bec852f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Wed Jul 2 11:36:11 2025 -0700
+
+    Fix memixstream.
+
+commit a05e04c7124f3fb3795cf78b9a174e0c431c7473
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 20:28:09 2025 -0700
+
+    Simplify make check.
+
+commit 39b89dcd3dc490c6d1538d19bad69891c3746c4c
+Merge: 321f230f5 70f6dec05
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 17:52:10 2025 -0600
+
+    Merge pull request #553 from vectorgraphics/replace-setup-latex-ci-windows
+    
+    CI: Replace custom action with choco for texlive.
+
+commit 70f6dec05d850a624c211bd26f2b760a986ab511
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 17:39:37 2025 -0600
+
+    CI: Expand path with texlive in windows CI.
+
+commit dd98db5cc1945c2adcb398e676dacf4a91684025
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 17:38:39 2025 -0600
+
+    CMAKE: Add additional notice mssages to options.
+
+commit 1548a9fafc777e2fe84abd8fa9866c41b5939408
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 17:19:39 2025 -0600
+
+    CI: specify pdftex explicitly in CI.
+
+commit e17d4571c8b8e12d486bb29ce939d2c2ed6c9aae
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 16:43:58 2025 -0600
+
+    CI: Replace custom action with choco for texlive.
+
+commit 321f230f5c888ff91dedccaa48487a693fc79b3d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 13:16:51 2025 -0700
+
+    Update documentation.
+
+commit c5b805600bc92686828612e3ed432511d719e7ff
+Merge: f27a6537e 5dad4478c
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 11:04:30 2025 -0600
+
+    Merge pull request #552 from vectorgraphics/retry-ghostscript-install-ci
+    
+    CI: Use retry for installing ghoscript.
+
+commit 5dad4478cbf472e77e9c2cc4dae45a83ce14286e
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Tue Jul 1 10:36:24 2025 -0600
+
+    CI: Use retry for installing ghoscript.
+
+commit f27a6537e1720ac65cb6d1bd2f8ed24bdbf55b93
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 02:39:47 2025 -0700
+
+    Regenerate tests.
+
+commit c45a21e9e89df1afedefa8cef235021a2ed4a7d1
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 02:19:19 2025 -0700
+
+    Update URL of Asymptote Web Application.
+
+commit 359ab1ad8f5954d1ee973ce1cfd00a0951a2bc59
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 02:03:15 2025 -0700
+
+    Add XDR tests.
+
+commit 42eba5f3f46efac71ed612bf053dca3ddf593c77
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 01:05:20 2025 -0600
+
+    Suppress MacOS X warnings.
+
+commit fb81149f6c050cfa7af0aa04433a1022becb6f5d
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jul 1 00:53:47 2025 -0600
+
+    Port xstream updates to MacOS X.
+
+commit 87386472859f053d193ce586c0dbdafb5bf45f39
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 30 23:12:17 2025 -0700
+
+    Fix last revision.
+
+commit 172d021fdcb5805a95f0f93c2359e4cec27bc2ee
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 30 22:15:04 2025 -0700
+
+    Fix last revision.
+
+commit 0e82219b6f45ef0172be48a49e1c6219c8337338
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 30 21:44:32 2025 -0700
+
+    Restrict optimization pragma to GCC.
+
+commit 61a4e86e898353713a73a51cd5a50d6142566bd6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 29 23:41:19 2025 -0700
+
+    Improve array read tests.
+
+commit 14e27840238fd1992c505599c0d1686dc3b5c506
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 29 23:31:59 2025 -0700
+
+    Update documentation.
+
+commit 7dbdf992ba26a47f659209c85b33d1bc94d53c63
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 29 22:58:47 2025 -0700
+
+    Reinstate file.singlereal by partially reverting commit
+    2643b3266bcf097515bb3aa3d8c375f6a55171e2, working around GCC optimization bug.
+
+commit b3a2012a707d6c2331967ca55d16fea7b9940df3
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun Jun 29 20:47:11 2025 -0700
+
+    Implement XDR and binary string reads.
+
+commit 842945d23266092a194ade0c66735d21a5ed5524
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 26 16:46:28 2025 -0700
+
+    Simplify code.
+
+commit b52f219a915b10b9d98a9587c8ad44c1553d00ee
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 26 13:29:25 2025 -0700
+
+    Simplify code.
+
+commit 034380739eb9583999aa7e0145521b4013f9e9e9
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 26 13:07:59 2025 -0700
+
+    Remove unused code.
+
+commit 2ed539103d8680f0241eb9a51e7e0c42b0ed5239
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 26 13:06:52 2025 -0700
+
+    Fix 64-bit integer XDR reads and writes under UNIX.
+
+commit 6713a8149cb2e2ba740f406ac6294b0106ccc17a
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 26 13:05:51 2025 -0700
+
+    Remove obsolete code.
+
+commit d28c5c516799acb6ce21e2bd83dfe583e3a5da5f
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Tue Jun 24 09:47:55 2025 -0700
+
+    Enforce binary mode for xdr input and output.
+
+commit 3396b9bc7291143179b0d5bad9e5da7b6a46a4d4
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Thu Jun 19 10:37:15 2025 -0700
+
+    Remove explicit 'gif:' format from animate call.
+
+commit 2f60e660c525c4345f261a2f1d14a54964eb5d48
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Fri Jun 6 20:28:41 2025 -0700
+
+    Respect xmap transforms again.
+
+commit a9482f571bd2d672ae5ef085016ca5e875354864
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 2 13:26:44 2025 -0700
+
+    Fix last revision.
+
+commit 9df09017a6052bf96f0882d97dffb55c05867dda
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 2 13:18:17 2025 -0700
+
+    Increase another CI timeout.
+
+commit 513efa6c314c3e81a18341bb39f02da0aff8b0e6
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Mon Jun 2 10:20:33 2025 -0700
+
+    Increase CI timeout.
+
+commit a2354f8cea0677b223fdeec8328a8a6261332164
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 25 12:20:34 2025 -0700
+
+    Clean up build-asymptote-CTAN.
+
+commit f3faabf8b067d6daa7016e3438258496759b1857
+Author: Supakorn 'Jamie' Rassameemasmuang <jamievlin@outlook.com>
+Date:   Mon May 26 00:57:15 2025 -0600
+
+    REPO: Modify gitignore to exclude .idea everywhere.
+
+commit 052983e2eb4801fb6d17ed8d06dac18ae069f384
+Author: John Bowman <bowman@ualberta.ca>
+Date:   Sun May 25 12:12:12 2025 -0700
+
+    Increment version to 3.05.
+
 commit 1cfeecfc04efb9f6457a6243b46441d911eba7f2
 Author: John Bowman <bowman@ualberta.ca>
 Date:   Sat May 24 13:26:14 2025 -0700
