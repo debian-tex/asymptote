@@ -1,0 +1,22 @@
+From de2cd40c6a9cb461ce5bdec903f813811af0b263 Mon Sep 17 00:00:00 2001
+From: Waqas Tahir <42442700+wakaztahir@users.noreply.github.com>
+Date: Sat, 10 May 2025 20:42:17 +0500
+Subject: [PATCH] Update ParentProcessWatcher.cpp
+
+---
+ src/lsp/ParentProcessWatcher.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/lsp/ParentProcessWatcher.cpp b/src/lsp/ParentProcessWatcher.cpp
+index ee4147b76b..3979f09bd3 100644
+--- a/LspCpp/src/lsp/ParentProcessWatcher.cpp
++++ b/LspCpp/src/lsp/ParentProcessWatcher.cpp
+@@ -3,7 +3,7 @@
+ #include <boost/process.hpp>
+ 
+ #ifdef _WIN32
+-#include <boost/process/v1/windows.hpp>
++#include <boost/process/windows.hpp>
+ #endif
+ 
+ #include <boost/filesystem.hpp>
