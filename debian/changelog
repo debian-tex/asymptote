@@ -1,3 +1,10 @@
+asymptote (3.05+ds-2) unstable; urgency=medium
+
+  * Force boost/process v1 api, which is deprecated in 1.88.
+    (Closes: #1110586). This is rather a workaround.
+
+ -- Hilmar Preuße <hille42@debian.org>  Tue, 12 Aug 2025 23:44:29 +0200
+
 asymptote (3.05+ds-1) unstable; urgency=medium
 
   * New upstream release.
