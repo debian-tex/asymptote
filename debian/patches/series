@@ -9,4 +9,5 @@ fix_date_in_doc.patch
 #38d018f6bc6d2341718a67193c4cbb99a07be698.patch
 #3852538e0b43aab6abab1e159651513087452994.patch
 #8c3541c6bb652c45922ed50b21e0ab086af9ea8f.patch
-de2cd40c6a9cb461ce5bdec903f813811af0b263.patch
+#de2cd40c6a9cb461ce5bdec903f813811af0b263.patch
+gentoo_938730.patch
