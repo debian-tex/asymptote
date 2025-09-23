@@ -1,6 +1,7 @@
 commit a0541fdbeb08247b8c97f2f01e922452ffb4bc9e
 Author: Erik Zeek <zeekec@gmail.com>
 Date:   Mon Jul 21 20:21:07 2025 -0600
+Bug-Debian: https://bugs.debian.org/1110586
 
     Use boost/process/v1 for newer boosts
     
