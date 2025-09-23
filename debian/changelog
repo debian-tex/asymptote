@@ -3,8 +3,9 @@ asymptote (3.05+ds-2) unstable; urgency=medium
   * Force boost/process v1 api, which is deprecated in 1.88.
     (Closes: #1110586). This is rather a workaround.
   * Remove surplus B-D on libosmesa6-dev (Closes: #1116072).
+  * Bump Standards version, no changes needed.
 
- -- Hilmar Preuße <hille42@debian.org>  Tue, 12 Aug 2025 23:44:29 +0200
+ -- Hilmar Preuße <hille42@debian.org>  Tue, 23 Sep 2025 23:50:31 +0200
 
 asymptote (3.05+ds-1) unstable; urgency=medium
 

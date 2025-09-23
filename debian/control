@@ -47,7 +47,7 @@ Build-Depends: bison,
                texlive-fonts-recommended,
                texlive-pstricks,
                zlib1g-dev
-Standards-Version: 4.7.0
+Standards-Version: 4.7.2
 Rules-Requires-Root: no
 Homepage: https://asymptote.sourceforge.net/
 Vcs-Git: https://github.com/debian-tex/asymptote.git
