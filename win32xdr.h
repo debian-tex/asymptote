@@ -21,8 +21,8 @@ struct Win32XDR
   FILE* file;
   struct
   {
-    char* data;
-    char* dataCursor;
+    uint8_t* data;
+    uint8_t* dataCursor;
     size_t memSize;
   } nonFileMem;
   uint32_t fileMode;
@@ -33,9 +33,12 @@ void w32_xdrstdio_create(Win32XDR* xdrs, FILE* file, uint32_t op);
 void w32_xdr_destroy(Win32XDR* xdrs);
 
 void w32_xdrmem_create(
-  Win32XDR* xdrs, char* addr, unsigned int size,
+  Win32XDR* xdrs, uint8_t* addr, size_t size,
   uint32_t op
 );
+
+size_t w32_xdr_getpos(Win32XDR* xdrs);
+bool w32_xdr_setpos(Win32XDR* xdrs, size_t pos);
 
 template<typename T>
 bool w32_internal_xdr_write_raw_bytes(Win32XDR* xdr, T& data)
@@ -168,6 +171,9 @@ typedef Win32XDR XDR;
 #define xdrstdio_create w32_xdrstdio_create
 #define xdr_destroy w32_xdr_destroy
 #define xdrmem_create w32_xdrmem_create
+
+#define xdr_getpos w32_xdr_getpos
+#define xdr_setpos w32_xdr_setpos
 
 #define xdr_int16_t w32_xdr_int16_t
 #define xdr_u_int16_t w32_xdr_u_int16_t

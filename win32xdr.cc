@@ -13,7 +13,7 @@ void w32_xdr_destroy(Win32XDR* xdrs)
 }
 
 void w32_xdrmem_create(
-  Win32XDR* xdrs, char* addr, unsigned int size,
+  Win32XDR* xdrs, uint8_t* addr, size_t size,
   uint32_t op
 )
 {
@@ -23,6 +23,18 @@ void w32_xdrmem_create(
   xdrs->nonFileMem.memSize = size;
   xdrs->nonFileMem.dataCursor = addr;
   xdrs->fileMode = op;
+}
+
+size_t w32_xdr_getpos(Win32XDR* xdrs) {
+  return xdrs->nonFileMem.dataCursor-xdrs->nonFileMem.data;
+}
+
+bool w32_xdr_setpos(Win32XDR* xdrs, size_t pos) {
+  if(pos <= xdrs->nonFileMem.memSize) {
+    xdrs->nonFileMem.dataCursor=xdrs->nonFileMem.data+pos;
+    return true;
+  }
+  return false;
 }
 
 bool w32_xdr_int16_t(Win32XDR* xdrs, int16_t* ip)
