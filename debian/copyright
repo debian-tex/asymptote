@@ -5,8 +5,16 @@ Source: http://asymptote.sourceforge.net
 Files-Excluded:
  asy.list
  autom4te.cache
+ doc/CAD.pdf
+ doc/TeXShopAndAsymptote.pdf
+ doc/asyRefCard.pdf
+ doc/asymptote.pdf
+ doc/FAQ/asy-faq.info
+ doc/png/asymptote.info
  LspCpp/third_party/rapidjson/bin/jsonchecker
  LspCpp/third_party/uri/Doxyfile
+ LspCpp/CMakeDoxyfile.in
+ LspCpp/CMakeDoxygenDefaults.cmake
  asy-keywords.el
  base/v3dheadertypes.asy
  base/v3dtypes.asy
