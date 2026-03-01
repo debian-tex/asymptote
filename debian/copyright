@@ -46,6 +46,14 @@ Copyright: Copyright (C) 2012-2016 Glyn Matthews
            Copyright (C) 2012 Google, Inc.
 License: BSL-1.0
 
+Files: LspCpp/third_party/asio/*
+Copyright: Copyright (c) 2003-2025 Christopher M. Kohlhoff <chris@kohlhoff.com>
+License: BSL-1.0
+
+Files: LspCpp/third_party/ixwebsocket/*
+Copyright: Copyright (c) 2018 Machine Zone
+License: BSD-3-clause
+
 Files: LspCpp/include/LibLsp/JsonRpc/* LspCpp/src/jsonrpc/* LspCpp/src/lsp/*
 Copyright: Copyright 2019 Google LLC
 License: Apache-2.0
@@ -59,7 +67,7 @@ Copyright: Copyright (C) 2004-2010 Hubert Chathi
            Copyright (C) 2009-2010 Ruben Molina
            Copyright (C) 2011 Picca Frédéric-Emmanuel
            Copyright (C) 2014-2020 Norbert Preining
-           Copyright (C) 2019-2025 Hilmar Preusse
+           Copyright (C) 2019-2026 Hilmar Preusse
 License: GPL-2+
 
 Files: doc/FAQ/*.pl
