@@ -1,11 +1,15 @@
-asymptote (3.09+ds-1) UNRELEASED; urgency=medium
+asymptote (3.09+ds-1) unstable; urgency=medium
 
   * New upstream version, refresh / disable patches.
     - Does not need boost any more (Closes: #1128109)
     - Move from pyqt5 to pyside6 (upstream pr#550) (Closes: #1127832).
   * Add dpkg-dev & make to Dep of test suite.
+  * Remove files from .orig.tar.gz, which are regenerated during build
+    (Closes: ##1044090).
+  * Bump Standards version, no changes needed.
+  * Lintian stuff.
 
- -- Hilmar Preuße <hille42@debian.org>  Sun, 01 Mar 2026 14:38:44 +0100
+ -- Hilmar Preuße <hille42@debian.org>  Sun, 01 Mar 2026 17:36:37 +0100
 
 asymptote (3.05+ds-2) unstable; urgency=medium
 

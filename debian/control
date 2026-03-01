@@ -6,7 +6,6 @@ Uploaders: Hubert Chathi <uhoreg@debian.org>,
            Norbert Preining <norbert@preining.info>,
            Hilmar Preuße <hille42@debian.org>
 Section: tex
-Priority: optional
 Build-Depends: bison,
                debhelper-compat (= 13),
                dh-python,
@@ -44,8 +43,7 @@ Build-Depends: bison,
                texlive-fonts-recommended,
                texlive-pstricks,
                zlib1g-dev
-Standards-Version: 4.7.2
-Rules-Requires-Root: no
+Standards-Version: 4.7.3
 Homepage: https://asymptote.sourceforge.net/
 Vcs-Git: https://github.com/debian-tex/asymptote.git
 Vcs-Browser: https://github.com/debian-tex/asymptote
