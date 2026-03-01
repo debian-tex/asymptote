@@ -3,9 +3,9 @@ Author: Hilmar Preusse <hille42@web.de>
 Forwarded: not-needed
 Last-Update: 2025-03-02
 
---- asymptote.orig/configure.ac
-+++ asymptote/configure.ac
-@@ -628,9 +628,9 @@
+--- asymptote_new.orig/configure.ac
++++ asymptote_new/configure.ac
+@@ -623,9 +623,9 @@
     )
  fi
  

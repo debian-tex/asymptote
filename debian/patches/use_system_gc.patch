@@ -3,9 +3,9 @@ Author: Hilmar Preusse <hille42@web.de>
 Forwarded: not-needed
 Last-Update: 2025-03-02
 
---- asymptote.orig/configure.ac
-+++ asymptote/configure.ac
-@@ -468,8 +468,8 @@
+--- asymptote_new.orig/configure.ac
++++ asymptote_new/configure.ac
+@@ -463,8 +463,8 @@
  if test "x$enable_gc" != "xno" ; then
    if test "x$with_vcpkg" == "xno"; then
      AC_DEFINE(USEGC,1,[GC Enabled])
