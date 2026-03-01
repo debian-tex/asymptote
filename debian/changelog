@@ -3,6 +3,7 @@ asymptote (3.09+ds-1) UNRELEASED; urgency=medium
   * New upstream version, refresh / disable patches.
     - Does not need boost any more (Closes: #1128109)
     - Move from pyqt5 to pyside6 (upstream pr#550) (Closes: #1127832).
+  * Add dpkg-dev & make to Dep of test suite.
 
  -- Hilmar Preuße <hille42@debian.org>  Sun, 01 Mar 2026 14:38:44 +0100
 

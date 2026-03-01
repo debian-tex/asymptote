@@ -1,3 +1,5 @@
 Tests: test-suite
-Depends: asymptote
+Depends: asymptote,
+         dpkg-dev,
+         make
 Restrictions: allow-stderr
