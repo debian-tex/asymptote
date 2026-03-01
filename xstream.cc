@@ -1,3 +1,4 @@
+#include <cassert>
 #include "xstream.h"
 
 #if defined(HAVE_CONFIG_H)
@@ -117,6 +118,7 @@ ixstream& ixstream::operator>>(double& x)
     if(!xdr_double(&xdri, &x)) set(eofbit);
   return *this;
 }
+
 ixstream& ixstream::operator>>(xbyte& x)
 {
   int c=fgetc(buf);
@@ -194,7 +196,7 @@ memoxstream::memoxstream(bool singleprecision)
   fmem_init(&fmInstance);
   buf=fmem_open(&fmInstance, "w+");
 #else
-    buf=open_memstream(&buffer,&size);
+  buf=open_memstream(&buffer,&size);
 #endif
   if(buf)
     xdrstdio_create(&xdro,buf,XDR_ENCODE);
@@ -261,31 +263,66 @@ std::vector<uint8_t> memoxstream::createCopyOfCurrentData() {
 }
 
 // memixstream
-memixstream::memixstream(char* data, size_t length, bool singleprecision)
-  : ixstream(singleprecision)
+#if defined(_WIN32)
+memixstream::memixstream(uint8_t* data, size_t length, bool singleprecision)
+  : ixstream(singleprecision), data(data), length(length)
 {
+  clear();
   xdrmem_create(&xdri,data,length,XDR_DECODE);
 }
-memixstream::memixstream(std::vector<char>& data, bool singleprecision)
+#else
+memixstream::memixstream(uint8_t* data, size_t length, bool singleprecision)
+  : ixstream(singleprecision)
+{
+  clear();
+  buf=fmemopen(data,length,"r");
+  if(buf) xdrstdio_create(&xdri,buf,XDR_DECODE);
+  else set(badbit);
+}
+#endif
+
+memixstream::memixstream(std::vector<uint8_t>& data, bool singleprecision)
   : memixstream(data.data(), data.size(), singleprecision)
 {
+}
+
+#if defined(_WIN32)
+xstream& memixstream::seek(OffsetType pos, seekdir dir) {
+  clear();
+  if(!xdr_setpos(&xdri,pos))
+    set(eofbit);
+  return *this;
+}
+
+OffsetType memixstream::tell() {
+  return xdr_getpos(&xdri);
+}
+
+ixstream& memixstream::operator>>(xbyte& x)
+{
+  size_t position=tell();
+  if(position < length) {
+    x=data[position++];
+    seek(position);
+  } else set(eofbit);
+  return *this;
 }
 
 memixstream::~memixstream()
 {
   xdr_destroy(&xdri);
 }
-void memixstream::close()
+#else
+memixstream::~memixstream()
 {
-  xdr_destroy(&xdri);
+  if(buf) {
+    fclose(buf);
+    buf=nullptr;
+  }
 }
-
-void memixstream::open(const char* filename, open_mode openMode)
-{
-}
+#endif
 
 // ioxstream
-
 void ioxstream::open(const char* filename, open_mode mode)
 {
   clear();
@@ -316,7 +353,6 @@ void ioxstream::close() {
 }
 ioxstream::ioxstream()
 {
-
 }
 ioxstream::ioxstream(const char* filename)
 {
