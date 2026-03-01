@@ -5,7 +5,7 @@ asymptote (3.09+ds-1) unstable; urgency=medium
     - Move from pyqt5 to pyside6 (upstream pr#550) (Closes: #1127832).
   * Add dpkg-dev & make to Dep of test suite.
   * Remove files from .orig.tar.gz, which are regenerated during build
-    (Closes: ##1044090).
+    (Closes: #1044090).
   * Bump Standards version, no changes needed.
   * Lintian stuff.
 
